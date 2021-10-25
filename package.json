@@ -1,0 +1,36 @@
+{
+  "name": "project_template",
+  "version": "0.1.0",
+  "description": "Base template for future app templates in the Software Factory",
+  "main": "index.js",
+  "repository": "https://github.com/rrglobal/project_template",
+  "author": "Josh Haines",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "commitizen": "^4.2.4",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^7.0.0",
+    "prettier": "^2.3.2",
+    "pretty-quick": "^3.1.1"
+  },
+  "scripts": {
+    "prepare": "husky install",
+    "commit": "cz",
+    "test": ""
+  },
+  "dependencies": {
+    "@commitlint/cli": "^12.1.4",
+    "@commitlint/config-conventional": "^12.1.4"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true"
+    }
+  }
+}
