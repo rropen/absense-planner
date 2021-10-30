@@ -1,7 +1,7 @@
 <p>
     <img alt="Rolls-Royce Logo" width="100" src="https://raw.githubusercontent.com/rropen/.github/main/img/logo.png">
     <br>
-    Repo Template to be used throughout the Rolls-Royce GitHub Enterprise Instances
+    A web app absence planner for teams
 </p>
 
 <!-- Place any useful shield.io shields here.  Use the style=flat styling option. -->
@@ -14,8 +14,15 @@
 
 ## Overview
 
-Add a brief overview of the project.
+Although R-R has existing systems to manage and view absence, they fail to meet some basic needs.
+1. Allow any R-R computer user to view any colleagues absence information (with appropriate protection of people's data and compliance to any legistation on privacy)
+2. Include 3rd party colleagues/contractors as well as regular staff
+3. globally accessible
+
+This project aims to overcome these deficiencies
+
 
 ## Usage
 
-Discuss how to use the project, how to get it running, or both.
+This project is just starting, will probably be a django web app with Javascript/jQuery on the front end, and Bulma.io CSS
+
