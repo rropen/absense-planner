@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .sidenav {
+            height: 100%;
+            width: 180px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 17, 255, 0.85);
+            overflow-x: auto;
+            padding-top: 20px;
+        }
+
+        .sidenav a {
+            padding: 10px 8px 6px 20px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #ffffff;
+            display: block;
+        }
+
+        .sidenav a:hover {
+            color: #ffffffb0;
+        }
+
+        .main {
+            margin-left: 100px;
+            padding: 10px 10px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        button {
+
+            font-size: 16px;
+            text-align: center;
+            border-radius: 6px;
+            border-color: blue;
+        }
+
+        .button1:hover {
+            background-color: #bbb;
+        }
+
+        .button1 {
+            border: 2px solid blue;
+            background-color: #ffffff;
+            color: #000;
+
+        }
+
+        .button2:hover {
+            background-color: #999;
+        }
+
+        .button2 {
+            border: 2px solid blue;
+            background-color: blue;
+            color: #ffffff;
+            margin-left: 195px;
+
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="sidenav">
+        <a href="/">Home</a>
+        <a href="/calendar">Calendar</a>
+        <a href="/add">Add Absence</a>
+        <a href="/profile">User Profile</a>
+        <a href="/login" style="font-size: larger;">Login</a>
+        <a href="/sign_up" style="font-size: larger;">Create Account</a>
+
+    </div>
+    <div id="content" , name="content" , class="main">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+
+</html>

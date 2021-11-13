@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+<head>
+    <title>{% block title %} Absence Planner - Create Account {% endblock %}</title>
+</head>
+{% block content %}
+<div class="main">
+    <h2>Absence Planner</h2>
+    <h3>Create Account</h3>
+
+    <form method="post">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button type="submit" , name="login" , class="button1">Login</button>
+        <button type="menu" , name="Sign up" , class="button2">Sign up</button>
+
+
+    </form>
+</div>
+{% endblock %}

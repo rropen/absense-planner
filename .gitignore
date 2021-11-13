@@ -118,3 +118,6 @@ dist
 .pnp.*
 workspace.code-workspace
 .dccache
+
+.venv
+db.sqlite3
