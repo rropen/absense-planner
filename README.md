@@ -24,5 +24,5 @@ This project aims to overcome these deficiencies
 
 ## Usage
 
-This project is just starting, will probably be a django web app with Javascript/jQuery on the front end, and Bulma.io CSS
+This project is just starting, will be a django web app with Javascript/jQuery on the front end, and Bulma.io CSS
 
