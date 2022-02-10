@@ -126,3 +126,4 @@ workspace.code-workspace
 db.sqlite3
 
 venv
+static_root
