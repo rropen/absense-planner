@@ -94,7 +94,8 @@ def sign_up_page(response):
 
 
 def calendar(response):
-    return render(response, "plannerapp/Calendar.html")
+    number = [1,2,3,4,5,6,7,8,9]
+    return render(response, "plannerapp/Calendar.html", {"num": number})
 
 
 def nameForm(request):

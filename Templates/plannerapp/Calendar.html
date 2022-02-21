@@ -1,32 +1,47 @@
-<!DOCTYPE html>
-<html>
-<head><title>Calendar Page</title>
-    <style>
-        .active { 
-            color: green; 
-        }
-        .absent {
-            color: red
-        }
-
-    </style>
-
-    <link href="css/basic.css" rel="stylesheet" type="text/css"/>
-</head>
-
-<body>
-
-    <h1> absence Calendar  </h1>
-    
-    <br>
-
-    {% for date in dates %}
-        
-
-    {% endfor %}
-
-  </body>
-
-
-</html>
-
+{% extends 'Base.html' %}
+{% block title %}Calendar{% endblock %}
+{% load static %}
+{% block content %}
+  <section class="section">
+    <div class="container">
+      <h1 class="title is-1">
+        Rolls-Royce Absence Calendar
+      </h1>
+      <p class="subtitle is-3">
+        Placeholder text
+      </p>
+      <div class="table-container">
+        <table class="table is-bordered is-striped">
+          <thead>
+            <th>Employee</th>
+            {% for i in num %}
+              <th>{{i}}</th>
+            {% endfor %}
+          </thead>
+          <tbody>
+            <tr>
+              <th>Employee 1</th>
+              {% for i in num %}
+                {% if i == 4 %}
+                  <td style="background-color: red;"></td>
+                {% else %}
+                <td> </td>
+                {% endif %}
+              {% endfor %}
+            </tr>
+            <tr>
+              <th>Employee 2</th>
+              {% for i in num %}
+                {% if i == 1 or i == 4 or i == 7 %}
+                  <td style="background-color: red;"></td>
+                {% else %}
+                <td> </td>
+                {% endif %}
+              {% endfor %}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+{% endblock %}
