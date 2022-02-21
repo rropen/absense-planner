@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .forms import names, login, sign_up
+from .forms import login, sign_up
 
 # Temp
 
