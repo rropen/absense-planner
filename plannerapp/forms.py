@@ -2,14 +2,6 @@ from django import forms
 from django.db.models.base import Model
 from django.forms import models
 
-from plannerapp.models import employees
-
-
-class names(forms.ModelForm):
-    class Meta:
-        model = employees
-        fields = ["firstName", "lastName"]
-
 
 class login(forms.Form):
     name = forms.CharField(

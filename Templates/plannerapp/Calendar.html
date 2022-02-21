@@ -1,5 +1,6 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
+{% block content %}
+
 <head><title>Calendar Page</title>
     <style>
         .active { 
@@ -22,9 +23,13 @@
     <p>Current Month: {{ current_month }}</p>
     <p>Days in month: {{ months_count }}</p>
     
+      
+    </div>
+</body>
+    
 
-  </body>
 
 
-</html>
 
+
+{% endblock %}
