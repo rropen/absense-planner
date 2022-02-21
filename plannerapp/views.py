@@ -95,16 +95,16 @@ def calendar_page(response):
     current_date = datetime.datetime.now()
     YEAR = current_date.year # make dynamic
     MONTH = current_date.month
-    current_month = calendar.monthrange(YEAR, MONTH)[1]
+    current_month = calendar.monthrange(YEAR, MONTH)[1] 
     
     month_name = current_date.strftime("%b")
 
     current_date.month
+    
     context = {
         "current_month": month_name,
         "months_count": current_month,
         }
-
 
     return render(response, "plannerapp/Calendar.html", context)
 
