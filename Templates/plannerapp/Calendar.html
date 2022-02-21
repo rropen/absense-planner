@@ -1,5 +1,8 @@
-<!DOCTYPE html>
-<html>
+
+
+{% extends "base.html" %}
+{% block content %}
+
 <head><title>Calendar Page</title>
     <style>
         .active { 
@@ -15,7 +18,7 @@
 </head>
 
 <body>
-
+    <div class="main">
     <h1> absence Calendar  </h1>
     
     <br>
@@ -24,9 +27,10 @@
         
 
     {% endfor %}
+    </div>
+</body>
 
-  </body>
 
 
-</html>
 
+{% endblock %}

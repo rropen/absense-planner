@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+{% extends "base.html" %}
+{% block content %}
+
 <html>
 <head><title>Details Page</title>
     <style> 
@@ -9,7 +12,7 @@
        }
        .right {
            float: right;
-           padding:100px;
+           
        }
 
        .attending {
@@ -26,33 +29,35 @@
 </head>
 
 <body>
-
-    <div class="text">
-    <h1> {{ name }}'s Profile Page </h1>
     
-    <p> Job Role: {{ job_role }} </p>
-    <p> Current Project: {{ project_id }} </p>
-    
+    <div class="main">
+        <div class="main">
+        <h1> {{ name }}'s Profile Page </h1>
         
-        <div class="right">
-
-            {% if attending %}
-                <div class="attending">
-                    <p> Attending Today </p>
-                </div>
+        <p> Job Role: {{ job_role }} </p>
+        <p> Current Project: {{ project_id }} </p>
+        
             
-            {% else %}
-                <div class="not_attending"> 
-                    <p> Not Attending </p>
-                </div>
-            {% endif %}        
-       
+            <div class="right">
+
+                {% if attending %}
+                    <div class="attending">
+                        <p> Attending Today </p>
+                    </div>
+                
+                {% else %}
+                    <div class="not_attending"> 
+                        <p> Not Attending </p>
+                    </div>
+                {% endif %}        
+        
+            </div>
+
         </div>
-
-
     </div>
 </body>
 
 
 </html>
 
+{% endblock %}

@@ -10,5 +10,4 @@ urlpatterns = [
     path("form/", views.nameForm, name="nameform"),
     path("profile/", views.profile_page, name="profile"),
     path("details", views.details_page, name="details"),
-
 ]
