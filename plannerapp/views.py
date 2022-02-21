@@ -1,5 +1,6 @@
+from sqlite3 import Cursor
 from django.shortcuts import render
-
+import calendar, datetime
 
 #Temp
 
@@ -20,11 +21,6 @@ details_info = [      # Sent over to html code
     ]
 ]
 
-calendar_info = [
-
-    
-
-]
 
 
 
@@ -45,12 +41,14 @@ def details_page(request):
 
 
 
-def calendar_page(request):
-    context = { "dates": calendar_info }      # Needs to take the list which contains that dates information
-    
-    print("test")
-
-    return render(request, "plannerapp/Calendar.html", context)
+#def calendar_page(request):
+#    current_month = datetime.datetime().month()
+#  
+#
+#    context = { "month": current_month }      # Needs to take the list which contains that dates information
+#    
+#
+#    return render(request, "plannerapp/Calendar.html", context)
 
 
 
@@ -93,8 +91,22 @@ def sign_up_page(response):
     return render (response, "plannerapp/sign_up.html", {"form":form})
 
 
-def calendar(response):
-    return render(response, "plannerapp/Calendar.html")
+def calendar_page(response):
+    current_date = datetime.datetime.now()
+    YEAR = current_date.year # make dynamic
+    MONTH = current_date.month
+    current_month = calendar.monthrange(YEAR, MONTH)[1]
+    
+    month_name = current_date.strftime("%b")
+
+    current_date.month
+    context = {
+        "current_month": month_name,
+        "months_count": current_month,
+        }
+
+
+    return render(response, "plannerapp/Calendar.html", context)
 
 
 def nameForm(request):

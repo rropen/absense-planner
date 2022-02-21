@@ -39,3 +39,5 @@ class sign_up(forms.Form):
 
 class register(forms.Form):
     check = forms.BooleanField()
+
+
