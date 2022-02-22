@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .forms import login, sign_up
 from sqlite3 import Cursor
 import calendar, datetime
+from django.http import HttpResponse
 
 
 # Temp
