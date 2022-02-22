@@ -1,58 +1,25 @@
-<!DOCTYPE html>
-<html>
-<head><title>Details Page</title>
-    <style> 
-       
-       .text {
-            font-weight: bold;
-            size: 10rem;
-       }
-       .right {
-           float: right;
-           padding:100px;
-       }
-
-       .attending {
-            color: green;
-        }
-        .not_attending {
-            color: red;
-        }
-
-        
-    </style>
-    
-
-</head>
-
-<body>
-
+{% extends 'Base.html' %}
+{% block title %}Profile{% endblock %}
+{% load static %}
+{% block content %}
+<div class="main">
     <div class="text">
-    <h1> {{ name }}'s Profile Page </h1>
-    
-    <p> Job Role: {{ job_role }} </p>
-    <p> Current Project: {{ project_id }} </p>
-    
-        
+        <h1> {{ name }}'s Profile Page </h1>
+        <p> Job Role: {{ job_role }} </p>
+        <p> Current Project: {{ project_id }} </p>
         <div class="right">
-
             {% if attending %}
-                <div class="attending">
-                    <p> Attending Today </p>
-                </div>
-            
-            {% else %}
-                <div class="not_attending"> 
-                    <p> Not Attending </p>
-                </div>
-            {% endif %}        
-       
+            <div class="attending">
+                <p> Attending Today </p>
+                    </div>
+                    {% else %}
+                    <div class="not_attending"> 
+                        <p> Not Attending </p>
+                        </div>
+                    {% endif %}        
+             </div>
         </div>
-
-
     </div>
 </body>
-
-
-</html>
+{% endblock %}
 

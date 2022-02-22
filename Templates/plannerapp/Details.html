@@ -1,44 +1,24 @@
-
-<!DOCTYPE html>
-<html>
-    <head><title>Details Page</title>
-        
-    {% load static %}
-    <link href="{% static 'css/basic.css' %}" rel="stylesheet" type="text/css"/>
-</head>
-
+{% extends "base.html" %}
+{% block title %}Details{% endblock %}
+{% load static %}
+{$ block content $}
 <body>
-
     <a href="http://localhost:8000/plannerapp/calendar/"> Return to calendar <a>
     <h1> date & other necessary details </h1>
-    
     <br>
     <h1>Staff: </h1>
-    {% for date in employee_dicts %}
-        
+    {% for date in employee_dicts %}  
         {% for i in date %}
             {% if i.attendence == "here" %}   
-
                 <div class="active">
                     <p>{{ i.name }} </p>
                 </div>
-
             {% else %}
-            
                 <div class="absent">
                     <p> {{ i.name }}</p>
                 </div>
-            
             {% endif %}
-            
-
         {% endfor %}
     {% endfor %}
-
-
-
 </body>
-
-
-</html>
-
+{$ endblock $}

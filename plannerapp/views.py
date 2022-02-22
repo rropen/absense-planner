@@ -1,4 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from .forms import names, login, sign_up
 
 
 #Temp
@@ -71,17 +73,13 @@ def profile_page(request):
 
 
     return render(request, "plannerapp/Profile.html", selected_profile_context)
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from .forms import names, login, sign_up
-
 
 def index(response):
     return render(response, "plannerapp/index.html")
 
 
 def add(response):
-    return render(response, "plannerapp/add.html")
+    return render(response, "plannerapp/add_absence.html")
 
 
 def login_page(response):
