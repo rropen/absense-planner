@@ -123,4 +123,6 @@ workspace.code-workspace
 .dccache
 
 .venv
+static_root
+venv
 db.sqlite3
