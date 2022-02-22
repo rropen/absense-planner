@@ -1,0 +1,16 @@
+{
+    "python.pythonPath": "${workspaceFolder}\\venv\\Scripts\\python.exe",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.autoComplete.extraPaths": [
+        "./plannerapp"
+    ],
+    "python.linting.pylintArgs": [
+        "--load-plugins",
+        "pylint_django",
+        "--django-settings-module",
+        "absence_planner.settings",
+        "--rcfile",
+        ".pylintrc"
+    ]
+}
