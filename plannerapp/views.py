@@ -108,20 +108,19 @@ def calendar_page(request):
             value = absence_info.values("absence_date").first()  
             
             
-            for k, v in value.items():
-
-                request_date = absence_info.values("request_date").first()["request_date"]
-                absence_content.append( 
-                    { 
-                        "name": user,
-                        "ID": absence_info.values("ID").first()["ID"],  
-                        "absence_date": absence_info.values("absence_date").first()["absence_date"],  
-                        "request_date": f"{request_date.day},{request_date.month},{request_date.year}",
-                        "request_accepted": absence_info.values("request_accepted").first()["request_accepted"],  
-                        "reason": absence_info.values("reason").first()["reason"],
-                    } 
-                    )
-            
+     
+            request_date = absence_info.values("request_date").first()["request_date"]
+            absence_content.append( 
+                { 
+                    "name": user,
+                    "ID": absence_info.values("ID").first()["ID"],  
+                    "absence_date": absence_info.values("absence_date").first()["absence_date"],  
+                    "request_date": f"{request_date.day},{request_date.month},{request_date.year}",
+                    "request_accepted": absence_info.values("request_accepted").first()["request_accepted"],  
+                    "reason": absence_info.values("reason").first()["reason"],
+                } 
+                )
+        
 
     context = {
         "current_month": month_name,
