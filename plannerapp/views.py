@@ -1,8 +1,12 @@
 from django.shortcuts import render, redirect
 from .forms import login, sign_up
-from sqlite3 import Cursor
+from .models import absence
+from django.contrib.auth.models import User
+
+
 import calendar, datetime
 from django.http import HttpResponse
+
 
 
 # Temp
@@ -38,24 +42,6 @@ def add(response):
     return render(response, "plannerapp/add_absence.html")
 
 
-def calendar_page(response):
-    current_date = datetime.datetime.now()
-    YEAR = current_date.year  # make dynamic
-    MONTH = current_date.month
-    current_month = calendar.monthrange(YEAR, MONTH)[1]
-
-    month_name = current_date.strftime("%b")
-
-    current_date.month
-
-    context = {
-        "current_month": month_name,
-        "months_count": current_month,
-    }
-
-    return render(response, "plannerapp/Calendar.html", context)
-
-
 def nameForm(request):
     form = names(request.POST or None)
     if form.is_valid():
@@ -71,6 +57,55 @@ def details_page(request):
         "employee_dicts": details_info,
     }
     return render(request, "plannerapp/Details.html", context)
+
+
+def calendar_page(request):
+    
+    current_date = datetime.datetime.now()
+    YEAR = current_date.year 
+    MONTH = current_date.month
+    current_month = calendar.monthrange(YEAR, MONTH)[1] 
+    
+    month_name = current_date.strftime("%b")
+
+    current_date.month
+    
+
+    users = User.objects.all() 
+
+    
+    absence_content = []
+
+    for user in users:
+        absence_info = absence.objects.filter(User_ID=user)
+        
+        if absence_info:
+            value = absence_info.values("absence_date").first()  
+            
+            
+     
+            request_date = absence_info.values("request_date").first()["request_date"]
+            absence_content.append( 
+                { 
+                    "name": user,
+                    "ID": absence_info.values("ID").first()["ID"],  
+                    "absence_date": absence_info.values("absence_date").first()["absence_date"],  
+                    "request_date": f"{request_date.day},{request_date.month},{request_date.year}",
+                    "request_accepted": absence_info.values("request_accepted").first()["request_accepted"],  
+                    "reason": absence_info.values("reason").first()["reason"],
+                } 
+                )
+        
+
+    context = {
+        "current_month": month_name,
+        "months_count": current_month,
+        "test": absence_content
+        }
+
+
+    return render(request, "plannerapp/Calendar.html", context)
+
 
 
 # Profile page
