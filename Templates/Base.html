@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <title>{% block title %}{% endblock %} - RR Absence</title>
     <style>
         * {
             font-family: Arial, Helvetica, sans-serif;
@@ -76,12 +79,41 @@
 
 <body>
     <div class="sidenav">
-        <a href="/">Home</a>
-        <a href="/calendar">Calendar</a>
-        <a href="/add_absence">Add Absence</a>
-        <a href="/profile">User Profile</a>
-        <a href="/login" style="font-size: larger;">Login</a>
-        <a href="/sign_up" style="font-size: larger;">Create Account</a>
+        <a href="/">
+            <span class="icon-text">
+                <span class="icon"><i class="fas fa-home"></i></span>
+                <span  style="margin-left: 10px;">Home</span>
+            </span>
+        </a>
+        <a href="/calendar">
+            <span class="icon-text">
+                <span class="icon"><i class="fas fa-calendar"></i></span>
+                <span  style="margin-left: 10px;">Calendar</span>
+            </span>
+        </a>
+        <a href="/add">
+            <span class="icon-text">
+                <span class="icon"><i class="fas fa-plus"></i></span>
+                <span  style="margin-left: 10px;">Absence</span>
+            </span>
+        </a>
+        <a href="/profile">
+            <span class="icon-text">
+                <span class="icon"><i class="fas fa-user"></i></span>
+                <span  style="margin-left: 10px;">Profile</span>
+            </span>
+        </a>
+        <a href="/login" style="font-size: larger;">
+            <span class="icon-text">
+                <span class="icon"><i class="fas fa-sign-in-alt"></i></span>
+                <span  style="margin-left: 10px;">Login</span>
+            </span>
+        </a>
+        <a href="/sign_up" style="font-size: larger;">
+            <span class="icon-text">
+                <span class="icon"><i class="fas fa-user-plus"></i></span>
+                <span  style="margin-left: 10px;">Register</span>
+            </span></a>
 
     </div>
     <div id="content" , name="content" , class="main">
