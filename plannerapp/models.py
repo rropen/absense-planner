@@ -15,7 +15,3 @@ class absence(models.Model):
 
     def __str__(self):
         return f"{self.User_ID}, {self.absence_date}, {self.reason}"
-
-
-# from django.contrib.auth.models import User
-# from .models import absence
