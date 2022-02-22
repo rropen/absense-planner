@@ -7,11 +7,15 @@ from django.contrib.auth.models import User
 class absence(models.Model):
     ID = models.AutoField(primary_key=True)
     User_ID = models.ForeignKey(User, on_delete=models.CASCADE)
-    absence_date = models.CharField(max_length=200)
-    request_date = models.DateTimeField(default=timezone.now)
+    absence_date = models.DateField(max_length=200)
+    request_date = models.DateField(default=timezone.now)
     manager_ID = models.CharField(max_length=200)
     request_accepted = models.BooleanField()
     reason = models.CharField(max_length=200)
 
     def __str__(self):
         return f"{self.User_ID}, {self.absence_date}, {self.reason}"
+
+
+# from django.contrib.auth.models import User
+# from .models import absence
