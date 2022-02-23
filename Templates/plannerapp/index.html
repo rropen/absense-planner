@@ -3,4 +3,13 @@
 {% load static %}
 {% block content %}
 
+<div class="main">
+    {% if user.is_authenticated %}
+        <p>Logged in as {{user.username}}</p>
+        <a href="{% url 'logout' %}">Log Out</a>
+    {% else %}
+        <p>You are not logged in.</p>
+        <a href="{% url 'login' %}">Click here to log in.</a>
+    {% endif %}
+</div>
 {% endblock %}
