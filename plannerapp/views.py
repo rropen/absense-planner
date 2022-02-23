@@ -2,11 +2,7 @@ from django.shortcuts import render, redirect
 from .forms import login, sign_up
 from .models import absence
 from django.contrib.auth.models import User
-
-
 import calendar, datetime
-from django.http import HttpResponse
-
 
 
 # Temp
@@ -24,7 +20,6 @@ profiles_info = []  # Not too sure how these details are going to be laid out
 
 
 profiles_info = []  # Not too sure how these details are going to be laid out
-
 
 selected_date = "29/10/21"
 
@@ -60,52 +55,66 @@ def details_page(request):
 
 
 def calendar_page(request):
-    
+
     current_date = datetime.datetime.now()
-    YEAR = current_date.year 
+    YEAR = current_date.year
     MONTH = current_date.month
-    current_month = calendar.monthrange(YEAR, MONTH)[1] 
-    
+    current_month = calendar.monthrange(YEAR, MONTH)[1]
     month_name = current_date.strftime("%b")
 
-    current_date.month
-    
-
-    users = User.objects.all() 
-
-    
+    users = User.objects.all()
     absence_content = []
+    total_absence_dates = {}
 
     for user in users:
+        # all the absences for the user
         absence_info = absence.objects.filter(User_ID=user)
-        
-        if absence_info:
-            value = absence_info.values("absence_date").first()  
-            
-            
-     
-            request_date = absence_info.values("request_date").first()["request_date"]
-            absence_content.append( 
-                { 
-                    "name": user,
-                    "ID": absence_info.values("ID").first()["ID"],  
-                    "absence_date": absence_info.values("absence_date").first()["absence_date"],  
-                    "request_date": f"{request_date.day},{request_date.month},{request_date.year}",
-                    "request_accepted": absence_info.values("request_accepted").first()["request_accepted"],  
-                    "reason": absence_info.values("reason").first()["reason"],
-                } 
-                )
-        
+        # if they have any absences
+        print("-------------------------------------------------------------------")
 
+        if absence_info:
+            # set for all the absences of a user
+            absence_dates = {1, 2, 3}
+            absence_dates.clear()
+            # mapping the absence content to keys in dictionary
+            for x in range(len(absence_info)):
+
+                request_date = absence_info[x].request_date
+
+                absence_id = absence_info[x].ID
+
+                absence_date = absence_info[x].absence_date
+                # adding dates to set
+                absence_dates.add(absence_date.day)
+
+                request_accepted = absence_info[x].request_accepted
+
+                reason = absence_info[x].reason
+
+                absence_content.append(
+                    {
+                        "name": user,
+                        "ID": absence_id,
+                        "absence_date": absence_date,
+                        "request_date": request_date,
+                        "request_accepted": request_accepted,
+                        "reason": reason,
+                    }
+                )
+            # for each user it maps the set of dates to a dictionary key labelled as the users name
+            total_absence_dates[user] = absence_dates
+    user_range = range(len(users))
     context = {
         "current_month": month_name,
-        "months_count": current_month,
-        "test": absence_content
-        }
-
+        "day_range": range(1, current_month + 1),
+        "absences": absence_content,
+        "absence_dates": total_absence_dates,
+        "users": list(users),
+        "user_range": user_range,
+    }
+    print(list(users))
 
     return render(request, "plannerapp/Calendar.html", context)
-
 
 
 # Profile page

@@ -42,8 +42,6 @@ INSTALLED_APPS = [
 ]
 
 
-
-
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -68,6 +66,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            "libraries": {"get_key": "plannerapp.templatetags.get_key"},
         },
     },
 ]
@@ -126,9 +125,7 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = str(BASE_DIR) + "/static_root"
 
-STATICFILES_DIRS = [
-    str(BASE_DIR) + "/plannerapp/static"
-]
+STATICFILES_DIRS = [str(BASE_DIR) + "/plannerapp/static"]
 
 
 # Default primary key field type
