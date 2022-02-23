@@ -5,7 +5,6 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("calendar/", views.calendar_page, name="calendar"),
     path("add_absence/", views.add, name="add"),
-    path("form/", views.nameForm, name="nameform"),
     path("profile/", views.profile_page, name="profile"),
     path("details", views.details_page, name="details"),
     path("login/", views.login_page, name="login"),
