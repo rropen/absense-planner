@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from .forms import login, sign_up
-from .models import absence
+from .forms import *
+from .models import *
 from django.contrib.auth.models import User
 import calendar, datetime
 
@@ -34,7 +34,36 @@ def index(response):
 
 
 def add(response):
-    return render(response, "plannerapp/add_absence.html")
+    form = CreateAbsence()
+    if response.method == "POST":
+        print(response.POST)
+        form = CreateAbsence(response.POST)
+        
+        
+        if form.is_valid():
+            print("-=-==-=\n\nForm Acceptable\n\n-=-=-=")
+            obj = absence()
+            
+            obj.absence_date_start = form.cleaned_data["start_date"]
+            obj.absence_date_end = form.cleaned_data["end_date"]
+            obj.reason = form.cleaned_data["reason"]
+
+            obj.request_accepted = False
+            
+
+            # Temporarily getting first user - (while there is no login & signup for basic users)
+            obj.User_ID = User.objects.all()[0]
+
+            obj.save()
+
+        
+
+    content = {
+        "form": form
+    }
+
+    return render(response, "plannerapp/add_absence.html", content)
+
 
 
 def details_page(request):
