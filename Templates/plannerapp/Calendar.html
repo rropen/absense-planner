@@ -1,4 +1,5 @@
 {% extends 'Base.html' %}
+{% load get_key %}
 {% block title %}Calendar{% endblock %}
 {% load static %}
 {% block content %}
@@ -8,37 +9,34 @@
         Rolls-Royce Absence Calendar
       </h1>
       <p class="subtitle is-3">
-        Placeholder text
+        {{current_month|date:"F"}}
       </p>
       <div class="table-container">
         <table class="table is-bordered is-striped">
           <thead>
             <th style="background-color: black; color: white;">Employee</th>
-            {% for i in num %}
-              <th style="background-color: black; color: white;">{{i}}</th>
+            {% for day in day_range %}
+              <th style="background-color: black; color: white;">{{day}}</th>
             {% endfor %}
           </thead>
           <tbody>
-            <tr>
-              <th>Employee 1</th>
-              {% for i in num %}
-                {% if i == 4 %}
-                  <td style="background-color: red;"></td>
-                {% else %}
-                <td> </td>
-                {% endif %}
-              {% endfor %}
-            </tr>
-            <tr>
-              <th>Employee 2</th>
-              {% for i in num %}
-                {% if i == 1 or i == 4 or i == 7 %}
-                  <td style="background-color: red;"></td>
-                {% else %}
-                <td> </td>
-                {% endif %}
-              {% endfor %}
-            </tr>
+            {% for user in users %}
+              <tr>
+                <td>{{user}}</td>
+                <!-- for every day in current month- -->
+                {% for day in day_range %}
+                  <!-- if absence day equals day then highligh red -->
+                  
+                  {% if day in absence_dates|get_key:user %}
+                    
+                    <td style="background-color:red"></td>
+                  {% else %}
+                    <td></td>
+                  {% endif %}
+                  
+                {% endfor %}
+              </tr>
+            {% endfor %}
           </tbody>
         </table>
       </div>
