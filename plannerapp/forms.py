@@ -33,3 +33,28 @@ class register(forms.Form):
     check = forms.BooleanField()
 
 
+class CreateAbsence(forms.Form):
+
+
+
+    def clean(self):
+        def end_date_valid():
+            if start_date > end_date:
+                return False
+            return True
+
+
+        cleaned_data = super().clean()
+        start_date = cleaned_data.get("start_date")
+        end_date = cleaned_data.get("end_date")
+
+        if not end_date_valid():
+            raise forms.ValidationError(f"End Date must be after start date {start_date}, {end_date}")
+
+
+
+    start_date = forms.DateField(label="Starting Date:", required=True, input_formats=['%d/%m/%Y'])
+    end_date = forms.DateField(label="Ending Date:", required=True, input_formats=['%d/%m/%Y'])
+    reason = forms.CharField(label="Reason For Absence - (Optional)", required=False, max_length=200) 
+    
+  
