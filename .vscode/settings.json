@@ -12,5 +12,8 @@
         "absence_planner.settings",
         "--rcfile",
         ".pylintrc"
+    ],
+    "python.analysis.extraPaths": [
+        "./plannerapp"
     ]
 }
