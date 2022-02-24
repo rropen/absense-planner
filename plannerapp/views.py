@@ -38,32 +38,25 @@ def add(response):
     if response.method == "POST":
         print(response.POST)
         form = CreateAbsence(response.POST)
-        
-        
+
         if form.is_valid():
             print("-=-==-=\n\nForm Acceptable\n\n-=-=-=")
             obj = absence()
-            
+
             obj.absence_date_start = form.cleaned_data["start_date"]
             obj.absence_date_end = form.cleaned_data["end_date"]
             obj.reason = form.cleaned_data["reason"]
 
             obj.request_accepted = False
-            
 
             # Temporarily getting first user - (while there is no login & signup for basic users)
-            obj.User_ID = User.objects.all()[0]
+            obj.User_ID = response.user
 
             obj.save()
 
-        
-
-    content = {
-        "form": form
-    }
+    content = {"form": form}
 
     return render(response, "plannerapp/add_absence.html", content)
-
 
 
 def details_page(request):
