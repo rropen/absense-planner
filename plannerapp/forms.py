@@ -1,6 +1,7 @@
 from django import forms
 from django.db.models.base import Model
 from django.forms import models
+from django.contrib.auth.models import User
 
 
 class login(forms.Form):
@@ -32,4 +33,7 @@ class sign_up(forms.Form):
 class register(forms.Form):
     check = forms.BooleanField()
 
-
+class DeleteUserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = []

@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
-from .forms import login, sign_up
+from .forms import login, sign_up, DeleteUserForm
 from .models import absence
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 import calendar, datetime
 
 
@@ -146,3 +148,20 @@ def login_page(response):
 def sign_up_page(response):
     form = sign_up()
     return render(response, "plannerapp/sign_up.html", {"form": form})
+
+@login_required
+def deleteuser(request):
+    if request.method == 'POST':
+        delete_form = DeleteUserForm(request.POST, instance=request.user)
+        user = request.user
+        user.delete()
+        messages.info(request, "Your account has been deleted.")
+        return redirect("index")
+    else:
+        delete_form = DeleteUserForm(instance=request.user)
+
+    context = {
+        'delete_form' : delete_form
+    }
+    
+    return render(request, 'registration/delete_account.html', context)
