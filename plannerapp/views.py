@@ -30,19 +30,19 @@ todays_attendance = False
 
 current_date = datetime.datetime.now()
 YEAR = current_date.year
-MONTH = current_date.month
+MONTH = current_date.strftime("%B")
 DAY = current_date.day
 
 
-def index(response):
-    return render(response, "plannerapp/index.html")
+def index(request):
+    return render(request, "plannerapp/index.html")
 
 
-def add(response):
+def add(request):
     form = CreateAbsence()
-    if response.method == "POST":
-        print(response.POST)
-        form = CreateAbsence(response.POST)
+    if request.method == "POST":
+        print(request.POST)
+        form = CreateAbsence(request.POST)
 
         if form.is_valid():
             print("-=-==-=\n\nForm Acceptable\n\n-=-=-=")
@@ -54,14 +54,13 @@ def add(response):
 
             obj.request_accepted = False
 
-            # Temporarily getting first user - (while there is no login & signup for basic users)
-            obj.User_ID = response.user
+            obj.User_ID = request.user
 
             obj.save()
 
     content = {"form": form}
 
-    return render(response, "plannerapp/add_absence.html", content)
+    return render(request, "plannerapp/add_absence.html", content)
 
 
 def details_page(request):
@@ -71,12 +70,18 @@ def details_page(request):
     return render(request, "plannerapp/Details.html", context)
 
 
-def calendar_page(request, month=MONTH, year=YEAR):
+def calendar_page(
+    request, month=MONTH, year=YEAR
+): 
 
-    month_days = calendar.monthrange(year, month)[1]
+    month_days = calendar.monthrange(
+        year, datetime.datetime.strptime(month, "%B").month
+    )[1]
     users = User.objects.all()
     absence_content = []
     total_absence_dates = {}
+    all_absences = {}
+    delta = datetime.timedelta(days=1)
 
     for user in users:
         # all the absences for the user
@@ -84,11 +89,11 @@ def calendar_page(request, month=MONTH, year=YEAR):
         # if they have any absences
 
         if absence_info:
-            # set for all the absences of a user
-            absence_dates = {1, 2, 3}
-            absence_dates.clear()
+
             # mapping the absence content to keys in dictionary
             for x in range(len(absence_info)):
+
+                absence_dates = []
 
                 request_date = absence_info[x].request_date
 
@@ -96,65 +101,66 @@ def calendar_page(request, month=MONTH, year=YEAR):
 
                 absence_date_start = absence_info[x].absence_date_start
                 absence_date_end = absence_info[x].absence_date_end
-
-                # code to start doing more than one month
-
-                if absence_date_start.year == absence_date_end.year:
-                    if absence_date_start.month == absence_date_end.month:
-                        for y in range(
-                            absence_date_start.day, absence_date_end.day + 1
-                        ):
-                            absence_dates.add(y)
-
-                    else:
-                        for y in range(
-                            absence_date_start.day,
-                        ):
-                            days_left_current_month = (
-                                calendar.monthrange(
-                                    absence_date_start.year, absence_date_start.month
-                                )[1]
-                                - absence_date_start.day
-                            )
-                    days_left_next_month = absence_date_end.day
+                dates = absence_date_start
+                while dates <= absence_date_end:
+                    absence_dates.append(dates)
+                    dates += delta
 
                 request_accepted = absence_info[x].request_accepted
 
                 reason = absence_info[x].reason
-
+                
                 absence_content.append(
                     {
-                        "name": user,
                         "ID": absence_id,
                         "absence_date_start": absence_date_start,
                         "absence_date_end": absence_date_end,
+                        "dates": absence_dates,
                         "request_date": request_date,
                         "request_accepted": request_accepted,
                         "reason": reason,
+                        
                     }
                 )
 
             # for each user it maps the set of dates to a dictionary key labelled as the users name
             total_absence_dates[user] = absence_dates
+            all_absences[user] = absence_content
 
-    datetime_object = datetime.datetime.strptime(str(month), "%m")
-    month_name = datetime_object.strftime("%B")
+    
+    previous_month = 1
+    next_month = 12
+    try:
+
+        next_month = datetime.datetime.strptime(str((datetime.datetime.strptime(month, "%B")).month + 1), "%m").strftime(
+            "%B"
+        )
+    except:
+        pass
+    try:
+        previous_month = datetime.datetime.strptime(str((datetime.datetime.strptime(month, "%B")).month - 1), "%m").strftime(
+            "%B"
+        )
+    except:
+        pass
+    dates = "dates"
     context = {
         "current_date": current_date,
         "day_range": range(1, month_days + 1),
-        "absences": absence_content,
+        "absences": all_absences,
         "absence_dates": total_absence_dates,
         "users": list(users),
         "current_day": DAY,
         "current_month": MONTH,
         "current_year": YEAR,
+        "month_num": datetime.datetime.strptime(month,"%B").month,
         "month":month,
         "year": year,
-        "previous_year":year-1,
+        "previous_year": year - 1,
         "next_year": year + 1,
-        "previous_month": month - 1,
-        "next_month": month + 1,
-        "month_name": month_name,
+        "previous_month": previous_month,
+        "next_month": next_month,
+        "date":dates
     }
 
     return render(request, "plannerapp/Calendar.html", context)
@@ -172,11 +178,11 @@ def profile_page(request):
     return render(request, "plannerapp/Profile.html", selected_profile_context)
 
 
-def login_page(response):
+def login_page(request):
     form = login()
-    return render(response, "plannerapp/login.html", {"form": form})
+    return render(request, "plannerapp/login.html", {"form": form})
 
 
-def sign_up_page(response):
+def sign_up_page(request):
     form = sign_up()
-    return render(response, "plannerapp/sign_up.html", {"form": form})
+    return render(request, "plannerapp/sign_up.html", {"form": form})

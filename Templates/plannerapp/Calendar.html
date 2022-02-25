@@ -10,24 +10,37 @@
           Rolls-Royce Absence Calendar
         </h1>
         <p class="subtitle is-3">
-          {{month_name}} {{year}}
-        </p>
+          {{month}} {{year}} 
+        <br>        
+      
+        {% if month_num == 12 %}
         
-          {% if month == 12 %}
-          <a href="http://127.0.0.1:8000/calendar/{{previous_month}}/{{year}}" class="button3">Prievous Month</a>
-          <a href="http://127.0.0.1:8000/calendar/1/{{next_year}}" class="button3 right">Next Month</a>
-          
-          {% elif month == 1 %}
-          <a href="http://127.0.0.1:8000/calendar/12/{{previous_year}}" class="button3">Prievous Month</a>
-          <a href="http://127.0.0.1:8000/calendar/{{next_month}}/{{year}}" class="button3 right">Next Month</a>
-          
-          {% else %}
-          <a href="http://127.0.0.1:8000/calendar/{{previous_month}}/{{year}}" class="button3">Prievous Month</a>
-          <a href="http://127.0.0.1:8000/calendar/{{next_month}}/{{year}}" class="button3 right">Next Month</a>
-          
-          {% endif %}
+        {% if current_year|add:2 == next_year %}
+        <a href="http://127.0.0.1:8000/calendar/{{previous_month}}/{{year}}" class="button3">Prievous Month</a>
+        {% else %}
+        <a href="http://127.0.0.1:8000/calendar/{{previous_month}}/{{year}}" class="button3">Prievous Month</a>
+        <a href="http://127.0.0.1:8000/calendar/January/{{next_year}}" class="button3 right">Next Month</a>
+        {% endif %}
         
-          <div class="table-container">
+        {% elif month_num == 1 %}
+        
+        {% if current_year|add:"-2" == previous_year %}
+        <a href="http://127.0.0.1:8000/calendar/{{next_month}}/{{year}}" class="button3 right">Next Month</a>
+        {% else %}
+        <a href="http://127.0.0.1:8000/calendar/December/{{previous_year}}" class="button3">Prievous Month</a>
+        <a href="http://127.0.0.1:8000/calendar/{{next_month}}/{{year}}" class="button3 right">Next Month</a>
+        {% endif %}
+      </p>
+
+        
+
+        {% else %}
+          <a href="http://127.0.0.1:8000/calendar/{{previous_month}}/{{year}}" class="button3">Prievous Month</a>
+          <a href="http://127.0.0.1:8000/calendar/{{next_month}}/{{year}}" class="button3 right">Next Month</a>
+        
+        {% endif %}
+      
+        <div class="table-container">
           <table class="table is-bordered is-striped" style="width:100%">
             <thead>
               <th style="background-color: black; color: white;">Employee</th>
@@ -39,11 +52,12 @@
               {% for user in users %}
                 <tr>
                   <td>{{user}}</td>
+                  
                   <!-- for every day in current month- -->
                   {% for day in day_range %}
-                    <!-- if absence day equals day then highligh red -->
+                    <!-- if absence day equals day then highlights red -->
                     
-                    {% if day in absence_dates|get_key:user %}
+                    {% if day in absences|get_key:user|get_key:0|get_key:date|get_key:0|date:"j" %}
                       
                       <td style="background-color:red"></td>
                     {% else %}
