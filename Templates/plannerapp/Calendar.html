@@ -3,43 +3,60 @@
 {% block title %}Calendar{% endblock %}
 {% load static %}
 {% block content %}
-  <section class="section">
-    <div class="container">
-      <h1 class="title is-1">
-        Rolls-Royce Absence Calendar
-      </h1>
-      <p class="subtitle is-3">
-        {{current_month|date:"F"}}
-      </p>
-      <div class="table-container">
-        <table class="table is-bordered is-striped">
-          <thead>
-            <th style="background-color: black; color: white;">Employee</th>
-            {% for day in day_range %}
-              <th style="background-color: black; color: white;">{{day}}</th>
-            {% endfor %}
-          </thead>
-          <tbody>
-            {% for user in users %}
-              <tr>
-                <td>{{user}}</td>
-                <!-- for every day in current month- -->
-                {% for day in day_range %}
-                  <!-- if absence day equals day then highligh red -->
-                  
-                  {% if day in absence_dates|get_key:user %}
+  <div class="main">
+    <section class="section">
+      <div class="container">
+        <h1 class="title is-1">
+          Rolls-Royce Absence Calendar
+        </h1>
+        <p class="subtitle is-3">
+          {{month_name}} {{year}}
+        </p>
+        
+          {% if month == 12 %}
+          <a href="http://127.0.0.1:8000/calendar/{{previous_month}}/{{year}}" class="button3">Prievous Month</a>
+          <a href="http://127.0.0.1:8000/calendar/1/{{next_year}}" class="button3 right">Next Month</a>
+          
+          {% elif month == 1 %}
+          <a href="http://127.0.0.1:8000/calendar/12/{{previous_year}}" class="button3">Prievous Month</a>
+          <a href="http://127.0.0.1:8000/calendar/{{next_month}}/{{year}}" class="button3 right">Next Month</a>
+          
+          {% else %}
+          <a href="http://127.0.0.1:8000/calendar/{{previous_month}}/{{year}}" class="button3">Prievous Month</a>
+          <a href="http://127.0.0.1:8000/calendar/{{next_month}}/{{year}}" class="button3 right">Next Month</a>
+          
+          {% endif %}
+        
+          <div class="table-container">
+          <table class="table is-bordered is-striped" style="width:100%">
+            <thead>
+              <th style="background-color: black; color: white;">Employee</th>
+              {% for day in day_range %}
+                <th style="background-color: black; color: white;">{{day}}</th>
+              {% endfor %}
+            </thead>
+            <tbody>
+              {% for user in users %}
+                <tr>
+                  <td>{{user}}</td>
+                  <!-- for every day in current month- -->
+                  {% for day in day_range %}
+                    <!-- if absence day equals day then highligh red -->
                     
-                    <td style="background-color:red"></td>
-                  {% else %}
-                    <td></td>
-                  {% endif %}
-                  
-                {% endfor %}
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+                    {% if day in absence_dates|get_key:user %}
+                      
+                      <td style="background-color:red"></td>
+                    {% else %}
+                      <td></td>
+                    {% endif %}
+                    
+                  {% endfor %}
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div> 
 {% endblock %}

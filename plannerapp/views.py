@@ -28,6 +28,11 @@ job_role = "Software Developer"  # Not sure if this is neccessary
 project_id = "AB12341"
 todays_attendance = False
 
+current_date = datetime.datetime.now()
+YEAR = current_date.year
+MONTH = current_date.month
+DAY = current_date.day
+
 
 def index(response):
     return render(response, "plannerapp/index.html")
@@ -66,14 +71,9 @@ def details_page(request):
     return render(request, "plannerapp/Details.html", context)
 
 
-def calendar_page(request):
+def calendar_page(request, month=MONTH, year=YEAR):
 
-    current_date = datetime.datetime.now()
-    YEAR = current_date.year
-    MONTH = current_date.month
-    DAY = current_date.day
-    current_month = calendar.monthrange(YEAR, MONTH)[1]
-    month_name = current_date.strftime("%F")
+    month_days = calendar.monthrange(year, month)[1]
     users = User.objects.all()
     absence_content = []
     total_absence_dates = {}
@@ -82,8 +82,7 @@ def calendar_page(request):
         # all the absences for the user
         absence_info = absence.objects.filter(User_ID=user)
         # if they have any absences
-        print("-------------------------------------------------------------------")
-        print(absence_info)
+
         if absence_info:
             # set for all the absences of a user
             absence_dates = {1, 2, 3}
@@ -106,17 +105,19 @@ def calendar_page(request):
                             absence_date_start.day, absence_date_end.day + 1
                         ):
                             absence_dates.add(y)
-                """    
+
                     else:
-                        for y in range(absence_date_start.day, ):
-                                                        days_left_current_month = (
-                        calendar.monthrange(
-                            absence_date_start.year, absence_date_start.month
-                        )[1]
-                        - absence_date_start.day
-                    )
+                        for y in range(
+                            absence_date_start.day,
+                        ):
+                            days_left_current_month = (
+                                calendar.monthrange(
+                                    absence_date_start.year, absence_date_start.month
+                                )[1]
+                                - absence_date_start.day
+                            )
                     days_left_next_month = absence_date_end.day
-                """
+
                 request_accepted = absence_info[x].request_accepted
 
                 reason = absence_info[x].reason
@@ -136,13 +137,24 @@ def calendar_page(request):
             # for each user it maps the set of dates to a dictionary key labelled as the users name
             total_absence_dates[user] = absence_dates
 
+    datetime_object = datetime.datetime.strptime(str(month), "%m")
+    month_name = datetime_object.strftime("%B")
     context = {
-        "current_month": current_date,
-        "day_range": range(1, current_month + 1),
+        "current_date": current_date,
+        "day_range": range(1, month_days + 1),
         "absences": absence_content,
         "absence_dates": total_absence_dates,
         "users": list(users),
         "current_day": DAY,
+        "current_month": MONTH,
+        "current_year": YEAR,
+        "month":month,
+        "year": year,
+        "previous_year":year-1,
+        "next_year": year + 1,
+        "previous_month": month - 1,
+        "next_month": month + 1,
+        "month_name": month_name,
     }
 
     return render(request, "plannerapp/Calendar.html", context)
