@@ -58,7 +58,7 @@ ROOT_URLCONF = "absence_planner.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [str(BASE_DIR.joinpath('Templates'))],
+        "DIRS": [str(BASE_DIR.joinpath("Templates"))],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -67,7 +67,10 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
-            "libraries": {"get_key": "plannerapp.templatetags.get_key"},
+            "libraries": {
+                "get_key": "plannerapp.templatetags.get_key",
+                "check_absences": "plannerapp.templatetags.check_absences",
+            },
         },
     },
 ]
@@ -134,5 +137,5 @@ STATICFILES_DIRS = [str(BASE_DIR) + "/plannerapp/static"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_REDIRECT_URL = 'index'
-LOGOUT_REDIRECT_URL = 'index'
+LOGIN_REDIRECT_URL = "index"
+LOGOUT_REDIRECT_URL = "index"

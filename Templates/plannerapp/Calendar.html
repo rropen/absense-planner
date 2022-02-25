@@ -1,5 +1,7 @@
 {% extends 'Base.html' %}
 {% load get_key %}
+{% load check_absences %}
+
 {% block title %}Calendar{% endblock %}
 {% load static %}
 {% block content %}
@@ -10,7 +12,7 @@
           Rolls-Royce Absence Calendar
         </h1>
         <p class="subtitle is-3">
-          {{month}} {{year}} 
+          {{month}} {{year}} {{}}
         <br>        
       
         {% if month_num == 12 %}
@@ -57,8 +59,7 @@
                   {% for day in day_range %}
                     <!-- if absence day equals day then highlights red -->
                     
-                    {% if day in absences|get_key:user|get_key:0|get_key:date|get_key:0|date:"j" %}
-                      
+                    {% %}
                       <td style="background-color:red"></td>
                     {% else %}
                       <td></td>
