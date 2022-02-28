@@ -3,9 +3,10 @@ from django import template
 register = template.Library()
 
 
-@register.filter(name="check_absences")
-def check_absences(list_, month, day):
+@register.simple_tag
+def check_absences(list_, year, month, day):
     for x in list_:
-        if x.month == month and x.day == day:
-          return True
+        if x.month == month and x.day == day and x.year == year:
+            return True
+           
     return False

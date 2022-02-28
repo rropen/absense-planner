@@ -70,9 +70,7 @@ def details_page(request):
     return render(request, "plannerapp/Details.html", context)
 
 
-def calendar_page(
-    request, month=MONTH, year=YEAR
-): 
+def calendar_page(request, month=MONTH, year=YEAR):
 
     month_days = calendar.monthrange(
         year, datetime.datetime.strptime(month, "%B").month
@@ -89,11 +87,9 @@ def calendar_page(
         # if they have any absences
 
         if absence_info:
-
+            absence_dates = []
             # mapping the absence content to keys in dictionary
             for x in range(len(absence_info)):
-
-                absence_dates = []
 
                 request_date = absence_info[x].request_date
 
@@ -109,7 +105,7 @@ def calendar_page(
                 request_accepted = absence_info[x].request_accepted
 
                 reason = absence_info[x].reason
-                
+
                 absence_content.append(
                     {
                         "ID": absence_id,
@@ -119,7 +115,6 @@ def calendar_page(
                         "request_date": request_date,
                         "request_accepted": request_accepted,
                         "reason": reason,
-                        
                     }
                 )
 
@@ -127,20 +122,21 @@ def calendar_page(
             total_absence_dates[user] = absence_dates
             all_absences[user] = absence_content
 
-    
+    print(total_absence_dates.keys())
+
     previous_month = 1
     next_month = 12
     try:
 
-        next_month = datetime.datetime.strptime(str((datetime.datetime.strptime(month, "%B")).month + 1), "%m").strftime(
-            "%B"
-        )
+        next_month = datetime.datetime.strptime(
+            str((datetime.datetime.strptime(month, "%B")).month + 1), "%m"
+        ).strftime("%B")
     except:
         pass
     try:
-        previous_month = datetime.datetime.strptime(str((datetime.datetime.strptime(month, "%B")).month - 1), "%m").strftime(
-            "%B"
-        )
+        previous_month = datetime.datetime.strptime(
+            str((datetime.datetime.strptime(month, "%B")).month - 1), "%m"
+        ).strftime("%B")
     except:
         pass
     dates = "dates"
@@ -153,14 +149,14 @@ def calendar_page(
         "current_day": DAY,
         "current_month": MONTH,
         "current_year": YEAR,
-        "month_num": datetime.datetime.strptime(month,"%B").month,
-        "month":month,
+        "month_num": datetime.datetime.strptime(month, "%B").month,
+        "month": month,
         "year": year,
         "previous_year": year - 1,
         "next_year": year + 1,
         "previous_month": previous_month,
         "next_month": next_month,
-        "date":dates
+        "date": dates,
     }
 
     return render(request, "plannerapp/Calendar.html", context)
