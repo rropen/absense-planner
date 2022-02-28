@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .forms import login, sign_up, DeleteUserForm
+from .forms import login, sign_up, DeleteUserForm, CreateAbsence
 from .models import absence
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
