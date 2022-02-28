@@ -1,6 +1,7 @@
 from django import forms
 from django.db.models.base import Model
 from django.forms import models
+from django.contrib.auth.models import User
 
 
 class login(forms.Form):
@@ -34,9 +35,6 @@ class register(forms.Form):
 
 
 class CreateAbsence(forms.Form):
-
-
-
     def clean(self):
         def end_date_valid():
             if start_date > end_date:
@@ -51,10 +49,12 @@ class CreateAbsence(forms.Form):
         if not end_date_valid():
             raise forms.ValidationError(f"End Date must be after start date {start_date}, {end_date}")
 
-
-
     start_date = forms.DateField(label="Starting Date:", required=True, input_formats=['%d/%m/%Y'])
     end_date = forms.DateField(label="Ending Date:", required=True, input_formats=['%d/%m/%Y'])
     reason = forms.CharField(label="Reason For Absence - (Optional)", required=False, max_length=200) 
-    
-  
+
+
+class DeleteUserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = []
