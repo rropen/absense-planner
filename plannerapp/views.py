@@ -86,10 +86,10 @@ def calendar_page(request, month=MONTH, year=YEAR):
     for user in users:
         # all the absences for the user
         absence_info = absence.objects.filter(User_ID=user)
-        # if they have any absences
 
-        if absence_info:
-            absence_dates = []
+        absence_dates = []
+        # if they have any absences
+        if len(absence_info) > 0:
             # mapping the absence content to keys in dictionary
             for x in range(len(absence_info)):
 
@@ -119,28 +119,27 @@ def calendar_page(request, month=MONTH, year=YEAR):
                         "reason": reason,
                     }
                 )
-
             # for each user it maps the set of dates to a dictionary key labelled as the users name
             total_absence_dates[user] = absence_dates
             all_absences[user] = absence_content
 
-    print(total_absence_dates.keys())
+    else: 
+        total_absence_dates[user] = []
+        all_absences[user] = []
+       
 
     previous_month = 1
     next_month = 12
     try:
-
         next_month = datetime.datetime.strptime(
             str((datetime.datetime.strptime(month, "%B")).month + 1), "%m"
         ).strftime("%B")
-    except:
-        pass
-    try:
         previous_month = datetime.datetime.strptime(
             str((datetime.datetime.strptime(month, "%B")).month - 1), "%m"
         ).strftime("%B")
     except:
         pass
+    
     dates = "dates"
     context = {
         "current_date": current_date,
