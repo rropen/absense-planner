@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import login, sign_up, DeleteUserForm, CreateAbsence
+from .forms import CreateTeamForm, login, sign_up, DeleteUserForm, CreateAbsence
 from .models import Absence, Relationship, Role, Team
 
 
@@ -17,6 +17,13 @@ def index(request) -> render:
 def teams_dashboard(request) -> render:
     all_user_teams = Relationship.objects.all().filter(user=request.user)
     return render(request, "teams/dashboard.html", {"teams": all_user_teams})
+
+
+def create_team(request) -> render:
+    form = CreateTeamForm()
+    return render(request, "teams/create_team.html", {"form": form})
+     
+
 
 @login_required
 def join_team(request) -> render:
@@ -42,8 +49,6 @@ def leave_team(request, id):
     find_relationship = Relationship.objects.get(id=id)
     find_relationship.delete()
     return redirect("dashboard")
-
-
 
 
 @login_required

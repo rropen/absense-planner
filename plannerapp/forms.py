@@ -2,6 +2,17 @@ from django import forms
 from django.db.models.base import Model
 from django.forms import models
 from django.contrib.auth.models import User
+from .models import Team
+
+
+class CreateTeamForm(forms.ModelForm):
+    class Meta:
+        model = Team
+        fields = ["name", "description", "private"]
+
+    name            = forms.CharField(min_length=5, max_length=64, required=True, widget=forms.TextInput(attrs={"class":"form-control mx-auto w-50 my-3", "placeholder":"Enter Username"}))
+    description     = forms.CharField(min_length=1, max_length=64, required=False, widget=forms.TextInput(attrs={"class":"form-control mx-auto w-50 my-3", "placeholder":"Enter First Name"}))
+    private         = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={"class":"", "placeholder":"Enter Last Name"}))
 
 
 class login(forms.Form):
