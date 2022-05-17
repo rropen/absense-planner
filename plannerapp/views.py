@@ -73,7 +73,6 @@ def calendar_page(request, day:int=None, month:int=None, year:int=None) -> rende
             }
             absences.append(absence_dict)
 
-            # Corban-Lee: https://www.blackexcellence.com/wp-content/uploads/2019/05/ntipykqjpyl227boqdr5-740x412.jpg
             # for each user it maps the set of dates to a dictionary key labelled as the users name
             total_absence_dates[user] = dates
             all_absences[user] = absences
@@ -86,7 +85,7 @@ def calendar_page(request, day:int=None, month:int=None, year:int=None) -> rende
         "absences": all_absences,
         "absence_dates": total_absence_dates,
         "users": list(users),
-        "current_day": day,  # redundant bcs we have "current_date"
+        "current_day": day,  # redundant because we have "current_date"
         "current_month": month, # redundant
         "current_year": year, # redundant
         "month_num": datetime.strptime(month, "%B").month,
@@ -100,15 +99,10 @@ def calendar_page(request, day:int=None, month:int=None, year:int=None) -> rende
     }
     return render(request, "plannerapp/Calendar.html", context)
 
-
-# this is where I gave up on optimisation. It's up to you now.
-# - Corban-Lee
-
-
 # Profile page
 def profile_page(request):
-
-    return render(request, "plannerapp/Profile.html")
+    absences = Absence.objects.filter(User_ID = request.user.id)
+    return render(request, "plannerapp/profile.html", {"absences":absences})
 
 
 def login_page(request):
