@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+{% load static %}
+{% block content %}
+
+<!--
+<div class="column has-text-centered is-4">
+    <label for="monthchoice">Enter month and year:</label>
+    <input type="month" id="monthchoice" name="month">
+</div>
+-->
+<div class="container">
+    <div class="columns">
+    {% for absence in absences %}
+        <div class="column is-one-third">
+            <div class="card has-background-light p-4 has-text-centered">
+                <span class="is-block is-size-5 has-text-weight-bold"> Start date: {{ absence.absence_date_start }}</span>
+                <span class="is-block is-size-5 has-text-weight-bold">End date: {{ absence.absence_date_end }}</span>
+                <span class="is-block">Reason for request: {{ absence.reason }}</span>
+                <span class="is-block">Requested Date: {{ absence.request_date }}</span>
+                <span class="is-block">Requested Accepted?: {{ absence.request_accepted }}</span>
+                <span class="is-block">Manager ID: {{ absence.manager_ID }}</span>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+{% endblock %}
