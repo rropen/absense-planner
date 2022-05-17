@@ -9,6 +9,7 @@ class login(forms.Form):
         label="Name:",
         max_length=200,
     )
+    
     password = forms.CharField(
         label="Password:",
         max_length=200,
