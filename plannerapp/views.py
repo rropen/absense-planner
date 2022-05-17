@@ -5,23 +5,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import login, sign_up, DeleteUserForm, CreateAbsence
-from .models import absence
+from .models import Absence
 
-
-# # temp
-# details_info = [  # Sent over to html code
-#     [
-#         {"name": "Jai", "attendence": "absent"},
-#         {"name": "Mark", "attendence": "late"},
-#         {"name": "Trevor", "attendence": "here"},
-#     ]
-# ]
-# profiles_info = []  # Not too sure how these details are going to be laid out
-# selected_date = "29/10/21"
-# selected_name = "bob"
-# job_role = "Software Developer"  # Not sure if this is neccessary
-# project_id = "AB12341"
-# todays_attendance = False
 
 def index(request) -> render:
     """returns the home page"""
@@ -32,7 +17,7 @@ def add(request) -> render:
     if request.method == "POST":
         form = CreateAbsence(request.POST)
         if form.is_valid():
-            obj = absence()
+            obj = Absence()
             obj.absence_date_start = form.cleaned_data["start_date"]
             obj.absence_date_end = form.cleaned_data["end_date"]
             obj.reason = form.cleaned_data["reason"]
@@ -64,7 +49,7 @@ def calendar_page(request, day:int=None, month:int=None, year:int=None) -> rende
     total_absence_dates = {}
     all_absences = {}
     for user in users:
-        db_absences = absence.objects.filter(User_ID=user)
+        db_absences = Absence.objects.filter(User_ID=user)
         if not db_absences:
             continue
         # translating absence object to dictionary
@@ -122,14 +107,8 @@ def calendar_page(request, day:int=None, month:int=None, year:int=None) -> rende
 
 # Profile page
 def profile_page(request):
-    selected_profile_context = {
-        "name": selected_name,
-        "job_role": job_role,
-        "project_id": project_id,
-        "attending": todays_attendance,
-    }
 
-    return render(request, "plannerapp/Profile.html", selected_profile_context)
+    return render(request, "plannerapp/Profile.html")
 
 
 def login_page(request):
