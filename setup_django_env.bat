@@ -10,7 +10,7 @@ ECHO ============================================================
 
 SET PYTHON_EXECUTABLE=notfound
 @REM LOOP through the list of python commands  to find the correct one by execute the --version of the command and set it to the variable PYTHON_EXECUTABLE of the one which does not throw an error
-FOR %%P IN ("py -3.9", "py -3.10", "py", "python3.9", "python3.10", "python", "python3") DO (
+FOR %%P IN ("py -3.8") DO (
     %%~P --version
     IF NOT ERRORLEVEL 1 (
         SET PYTHON_EXECUTABLE=%%~P

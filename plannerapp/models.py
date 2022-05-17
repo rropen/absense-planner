@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 
 
-class absence(models.Model):
+class Absence(models.Model):
     ID = models.AutoField(primary_key=True)
     User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="absences")
     absence_date_start = models.DateField(max_length=200)
