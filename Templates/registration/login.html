@@ -2,12 +2,13 @@
 {% block title %}Login{% endblock %}
 {% load static %}
 {% block content %}
+{% load bulma_tags %}
 <div class="main">
-    <h2>Login</h2>
+    <h2 class="title is-2">Login</h2>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Login</button>
+        {{ form | bulma }}
+        <button class="button is-primary" type="submit">Login</button>
     </form>
 </div>
 {% endblock %}

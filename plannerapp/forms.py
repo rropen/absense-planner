@@ -8,8 +8,8 @@ class login(forms.Form):
     name = forms.CharField(
         label="Name:",
         max_length=200,
-        widget=forms.TextInput(attrs={"class":"form-contro"}))
     )
+    
     password = forms.CharField(
         label="Password:",
         max_length=200,
