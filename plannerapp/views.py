@@ -12,6 +12,7 @@ def index(request) -> render:
     """returns the home page"""
     return render(request, "plannerapp/index.html")
 
+@login_required
 def add(request) -> render:
     """create new absence record"""
     if request.method == "POST":

@@ -2,6 +2,8 @@
 {% load static %}
 {% block title %}Register Absence{% endblock %}
 {% block content %}
+
+{% if user.is_authenticated %}
     <div class="main">
         <h1> Create Absence </h1>
             <form method="POST">
@@ -13,5 +15,12 @@
                 <input type="submit" value="SAVE">
             </form>
     </div>
+{% else %}
+    <article class="message is-danger">
+        <div class="message-body">
+          <p>You must be logged in to use these services</p>
+        </div>
+      </article>
+{% endif %}
 
 {% endblock %}
