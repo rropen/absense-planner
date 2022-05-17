@@ -10,9 +10,9 @@ class CreateTeamForm(forms.ModelForm):
         model = Team
         fields = ["name", "description", "private"]
 
-    name            = forms.CharField(min_length=5, max_length=64, required=True, widget=forms.TextInput(attrs={"class":"form-control mx-auto w-50 my-3", "placeholder":"Enter Username"}))
-    description     = forms.CharField(min_length=1, max_length=64, required=False, widget=forms.Textarea(attrs={"class":"form-control mx-auto w-50 my-3", "placeholder":"Enter First Name"}))
-    private         = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={"class":"", "placeholder":"Enter Last Name"}))
+    name            = forms.CharField(min_length=3, max_length=64, required=True, widget=forms.TextInput(attrs={"class":"", "placeholder":"Team Name"}))
+    description     = forms.CharField(max_length=512, required=False, widget=forms.Textarea(attrs={"class":"", "placeholder":"Team Description"}))
+    private         = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={"class":""}))
 
 
 class login(forms.Form):
