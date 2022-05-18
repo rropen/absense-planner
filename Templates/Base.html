@@ -13,7 +13,6 @@
             font-family: Arial, Helvetica, sans-serif;
         }
         .main {
-            margin-left: 100px;
             padding: 10px 10px;
             font-family: Arial, Helvetica, sans-serif;
         }
@@ -57,10 +56,6 @@
 
         .button1:hover {
             background-color: #bbb;
-        }
-
-        .navbar a {
-            color: white
         }
 
         .button1 {
@@ -111,10 +106,16 @@
         .rr-white {
             color: #fff;
         }
-    </style>
 
+        .navbar a {
+            color: white;
+        }
+
+    </style>
 </head>
 
+<body>
+  
 <section class="hero rr-primary">
     <div class="hero-body ">
       <p class="title rr-primary">
@@ -124,70 +125,149 @@
         v0.02
       </p>
     </div>
-  </section>
+</section>
 
-<nav class="navbar rr-secondary" role="navigation"  aria-label="main navigation">
+
+
+
+<nav class="navbar rr-secondary">
   <div class="navbar-brand">
-
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
+    <div class="navbar-burger burger rr-white" data-target="navbarExampleTransparentExample">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
   </div>
 
-  <div id="navbarBasicExample" class="navbar-menu">
-    <div class="navbar-start">
-      <a href="/" class="navbar-item" style="margin-left: 3rem; padding-left: 0">
-        Home
+  <div id="navbarExampleTransparentExample" class="navbar-menu rr-secondary" >
+    <div class="navbar-start" style="margin-left: 48px">
+
+      <a class="navbar-item icon-text" href="/">
+        <span class="icon is-size-5">
+          <i class="fas fa-home"></i>
+        </span>
+        <span>Home</span>
       </a>
 
-      <a href="/calendar/" class="navbar-item rr-white">
-        Calendar
+      <a class="navbar-item icon-text" href="/calendar/">
+        <span class="icon is-size-5">
+          <i class="fas fa-calendar-alt"></i>
+        </span>
+        <span>Calendar</span>
       </a>
 
-      <a href="/add_absence/" class="navbar-item">
-        Absence
+      <a class="navbar-item icon-text" href="/add_absence/">
+        <span class="icon is-size-5">
+          <i class="fas fa-calendar-plus"></i>
+        </span>
+        <span>Add Absence</span>
       </a>
 
-      <a href="/profile/" class="navbar-item">
-        Profile
+      <a class="navbar-item icon-text" href="/profile/">
+        <span class="icon is-size-5">
+          <i class="fas fa-user"></i>
+        </span>
+        <span>Profile</span>
       </a>
 
-      <a href="/groups/" class="navbar-item">
-        Groups
+      <a class="navbar-item icon-text" href="/groups/">
+        <span class="icon is-size-5">
+          <i class="fas fa-users"></i>
+        </span>
+        <span>Teams</span>
       </a>
-        </div>
-      </div>
+
     </div>
+  </div>
 
-    <div class="navbar-end">
-      <div class="navbar-item">
-        <div class="buttons">
+  <div class="navbar-end">
+    <div class="navbar-item" style="float: right">
+      <div class="field is-grouped">
+          <div class="buttons">
             {% if user.is_authenticated %}
                 <a href="{% url 'logout' %}" class="button is-light">
                     Log out
                 </a>
             {% else %}
                 <a href="/accounts/signup" class="button is-info">
-                    <strong>Sign up</strong>
+                  <strong>Sign up</strong>
                 </a>
                 <a href="/accounts/login" class="button is-light">
-                    Log in
+                  Log in
                 </a>
             {% endif %}
-
-        </div>
+          </div>
       </div>
     </div>
   </div>
 </nav>
 
+  <div id="content" , name="content" , class="main">
+      {% block content %}
+      {% endblock %}
+  </div>
 
-    <div id="content" , name="content" , class="main">
-        {% block content %}
-        {% endblock %}
-    </div>
+  
 </body>
 
+<script>
+  'use strict';
+
+document.addEventListener('DOMContentLoaded', function () {
+
+  // Dropdowns in navbar
+
+  var $dropdowns = getAll('.navbar-item.has-dropdown:not(.is-hoverable)');
+
+  if ($dropdowns.length > 0) {
+    $dropdowns.forEach(function ($el) {
+      $el.addEventListener('click', function (event) {
+        event.stopPropagation();
+        $el.classList.toggle('is-active');
+      });
+    });
+
+    document.addEventListener('click', function (event) {
+      closeDropdowns();
+    });
+  }
+
+  function closeDropdowns() {
+    $dropdowns.forEach(function ($el) {
+      $el.classList.remove('is-active');
+    });
+  }
+
+  // Close dropdowns if ESC pressed
+  document.addEventListener('keydown', function (event) {
+    var e = event || window.event;
+    if (e.keyCode === 27) {
+      closeDropdowns();
+    }
+  });
+
+  // Toggles
+
+  var $burgers = getAll('.burger');
+
+  if ($burgers.length > 0) {
+    $burgers.forEach(function ($el) {
+      $el.addEventListener('click', function () {
+        var target = $el.dataset.target;
+        var $target = document.getElementById(target);
+        $el.classList.toggle('is-active');
+        $target.classList.toggle('is-active');
+      });
+    });
+  }
+
+  // Functions
+
+  function getAll(selector) {
+    return Array.prototype.slice.call(document.querySelectorAll(selector), 0);
+  }
+});
+</script>
+
 </html>
+
