@@ -2,12 +2,13 @@ import calendar
 from datetime import datetime, timedelta
 from logging import exception
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import login, sign_up, DeleteUserForm, CreateAbsence
+from .forms import login, sign_up, DeleteUserForm, AbsenceForm
 from .models import Absence
-
+from django.views.generic import UpdateView
 
 def index(request) -> render:
     """returns the home page"""
@@ -16,7 +17,7 @@ def index(request) -> render:
 def add(request) -> render:
     """create new absence record"""
     if request.method == "POST":
-        form = CreateAbsence(request.POST)
+        form = AbsenceForm(request.POST)
         if form.is_valid():
             obj = Absence()
             obj.absence_date_start = form.cleaned_data["start_date"]
@@ -26,7 +27,7 @@ def add(request) -> render:
             obj.User_ID = request.user
             obj.save()
     else:
-        form = CreateAbsence()
+        form = AbsenceForm()
     content = {"form": form}
     return render(request, "plannerapp/add_absence.html", content)
 
@@ -141,3 +142,14 @@ def absence_delete(request, absence_id:int):
         return redirect("profile")
     else:
         raise Exception()
+
+class EditAbsence(UpdateView):
+    template_name = "plannerapp/edit_absence.html"
+    model = Absence
+
+    # specify the fields
+    fields = ["absence_date_start", "absence_date_end"]
+
+    def get_success_url(self) -> str:
+        return reverse("profile")
+

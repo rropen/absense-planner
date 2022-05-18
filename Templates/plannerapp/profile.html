@@ -41,7 +41,7 @@
                 <span class="is-block">Requested Accepted?: {{ absence.request_accepted }}</span>
                 <span class="is-block">Manager ID: {{ absence.manager_ID }}</span>
                 <div class="mx-auto">
-                    <a class="button is-info" href="">Edit</a>
+                    <a class="button is-info" href="/absence/edit/{{ absence.pk }}">Edit</a>
                     <button class="button is-danger delete-trigger-button" data-id="{{ absence.pk }}">Delete</button>
                 </div>
             </div>

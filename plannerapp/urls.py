@@ -10,5 +10,7 @@ urlpatterns = [
     path("details/", views.details_page, name="details"),
     path("accounts/delete_user", views.deleteuser, name="delete_user"),
     path("absence/delete/<int:absence_id>", views.absence_delete, name="Absence Delete"),
+    path("absence/edit/<int:pk>", views.EditAbsence.as_view(), name="absence_edit"),
+
     # path("absence/edit/<int:id>", views.absence_edit, name="Absence Edit")
 ]
