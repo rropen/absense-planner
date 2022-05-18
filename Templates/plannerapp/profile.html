@@ -9,8 +9,28 @@
     <input type="month" id="monthchoice" name="month">
 </div>
 -->
-<div class="container">
-    <div class="columns">
+
+<div id="delete-modal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Are you sure you want to delete this absence?</p>
+        <button class="delete" aria-label="close"></button>
+      </header>
+      <footer class="modal-card-foot">
+        <a class="button is-danger" href="" id="delete-btn">Delete</a>
+        <button class="button is-info">Cancel</button>
+      </footer>
+    </div>
+  </div>
+
+
+<div class="is-size-5 has-text-centered">
+    <h1>My Absences</h1>
+</div>
+
+<div class="mt-2">
+    <div class="columns is-multiline">
     {% for absence in absences %}
         <div class="column is-one-third">
             <div class="card has-background-light p-4 has-text-centered">
@@ -20,9 +40,73 @@
                 <span class="is-block">Requested Date: {{ absence.request_date }}</span>
                 <span class="is-block">Requested Accepted?: {{ absence.request_accepted }}</span>
                 <span class="is-block">Manager ID: {{ absence.manager_ID }}</span>
+                <div class="mx-auto">
+                    <a class="button is-info" href="">Edit</a>
+                    <button class="button is-danger delete-trigger-button" data-id="{{ absence.pk }}">Delete</button>
+                </div>
             </div>
         </div>
     {% endfor %}
     </div>
 </div>
+
+<script>
+
+  
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+  // Functions to open and close a modal
+  function openModal() {
+    $el = document.getElementById("delete-modal");
+    $el.classList.add('is-active');
+  }
+
+  function closeModal($el) {
+    $el.classList.remove('is-active');
+  }
+
+  function closeAllModals() {
+    (document.querySelectorAll('.modal') || []).forEach(($modal) => {
+      closeModal($modal);
+    });
+  }
+
+  // Add a click event on buttons to open a specific modal
+  (document.querySelectorAll('.js-modal-trigger') || []).forEach(($trigger) => {
+    const modal = $trigger.dataset.target;
+    const $target = 
+
+    $trigger.addEventListener('click', (e) => {
+      openModal($target);
+    });
+    $("#delete-btn").attr("href", "/absence/delete/" + $trigger.dataset.id)
+  });
+
+  // Add a click event on various child elements to close the parent modal
+  (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button') || []).forEach(($close) => {
+    const $target = $close.closest('.modal');
+
+    $close.addEventListener('click', () => {
+      closeModal($target);
+    });
+  });
+
+  // Add a keyboard event to close all modals
+  document.addEventListener('keydown', (event) => {
+    const e = event || window.event;
+
+    if (e.keyCode === 27) { // Escape key
+      closeAllModals();
+    }
+  });
+
+  $(".delete-trigger-button").click(function(e){
+        $("#delete-btn").attr("href", "/absence/delete/" + $(this).attr("data-id"))
+        openModal();
+    });
+});
+
+
+</script>
 {% endblock %}

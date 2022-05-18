@@ -1,5 +1,6 @@
 import calendar
 from datetime import datetime, timedelta
+from logging import exception
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -131,3 +132,12 @@ def deleteuser(request):
     }
     
     return render(request, 'registration/delete_account.html', context)
+
+def absence_delete(request, absence_id:int):
+    absence = Absence.objects.get(pk=absence_id)
+    user = request.user
+    if user == absence.User_ID:
+        absence.delete()
+        return redirect("profile")
+    else:
+        raise Exception()
