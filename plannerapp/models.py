@@ -26,6 +26,10 @@ class Team(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+    @property
+    def count(self):
+        return Relationship.objects.filter(team=self).count()
+
 class Role(models.Model):
     """ This includes all the attributes of a Role """
     id              = models.AutoField(primary_key=True)

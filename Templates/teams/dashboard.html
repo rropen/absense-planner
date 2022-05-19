@@ -6,24 +6,36 @@
 <div class="container">
     <div class="columns">
         <div class="column is-half">
-            <div class="card has-background-success p-4 has-text-centered">
-                <a class="has-text-white is-size-4" href="{% url 'create_team' %}">Create A Team <i class="fas fa-plus mx-2"></i></a>
+            <div class="card has-background-success p-3 has-text-centered">
+                <a class="has-text-white is-size-5" href="{% url 'create_team' %}">Create A Team <i class="fas fa-plus mx-2"></i></a>
             </div>
         </div>
         <div class="column is-half">
-            <div class="card has-background-info p-4 has-text-centered">
-                <a class="has-text-white is-size-4" href="{% url 'join_team' %}">Join A Team <i class="fas fa-users mx-2"></i></a>
+            <div class="card has-background-info p-3 has-text-centered">
+                <a class="has-text-white is-size-5" href="{% url 'join_team' %}">Join A Team <i class="fas fa-users mx-2"></i></a>
             </div>
         </div>
     </div>
 
-    <h3 class="has-text-weight-bold is-size-5 my-3">My Teams ({{teams.count}})</h3>
+    <h3 class="has-text-weight-bold is-size-5 my-3">My Teams ({{rels.count}})</h3>
 
-    {% for team in teams %}
+    {% for rel in rels %}
         <div class="container has-background-light box">
-            <span class="is-block is-size-5	has-text-weight-bold">{{team.team.name}}</span>
-            <a class="button is-link" href="#">View</a>
-            <a class="button is-danger" href="{% url 'leave_team' team.id %}">Leave</a>
+            <div class="is-size-5 mb-3">
+                <span class="is-block is-size-5	has-text-weight-bold">{{rel.team.name}} <i class="fas fa-users mx-2"></i>{{rel.team.count}}</span>
+                {% if rel.team.private %}
+                    <span class="tag is-dark">Private</span>
+                {% elif not rel.team.private %}
+                    <span class="tag is-dark">Public</span>
+                {% endif %}
+                
+                <span class="tag is-info">{{rel.role.role}}</span>
+            </div>
+            <span class="is-block is-size-6">{{rel.team.description}}</span>
+            <div class="is-block mt-3">
+                <a class="button is-link" href="#">View</a>
+                <a class="button is-danger" href="{% url 'leave_team' rel.id %}">Leave</a>                
+            </div>
         </div>
     {% endfor %}
     

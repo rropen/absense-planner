@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import CreateTeamForm, login, sign_up, DeleteUserForm, AbsenceForm
 from .models import Absence, Relationship, Role, Team
+from django.db.models.functions import Lower
+
 
 # Temp
 
@@ -47,8 +49,8 @@ def get_total_members(team):
 
 @login_required
 def teams_dashboard(request) -> render:
-    all_user_teams = Relationship.objects.all().filter(user=request.user)
-    return render(request, "teams/dashboard.html", {"teams": all_user_teams})
+    rels = Relationship.objects.order_by(Lower("team__name")).filter(user=request.user)
+    return render(request, "teams/dashboard.html", {"rels": rels})
 
 @login_required
 def create_team(request) -> render:
@@ -84,6 +86,7 @@ def join_team(request) -> render:
             "id" : team.id,
             "name" : team.name,
             "description" : team.description,
+            "private" : team.private, 
             "count" : get_total_members(team)
             })
     return render(request, "teams/join_team.html", {"all_teams": all_teams_count})
