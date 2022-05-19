@@ -22,10 +22,11 @@ def add(request) -> render:
             obj = Absence()
             obj.absence_date_start = form.cleaned_data["start_date"]
             obj.absence_date_end = form.cleaned_data["end_date"]
-            obj.reason = form.cleaned_data["reason"]
             obj.request_accepted = False
             obj.User_ID = request.user
             obj.save()
+
+            # redirect to success page
     else:
         form = AbsenceForm()
     content = {"form": form}
@@ -71,7 +72,6 @@ def calendar_page(request, day:int=None, month:int=None, year:int=None) -> rende
                 'included_dates': dates,
                 'request_date': absence.request.date,
                 'request_accepted': absence.request_accepted,
-                'reason': absence.reason
             }
             absences.append(absence_dict)
 

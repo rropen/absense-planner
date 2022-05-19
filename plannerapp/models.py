@@ -12,7 +12,6 @@ class Absence(models.Model):
     request_date = models.DateField(default=timezone.now)
     manager_ID = models.CharField(max_length=200)
     request_accepted = models.BooleanField()
-    reason = models.CharField(max_length=200)
 
     def __str__(self):
-        return f"{self.User_ID}, {self.absence_date_start}, {self.reason}"
+        return f"{self.User_ID}, {self.absence_date_start}"
