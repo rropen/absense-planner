@@ -41,8 +41,6 @@ def index(request) -> render:
     """returns the home page"""
     return render(request, "plannerapp/index.html")
 
-<<<<<<< HEAD
-=======
 
 @login_required
 def teams_dashboard(request) -> render:
@@ -77,7 +75,6 @@ def leave_team(request, id):
 
 
 
->>>>>>> origin/matthew-dev-17/05
 @login_required
 def add(request) -> render:
     """create new absence record"""
@@ -194,12 +191,6 @@ def calendar_page(request, month=MONTH, year=YEAR):
     return render(request, "plannerapp/Calendar.html", context)
 
 
-<<<<<<< HEAD
-=======
-# this is where I gave up on optimisation. It's up to you now.
-# - Corban-Lee
-
->>>>>>> origin/matthew-dev-17/05
 # Profile page
 @login_required
 def profile_page(request):
