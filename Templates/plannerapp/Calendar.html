@@ -11,29 +11,116 @@
             <h1 class="title is-1">
                 Rolls-Royce Absence Calendar
             </h1>
-            <p class="subtitle is-3">
+            <p class="subtitle is-3 mb-1">
                 {{month}} {{year}}
+            </p>
 
                 {% if month_num == 12 %}
                     {% if current_year|add:2 == next_year %}
-                        <a href="/calendar/{{previous_month}}/{{year}}" class="button3">Prievous Month</a>
+                        <div class="level is-block">
+                            <div class="level-right">
+                                <a href="/calendar/{{previous_month}}/{{year}}" class="button3 right"><p class="buttons">
+                                    <button class="button ">
+                                      <span class="icon ">
+                                        <i class="fas fa-arrow-left"></i>
+                                      </span>
+                                    </button>
+                                  </p></a>
+
+                                  <a href="" class="button3 right noHover"><p class="buttons">
+                                    <button class="button " disabled>
+                                      <span class="icon ">
+                                        <i class="fas fa-arrow-right"></i>
+                                      </span>
+                                    </button>
+                                  </p></a>
+                            </div>
+                        </div>
                     {% else %}
-                        <a href="/calendar/{{previous_month}}/{{year}}" class="button3">Prievous Month</a>
-                        <a href="/calendar/January/{{next_year}}" class="button3 right">Next Month</a>
+                        <div class="level is-block">
+                            <div class="level-right">
+                                <a href="/calendar/{{previous_month}}/{{year}}" class="button3 right"><p class="buttons">
+                                    <button class="button ">
+                                    <span class="icon ">
+                                        <i class="fas fa-arrow-left"></i>
+                                    </span>
+                                    </button>
+                                </p></a>
+                                <a href="/calendar/January/{{next_year}}" class="button3 right"><p class="buttons">
+                                    <button class="button ">
+                                      <span class="icon ">
+                                        <i class="fas fa-arrow-right"></i>
+                                      </span>
+                                    </button>
+                                  </p></a>
+                            </div>
+                        </div>
                     {% endif %}
                 {% elif month_num == 1 %}
                     {% if current_year|add:"-2" == previous_year %}
-                        <a href="/calendar/{{next_month}}/{{year}}" class="button3 right">Next Month</a>
+                    <div class="level is-block">
+                        <div class="level-right">
+                            <a href="" class="button3 right noHover"><p class="buttons">
+                                <button class="button" disabled>
+                                <span class="icon">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                                </button>
+                            </p></a>
+                            <a href="/calendar/{{next_month}}/{{year}}" class="button3 right"><p class="buttons">
+                                <button class="button ">
+                                  <span class="icon ">
+                                    <i class="fas fa-arrow-right"></i>
+                                  </span>
+                                </button>
+                              </p></a>
+                        </div>
+                    </div>
                     {% else %}
-                        <a href="/calendar/December/{{previous_year}}" class="button3">Prievous Month</a>
-                        <a href="/calendar/{{next_month}}/{{year}}" class="button3 right">Next Month</a>
+                    <div class="level is-block">
+                        <div class="level-right">
+                            <a href="/calendar/December/{{previous_year}}" class="button3 right"><p class="buttons">
+                                <button class="button ">
+                                  <span class="icon ">
+                                    <i class="fas fa-arrow-left"></i>
+                                  </span>
+                                </button>
+                              </p></a>
+    
+                              <a href="/calendar/{{next_month}}/{{year}}" class="button3 right">
+                                    <p class="buttons">
+                                        <button class="button ">
+                                        <span class="icon ">
+                                            <i class="fas fa-arrow-right"></i>
+                                        </span>
+                                        </button>
+                                    </p>
+                                </a>
+                        </div>
+                    </div>
                     {% endif %}
                 {% else %}
-                    <a href="/calendar/{{previous_month}}/{{year}}" class="button3">Prievous Month</a>
-                    <a href="/calendar/{{next_month}}/{{year}}" class="button3 right">Next Month</a>
+                <div class="level is-block">
+                    <div class="level-right">
+                        <a href="/calendar/{{previous_month}}/{{year}}" class="button3 right"><p class="buttons">
+                            <button class="button ">
+                            <span class="icon ">
+                                <i class="fas fa-arrow-left"></i>
+                            </span>
+                            </button>
+                        </p></a>
+                        <a href="/calendar/{{next_month}}/{{year}}" class="button3 right"><p class="buttons">
+                            <button class="button ">
+                            <span class="icon ">
+                                <i class="fas fa-arrow-right"></i>
+                            </span>
+                            </button>
+                        </p></a>
+                    </div>
+                </div>
                 {% endif %}
 
-            <div class="table-container">
+            <div class="table-container" style="overflow: hidden">
                 <table class="table is-bordered is-striped" style="width:100%">
                     <thead>
                         <th style="background-color: black; color: white;">Employee</th>

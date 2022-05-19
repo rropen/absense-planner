@@ -1,18 +1,23 @@
 {% extends "base.html" %}
+{% load bulma_tags %}
 {% load static %}
 {% block title %}Register Absence{% endblock %}
 {% block content %}
 
 {% if user.is_authenticated %}
     <div class="main">
-        <h1> Create Absence </h1>
+        <h1 class="title"> Create Absence </h1>
             <form method="POST">
                 {% csrf_token %}
-                {{form.as_p}}
+                <div class="column is-3">
+                {{form | bulma}}
+                
                 {% for error in form.errors %}
                 <p>{{error}}</p>
                 {% endfor %}
-                <input type="submit" value="SAVE">
+                <input type="submit" class="button is-link" value="Save">
+                </div>
+
             </form>
     </div>
 {% else %}

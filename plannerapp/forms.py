@@ -67,8 +67,8 @@ class AbsenceForm(forms.ModelForm):
         if not end_date_valid():
             raise forms.ValidationError(f"End Date must be after start date {start_date}, {end_date}")
 
-    start_date = forms.DateField(label="Starting Date:", required=True, input_formats=['%d/%m/%Y'])
-    end_date = forms.DateField(label="Ending Date:", required=True, input_formats=['%d/%m/%Y'])
+    start_date = forms.DateField(label="Starting Date:", required=True, input_formats=['%Y-%m-%d'], widget=forms.DateTimeInput(attrs={"type":"date"}))
+    end_date = forms.DateField(label="Ending Date:", required=True, input_formats=['%Y-%m-%d'], widget=forms.DateTimeInput(attrs={"type":"date"}))
 
 
 class DeleteUserForm(forms.ModelForm):
