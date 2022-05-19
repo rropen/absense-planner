@@ -1,12 +1,41 @@
 import calendar
-from datetime import datetime, timedelta
+import datetime 
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import CreateTeamForm, login, sign_up, DeleteUserForm, CreateAbsence
+from .forms import CreateTeamForm, login, sign_up, DeleteUserForm, AbsenceForm
 from .models import Absence, Relationship, Role, Team
 
+# Temp
+
+details_info = [  # Sent over to html code
+    [
+        {"name": "Jai", "attendence": "absent"},
+        {"name": "Mark", "attendence": "late"},
+        {"name": "Trevor", "attendence": "here"},
+    ]
+]
+
+
+profiles_info = []  # Not too sure how these details are going to be laid out
+
+
+profiles_info = []  # Not too sure how these details are going to be laid out
+
+selected_date = "29/10/21"
+
+selected_name = "bob"
+job_role = "Software Developer"  # Not sure if this is neccessary
+project_id = "AB12341"
+todays_attendance = False
+
+current_date = datetime.datetime.now()
+YEAR = current_date.year
+MONTH = current_date.strftime("%B")
+DAY = current_date.day
+from django.views.generic import UpdateView
 
 def index(request) -> render:
     """returns the home page"""
@@ -80,17 +109,18 @@ def leave_team(request, id):
 def add(request) -> render:
     """create new absence record"""
     if request.method == "POST":
-        form = CreateAbsence(request.POST)
+        form = AbsenceForm(request.POST)
         if form.is_valid():
             obj = Absence()
             obj.absence_date_start = form.cleaned_data["start_date"]
             obj.absence_date_end = form.cleaned_data["end_date"]
-            obj.reason = form.cleaned_data["reason"]
             obj.request_accepted = False
             obj.User_ID = request.user
             obj.save()
+
+            # redirect to success page
     else:
-        form = CreateAbsence()
+        form = AbsenceForm()
     content = {"form": form}
     return render(request, "plannerapp/add_absence.html", content)
 
@@ -100,69 +130,94 @@ def details_page(request) -> render:
     context = {"employee_dicts": ""}
     return render(request, "plannerapp/Details.html", context)
 
-def calendar_page(request, day:int=None, month:int=None, year:int=None) -> render:
-    """returns calander web page with a context full of random junk"""
-    # get the current date if no date has been passed
-    if None in (day, month, year):
-        date = datetime.now()
-        year = date.year
-        month = date.month
-        day = date.day
-    _, days_in_month = calendar.monthrange(year, month)
+def calendar_page(request, month=MONTH, year=YEAR):
+
+    month_days = calendar.monthrange(
+        year, datetime.datetime.strptime(month, "%B").month
+    )[1]
     users = User.objects.all()
-    absences = []
+    absence_content = []
     total_absence_dates = {}
     all_absences = {}
+    delta = datetime.timedelta(days=1)
+
     for user in users:
-        db_absences = Absence.objects.filter(User_ID=user)
-        if not db_absences:
-            continue
-        # translating absence object to dictionary
-        for absence in db_absences:
-            start_date = absence.absence_date_start
-            end_date = absence.absence_date_end
-            # create list of dates that will be absent
-            dates = [
-                start_date + timedelta(days=n) for n in range(
-                    start_date, end_date
+        # all the absences for the user
+        absence_info = Absence.objects.filter(User_ID=user)
+        total_absence_dates[user] = []
+        all_absences[user] = []
+
+        # if they have any absences
+        if absence_info:
+            # mapping the absence content to keys in dictionary
+            for x in range(len(absence_info)): # pylint: disable=consider-using-enumerate
+                request_date = absence_info[x].request_date
+
+                absence_id = absence_info[x].ID
+
+                absence_date_start = absence_info[x].absence_date_start
+                absence_date_end = absence_info[x].absence_date_end
+                dates = absence_date_start
+                while dates <= absence_date_end:
+                    total_absence_dates[user].append(dates)
+                    dates += delta
+
+                request_accepted = absence_info[x].request_accepted
+
+
+                absence_content.append(
+                    {
+                        "ID": absence_id,
+                        "absence_date_start": absence_date_start,
+                        "absence_date_end": absence_date_end,
+                        "dates": total_absence_dates[user],
+                        "request_date": request_date,
+                        "request_accepted": request_accepted,
+                    }
                 )
-            ]
-            absence_dict = {
-                'id': absence.id,
-                'start_date': start_date,
-                'end_date': end_date,
-                'included_dates': dates,
-                'request_date': absence.request.date,
-                'request_accepted': absence.request_accepted,
-                'reason': absence.reason
-            }
-            absences.append(absence_dict)
 
             # for each user it maps the set of dates to a dictionary key labelled as the users name
-            total_absence_dates[user] = dates
-            all_absences[user] = absences
-    
-    next_month = month + 1 if month < 12 else 1
-    last_month = month - 1 if month > 1 else 12
+            total_absence_dates[user] = total_absence_dates[user]
+            all_absences[user] = absence_content
+
+
+    previous_month = 1
+    next_month = 12
+    try:
+
+        next_month = datetime.datetime.strptime(
+            str((datetime.datetime.strptime(month, "%B")).month + 1), "%m"
+        ).strftime("%B")
+    except:
+        pass
+    try:
+        previous_month = datetime.datetime.strptime(
+            str((datetime.datetime.strptime(month, "%B")).month - 1), "%m"
+        ).strftime("%B")
+    except:
+        pass
+    dates = "dates"
     context = {
-        "current_date": date,
-        "day_range": range(1, days_in_month + 1),
+        "current_date": current_date,
+        "day_range": range(1, month_days + 1),
         "absences": all_absences,
         "absence_dates": total_absence_dates,
         "users": list(users),
-        "current_day": day,  # redundant because we have "current_date"
-        "current_month": month, # redundant
-        "current_year": year, # redundant
-        "month_num": datetime.strptime(month, "%B").month,
+        "current_day": DAY,
+        "current_month": MONTH,
+        "current_year": YEAR,
+        "month_num": datetime.datetime.strptime(month, "%B").month,
         "month": month,
         "year": year,
         "previous_year": year - 1,
         "next_year": year + 1,
-        "previous_month": last_month,
+        "previous_month": previous_month,
         "next_month": next_month,
         "date": dates,
     }
+
     return render(request, "plannerapp/Calendar.html", context)
+
 
 # Profile page
 def profile_page(request):
@@ -196,3 +251,23 @@ def deleteuser(request):
     }
     
     return render(request, 'registration/delete_account.html', context)
+
+def absence_delete(request, absence_id:int):
+    absence = Absence.objects.get(pk=absence_id)
+    user = request.user
+    if user == absence.User_ID:
+        absence.delete()
+        return redirect("profile")
+    else:
+        raise Exception()
+
+class EditAbsence(UpdateView):
+    template_name = "plannerapp/edit_absence.html"
+    model = Absence
+
+    # specify the fields
+    fields = ["absence_date_start", "absence_date_end"]
+
+    def get_success_url(self) -> str:
+        return reverse("profile")
+

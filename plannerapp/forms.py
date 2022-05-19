@@ -14,6 +14,7 @@ class CreateTeamForm(forms.ModelForm):
     description     = forms.CharField(max_length=512, required=False, widget=forms.Textarea(attrs={"class":"", "placeholder":"Team Description"}))
     private         = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={"class":""}))
 
+from .models import Absence
 
 class login(forms.Form):
     name = forms.CharField(
@@ -46,7 +47,12 @@ class register(forms.Form):
     check = forms.BooleanField()
 
 
-class CreateAbsence(forms.Form):
+class AbsenceForm(forms.ModelForm):
+    
+    class Meta:
+        model = Absence
+        fields = ["start_date", "end_date"]
+
     def clean(self):
         def end_date_valid():
             if start_date > end_date:
@@ -63,7 +69,6 @@ class CreateAbsence(forms.Form):
 
     start_date = forms.DateField(label="Starting Date:", required=True, input_formats=['%d/%m/%Y'])
     end_date = forms.DateField(label="Ending Date:", required=True, input_formats=['%d/%m/%Y'])
-    reason = forms.CharField(label="Reason For Absence - (Optional)", required=False, max_length=200) 
 
 
 class DeleteUserForm(forms.ModelForm):

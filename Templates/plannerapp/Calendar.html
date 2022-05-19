@@ -6,62 +6,61 @@
 {% block content %}
 
 <div class="main">
-  <section class="section">
-    <div class="container">
-      <h1 class="title is-1">Rolls-Royce Absence Calendar</h1>
-      <p class="subtitle is-3">{{month}} {{year}}<br>        
-        {% if month_num == 12 %}
-          {% if current_year|add:2 == next_year %}
-            <a href="/calendar/{{previous_month}}/{{year}}" class="button3">Prievous Month</a>
-          {% else %}
-        <a href="/calendar/{{previous_month}}/{{year}}" class="button3">Prievous Month</a>
-        <a href="/calendar/January/{{next_year}}" class="button3 right">Next Month</a>
-        {% endif %}
+    <section class="section">
+        <div class="container">
+            <h1 class="title is-1">
+                Rolls-Royce Absence Calendar
+            </h1>
+            <p class="subtitle is-3">
+                {{month}} {{year}}
 
-        {% elif month_num == 1 %}
-          {% if current_year|add:"-2" == previous_year %}
-          <a href="/calendar/{{next_month}}/{{year}}" class="button3 right">Next Month</a>
-          {% else %}
-          <a href="/calendar/December/{{previous_year}}" class="button3">Prievous Month</a>
-          <a href="/calendar/{{next_month}}/{{year}}" class="button3 right">Next Month</a>
-          {% endif %}
-        </p>
+                {% if month_num == 12 %}
+                    {% if current_year|add:2 == next_year %}
+                        <a href="/calendar/{{previous_month}}/{{year}}" class="button3">Prievous Month</a>
+                    {% else %}
+                        <a href="/calendar/{{previous_month}}/{{year}}" class="button3">Prievous Month</a>
+                        <a href="/calendar/January/{{next_year}}" class="button3 right">Next Month</a>
+                    {% endif %}
+                {% elif month_num == 1 %}
+                    {% if current_year|add:"-2" == previous_year %}
+                        <a href="/calendar/{{next_month}}/{{year}}" class="button3 right">Next Month</a>
+                    {% else %}
+                        <a href="/calendar/December/{{previous_year}}" class="button3">Prievous Month</a>
+                        <a href="/calendar/{{next_month}}/{{year}}" class="button3 right">Next Month</a>
+                    {% endif %}
+                {% else %}
+                    <a href="/calendar/{{previous_month}}/{{year}}" class="button3">Prievous Month</a>
+                    <a href="/calendar/{{next_month}}/{{year}}" class="button3 right">Next Month</a>
+                {% endif %}
 
-        {% else %}
-          <a href="/calendar/{{previous_month}}/{{year}}" class="button3">Prievous Month</a>
-          <a href="/calendar/{{next_month}}/{{year}}" class="button3 right">Next Month</a>
-        {% endif %}
-    
-      <div class="table-container">
-        <table class="table is-bordered is-striped" style="width:100%">
-          <thead>
-            <th style="background-color: black; color: white;">Employee</th>
-            {% for day in day_range %}
-              <th style="background-color: black; color: white;">{{day}}</th>
-            {% endfor %}
-          </thead>
-          <tbody>
-            {% for user in users %}
-              <tr>
-                <td>{{user}}</td>
-                
-                <!-- for every day in current month- -->
-                {% for day in day_range %}
-                  <!-- if absence day equals day then highlights red -->
-                  {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
-                  {% if check_absence %}
-                    <td style="background-color:red"></td>
-                  {% else %}
-                    <td></td>
-                  {% endif %}
-                  
-                {% endfor %}
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-</div> 
+            <div class="table-container">
+                <table class="table is-bordered is-striped" style="width:100%">
+                    <thead>
+                        <th style="background-color: black; color: white;">Employee</th>
+                        {% for day in day_range %}
+                            <th style="background-color: black; color: white;">{{day}}</th>
+                        {% endfor %}
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                            <tr>
+                                <td>{{user}}</td>
+                                <!-- for every day in current month- -->
+                                {% for day in day_range %}
+                                    <!-- if absence day equals day then highlights red -->
+                                    {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
+                                    {% if check_absence %}
+                                        <td style="background-color:red"></td>
+                                    {% else %}
+                                        <td></td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
 {% endblock %}
