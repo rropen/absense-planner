@@ -13,7 +13,7 @@ class Absence(models.Model):
     request_accepted = models.BooleanField()
 
     def __str__(self):
-        return f"{self.User_ID.username}, {self.absence_date_start}, {self.reason}"
+        return f"{self.User_ID}, {self.absence_date_start}"
 
 
 class Team(models.Model):

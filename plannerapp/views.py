@@ -124,12 +124,14 @@ def add(request) -> render:
     content = {"form": form}
     return render(request, "plannerapp/add_absence.html", content)
 
+@login_required
 def details_page(request) -> render:
     """returns details web page"""
     # TODO: get employee details and add them to context
     context = {"employee_dicts": ""}
     return render(request, "plannerapp/Details.html", context)
 
+@login_required
 def calendar_page(request, month=MONTH, year=YEAR):
 
     month_days = calendar.monthrange(
@@ -220,6 +222,7 @@ def calendar_page(request, month=MONTH, year=YEAR):
 
 
 # Profile page
+@login_required
 def profile_page(request):
     absences = Absence.objects.filter(User_ID = request.user.id)
     return render(request, "plannerapp/profile.html", {"absences":absences})
@@ -252,6 +255,7 @@ def deleteuser(request):
     
     return render(request, 'registration/delete_account.html', context)
 
+@login_required
 def absence_delete(request, absence_id:int):
     absence = Absence.objects.get(pk=absence_id)
     user = request.user

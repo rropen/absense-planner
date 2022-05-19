@@ -3,10 +3,12 @@
 {% load static %}
 {% block content %}
 <div class="main">
-    <h2>Sign up</h2>
+    <h1 class="title">Sign up</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
+        <input type="checkbox" id="terms" required>
+        <label for="terms">I've read and agree to the <a href="">terms and conditions</a>.</label><br>
         <button type="submit">Sign Up</button>
     </form>
 </div>
