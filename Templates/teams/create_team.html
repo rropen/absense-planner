@@ -1,0 +1,12 @@
+{% extends 'Base.html' %}
+{% block title %}Join Team{% endblock %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <form method="post" class="text-center">
+        {% csrf_token %}
+        {{form}}
+    <input class="" type="submit" value="Submit">
+    </form>
+</div>
+{% endblock %}

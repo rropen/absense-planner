@@ -1,0 +1,31 @@
+{% extends 'Base.html' %}
+{% block title %}Teams Dashboard{% endblock %}
+{% load static %}
+{% block content %}
+
+<div class="container">
+    <div class="columns">
+        <div class="column is-half">
+            <div class="card has-background-success p-4 has-text-centered">
+                <a class="has-text-white is-size-4" href="{% url 'create_team' %}">Create A Team <i class="fas fa-plus mx-2"></i></a>
+            </div>
+        </div>
+        <div class="column is-half">
+            <div class="card has-background-info p-4 has-text-centered">
+                <a class="has-text-white is-size-4" href="{% url 'join_team' %}">Join A Team <i class="fas fa-users mx-2"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="has-text-weight-bold is-size-5 my-3">My Teams ({{teams.count}})</h3>
+
+    {% for team in teams %}
+        <div class="container has-background-light box">
+            <span class="is-block is-size-5	has-text-weight-bold">{{team.team.name}}</span>
+            <a class="button is-link" href="#">View</a>
+            <a class="button is-danger" href="{% url 'leave_team' team.id %}">Leave</a>
+        </div>
+    {% endfor %}
+    
+</div>
+{% endblock %}
