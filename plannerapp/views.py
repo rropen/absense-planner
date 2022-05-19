@@ -58,7 +58,8 @@ def join_team(request) -> render:
             "count" : get_total_members(team)
             })
     return render(request, "teams/join_team.html", {"all_teams": all_teams_count})
-    
+
+@login_required
 def joining_team_process(request, id, role):
     find_team = Team.objects.get(id=id)
     find_role = Role.objects.get(role=role)
