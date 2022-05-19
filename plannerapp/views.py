@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import login, sign_up, DeleteUserForm, AbsenceForm
-from .models import Absence
+from .models import Absence, Relationship, Role, Team
 
 # Temp
 
@@ -41,6 +41,43 @@ def index(request) -> render:
     """returns the home page"""
     return render(request, "plannerapp/index.html")
 
+<<<<<<< HEAD
+=======
+
+@login_required
+def teams_dashboard(request) -> render:
+    all_user_teams = Relationship.objects.all().filter(user=request.user)
+    return render(request, "teams/dashboard.html", {"teams": all_user_teams})
+
+@login_required
+def join_team(request) -> render:
+    """ Renders page with all teams the user is not currently in """
+    user_teams = []
+    all_user_teams = Relationship.objects.all().filter(user=request.user)
+    for teams in all_user_teams:
+        user_teams.append(teams.team.name)   
+    all_teams = Team.objects.all().exclude(name__in=user_teams)
+    return render(request, "teams/join_team.html", {"all_teams": all_teams})
+    
+def joining_team_process(request, id, role):
+    find_team = Team.objects.get(id=id)
+    find_role = Role.objects.get(role=role)
+    Relationship.objects.create(
+        user = request.user,
+        team = find_team,
+        role = find_role,
+    )
+    return redirect("dashboard")
+
+def leave_team(request, id):
+    find_relationship = Relationship.objects.get(id=id)
+    find_relationship.delete()
+    return redirect("dashboard")
+
+
+
+
+>>>>>>> origin/matthew-dev-17/05
 @login_required
 def add(request) -> render:
     """create new absence record"""
@@ -157,6 +194,12 @@ def calendar_page(request, month=MONTH, year=YEAR):
     return render(request, "plannerapp/Calendar.html", context)
 
 
+<<<<<<< HEAD
+=======
+# this is where I gave up on optimisation. It's up to you now.
+# - Corban-Lee
+
+>>>>>>> origin/matthew-dev-17/05
 # Profile page
 @login_required
 def profile_page(request):

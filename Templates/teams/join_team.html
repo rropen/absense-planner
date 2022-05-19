@@ -1,0 +1,26 @@
+{% extends 'Base.html' %}
+{% block title %}Join Team{% endblock %}
+{% load static %}
+{% block content %}
+<div class="container">
+
+    <div class="field has-addons is-justify-content-flex-end">
+        <div class="control">
+          <input class="input" type="text" placeholder="Find a repository">
+        </div>
+        <div class="control">
+            <a class="button is-link">Search</a>
+        </div>
+    </div>
+
+    {% for team in all_teams %}
+        <div class="container has-background-light box">
+            <span class="is-block is-size-5	has-text-weight-bold">{{team.name}}</span>
+            <span class="is-block">Creator: {{team.creator}}</span>
+            <a class="button is-success" href="{% url 'join_team_2' team.id 'Member' %}">Join as Member</a>
+            <a class="button is-link" href="{% url 'join_team_2' team.id 'Follower' %}">Join as Follower</a>
+
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
