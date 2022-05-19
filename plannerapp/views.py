@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import login, sign_up, DeleteUserForm, AbsenceForm
+from .forms import CreateTeamForm, login, sign_up, DeleteUserForm, AbsenceForm
 from .models import Absence, Relationship, Role, Team
 
 # Temp
@@ -41,11 +41,34 @@ def index(request) -> render:
     """returns the home page"""
     return render(request, "plannerapp/index.html")
 
+def get_total_members(team):
+    test = Relationship.objects.filter(team=team).count()
+    return test
 
 @login_required
 def teams_dashboard(request) -> render:
     all_user_teams = Relationship.objects.all().filter(user=request.user)
     return render(request, "teams/dashboard.html", {"teams": all_user_teams})
+
+@login_required
+def create_team(request) -> render:
+    if request.method == "POST":
+        form = CreateTeamForm(request.POST)
+        if form.is_valid():
+            form.save()
+            # Gets the created team and "Owner" Role and creates a Link between the user and their team
+            created_team = Team.objects.get(name=form.cleaned_data['name'])
+            assign_role = Role.objects.get(role="Owner")
+            Relationship.objects.create(
+                user = request.user,
+                team = created_team,
+                role = assign_role,
+            )
+    else:
+        form = CreateTeamForm()
+    return render(request, "teams/create_team.html", {"form": form})
+     
+
 
 @login_required
 def join_team(request) -> render:
@@ -55,8 +78,17 @@ def join_team(request) -> render:
     for teams in all_user_teams:
         user_teams.append(teams.team.name)   
     all_teams = Team.objects.all().exclude(name__in=user_teams)
-    return render(request, "teams/join_team.html", {"all_teams": all_teams})
-    
+    all_teams_count = []
+    for team in all_teams:
+        all_teams_count.append({
+            "id" : team.id,
+            "name" : team.name,
+            "description" : team.description,
+            "count" : get_total_members(team)
+            })
+    return render(request, "teams/join_team.html", {"all_teams": all_teams_count})
+
+@login_required
 def joining_team_process(request, id, role):
     find_team = Team.objects.get(id=id)
     find_role = Role.objects.get(role=role)
@@ -71,8 +103,6 @@ def leave_team(request, id):
     find_relationship = Relationship.objects.get(id=id)
     find_relationship.delete()
     return redirect("dashboard")
-
-
 
 
 @login_required
