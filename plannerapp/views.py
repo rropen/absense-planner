@@ -1,10 +1,11 @@
 import calendar
 import datetime 
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import login, sign_up, DeleteUserForm, CreateAbsence
+from .forms import login, sign_up, DeleteUserForm, AbsenceForm
 from .models import Absence
 
 # Temp
@@ -34,6 +35,7 @@ current_date = datetime.datetime.now()
 YEAR = current_date.year
 MONTH = current_date.strftime("%B")
 DAY = current_date.day
+from django.views.generic import UpdateView
 
 def index(request) -> render:
     """returns the home page"""
@@ -42,17 +44,18 @@ def index(request) -> render:
 def add(request) -> render:
     """create new absence record"""
     if request.method == "POST":
-        form = CreateAbsence(request.POST)
+        form = AbsenceForm(request.POST)
         if form.is_valid():
             obj = Absence()
             obj.absence_date_start = form.cleaned_data["start_date"]
             obj.absence_date_end = form.cleaned_data["end_date"]
-            obj.reason = form.cleaned_data["reason"]
             obj.request_accepted = False
             obj.User_ID = request.user
             obj.save()
+
+            # redirect to success page
     else:
-        form = CreateAbsence()
+        form = AbsenceForm()
     content = {"form": form}
     return render(request, "plannerapp/add_absence.html", content)
 
@@ -96,7 +99,6 @@ def calendar_page(request, month=MONTH, year=YEAR):
 
                 request_accepted = absence_info[x].request_accepted
 
-                reason = absence_info[x].reason
 
                 absence_content.append(
                     {
@@ -106,7 +108,6 @@ def calendar_page(request, month=MONTH, year=YEAR):
                         "dates": total_absence_dates[user],
                         "request_date": request_date,
                         "request_accepted": request_accepted,
-                        "reason": reason,
                     }
                 )
 
@@ -185,3 +186,23 @@ def deleteuser(request):
     }
     
     return render(request, 'registration/delete_account.html', context)
+
+def absence_delete(request, absence_id:int):
+    absence = Absence.objects.get(pk=absence_id)
+    user = request.user
+    if user == absence.User_ID:
+        absence.delete()
+        return redirect("profile")
+    else:
+        raise Exception()
+
+class EditAbsence(UpdateView):
+    template_name = "plannerapp/edit_absence.html"
+    model = Absence
+
+    # specify the fields
+    fields = ["absence_date_start", "absence_date_end"]
+
+    def get_success_url(self) -> str:
+        return reverse("profile")
+
