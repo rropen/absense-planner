@@ -135,12 +135,14 @@ def details_page(request) -> render:
     return render(request, "plannerapp/Details.html", context)
 
 @login_required
-def calendar_page(request, month=MONTH, year=YEAR):
+def team_calendar(request, id, month=MONTH, year=YEAR):
 
     month_days = calendar.monthrange(
         year, datetime.datetime.strptime(month, "%B").month
     )[1]
-    users = User.objects.all()
+
+    users = Relationship.objects.all().filter(team=id)
+
     absence_content = []
     total_absence_dates = {}
     all_absences = {}
@@ -148,7 +150,7 @@ def calendar_page(request, month=MONTH, year=YEAR):
 
     for user in users:
         # all the absences for the user
-        absence_info = Absence.objects.filter(User_ID=user)
+        absence_info = Absence.objects.filter(User_ID=user.user.id)
         total_absence_dates[user] = []
         all_absences[user] = []
 
@@ -156,7 +158,6 @@ def calendar_page(request, month=MONTH, year=YEAR):
         if absence_info:
             # mapping the absence content to keys in dictionary
             for x in range(len(absence_info)): # pylint: disable=consider-using-enumerate
-                request_date = absence_info[x].request_date
 
                 absence_id = absence_info[x].ID
 
@@ -167,7 +168,6 @@ def calendar_page(request, month=MONTH, year=YEAR):
                     total_absence_dates[user].append(dates)
                     dates += delta
 
-                request_accepted = absence_info[x].request_accepted
 
 
                 absence_content.append(
@@ -176,8 +176,6 @@ def calendar_page(request, month=MONTH, year=YEAR):
                         "absence_date_start": absence_date_start,
                         "absence_date_end": absence_date_end,
                         "dates": total_absence_dates[user],
-                        "request_date": request_date,
-                        "request_accepted": request_accepted,
                     }
                 )
 
@@ -202,12 +200,13 @@ def calendar_page(request, month=MONTH, year=YEAR):
     except:
         pass
     dates = "dates"
+    team = Team.objects.get(id=id)
     context = {
         "current_date": current_date,
         "day_range": range(1, month_days + 1),
         "absences": all_absences,
         "absence_dates": total_absence_dates,
-        "users": list(users),
+        "users": users,
         "current_day": DAY,
         "current_month": MONTH,
         "current_year": YEAR,
@@ -219,9 +218,11 @@ def calendar_page(request, month=MONTH, year=YEAR):
         "previous_month": previous_month,
         "next_month": next_month,
         "date": dates,
+        "team": team,
+        "team_count": Relationship.objects.filter(team=team.id).count()
     }
 
-    return render(request, "plannerapp/Calendar.html", context)
+    return render(request, "teams/calendar.html", context)
 
 
 # Profile page
