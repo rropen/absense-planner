@@ -12,7 +12,7 @@
         </div>
         <div class="column is-half">
             <div class="card has-background-info p-3 has-text-centered">
-                <a class="has-text-white is-size-5" href="{% url 'join_team' %}">Join A Team <i class="fas fa-users mx-2"></i></a>
+                <a class="has-text-white is-size-5" href="{% url 'join_team' %}">Join A Team <i class="fas fa-user-friends mx-2"></i></a>
             </div>
         </div>
     </div>
@@ -22,7 +22,7 @@
     {% for rel in rels %}
         <div class="container has-background-light box">
             <div class="is-size-5 mb-3">
-                <span class="is-block is-size-5	has-text-weight-bold">{{rel.team.name}} <i class="fas fa-users mx-2"></i>{{rel.team.count}}</span>
+                <span class="is-block is-size-5	has-text-weight-bold">{{rel.team.name}} <i class="fas fa-user-alt mx-1"></i>{{rel.team.count}}</span>
                 {% if rel.team.private %}
                     <span class="tag is-dark">Private</span>
                 {% elif not rel.team.private %}

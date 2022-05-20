@@ -22,7 +22,7 @@
     {% for team in all_teams %}
     <div class="container has-background-light box">
         <div class="is-size-5 mb-3">
-            <span class="is-block is-size-5	has-text-weight-bold">{{team.name}} <i class="fas fa-users mx-2"></i>{{team.count}}</span>
+            <span class="is-block is-size-5	has-text-weight-bold">{{team.name}} <i class="fas fa-user-alt mx-2"></i>{{team.count}}</span>
             {% if team.private %}
                 <span class="tag is-dark">Private</span>
             {% elif not team.private %}

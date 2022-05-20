@@ -200,6 +200,7 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
     except:
         pass
     dates = "dates"
+    team = Team.objects.get(id=id)
     context = {
         "current_date": current_date,
         "day_range": range(1, month_days + 1),
@@ -217,7 +218,8 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
         "previous_month": previous_month,
         "next_month": next_month,
         "date": dates,
-        "team_id": id,
+        "team": team,
+        "team_count": Relationship.objects.filter(team=team.id).count()
     }
 
     return render(request, "teams/calendar.html", context)
