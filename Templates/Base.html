@@ -17,6 +17,19 @@
         * {
             font-family: Arial, Helvetica, sans-serif;
         }
+        
+        html, body {
+          height: 100%;
+        }
+        
+        body {
+          position: relative;
+          margin: 0;
+          min-height: 100%;
+          overflow-x: hidden;
+}
+
+
         .main {
             padding: 10px 10px;
             font-family: Arial, Helvetica, sans-serif;
@@ -118,11 +131,21 @@
         .noHover{
           pointer-events: none;
         }
+
+
+        footer {
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          height: 150px;
+          width: 100%;
+          overflow: hidden;
+        }
     </style>
 </head>
 
 <body>
-  
+
 <section class="hero rr-primary">
     <div class="hero-body ">
       <p class="title rr-primary">
@@ -214,6 +237,16 @@
       {% block content %}
       {% endblock %}
   </div>
+
+  <footer class="footer">
+    <div class="content has-text-centered">
+      <h4>Absence Planner</h4>
+      <p>Created by Rolls Royce.
+        <br>
+         View the Privacy Policy <a href="/privacy/">here</a>.
+      </p>
+    </div>
+  </footer>
 
 </body>
 
