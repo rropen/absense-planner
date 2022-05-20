@@ -61,7 +61,7 @@ if EXIST manage.py (
     ECHO Loading fixtures
 
     @REM LOOP through all fixtures in the fixtures folder in a for loop and load them one by one
-    for %%f in (app\fixtures\*.*) do (
+    for %%f in (plannerapp\fixtures\*.*) do (
         ECHO Loading fixture %%f
         "venv\Scripts\python" manage.py loaddata %%f
     )
