@@ -31,8 +31,13 @@
         </div>
         <span class="is-block is-size-6">{{team.description}}</span>
         <div class="is-block mt-3">
-            <a class="button is-success" href="{% url 'join_team_2' team.id 'Member' %}">Join as Member</a>
-            <a class="button is-link" href="{% url 'join_team_2' team.id 'Follower' %}">Join as Follower</a>             
+            {% if team.private %}
+                <a class="button is-success" href="#">Apply as Member</a>
+                <a class="button is-link" href="#">Apply as Follower</a>
+            {% else %}
+                <a class="button is-success" href="{% url 'join_team_2' team.id 'Member' %}">Join as Member</a>
+                <a class="button is-link" href="{% url 'join_team_2' team.id 'Follower' %}">Join as Follower</a>
+            {% endif %}           
         </div>
     </div>
     {% endfor %}

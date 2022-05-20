@@ -33,7 +33,7 @@
             </div>
             <span class="is-block is-size-6">{{rel.team.description}}</span>
             <div class="is-block mt-3">
-                <a class="button is-link" href="#">View</a>
+                <a class="button is-link" href="{% url 'Calendar' rel.team.id %}">View</a>
                 <a class="button is-danger" href="{% url 'leave_team' rel.id %}">Leave</a>                
             </div>
         </div>
