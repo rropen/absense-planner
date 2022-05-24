@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Edit Absence{% endblock %}
+{% block content %}
+    <div class="main">
+        <h1> Edit Absence </h1>
+            <form method="POST">
+                {% csrf_token %}
+                {{form.as_p }}
+                {% for error in form.errors %}
+                <p>{{error}}</p>
+                {% endfor %}
+                <input type="submit" value="SAVE">
+            </form>
+    </div>
+
+{% endblock %}

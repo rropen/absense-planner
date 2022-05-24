@@ -1,10 +1,13 @@
+import calendar
+import datetime 
 from django.shortcuts import render, redirect
-from .forms import login, sign_up, DeleteUserForm, CreateAbsence
-from .models import absence
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-import calendar, datetime
+from .forms import CreateTeamForm, login, sign_up, DeleteUserForm, AbsenceForm
+from .models import Absence, Relationship, Role, Team
+from django.db.models.functions import Lower
 
 
 # Temp
@@ -34,50 +37,112 @@ current_date = datetime.datetime.now()
 YEAR = current_date.year
 MONTH = current_date.strftime("%B")
 DAY = current_date.day
+from django.views.generic import UpdateView
 
-
-def index(request):
+def index(request) -> render:
+    """returns the home page"""
     return render(request, "plannerapp/index.html")
 
+def get_total_members(team):
+    test = Relationship.objects.filter(team=team).count()
+    return test
 
-def add(request):
-    form = CreateAbsence()
+@login_required
+def teams_dashboard(request) -> render:
+    rels = Relationship.objects.order_by(Lower("team__name")).filter(user=request.user)
+    return render(request, "teams/dashboard.html", {"rels": rels})
+
+@login_required
+def create_team(request) -> render:
     if request.method == "POST":
-        print(request.POST)
-        form = CreateAbsence(request.POST)
-
+        form = CreateTeamForm(request.POST)
         if form.is_valid():
-            print("-=-==-=\n\nForm Acceptable\n\n-=-=-=")
-            obj = absence()
+            form.save()
+            # Gets the created team and "Owner" Role and creates a Link between the user and their team
+            created_team = Team.objects.get(name=form.cleaned_data['name'])
+            assign_role = Role.objects.get(role="Owner")
+            Relationship.objects.create(
+                user = request.user,
+                team = created_team,
+                role = assign_role,
+            )
+    else:
+        form = CreateTeamForm()
+    return render(request, "teams/create_team.html", {"form": form})
+     
 
+
+@login_required
+def join_team(request) -> render:
+    """ Renders page with all teams the user is not currently in """
+    user_teams = []
+    all_user_teams = Relationship.objects.all().filter(user=request.user)
+    for teams in all_user_teams:
+        user_teams.append(teams.team.name)   
+    all_teams = Team.objects.all().exclude(name__in=user_teams)
+    all_teams_count = []
+    for team in all_teams:
+        all_teams_count.append({
+            "id" : team.id,
+            "name" : team.name,
+            "description" : team.description,
+            "private" : team.private, 
+            "count" : get_total_members(team)
+            })
+    return render(request, "teams/join_team.html", {"all_teams": all_teams_count})
+
+@login_required
+def joining_team_process(request, id, role):
+    find_team = Team.objects.get(id=id)
+    find_role = Role.objects.get(role=role)
+    Relationship.objects.create(
+        user = request.user,
+        team = find_team,
+        role = find_role,
+    )
+    return redirect("dashboard")
+
+def leave_team(request, id):
+    find_relationship = Relationship.objects.get(id=id)
+    find_relationship.delete()
+    return redirect("dashboard")
+
+
+@login_required
+def add(request) -> render:
+    """create new absence record"""
+    if request.method == "POST":
+        form = AbsenceForm(request.POST)
+        if form.is_valid():
+            obj = Absence()
             obj.absence_date_start = form.cleaned_data["start_date"]
             obj.absence_date_end = form.cleaned_data["end_date"]
-            obj.reason = form.cleaned_data["reason"]
-
             obj.request_accepted = False
-
             obj.User_ID = request.user
-
             obj.save()
 
+            # redirect to success page
+    else:
+        form = AbsenceForm()
     content = {"form": form}
-
     return render(request, "plannerapp/add_absence.html", content)
 
-
-def details_page(request):
-    context = {
-        "employee_dicts": details_info,
-    }
+@login_required
+def details_page(request) -> render:
+    """returns details web page"""
+    # TODO: get employee details and add them to context
+    context = {"employee_dicts": ""}
     return render(request, "plannerapp/Details.html", context)
 
-
-def calendar_page(request, month=MONTH, year=YEAR):
+@login_required
+def team_calendar(request, id, month=MONTH, year=YEAR):
 
     month_days = calendar.monthrange(
         year, datetime.datetime.strptime(month, "%B").month
     )[1]
-    users = User.objects.all()
+
+    users = Relationship.objects.all().filter(team=id)
+
     absence_content = []
     total_absence_dates = {}
     all_absences = {}
@@ -85,15 +150,14 @@ def calendar_page(request, month=MONTH, year=YEAR):
 
     for user in users:
         # all the absences for the user
-        absence_info = absence.objects.filter(User_ID=user)
+        absence_info = Absence.objects.filter(User_ID=user.user.id)
+        total_absence_dates[user] = []
+        all_absences[user] = []
 
-        absence_dates = []
         # if they have any absences
-        if len(absence_info) > 0:
+        if absence_info:
             # mapping the absence content to keys in dictionary
-            for x in range(len(absence_info)):
-
-                request_date = absence_info[x].request_date
+            for x in range(len(absence_info)): # pylint: disable=consider-using-enumerate
 
                 absence_id = absence_info[x].ID
 
@@ -101,26 +165,21 @@ def calendar_page(request, month=MONTH, year=YEAR):
                 absence_date_end = absence_info[x].absence_date_end
                 dates = absence_date_start
                 while dates <= absence_date_end:
-                    absence_dates.append(dates)
+                    total_absence_dates[user].append(dates)
                     dates += delta
 
-                request_accepted = absence_info[x].request_accepted
 
-                reason = absence_info[x].reason
 
                 absence_content.append(
                     {
                         "ID": absence_id,
                         "absence_date_start": absence_date_start,
                         "absence_date_end": absence_date_end,
-                        "dates": absence_dates,
-                        "request_date": request_date,
-                        "request_accepted": request_accepted,
-                        "reason": reason,
+                        "dates": total_absence_dates[user],
                     }
                 )
             # for each user it maps the set of dates to a dictionary key labelled as the users name
-            total_absence_dates[user] = absence_dates
+            total_absence_dates[user] = total_absence_dates[user]
             all_absences[user] = absence_content
 
     else: 
@@ -141,12 +200,13 @@ def calendar_page(request, month=MONTH, year=YEAR):
         pass
     
     dates = "dates"
+    team = Team.objects.get(id=id)
     context = {
         "current_date": current_date,
         "day_range": range(1, month_days + 1),
         "absences": all_absences,
         "absence_dates": total_absence_dates,
-        "users": list(users),
+        "users": users,
         "current_day": DAY,
         "current_month": MONTH,
         "current_year": YEAR,
@@ -158,21 +218,18 @@ def calendar_page(request, month=MONTH, year=YEAR):
         "previous_month": previous_month,
         "next_month": next_month,
         "date": dates,
+        "team": team,
+        "team_count": Relationship.objects.filter(team=team.id).count()
     }
 
-    return render(request, "plannerapp/Calendar.html", context)
+    return render(request, "teams/calendar.html", context)
 
 
 # Profile page
+@login_required
 def profile_page(request):
-    selected_profile_context = {
-        "name": selected_name,
-        "job_role": job_role,
-        "project_id": project_id,
-        "attending": todays_attendance,
-    }
-
-    return render(request, "plannerapp/Profile.html", selected_profile_context)
+    absences = Absence.objects.filter(User_ID = request.user.id)
+    return render(request, "plannerapp/profile.html", {"absences":absences})
 
 
 def login_page(request):
@@ -186,6 +243,7 @@ def sign_up_page(request):
 
 @login_required
 def deleteuser(request):
+    """delete a user account"""
     if request.method == 'POST':
         delete_form = DeleteUserForm(request.POST, instance=request.user)
         user = request.user
@@ -200,3 +258,24 @@ def deleteuser(request):
     }
     
     return render(request, 'registration/delete_account.html', context)
+
+@login_required
+def absence_delete(request, absence_id:int):
+    absence = Absence.objects.get(pk=absence_id)
+    user = request.user
+    if user == absence.User_ID:
+        absence.delete()
+        return redirect("profile")
+    else:
+        raise Exception()
+
+class EditAbsence(UpdateView):
+    template_name = "plannerapp/edit_absence.html"
+    model = Absence
+
+    # specify the fields
+    fields = ["absence_date_start", "absence_date_end"]
+
+    def get_success_url(self) -> str:
+        return reverse("profile")
+

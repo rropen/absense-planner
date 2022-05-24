@@ -7,38 +7,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+      <script
+        src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+        crossorigin="anonymous"></script>
+  
     <title>{% block title %}{% endblock %} - RR Absence</title>
     <style>
         * {
             font-family: Arial, Helvetica, sans-serif;
         }
-
-        .sidenav {
-            height: 100%;
-            width: 180px;
-            position: fixed;
-            z-index: 1;
-            top: 0;
-            left: 0;
-            background-color: rgba(0, 3, 197, 0.856);
-            overflow-x: auto;
-            padding-top: 20px;
-        }
-
-        .sidenav a {
-            padding: 10px 8px 6px 20px;
-            text-decoration: none;
-            font-size: 25px;
-            color: #ffffff;
-            display: block;
-        }
-
-        .sidenav a:hover {
-            color: #ffffffb0;
-        }
-
         .main {
-            margin-left: 100px;
             padding: 10px 10px;
             font-family: Arial, Helvetica, sans-serif;
         }
@@ -50,7 +29,7 @@
 
         .button3 {
             font-size: 15px;
-            padding: 8.5px 8.5px;
+            padding: 8.5px 0px 8.5px ;
             text-align: center;
             border-radius: 6px;
             border-width: 1px;
@@ -71,7 +50,6 @@
             border-width: 1px;
             border-color: blue;
             background-color: #ffffff;
-            align-self: ;
         }
         
         .button3.right:hover {
@@ -114,63 +92,181 @@
        .attending {
             color: green;
         }
+        
         .not_attending {
             color: red;
         }
-    </style>
 
+        .rr-primary {
+            background-color: #10069f;
+            color: #fff;
+        }
+
+        .rr-secondary {
+            background-color: #271EA8;
+            color: #fff;
+        }
+
+        .rr-white {
+            color: #fff;
+        }
+
+        .navbar a {
+            color: white;
+        }
+
+        .noHover{
+          pointer-events: none;
+        }
+    </style>
 </head>
 
 <body>
-    
-    <div class="sidenav">
-        <a href="/">
-            <span class="icon-text">
-                <span class="icon"><i class="fas fa-home"></i></span>
-                <span  style="margin-left: 10px;">Home</span>
-            </span>
-        </a>
-        <a href="/calendar/">
-            <span class="icon-text">
-                <span class="icon"><i class="fas fa-calendar"></i></span>
-                <span  style="margin-left: 10px;">Calendar</span>
-            </span>
-        </a>
-        <a href="/add_absence">
-            <span class="icon-text">
-                <span class="icon"><i class="fas fa-plus"></i></span>
-                <span  style="margin-left: 10px;">Absence</span>
-            </span>
-        </a>
-        <a href="/profile">
-            <span class="icon-text">
-                <span class="icon"><i class="fas fa-user"></i></span>
-                <span  style="margin-left: 10px;">Profile</span>
-            </span>
-        </a>
-        <a href="/accounts/login" style="font-size: larger;">
-            <span class="icon-text">
-                <span class="icon"><i class="fas fa-sign-in-alt"></i></span>
-                <span  style="margin-left: 10px;">Login</span>
-            </span>
-        </a>
-        <a href="/accounts/signup" style="font-size: larger;">
-            <span class="icon-text">
-                <span class="icon"><i class="fas fa-user-plus"></i></span>
-                <span  style="margin-left: 10px;">Register</span>
-            </span></a>
-        <a href="/accounts/delete_user" style="font-size: larger;">
-            <span class="icon-text">
-                <span class="icon"><i class="fas fa-user-slash"></i></span>
-                <span style="margin-left: 10px;">Delete Account</span>
-            </span>
-        </a>
+  
+<section class="hero rr-primary">
+    <div class="hero-body ">
+      <p class="title rr-primary">
+        Absence Planner
+      </p>
+      <p class="subtitle rr-white">
+        v0.02
+      </p>
+    </div>
+</section>
 
+
+
+
+<nav class="navbar rr-secondary">
+  <div class="navbar-brand">
+    <div class="navbar-burger burger rr-white" data-target="navbarExampleTransparentExample">
+      <span></span>
+      <span></span>
+      <span></span>
     </div>
-    <div id="content" , name="content" , class="main">
-        {% block content %}
-        {% endblock %}
+  </div>
+
+  <div id="navbarExampleTransparentExample" class="navbar-menu rr-secondary" >
+    <div class="navbar-start" style="margin-left: 48px">
+
+      <a class="navbar-item icon-text" href="/">
+        <span class="icon is-size-5">
+          <i class="fas fa-home"></i>
+        </span>
+        <span>Home</span>
+      </a>
+
+      <!--<a class="navbar-item icon-text" href="/calendar/">
+        <span class="icon is-size-5">
+          <i class="fas fa-calendar-alt"></i>
+        </span>
+        <span>Calendar</span>
+      </a>-->
+
+      <a class="navbar-item icon-text" href="/absence/add">
+        <span class="icon is-size-5">
+          <i class="fas fa-calendar-plus"></i>
+        </span>
+        <span>Add Absence</span>
+      </a>
+
+      <a class="navbar-item icon-text" href="/teams">
+        <span class="icon is-size-5">
+          <i class="fas fa-users"></i>
+        </span>
+        <span>Teams</span>
+      </a>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <div class="navbar-end">
+    <div class="navbar-item" style="float: right">
+      <div class="field is-grouped">
+          <div class="buttons">
+            {% if user.is_authenticated %}
+                <a href="/profile/" class="button is-info">{{request.user.username}}</a>
+                <a href="{% url 'logout' %}" class="button is-light">Log out</a>
+            {% else %}
+                <a href="/accounts/signup" class="button is-info">
+                  <strong>Sign up</strong>
+                </a>
+                <a href="/accounts/login" class="button is-light">
+                  Log in
+                </a>
+            {% endif %}
+          </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+  <div id="content" , name="content" , class="main">
+      {% block content %}
+      {% endblock %}
+  </div>
+
 </body>
 
+<script>
+  'use strict';
+
+document.addEventListener('DOMContentLoaded', function () {
+
+  // Dropdowns in navbar
+
+  var $dropdowns = getAll('.navbar-item.has-dropdown:not(.is-hoverable)');
+
+  if ($dropdowns.length > 0) {
+    $dropdowns.forEach(function ($el) {
+      $el.addEventListener('click', function (event) {
+        event.stopPropagation();
+        $el.classList.toggle('is-active');
+      });
+    });
+
+    document.addEventListener('click', function (event) {
+      closeDropdowns();
+    });
+  }
+
+  function closeDropdowns() {
+    $dropdowns.forEach(function ($el) {
+      $el.classList.remove('is-active');
+    });
+  }
+
+  // Close dropdowns if ESC pressed
+  document.addEventListener('keydown', function (event) {
+    var e = event || window.event;
+    if (e.keyCode === 27) {
+      closeDropdowns();
+    }
+  });
+
+  // Toggles
+
+  var $burgers = getAll('.burger');
+
+  if ($burgers.length > 0) {
+    $burgers.forEach(function ($el) {
+      $el.addEventListener('click', function () {
+        var target = $el.dataset.target;
+        var $target = document.getElementById(target);
+        $el.classList.toggle('is-active');
+        $target.classList.toggle('is-active');
+      });
+    });
+  }
+
+  // Functions
+
+  function getAll(selector) {
+    return Array.prototype.slice.call(document.querySelectorAll(selector), 0);
+  }
+});
+</script>
+
 </html>
+

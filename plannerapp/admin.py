@@ -1,5 +1,8 @@
 from django.contrib import admin
 
-from .models import absence
+from .models import Absence, Relationship, Role, Team
 
-admin.site.register(absence)
+admin.site.register(Absence)
+admin.site.register(Team)
+admin.site.register(Relationship)
+admin.site.register(Role)

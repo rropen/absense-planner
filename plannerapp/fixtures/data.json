@@ -1,0 +1,23 @@
+[
+    {
+      "model": "plannerapp.role",
+      "pk": 1,
+      "fields": {
+        "role": "Owner"
+      }
+    },
+    {
+        "model": "plannerapp.role",
+        "pk": 2,
+        "fields": {
+          "role": "Member"
+        }
+      },
+      {
+        "model": "plannerapp.role",
+        "pk": 3,
+        "fields": {
+          "role": "Follower"
+        }
+      }
+  ]
