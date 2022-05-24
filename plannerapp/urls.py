@@ -3,6 +3,8 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
+    path("calendar/", views.all_calendar, name="all_Calendar"),
+    path("calendar/<str:month>/<int:year>", views.all_calendar, name="all_calendar"),
     path("teams/", views.teams_dashboard, name="dashboard"),
     path("teams/create", views.create_team, name="create_team"),
     path("teams/join", views.join_team, name="join_team"),
