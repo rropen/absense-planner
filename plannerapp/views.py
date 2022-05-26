@@ -102,6 +102,7 @@ def joining_team_process(request, id, role):
     )
     return redirect("dashboard")
 
+@login_required
 def leave_team(request, id):
     find_relationship = Relationship.objects.get(id=id)
     find_relationship.delete()
