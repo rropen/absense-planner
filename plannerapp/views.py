@@ -232,6 +232,7 @@ def all_calendar(request, month=MONTH, year=YEAR):
         year, datetime.datetime.strptime(month, "%B").month
     )[1]
 
+
     all_users = []
     user_relations = Relationship.objects.filter(user=request.user)
     for relation in user_relations:
@@ -286,14 +287,19 @@ def all_calendar(request, month=MONTH, year=YEAR):
     previous_month = 1
     next_month = 12
     try:
+
         next_month = datetime.datetime.strptime(
             str((datetime.datetime.strptime(month, "%B")).month + 1), "%m"
         ).strftime("%B")
+    except:
+        pass
+    try:
         previous_month = datetime.datetime.strptime(
             str((datetime.datetime.strptime(month, "%B")).month - 1), "%m"
         ).strftime("%B")
     except:
         pass
+    dates = "dates"
     
     dates = "dates"
     context = {
