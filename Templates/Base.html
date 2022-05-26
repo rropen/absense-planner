@@ -169,6 +169,7 @@
     </div>
   </div>
 
+  {% if user.is_authenticated %}
   <div id="navbarExampleTransparentExample" class="navbar-menu rr-secondary" >
     <div class="navbar-start" style="margin-left: 48px">
 
@@ -178,7 +179,7 @@
         </span>
         <span>Home</span>
       </a>
-
+  {% else %}
       <a class="navbar-item icon-text" href="/calendar/">
         <span class="icon is-size-5">
           <i class="fas fa-calendar-alt"></i>
@@ -206,8 +207,7 @@
         </span>
         <span>Teams</span>
       </a>
-        </div>
-      </div>
+    {% endif %}
     </div>
   </div>
 
