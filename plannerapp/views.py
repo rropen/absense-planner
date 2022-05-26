@@ -279,3 +279,7 @@ class EditAbsence(UpdateView):
     def get_success_url(self) -> str:
         return reverse("profile")
 
+@login_required
+def profile_settings(request) -> render:
+    """returns the settings page"""
+    return render(request, "plannerapp/settings.html")
