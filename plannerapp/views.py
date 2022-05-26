@@ -257,9 +257,7 @@ def all_calendar(request, month=MONTH, year=YEAR):
         if absence_info:
             # mapping the absence content to keys in dictionary
             for x in range(len(absence_info)): # pylint: disable=consider-using-enumerate
-
                 absence_id = absence_info[x].ID
-
                 absence_date_start = absence_info[x].absence_date_start
                 absence_date_end = absence_info[x].absence_date_end
                 dates = absence_date_start
@@ -275,13 +273,14 @@ def all_calendar(request, month=MONTH, year=YEAR):
                         "dates": total_absence_dates[user],
                     }
                 )
+
             # for each user it maps the set of dates to a dictionary key labelled as the users name
             total_absence_dates[user] = total_absence_dates[user]
             all_absences[user] = absence_content
 
-    else: 
-        total_absence_dates[user] = []
-        all_absences[user] = []
+        else: 
+            total_absence_dates[user] = []
+            all_absences[user] = []
        
 
     previous_month = 1
