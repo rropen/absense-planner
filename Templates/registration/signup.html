@@ -3,14 +3,14 @@
 {% load static %}
 {% block content %}
 {% load bulma_tags %}
-<div class="main">
-    <h1 class="title">Sign up</h2>
-    <form method="post" class="column is-3">
+<div class="main column is-3 container ">
+    <h1 class="title has-text-centered">Sign up</h2>
+    <form method="post">
         {% csrf_token %}
         {{ form | bulma }}
         <input type="checkbox" id="terms" required>
         <label for="terms">I've read and agree to the <a href="">terms and conditions</a>.</label><br>
-        <button type="submit">Sign Up</button>
+        <button type="submit" class="button is-link">Sign Up</button>
     </form>
 </div>
 

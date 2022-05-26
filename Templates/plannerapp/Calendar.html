@@ -19,7 +19,14 @@
                     {% if current_year|add:2 == next_year %}
                         <div class="level is-block">
                             <div class="level-right">
-                                <a href="/calendar/{{previous_month}}/{{year}}" class="button3 right"><p class="buttons">
+                                <a href="/calendar/{{current_month}}/{{year}}" class="mr-4"><p class="buttons">
+                                    <button class="button ">
+                                    <span class="icon ">
+                                        <i class="fas fa-sync"></i>
+                                    </span>
+                                    </button>
+                                </p></a>
+                                <a href="/calendar/{{previous_month}}/{{year}}"><p class="buttons">
                                     <button class="button ">
                                       <span class="icon ">
                                         <i class="fas fa-arrow-left"></i>
@@ -27,7 +34,7 @@
                                     </button>
                                   </p></a>
 
-                                  <a href="" class="button3 right noHover"><p class="buttons">
+                                  <a href="" class="noHover"><p class="buttons">
                                     <button class="button " disabled>
                                       <span class="icon ">
                                         <i class="fas fa-arrow-right"></i>
@@ -39,14 +46,21 @@
                     {% else %}
                         <div class="level is-block">
                             <div class="level-right">
-                                <a href="/calendar/{{previous_month}}/{{year}}" class="button3 right"><p class="buttons">
+                                <a href="/calendar/{{current_month}}/{{year}}" class="mr-4"><p class="buttons">
+                                    <button class="button ">
+                                    <span class="icon ">
+                                        <i class="fas fa-sync"></i>
+                                    </span>
+                                    </button>
+                                </p></a>
+                                <a href="/calendar/{{previous_month}}/{{year}}"><p class="buttons">
                                     <button class="button ">
                                     <span class="icon ">
                                         <i class="fas fa-arrow-left"></i>
                                     </span>
                                     </button>
                                 </p></a>
-                                <a href="/calendar/January/{{next_year}}" class="button3 right"><p class="buttons">
+                                <a href="/calendar/January/{{next_year}}""><p class="buttons">
                                     <button class="button ">
                                       <span class="icon ">
                                         <i class="fas fa-arrow-right"></i>
@@ -60,14 +74,21 @@
                     {% if current_year|add:"-2" == previous_year %}
                     <div class="level is-block">
                         <div class="level-right">
-                            <a href="" class="button3 right noHover"><p class="buttons">
+                            <a href="/calendar/{{current_month}}/{{year}}" class="mr-4"><p class="buttons">
+                                <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-sync"></i>
+                                </span>
+                                </button>
+                            </p></a>
+                            <a href="" class="noHover"><p class="buttons">
                                 <button class="button" disabled>
                                 <span class="icon">
                                     <i class="fas fa-arrow-left"></i>
                                 </span>
                                 </button>
                             </p></a>
-                            <a href="/calendar/{{next_month}}/{{year}}" class="button3 right"><p class="buttons">
+                            <a href="/calendar/{{next_month}}/{{year}}"><p class="buttons">
                                 <button class="button ">
                                   <span class="icon ">
                                     <i class="fas fa-arrow-right"></i>
@@ -79,7 +100,14 @@
                     {% else %}
                     <div class="level is-block">
                         <div class="level-right">
-                            <a href="/calendar/December/{{previous_year}}" class="button3 right"><p class="buttons">
+                            <a href="/calendar/{{current_month}}/{{year}}" class="mr-4"><p class="buttons">
+                                <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-sync"></i>
+                                </span>
+                                </button>
+                            </p></a>
+                            <a href="/calendar/December/{{previous_year}}"><p class="buttons">
                                 <button class="button ">
                                   <span class="icon ">
                                     <i class="fas fa-arrow-left"></i>
@@ -87,7 +115,7 @@
                                 </button>
                               </p></a>
     
-                              <a href="/calendar/{{next_month}}/{{year}}" class="button3 right">
+                              <a href="/calendar/{{next_month}}/{{year}}">
                                     <p class="buttons">
                                         <button class="button ">
                                         <span class="icon ">
@@ -102,14 +130,21 @@
                 {% else %}
                 <div class="level is-block">
                     <div class="level-right">
-                        <a href="/calendar/{{previous_month}}/{{year}}" class="button3 right"><p class="buttons">
+                        <a href="/calendar/{{current_month}}/{{year}}" class="mr-4"><p class="buttons">
+                            <button class="button ">
+                            <span class="icon ">
+                                <i class="fas fa-sync"></i>
+                            </span>
+                            </button>
+                        </p></a>
+                        <a href="/calendar/{{previous_month}}/{{year}}" class=""><p class="buttons">
                             <button class="button ">
                             <span class="icon ">
                                 <i class="fas fa-arrow-left"></i>
                             </span>
                             </button>
                         </p></a>
-                        <a href="/calendar/{{next_month}}/{{year}}" class="button3 right"><p class="buttons">
+                        <a href="/calendar/{{next_month}}/{{year}}" class=""><p class="buttons">
                             <button class="button ">
                             <span class="icon ">
                                 <i class="fas fa-arrow-right"></i>
