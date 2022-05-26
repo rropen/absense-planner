@@ -1,0 +1,159 @@
+{% extends 'Base.html' %}
+{% load get_key %}
+{% load check_absences %}
+{% block title %}Calendar{% endblock %}
+{% load static %}
+{% block content %}
+
+<div class="main">
+    <section class="section">
+        <div class="container">
+            <div class="level">
+                <div class="level-left">
+                    <h1 class="title is-3 level-item">All Team Members ({{users|length}})</h1>
+                </div>
+                <div class="level-right">
+                    <a class="button is-info is-outlined mx-1" href="#"><i class="fas fa-filter"></i></a>
+                </div>
+            </div>
+                {% if month_num == 12 %}
+                    {% if current_year|add:2 == next_year %}
+                        <div class="level is-block">
+                            <div class="level-right">
+                                <span class="has-text-weight-bold mx-2">{{month}} {{year}}</span>
+                                <a href="/calendar/{{previous_month}}/{{year}}" class="button3 right"><p class="buttons">
+                                    <button class="button ">
+                                      <span class="icon ">
+                                        <i class="fas fa-arrow-left"></i>
+                                      </span>
+                                    </button>
+                                  </p></a>
+
+                                  <a href="" class="button3 right noHover"><p class="buttons">
+                                    <button class="button " disabled>
+                                      <span class="icon ">
+                                        <i class="fas fa-arrow-right"></i>
+                                      </span>
+                                    </button>
+                                  </p></a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="level is-block">
+                            <div class="level-right">
+                                <span class="has-text-weight-bold mx-2">{{month}} {{year}}</span>
+                                <a href="/calendar/{{previous_month}}/{{year}}" class="button3 right"><p class="buttons">
+                                    <button class="button ">
+                                    <span class="icon ">
+                                        <i class="fas fa-arrow-left"></i>
+                                    </span>
+                                    </button>
+                                </p></a>
+                                <a href="/calendar/January/{{next_year}}" class="button3 right"><p class="buttons">
+                                    <button class="button ">
+                                      <span class="icon ">
+                                        <i class="fas fa-arrow-right"></i>
+                                      </span>
+                                    </button>
+                                  </p></a>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% elif month_num == 1 %}
+                    {% if current_year|add:"-2" == previous_year %}
+                    <div class="level is-block">
+                        <div class="level-right">
+                            <span class="has-text-weight-bold mx-2">{{month}} {{year}}</span>
+                            <a href="" class="button3 right noHover"><p class="buttons">
+                                <button class="button" disabled>
+                                <span class="icon">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                                </button>
+                            </p></a>
+                            <a href="/calendar/{{next_month}}/{{year}}" class="button3 right"><p class="buttons">
+                                <button class="button ">
+                                  <span class="icon ">
+                                    <i class="fas fa-arrow-right"></i>
+                                  </span>
+                                </button>
+                              </p></a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="level is-block">
+                        <div class="level-right">
+                            <span class="has-text-weight-bold mx-2">{{month}} {{year}}</span>
+                            <a href="/calendar/December/{{previous_year}}" class="button3 right"><p class="buttons">
+                                <button class="button ">
+                                  <span class="icon ">
+                                    <i class="fas fa-arrow-left"></i>
+                                  </span>
+                                </button>
+                              </p></a>
+    
+                              <a href="/calendar/{{next_month}}/{{year}}" class="button3 right">
+                                    <p class="buttons">
+                                        <button class="button ">
+                                        <span class="icon ">
+                                            <i class="fas fa-arrow-right"></i>
+                                        </span>
+                                        </button>
+                                    </p>
+                                </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% else %}
+                <div class="level is-block">
+                    <div class="level-right">
+                        <span class="has-text-weight-bold mx-2">{{month}} {{year}}</span>
+                        <a href="/calendar/{{previous_month}}/{{year}}" class="button3 right"><p class="buttons">
+                            <button class="button ">
+                            <span class="icon ">
+                                <i class="fas fa-arrow-left"></i>
+                            </span>
+                            </button>
+                        </p></a>
+                        <a href="/calendar/{{next_month}}/{{year}}" class="button3 right"><p class="buttons">
+                            <button class="button ">
+                            <span class="icon ">
+                                <i class="fas fa-arrow-right"></i>
+                            </span>
+                            </button>
+                        </p></a>
+                    </div>
+                </div>
+                {% endif %}
+
+            <div class="table-container" style="overflow: hidden">
+                <table class="table is-bordered is-striped" style="width:100%">
+                    <thead>
+                        <th style="background-color: black; color: white;">Employee</th>
+                        {% for day in day_range %}
+                            <th style="background-color: black; color: white;">{{day}}</th>
+                        {% endfor %}
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                            <tr>
+                                <td>{{user.username}}</td>
+                                <!-- for every day in current month- -->
+                                {% for day in day_range %}
+                                    <!-- if absence day equals day then highlights red -->
+                                    {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
+                                    {% if check_absence %}
+                                        <td style="background-color:red"></td>
+                                    {% else %}
+                                        <td></td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

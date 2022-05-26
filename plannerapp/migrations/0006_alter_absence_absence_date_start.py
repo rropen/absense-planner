@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='absence',
+            model_name='Absence',
             name='absence_date_start',
             field=models.DateField(max_length=200),
         ),
