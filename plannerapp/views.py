@@ -106,7 +106,15 @@ def joining_team_process(request, id, role):
 def leave_team(request, id):
     find_relationship = Relationship.objects.get(id=id)
     find_relationship.delete()
+    team_cleaner(find_relationship)
     return redirect("dashboard")
+
+def team_cleaner(rel):
+    team = Team.objects.get(id=rel.team.id)
+    all_team_relationships = Relationship.objects.filter(team=team)
+    if all_team_relationships.count() == 0:
+        team.delete()
+    return
 
 
 @login_required
