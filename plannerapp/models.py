@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils import timezone
+from river.models.fields.state import StateField
 from django.contrib.auth.models import User
 
 
@@ -41,6 +41,8 @@ class Relationship(models.Model):
     user        = models.ForeignKey(User, on_delete=models.CASCADE)
     team        = models.ForeignKey(Team, on_delete=models.CASCADE)
     role        = models.ForeignKey(Role, on_delete=models.CASCADE)
+    status      = StateField()
+
 
     class Meta:
         unique_together = ('user', 'team',)
