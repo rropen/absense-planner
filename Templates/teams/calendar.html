@@ -8,25 +8,32 @@
 <div class="main">
     <section class="section">
         <div class="container">
-            <h1 class="title is-1">
-                Rolls-Royce Absence Calendar
-            </h1>
-            <p class="subtitle is-3 mb-1">
-                {{month}} {{year}}
-            </p>
+            <div class="level">
+                <div class="level-left">
+                    <h1 class="title is-3 level-item">{{team.name}} 
+                        
+                        <i class="fas fa-users ml-3"></i>
+                        <span class="ml-2">{{team_count}}</span>
 
+                        {% if team.private %}
+                        <span class="tag is-dark ml-2">Private</span>
+                        {% elif not team.private %}
+                            <span class="tag is-dark ml-2">Public</span>
+                        {% endif %}
+                    </h1>
+                </div>
+                <div class="level-right">
+                    <a class="button is-info is-outlined mx-1" href="#"><i class="fas fa-cog"></i></a>
+                    <a class="button is-danger" href="{% url 'leave_team' team.id %}">Leave</a>              
+                </div>
+            </div>
+            <p class="my-3">{{team.description}}</p>
                 {% if month_num == 12 %}
                     {% if current_year|add:2 == next_year %}
                         <div class="level is-block">
                             <div class="level-right">
-                                <a href="/calendar/{{current_month}}/{{year}}" class="mr-4"><p class="buttons">
-                                    <button class="button ">
-                                    <span class="icon ">
-                                        <i class="fas fa-sync"></i>
-                                    </span>
-                                    </button>
-                                </p></a>
-                                <a href="/calendar/{{previous_month}}/{{year}}"><p class="buttons">
+                                <span class="has-text-weight-bold mx-2">{{month}} {{year}}</span>
+                                <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}" class="button3 right"><p class="buttons">
                                     <button class="button ">
                                       <span class="icon ">
                                         <i class="fas fa-arrow-left"></i>
@@ -34,7 +41,7 @@
                                     </button>
                                   </p></a>
 
-                                  <a href="" class="noHover"><p class="buttons">
+                                  <a href="" class="button3 right noHover"><p class="buttons">
                                     <button class="button " disabled>
                                       <span class="icon ">
                                         <i class="fas fa-arrow-right"></i>
@@ -46,21 +53,15 @@
                     {% else %}
                         <div class="level is-block">
                             <div class="level-right">
-                                <a href="/calendar/{{current_month}}/{{year}}" class="mr-4"><p class="buttons">
-                                    <button class="button ">
-                                    <span class="icon ">
-                                        <i class="fas fa-sync"></i>
-                                    </span>
-                                    </button>
-                                </p></a>
-                                <a href="/calendar/{{previous_month}}/{{year}}"><p class="buttons">
+                                <span class="has-text-weight-bold mx-2">{{month}} {{year}}</span>
+                                <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}" class="button3 right"><p class="buttons">
                                     <button class="button ">
                                     <span class="icon ">
                                         <i class="fas fa-arrow-left"></i>
                                     </span>
                                     </button>
                                 </p></a>
-                                <a href="/calendar/January/{{next_year}}""><p class="buttons">
+                                <a href="/teams/calendar/{{team.id}}/January/{{next_year}}" class="button3 right"><p class="buttons">
                                     <button class="button ">
                                       <span class="icon ">
                                         <i class="fas fa-arrow-right"></i>
@@ -74,21 +75,15 @@
                     {% if current_year|add:"-2" == previous_year %}
                     <div class="level is-block">
                         <div class="level-right">
-                            <a href="/calendar/{{current_month}}/{{year}}" class="mr-4"><p class="buttons">
-                                <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-sync"></i>
-                                </span>
-                                </button>
-                            </p></a>
-                            <a href="" class="noHover"><p class="buttons">
+                            <span class="has-text-weight-bold mx-2">{{month}} {{year}}</span>
+                            <a href="" class="button3 right noHover"><p class="buttons">
                                 <button class="button" disabled>
                                 <span class="icon">
                                     <i class="fas fa-arrow-left"></i>
                                 </span>
                                 </button>
                             </p></a>
-                            <a href="/calendar/{{next_month}}/{{year}}"><p class="buttons">
+                            <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}" class="button3 right"><p class="buttons">
                                 <button class="button ">
                                   <span class="icon ">
                                     <i class="fas fa-arrow-right"></i>
@@ -100,14 +95,8 @@
                     {% else %}
                     <div class="level is-block">
                         <div class="level-right">
-                            <a href="/calendar/{{current_month}}/{{year}}" class="mr-4"><p class="buttons">
-                                <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-sync"></i>
-                                </span>
-                                </button>
-                            </p></a>
-                            <a href="/calendar/December/{{previous_year}}"><p class="buttons">
+                            <span class="has-text-weight-bold mx-2">{{month}} {{year}}</span>
+                            <a href="/teams/calendar/{{team.id}}/December/{{previous_year}}" class="button3 right"><p class="buttons">
                                 <button class="button ">
                                   <span class="icon ">
                                     <i class="fas fa-arrow-left"></i>
@@ -115,7 +104,7 @@
                                 </button>
                               </p></a>
     
-                              <a href="/calendar/{{next_month}}/{{year}}">
+                              <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}" class="button3 right">
                                     <p class="buttons">
                                         <button class="button ">
                                         <span class="icon ">
@@ -130,21 +119,15 @@
                 {% else %}
                 <div class="level is-block">
                     <div class="level-right">
-                        <a href="/calendar/{{current_month}}/{{year}}" class="mr-4"><p class="buttons">
-                            <button class="button ">
-                            <span class="icon ">
-                                <i class="fas fa-sync"></i>
-                            </span>
-                            </button>
-                        </p></a>
-                        <a href="/calendar/{{previous_month}}/{{year}}" class=""><p class="buttons">
+                        <span class="has-text-weight-bold mx-2">{{month}} {{year}}</span>
+                        <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}" class="button3 right"><p class="buttons">
                             <button class="button ">
                             <span class="icon ">
                                 <i class="fas fa-arrow-left"></i>
                             </span>
                             </button>
                         </p></a>
-                        <a href="/calendar/{{next_month}}/{{year}}" class=""><p class="buttons">
+                        <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}" class="button3 right"><p class="buttons">
                             <button class="button ">
                             <span class="icon ">
                                 <i class="fas fa-arrow-right"></i>
@@ -166,7 +149,7 @@
                     <tbody>
                         {% for user in users %}
                             <tr>
-                                <td>{{user}}</td>
+                                <td>{{user.user.username}}</td>
                                 <!-- for every day in current month- -->
                                 {% for day in day_range %}
                                     <!-- if absence day equals day then highlights red -->

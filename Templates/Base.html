@@ -7,10 +7,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-      <script
-        src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-        crossorigin="anonymous"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"></script>
+
+      <script language="javascript">
+        <!--
+        var pageRefreshCounter = 0;
+        function SecondsSinceLastRefresh () {
+        // add 1 to current value of pageRefreshCounter
+        pageRefreshCounter++;
+        // update our input box
+        document.LastRefreshFrm.refreshSecBox.value = pageRefreshCounter;
+        // call SecondsSinceLastRefresh () every second;
+        // note 1000 milliseconds = 1 second
+        // if you change 1000 to 60000 that will call the function every 1 minute.
+        // This will display the time in minutes since the page was last refreshed!
+        setTimeout("SecondsSinceLastRefresh ()", 60000);
+        }
+        </script>
   
     <title>{% block title %}{% endblock %} - RR Absence</title>
     <style>
@@ -39,36 +55,6 @@
             margin-left: 1700px;
             padding: 20px 10px;
         }
-
-        /* .button3 {
-            font-size: 15px;
-            padding: 8.5px 0px 8.5px ;
-            text-align: center;
-            border-radius: 6px;
-            border-width: 1px;
-            border-color: blue;
-            background-color: #ffffff;
-        }
-        
-        .button3:hover {
-            
-            background-color: #bbb;
-        }
-
-        .button3.right{
-            font-size: 15px;
-            padding: 8.5px 8.5px;
-            text-align: center;
-            border-radius: 1px;
-            border-width: 1px;
-            border-color: blue;
-            background-color: #ffffff;
-        }
-        
-        .button3.right:hover {
-            background-color: #bbb;
-            border-color: #bbb;
-        } */
 
         .text {
             font-weight: bold;
@@ -166,13 +152,6 @@
         <span>Add Absence</span>
       </a>
 
-      <a class="navbar-item icon-text" href="/profile/">
-        <span class="icon is-size-5">
-          <i class="fas fa-user"></i>
-        </span>
-        <span>Profile</span>
-      </a>
-
       <a class="navbar-item icon-text" href="/teams">
         <span class="icon is-size-5">
           <i class="fas fa-users"></i>
@@ -195,9 +174,8 @@
       <div class="field is-grouped">
           <div class="buttons">
             {% if user.is_authenticated %}
-                <a href="{% url 'logout' %}" class="button is-light">
-                    Log out
-                </a>
+                <a href="/profile/" class="button is-info">{{request.user.username}}</a>
+                <a href="{% url 'logout' %}" class="button is-light">Log out</a>
             {% else %}
                 <a href="/accounts/signup" class="button is-info">
                   <strong>Sign up</strong>
@@ -289,6 +267,8 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 </script>
+
+
 
 </html>
 

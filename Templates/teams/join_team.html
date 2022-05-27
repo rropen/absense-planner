@@ -3,21 +3,43 @@
 {% load static %}
 {% block content %}
 <div class="container">
-
-    <div class="field has-addons is-justify-content-flex-end">
-        <div class="control">
-          <input class="input" type="text" placeholder="Search for a Team">
+    <div class="level">
+        <div class="level-left">
+            <div class="level-item">
+                <a class="button is-link" href="/teams/">Back to Dashboard</a>
+            </div>
         </div>
-        <div class="control">
-            <a class="button is-link">Search</a>
+        <div class="level-right">
+            <div class="level-item">
+                <div class="field has-addons">
+                    <div class="control"><input class="input" type="text" placeholder="Search for a Team"></div>
+                    <div class="control"><a class="button is-link">Search</a></div>
+                </div>            
+            </div>
         </div>
     </div>
+        
     {% for team in all_teams %}
-        <div class="container has-background-light box">
-            <span class="is-block is-size-5	has-text-weight-bold">{{team.name}} <i class="fas fa-users mx-2"></i>{{team.count}}</span>
-            <a class="button is-success" href="{% url 'join_team_2' team.id 'Member' %}">Join as Member</a>
-            <a class="button is-link" href="{% url 'join_team_2' team.id 'Follower' %}">Join as Follower</a>
+    <div class="container has-background-light box">
+        <div class="is-size-5 mb-3">
+            <span class="is-block is-size-5	has-text-weight-bold">{{team.name}} <i class="fas fa-user-alt mx-2"></i>{{team.count}}</span>
+            {% if team.private %}
+                <span class="tag is-dark">Private</span>
+            {% elif not team.private %}
+                <span class="tag is-dark">Public</span>
+            {% endif %}
         </div>
+        <span class="is-block is-size-6">{{team.description}}</span>
+        <div class="is-block mt-3">
+            {% if team.private %}
+                <a class="button is-success" href="#">Apply as Member</a>
+                <a class="button is-link" href="#">Apply as Follower</a>
+            {% else %}
+                <a class="button is-success" href="{% url 'join_team_2' team.id 'Member' %}">Join as Member</a>
+                <a class="button is-link" href="{% url 'join_team_2' team.id 'Follower' %}">Join as Follower</a>
+            {% endif %}           
+        </div>
+    </div>
     {% endfor %}
 </div>
 {% endblock %}
