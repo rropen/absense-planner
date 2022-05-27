@@ -44,14 +44,32 @@
 
 <body>
 
-<button class="collapsible">Privacy Settings</button>
-<div class="content">
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-</div>
+<div class="columns is-centered">
+    <div class="column is-two-thirds">
+        <button class="collapsible has-text-centered">Privacy Settings</button>
+        <div class="content">
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        </div>
 
-<button class="collapsible">Permissions Settings</button>
-<div class="content">
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <button class="collapsible has-text-centered">Permissions Settings</button>
+        <div class="content is-size-5">
+            <nav class="level">
+                <p>Users who can edit your absences</p>
+                <form method="POST" action="settings/add-user">
+                    {% csrf_token %}
+                    <input name="username" type="text">
+                    <button class="button is-info" type="submit">Add User</button>
+                </form>
+            </nav>
+            {% for absence in absences %}
+                absence id:{{ absence.ID }}<br>
+                {% for user in absence.edit_whitelist.all %}
+                    user: {{ user.username }}<br>
+                {% endfor %}
+                <br>
+            {% endfor %}
+        </div>
+    </div>
 </div>
 
 

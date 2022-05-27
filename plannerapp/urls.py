@@ -17,6 +17,7 @@ urlpatterns = [
     path("absence/delete/<int:absence_id>", views.absence_delete, name="Absence Delete"),
     path("absence/edit/<int:pk>", views.EditAbsence.as_view(), name="absence_edit"),
     path("profile/settings", views.profile_settings, name="profile settings"),
+    path("profile/settings/add-user", views.add_user, name="add-user")
 
     # path("absence/edit/<int:id>", views.absence_edit, name="Absence Edit")
 ]

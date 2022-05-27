@@ -282,4 +282,16 @@ class EditAbsence(UpdateView):
 @login_required
 def profile_settings(request) -> render:
     """returns the settings page"""
-    return render(request, "plannerapp/settings.html")
+    absences = Absence.objects.filter(User_ID=request.user.id)
+    context = {"absences": absences}
+    return render(request, "plannerapp/settings.html", context)
+
+@login_required
+def add_user(request) -> render:
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        absence:Absence = Absence.objects.filter(User_ID=request.user.id)[0]
+        user = User.objects.filter(username=username)[0]
+        absence.edit_whitelist.add(user)
+        absence.save()
+    return redirect('/profile/settings')
