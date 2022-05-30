@@ -43,6 +43,10 @@ def index(request) -> render:
     """returns the home page"""
     return render(request, "plannerapp/index.html")
 
+def privacy_page(request) -> render:
+    return render(request, "plannerapp/privacy.html")
+
+@login_required
 def get_total_members(team):
     test = Relationship.objects.filter(team=team).count()
     return test

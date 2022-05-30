@@ -5,6 +5,18 @@
 {% load static %}
 {% block content %}
 
+<style>
+    .RefreshBox {
+        pointer-events:none;
+        text-align:right;
+        background-color: ghostwhite;
+        border: 0px;
+        font-size:11pt;
+        width: 24px;
+        height: 12px;
+        }
+</style>
+
 <div class="main">
     <section class="section">
         <div class="container">
@@ -28,115 +40,145 @@
                 </div>
             </div>
             <p class="my-3">{{team.description}}</p>
-                {% if month_num == 12 %}
-                    {% if current_year|add:2 == next_year %}
-                        <div class="level is-block">
-                            <div class="level-right">
-                                <span class="has-text-weight-bold mx-2">{{month}} {{year}}</span>
-                                <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}" class="button3 right"><p class="buttons">
-                                    <button class="button ">
-                                      <span class="icon ">
-                                        <i class="fas fa-arrow-left"></i>
-                                      </span>
-                                    </button>
-                                  </p></a>
 
-                                  <a href="" class="button3 right noHover"><p class="buttons">
-                                    <button class="button " disabled>
-                                      <span class="icon ">
-                                        <i class="fas fa-arrow-right"></i>
-                                      </span>
-                                    </button>
-                                  </p></a>
-                            </div>
-                        </div>
-                    {% else %}
-                        <div class="level is-block">
-                            <div class="level-right">
-                                <span class="has-text-weight-bold mx-2">{{month}} {{year}}</span>
-                                <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}" class="button3 right"><p class="buttons">
-                                    <button class="button ">
-                                    <span class="icon ">
-                                        <i class="fas fa-arrow-left"></i>
-                                    </span>
-                                    </button>
-                                </p></a>
-                                <a href="/teams/calendar/{{team.id}}/January/{{next_year}}" class="button3 right"><p class="buttons">
-                                    <button class="button ">
-                                      <span class="icon ">
-                                        <i class="fas fa-arrow-right"></i>
-                                      </span>
-                                    </button>
-                                  </p></a>
-                            </div>
-                        </div>
-                    {% endif %}
-                {% elif month_num == 1 %}
-                    {% if current_year|add:"-2" == previous_year %}
-                    <div class="level is-block">
-                        <div class="level-right">
-                            <span class="has-text-weight-bold mx-2">{{month}} {{year}}</span>
-                            <a href="" class="button3 right noHover"><p class="buttons">
-                                <button class="button" disabled>
-                                <span class="icon">
-                                    <i class="fas fa-arrow-left"></i>
-                                </span>
-                                </button>
-                            </p></a>
-                            <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}" class="button3 right"><p class="buttons">
-                                <button class="button ">
-                                  <span class="icon ">
-                                    <i class="fas fa-arrow-right"></i>
-                                  </span>
-                                </button>
-                              </p></a>
-                        </div>
-                    </div>
-                    {% else %}
-                    <div class="level is-block">
-                        <div class="level-right">
-                            <span class="has-text-weight-bold mx-2">{{month}} {{year}}</span>
-                            <a href="/teams/calendar/{{team.id}}/December/{{previous_year}}" class="button3 right"><p class="buttons">
-                                <button class="button ">
-                                  <span class="icon ">
-                                    <i class="fas fa-arrow-left"></i>
-                                  </span>
-                                </button>
-                              </p></a>
-    
-                              <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}" class="button3 right">
-                                    <p class="buttons">
-                                        <button class="button ">
-                                        <span class="icon ">
-                                            <i class="fas fa-arrow-right"></i>
-                                        </span>
-                                        </button>
-                                    </p>
-                                </a>
-                        </div>
-                    </div>
-                    {% endif %}
+            <div class="level mb-6">
+                <span class="level-left is-size-4 mb-0">{{month}} {{year}}</span>
+
+            <span class="tag">
+                    <form class="level-right" name="LastRefreshFrm">
+                        Last refreshed
+                            <input type="text" name="refreshSecBox" size="1" class="RefreshBox" readonly>
+
+                            <script language="javascript">
+                                SecondsSinceLastRefresh ();
+                            </script>
+                        minute(s) ago.
+                    </form>
+                </div>
+            </span>
+
+            <div class="level">
+                <div class="level-left">
+                    <a href="/teams/calendar/{{team.id}}/{{current_month}}/{{year}}" class="mr-4"><p class="buttons">
+                        <button class="button ">
+                        <span class="icon ">
+                            <i class="fas fa-sync"></i>
+                        </span>
+                        </button>
+                    </p></a>
+
+<!-- Month limiter - December the next year -->
+            {% if month_num == 12 %}
+                {% if current_year|add:2 == next_year %}
+                    <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}"><p class="buttons">
+                        <button class="button ">
+                            <span class="icon ">
+                            <i class="fas fa-arrow-left"></i>
+                            </span>
+                        </button>
+                    </p></a>
+
+                    <a href="" class="noHover"><p class="buttons">
+                        <button class="button " disabled>
+                            <span class="icon ">
+                            <i class="fas fa-arrow-right"></i>
+                            </span>
+                        </button>
+                    </p></a>      
+                </div>
+
+                
                 {% else %}
-                <div class="level is-block">
-                    <div class="level-right">
-                        <span class="has-text-weight-bold mx-2">{{month}} {{year}}</span>
-                        <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}" class="button3 right"><p class="buttons">
-                            <button class="button ">
+                    <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}"><p class="buttons">
+                        <button class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-left"></i>
+                        </span>
+                        </button>
+                    </p></a>
+
+
+                    <a href="/teams/calendar/{{team.id}}/January/{{next_year}}""><p class="buttons">
+                        <button class="button">
                             <span class="icon ">
-                                <i class="fas fa-arrow-left"></i>
+                            <i class="fas fa-arrow-right"></i>
                             </span>
-                            </button>
+                        </button>
                         </p></a>
-                        <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}" class="button3 right"><p class="buttons">
-                            <button class="button ">
+                </div>
+            {% endif %}
+
+
+<!-- Start of the previous year - January -->
+            {% elif month_num == 1 %}
+                {% if current_year|add:"-2" == previous_year %}
+                    <a href="" class="noHover"><p class="buttons">
+                        <button class="button" disabled>
+                        <span class="icon">
+                            <i class="fas fa-arrow-left"></i>
+                        </span>
+                        </button>
+                    </p></a>
+
+                    <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}"><p class="buttons">
+                        <button class="button ">
                             <span class="icon ">
-                                <i class="fas fa-arrow-right"></i>
+                            <i class="fas fa-arrow-right"></i>
                             </span>
-                            </button>
+                        </button>
+                    </p></a>
+                </div> 
+                {% else %}
+                    <a href="/teams/calendar/{{team.id}}/December/{{previous_year}}"><p class="buttons">
+                        <button class="button ">
+                            <span class="icon ">
+                            <i class="fas fa-arrow-left"></i>
+                            </span>
+                        </button>
                         </p></a>
-                    </div>
+
+                    <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}"><p class="buttons">
+                        <button class="button ">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                        </button>
+                    </p></a>
                 </div>
                 {% endif %}
+   
+<!-- How the page looks by default upon landing -->  
+            {% else %} 
+                <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}"><p class="buttons">
+                    <button class="button ">
+                    <span class="icon ">
+                        <i class="fas fa-arrow-left"></i>
+                    </span>
+                    </button>
+                </p></a>
+
+                <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}"><p class="buttons">
+                    <button class="button ">
+                    <span class="icon ">
+                        <i class="fas fa-arrow-right"></i>
+                    </span>
+                    </button>
+                </p></a>
+            </div>
+            {% endif %}
+
+
+<!-- Search box and filter button -->
+            <div class="level">
+                <div class="control has-icons-left level-right">
+                    <input class="input" type="text" placeholder="Search">
+                    <span class="icon is-left">
+                    <i class="fas fa-search"></i>
+                    </span>
+                </div>
+                <a class="button is-info is-outlined mx-1 level-right" href="#"><i class="fas fa-filter"></i></a>
+            </div>
+        </div>
 
             <div class="table-container" style="overflow: hidden">
                 <table class="table is-bordered is-striped" style="width:100%">
