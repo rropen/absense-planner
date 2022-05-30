@@ -290,8 +290,18 @@ def profile_settings(request) -> render:
 def add_user(request) -> render:
     if request.method == 'POST':
         username = request.POST.get('username')
-        absence:Absence = Absence.objects.filter(User_ID=request.user.id)[0]
-        user = User.objects.filter(username=username)[0]
+        try:
+            absence:Absence = Absence.objects.filter(User_ID=request.user.id)[0]
+        except IndexError:
+            #TODO Create error page
+            return redirect('/')
+
+        try:
+            user = User.objects.filter(username=username)[0]
+        except IndexError:
+            #TODO Create error page
+            return redirect('/')
+        
         absence.edit_whitelist.add(user)
         absence.save()
     return redirect('/profile/settings')

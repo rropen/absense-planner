@@ -62,7 +62,6 @@
                 </form>
             </nav>
             {% for absence in absences %}
-                absence id:{{ absence.ID }}<br>
                 {% for user in absence.edit_whitelist.all %}
                     user: {{ user.username }}<br>
                 {% endfor %}
