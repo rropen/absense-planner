@@ -49,11 +49,6 @@ def privacy_page(request) -> render:
     return render(request, "plannerapp/privacy.html")
 
 @login_required
-def get_total_members(team):
-    test = Relationship.objects.filter(team=team).count()
-    return test
-
-@login_required
 def teams_dashboard(request) -> render:
     rels = Relationship.objects.order_by(Lower("team__name")).filter(user=request.user)
     return render(request, "teams/dashboard.html", {"rels": rels})
@@ -94,7 +89,7 @@ def join_team(request) -> render:
             "name" : team.name,
             "description" : team.description,
             "private" : team.private, 
-            "count" : get_total_members(team)
+            "count" : Relationship.objects.filter(team=team).count()
             })
     return render(request, "teams/join_team.html", {"all_teams": all_teams_count})
 
@@ -102,11 +97,15 @@ def join_team(request) -> render:
 def joining_team_process(request, id, role):
     find_team = Team.objects.get(id=id)
     find_role = Role.objects.get(role=role)
-    Relationship.objects.create(
+    new_rel = Relationship.objects.create(
         user = request.user,
         team = find_team,
         role = find_role,
     )
+    if not find_team.private:
+        new_rel.river.status.approve(as_user=request.user, next_state=State.objects.get(slug='approved'))
+
+
     return redirect("dashboard")
 
 @login_required
