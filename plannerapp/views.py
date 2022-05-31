@@ -43,6 +43,10 @@ def index(request) -> render:
     """returns the home page"""
     return render(request, "plannerapp/index.html")
 
+def privacy_page(request) -> render:
+    return render(request, "plannerapp/privacy.html")
+
+@login_required
 def get_total_members(team):
     test = Relationship.objects.filter(team=team).count()
     return test
@@ -386,3 +390,29 @@ class EditAbsence(UpdateView):
     def get_success_url(self) -> str:
         return reverse("profile")
 
+@login_required
+def profile_settings(request) -> render:
+    """returns the settings page"""
+    absences = Absence.objects.filter(User_ID=request.user.id)
+    context = {"absences": absences}
+    return render(request, "plannerapp/settings.html", context)
+
+@login_required
+def add_user(request) -> render:
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        try:
+            absence:Absence = Absence.objects.filter(User_ID=request.user.id)[0]
+        except IndexError:
+            #TODO Create error page
+            return redirect('/')
+
+        try:
+            user = User.objects.filter(username=username)[0]
+        except IndexError:
+            #TODO Create error page
+            return redirect('/')
+        
+        absence.edit_whitelist.add(user)
+        absence.save()
+    return redirect('/profile/settings')

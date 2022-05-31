@@ -7,16 +7,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-      <script
-        src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-        crossorigin="anonymous"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"></script>
+
+      <script language="javascript">
+        <!--
+        var pageRefreshCounter = 0;
+        function SecondsSinceLastRefresh () {
+        // add 1 to current value of pageRefreshCounter
+        pageRefreshCounter++;
+        // update our input box
+        document.LastRefreshFrm.refreshSecBox.value = pageRefreshCounter;
+        // call SecondsSinceLastRefresh () every second;
+        // note 1000 milliseconds = 1 second
+        // if you change 1000 to 60000 that will call the function every 1 minute.
+        // This will display the time in minutes since the page was last refreshed!
+        setTimeout("SecondsSinceLastRefresh ()", 60000);
+        }
+        </script>
   
     <title>{% block title %}{% endblock %} - RR Absence</title>
     <style>
         * {
             font-family: Arial, Helvetica, sans-serif;
         }
+        
+        html, body {
+          height: 100%;
+        }
+        
+        body {
+          position: relative;
+          margin: 0;
+          min-height: 100%;
+          display: flex;
+          flex-direction: column;
+        }
+
         .main {
             padding: 10px 10px;
             font-family: Arial, Helvetica, sans-serif;
@@ -25,59 +54,6 @@
         .logo {
             margin-left: 1700px;
             padding: 20px 10px;
-        }
-
-        .button3 {
-            font-size: 15px;
-            padding: 8.5px 0px 8.5px ;
-            text-align: center;
-            border-radius: 6px;
-            border-width: 1px;
-            border-color: blue;
-            background-color: #ffffff;
-        }
-        
-        .button3:hover {
-            
-            background-color: #bbb;
-        }
-
-        .button3.right{
-            font-size: 15px;
-            padding: 8.5px 8.5px;
-            text-align: center;
-            border-radius: 6px;
-            border-width: 1px;
-            border-color: blue;
-            background-color: #ffffff;
-        }
-        
-        .button3.right:hover {
-            background-color: #bbb;
-            border-color: #bbb;
-            
-        }
-
-        .button1:hover {
-            background-color: #bbb;
-        }
-
-        .button1 {
-            border: 2px solid blue;
-            background-color: #ffffff;
-            color: #000;
-
-        }
-
-        .button2:hover {
-            background-color: #999;
-        }
-
-        .button2 {
-            border: 2px solid blue;
-            background-color: blue;
-            color: #ffffff;
-            margin-left: 195px;
         }
 
         .text {
@@ -118,11 +94,17 @@
         .noHover{
           pointer-events: none;
         }
+
+        footer {
+          margin-top: auto;
+          height: 150px;
+          width: 100%;
+        }
     </style>
 </head>
 
 <body>
-  
+
 <section class="hero rr-primary">
     <div class="hero-body ">
       <p class="title rr-primary">
@@ -146,16 +128,16 @@
     </div>
   </div>
 
+
   <div id="navbarExampleTransparentExample" class="navbar-menu rr-secondary" >
     <div class="navbar-start" style="margin-left: 48px">
-
+{% if user.is_authenticated %}
       <a class="navbar-item icon-text" href="/">
         <span class="icon is-size-5">
           <i class="fas fa-home"></i>
         </span>
         <span>Home</span>
       </a>
-
       <a class="navbar-item icon-text" href="/calendar/">
         <span class="icon is-size-5">
           <i class="fas fa-calendar-alt"></i>
@@ -176,8 +158,14 @@
         </span>
         <span>Teams</span>
       </a>
-        </div>
-      </div>
+{% else %}
+    <a class="navbar-item icon-text" href="/">
+      <span class="icon is-size-5">
+        <i class="fas fa-home"></i>
+      </span>
+      <span>Home</span>
+    </a>
+{% endif %}
     </div>
   </div>
 
@@ -202,10 +190,22 @@
   </div>
 </nav>
 
+<container>
   <div id="content" , name="content" , class="main">
       {% block content %}
       {% endblock %}
   </div>
+</container>
+
+  <footer class="footer">
+    <div class="content has-text-centered">
+      <h4>Absence Planner</h4>
+      <p>Created by Rolls Royce.
+        <br>
+         View the Privacy Policy <a href="/privacy/">here</a>.
+      </p>
+    </div>
+  </footer>
 
 </body>
 
@@ -267,6 +267,8 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 </script>
+
+
 
 </html>
 

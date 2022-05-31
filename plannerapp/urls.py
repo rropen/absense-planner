@@ -15,9 +15,12 @@ urlpatterns = [
     path("absence/add", views.add, name="add"),
     path("profile/", views.profile_page, name="profile"),
     path("details/", views.details_page, name="details"),
+    path("privacy/", views.privacy_page, name="privacy"),
     path("accounts/delete_user", views.deleteuser, name="delete_user"),
     path("absence/delete/<int:absence_id>", views.absence_delete, name="Absence Delete"),
     path("absence/edit/<int:pk>", views.EditAbsence.as_view(), name="absence_edit"),
+    path("profile/settings", views.profile_settings, name="profile settings"),
+    path("profile/settings/add-user", views.add_user, name="add-user")
 
     # path("absence/edit/<int:id>", views.absence_edit, name="Absence Edit")
 ]
