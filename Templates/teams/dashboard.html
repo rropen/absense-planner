@@ -4,7 +4,7 @@
 {% block content %}
 
 <div class="container">
-    <div class="columns">
+    <!-- <div class="columns">
         <div class="column is-half">
             <div class="card has-background-success p-3 has-text-centered">
                 <a class="has-text-white is-size-5" href="{% url 'create_team' %}">Create A Team <i class="fas fa-plus mx-2"></i></a>
@@ -14,6 +14,20 @@
             <div class="card has-background-info p-3 has-text-centered">
                 <a class="has-text-white is-size-5" href="{% url 'join_team' %}">Join A Team <i class="fas fa-user-friends mx-2"></i></a>
             </div>
+        </div>
+    </div> -->
+
+    <div class="columns">
+        <div class="column is-half">
+            <a class="column button is-medium is-success icon-text" href="{% url 'create_team' %}">
+                </i>Create A Team<i class="fas fa-plus ml-3"></i>
+            </a>
+        </div>
+
+        <div class="column is-half">
+            <a class="column button is-medium is-info icon-text" href="{% url 'join_team' %}">
+                </i>Join A Team<i class="fas fa-user-friends ml-3"></i>
+            </a>
         </div>
     </div>
 

@@ -19,26 +19,23 @@
       </header>
       <footer class="modal-card-foot">
         <a class="button is-danger" href="" id="delete-btn">Delete</a>
-        <button class="button is-info">Cancel</button>
+        <a class="button is-info">Cancel</a>
       </footer>
     </div>
   </div>
 
-<nav class="level">
-  <div class="level-item has-text-centered">
-    <div>
-      <div class="is-size-5">
-        <h1>My Absences</h1>
-      </div>
-    </div>
+<nav class="">
+  <div class="block has-text-centered" style="position:absolute; left:0; right:0; margin-top:10px;">
+        <h1 class="title">My Absences</h1>
   </div>
+
   <!-- Left side -->
-  <div class="level-right">
-    <div class="level-item">
+  <div class="" style="float:right; position: relative;">
       <a class="button is-info" href="/profile/settings"><i class="fas fa-cog"></i></a>
-    </div>
   </div>
 </nav>
+
+<div class="main container mt-6">
 
 
 <div class="mt-2">
@@ -50,7 +47,7 @@
                 <span class="is-block is-size-5 has-text-weight-bold">End date: {{ absence.absence_date_end }}</span>
                 <div class="mx-auto">
                     <a class="button is-info" href="/absence/edit/{{ absence.pk }}">Edit</a>
-                    <button class="button is-danger delete-trigger-button" data-id="{{ absence.pk }}">Delete</button>
+                    <a class="button is-danger delete-trigger-button" data-id="{{ absence.pk }}">Delete</a>
                 </div>
             </div>
         </div>
@@ -58,10 +55,9 @@
     </div>
 </div>
 
+
+</div>
 <script>
-
-  
-
 
     document.addEventListener('DOMContentLoaded', () => {
   // Functions to open and close a modal
