@@ -30,7 +30,7 @@ class Team(models.Model):
 
     @property
     def count(self):
-        return Relationship.objects.filter(team=self).count()
+        return Relationship.objects.filter(team=self, status=State.objects.get(slug="approved")).count()
 
 class Role(models.Model):
     """ This includes all the attributes of a Role """
@@ -53,7 +53,7 @@ class Relationship(models.Model):
         unique_together = ('user', 'team',)
 
     def __str__(self):
-        return f"{self.user.username} | {self.team.name} | {self.role}"
+        return f"User: {self.user.username} --> {self.team.name} as {self.role} ({self.status})"
 
     def custom_delete(self):
         to_delete = TransitionApproval.objects.filter(object_id=self.pk)

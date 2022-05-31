@@ -50,7 +50,8 @@ def privacy_page(request) -> render:
 
 @login_required
 def teams_dashboard(request) -> render:
-    rels = Relationship.objects.order_by(Lower("team__name")).filter(user=request.user)
+    rels = Relationship.objects.order_by(Lower("team__name")).filter(user=request.user, status=State.objects.get(slug="approved"))
+    
     return render(request, "teams/dashboard.html", {"rels": rels})
 
 @login_required
@@ -122,6 +123,25 @@ def team_cleaner(rel):
         team.delete()
     return
 
+@login_required
+def team_settings(request, id):
+    """ Checks to see if user is the owner and renders the Setting page """
+    team = Team.objects.get(id=id)
+    user_relation = Relationship.objects.get(team=id, user=request.user)
+    if user_relation.role.role == "Owner":
+        all_pending_relations = Relationship.objects.filter(team=id, status=State.objects.get(slug="pending"))
+        return render(request, "teams/settings.html", {"team" : team, "pending_rels": all_pending_relations})
+    else:
+        return redirect("dashboard")
+
+def joining_team_request(request, id, response):
+    find_rel = Relationship.objects.get(id=id)
+    print(response)
+    if response == "accepted":
+        find_rel.river.status.approve(as_user=request.user, next_state=State.objects.get(slug='approved'))
+    elif response == "declined":
+        find_rel.river.status.approve(as_user=request.user, next_state=State.objects.get(slug='declined'))
+    return redirect("dashboard")
 
 @login_required
 def add(request) -> render:
@@ -156,7 +176,7 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
         year, datetime.datetime.strptime(month, "%B").month
     )[1]
 
-    users = Relationship.objects.all().filter(team=id)
+    users = Relationship.objects.all().filter(team=id, status=State.objects.get(slug="approved"))
 
     absence_content = []
     total_absence_dates = {}
@@ -234,7 +254,7 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
         "next_month": next_month,
         "date": dates,
         "team": team,
-        "team_count": Relationship.objects.filter(team=team.id).count()
+        "team_count": Relationship.objects.filter(team=team.id, status=State.objects.get(slug="approved")).count()
     }
 
     return render(request, "teams/calendar.html", context)
@@ -250,7 +270,7 @@ def all_calendar(request, month=MONTH, year=YEAR):
     all_users = []
     user_relations = Relationship.objects.filter(user=request.user)
     for relation in user_relations:
-        rels = Relationship.objects.filter(team=relation.team)
+        rels = Relationship.objects.filter(team=relation.team, status=State.objects.get(slug="approved"))
         for rel in rels:
             if rel.user in all_users:
                 pass
@@ -336,7 +356,6 @@ def all_calendar(request, month=MONTH, year=YEAR):
     }
 
     return render(request, "plannerapp/calendar.html", context)
-
 
 # Profile page
 @login_required
