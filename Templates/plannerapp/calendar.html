@@ -23,7 +23,9 @@
 
             <div class="level mb-1">
                 <div class="level-left">
-                    <h1 class="title is-3 level-item">Absence Calendar ({{users|length}})</h1>
+                    <h1 class="title is-3 level-item">Absence Calendar 
+                        <i class="fas fa-users mx-3"></i>{{users|length}}
+                    </h1>
                 </div>
             </div>
 
@@ -171,7 +173,7 @@
             <div class="table-container" style="overflow: hidden">
                 <table class="table is-bordered is-striped" style="width:100%">
                     <thead>
-                        <th style="background-color: black; color: white;">Employee</th>
+                        <th style="background-color: black; color: white;">Person</th>
                         {% for day in day_range %}
                             <th style="background-color: black; color: white;">{{day}}</th>
                         {% endfor %}
@@ -185,7 +187,7 @@
                                     <!-- if absence day equals day then highlights red -->
                                     {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
                                     {% if check_absence %}
-                                        <td style="background-color:red"></td>
+                                        <td style="background-color: #926AA6"></td>
                                     {% else %}
                                         <td></td>
                                     {% endif %}

@@ -8,6 +8,8 @@ from django.contrib import messages
 from .forms import CreateTeamForm, login, sign_up, DeleteUserForm, AbsenceForm
 from .models import Absence, Relationship, Role, Team
 from django.db.models.functions import Lower
+from django.db.models import ProtectedError
+from river.models.fields.state import State
 
 
 # Temp
@@ -65,11 +67,12 @@ def create_team(request) -> render:
             # Gets the created team and "Owner" Role and creates a Link between the user and their team
             created_team = Team.objects.get(name=form.cleaned_data['name'])
             assign_role = Role.objects.get(role="Owner")
-            Relationship.objects.create(
+            new_rel = Relationship.objects.create(
                 user = request.user,
                 team = created_team,
                 role = assign_role,
             )
+            new_rel.river.status.approve(as_user=request.user, next_state=State.objects.get(slug='approved'))
     else:
         form = CreateTeamForm()
     return render(request, "teams/create_team.html", {"form": form})
@@ -109,7 +112,7 @@ def joining_team_process(request, id, role):
 @login_required
 def leave_team(request, id):
     find_relationship = Relationship.objects.get(id=id)
-    find_relationship.delete()
+    find_relationship.custom_delete()
     team_cleaner(find_relationship)
     return redirect("dashboard")
 

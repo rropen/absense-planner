@@ -1,5 +1,6 @@
 from django.db import models
-from river.models.fields.state import StateField
+from river.models.fields.state import StateField, State
+from river.models import TransitionApproval
 from django.contrib.auth.models import User
 
 
@@ -45,7 +46,7 @@ class Relationship(models.Model):
     user        = models.ForeignKey(User, on_delete=models.CASCADE)
     team        = models.ForeignKey(Team, on_delete=models.CASCADE)
     role        = models.ForeignKey(Role, on_delete=models.CASCADE)
-    status      = StateField()
+    status      = StateField(on_delete=models.CASCADE)
 
 
     class Meta:
@@ -53,3 +54,9 @@ class Relationship(models.Model):
 
     def __str__(self):
         return f"{self.user.username} | {self.team.name} | {self.role}"
+
+    def custom_delete(self):
+        to_delete = TransitionApproval.objects.filter(object_id=self.pk)
+        for obj in to_delete:
+            obj.delete()
+        self.delete()
