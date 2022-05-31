@@ -13,7 +13,10 @@
                 <tr>
                     <td class="columns">
                         <div class="column">
-                            <span class="is-size-6 has-text-weight-bold">{{pending_rel.user.username}}</span>
+                            <span class="is-size-6 has-text-weight-bold">User: {{pending_rel.user.username}}</span>
+                        </div>
+                        <div class="column">
+                            <span class="is-size-6 has-text-weight-bold">Applied for: {{pending_rel.role.role}}</span>
                         </div>
                         <div class="column has-text-right">
                             <a href="{% url 'joining_team_request' pending_rel.id 'accepted' %}" class="button is-success is-size-7 mx-2">Accept</a>
