@@ -1,5 +1,6 @@
 from django.db import models
-from django.utils import timezone
+from river.models.fields.state import StateField, State
+from river.models import TransitionApproval
 from django.contrib.auth.models import User
 
 
@@ -29,7 +30,7 @@ class Team(models.Model):
 
     @property
     def count(self):
-        return Relationship.objects.filter(team=self).count()
+        return Relationship.objects.filter(team=self, status=State.objects.get(slug="approved")).count()
 
 class Role(models.Model):
     """ This includes all the attributes of a Role """
@@ -45,9 +46,17 @@ class Relationship(models.Model):
     user        = models.ForeignKey(User, on_delete=models.CASCADE)
     team        = models.ForeignKey(Team, on_delete=models.CASCADE)
     role        = models.ForeignKey(Role, on_delete=models.CASCADE)
+    status      = StateField(on_delete=models.CASCADE)
+
 
     class Meta:
         unique_together = ('user', 'team',)
 
     def __str__(self):
-        return f"{self.user.username} | {self.team.name} | {self.role}"
+        return f"User: {self.user.username} --> {self.team.name} as {self.role} ({self.status})"
+
+    def custom_delete(self):
+        to_delete = TransitionApproval.objects.filter(object_id=self.pk)
+        for obj in to_delete:
+            obj.delete()
+        self.delete()

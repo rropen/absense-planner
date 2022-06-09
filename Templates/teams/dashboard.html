@@ -31,7 +31,17 @@
         </div>
     </div>
 
-    <h3 class="has-text-weight-bold is-size-5 my-3">My Teams ({{rels.count}})</h3>
+    <div class="level">
+        <div class="level-left">
+            <h3 class="has-text-weight-bold is-size-5 my-3">My Teams ({{rels.count}})</h3>
+        </div>
+        <div class="level-right">
+            <a class="level-item p-1 has-text-link">
+                <i class="fas fa-envelope is-size-3 m-0"></i>
+                <span class="tag is-danger is-rounded is-size-7 m-0" style="transform: translate(-12px, -12px)">0</span>
+            </a>
+        </div>
+    </div>
 
     {% for rel in rels %}
         <div class="container has-background-light box">
