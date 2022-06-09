@@ -37,9 +37,7 @@
                 </div>
                 
                 <div class="level-right">
-                    <a class="button is-primary is-outlined modal-button" data-target = "#modal"><i class="fas fa-user-plus"></i></a>
-                        
-                    <a class="button is-info is-outlined mx-1" href="#"><i class="fas fa-cog"></i></a>
+                    <a class="button is-info is-outlined mx-1" href="{% url 'team_settings' team.id %}"><i class="fas fa-cog"></i></a>
                     <a class="button is-danger" href="{% url 'leave_team' team.id %}">Leave</a>              
                 </div>
             </div>
@@ -188,7 +186,7 @@
             <div class="table-container" style="overflow: hidden">
                 <table class="table is-bordered is-striped" style="width:100%">
                     <thead>
-                        <th style="background-color: black; color: white;">Employee</th>
+                        <th style="background-color: black; color: white;">Person</th>
                         {% for day in day_range %}
                             <th style="background-color: black; color: white;">{{day}}</th>
                         {% endfor %}
@@ -202,7 +200,7 @@
                                     <!-- if absence day equals day then highlights red -->
                                     {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
                                     {% if check_absence %}
-                                        <td style="background-color:red"></td>
+                                        <td style="background-color: #926AA6"></td>
                                     {% else %}
                                         <td></td>
                                     {% endif %}
