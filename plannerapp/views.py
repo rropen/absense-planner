@@ -12,28 +12,7 @@ from django.db.models import ProtectedError
 from river.models.fields.state import State
 
 
-# Temp
-
-details_info = [  # Sent over to html code
-    [
-        {"name": "Jai", "attendence": "absent"},
-        {"name": "Mark", "attendence": "late"},
-        {"name": "Trevor", "attendence": "here"},
-    ]
-]
-
-
 profiles_info = []  # Not too sure how these details are going to be laid out
-
-
-profiles_info = []  # Not too sure how these details are going to be laid out
-
-selected_date = "29/10/21"
-
-selected_name = "bob"
-job_role = "Software Developer"  # Not sure if this is neccessary
-project_id = "AB12341"
-todays_attendance = False
 
 current_date = datetime.datetime.now()
 YEAR = current_date.year
@@ -268,6 +247,7 @@ def all_calendar(request, month=MONTH, year=YEAR):
 
 
     all_users = []
+    all_users.append(request.user)
     user_relations = Relationship.objects.filter(user=request.user)
     for relation in user_relations:
         rels = Relationship.objects.filter(team=relation.team, status=State.objects.get(slug="approved"))
