@@ -6,3 +6,4 @@ admin.site.register(Absence)
 admin.site.register(Team)
 admin.site.register(Relationship)
 admin.site.register(Role)
+

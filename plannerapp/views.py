@@ -8,6 +8,8 @@ from django.contrib import messages
 from .forms import CreateTeamForm, login, sign_up, DeleteUserForm, AbsenceForm
 from .models import Absence, Relationship, Role, Team
 from django.db.models.functions import Lower
+from django.db.models import ProtectedError
+from river.models.fields.state import State
 
 
 # Temp
@@ -47,13 +49,9 @@ def privacy_page(request) -> render:
     return render(request, "plannerapp/privacy.html")
 
 @login_required
-def get_total_members(team):
-    test = Relationship.objects.filter(team=team).count()
-    return test
-
-@login_required
 def teams_dashboard(request) -> render:
-    rels = Relationship.objects.order_by(Lower("team__name")).filter(user=request.user)
+    rels = Relationship.objects.order_by(Lower("team__name")).filter(user=request.user, status=State.objects.get(slug="approved"))
+    
     return render(request, "teams/dashboard.html", {"rels": rels})
 
 @login_required
@@ -65,11 +63,12 @@ def create_team(request) -> render:
             # Gets the created team and "Owner" Role and creates a Link between the user and their team
             created_team = Team.objects.get(name=form.cleaned_data['name'])
             assign_role = Role.objects.get(role="Owner")
-            Relationship.objects.create(
+            new_rel = Relationship.objects.create(
                 user = request.user,
                 team = created_team,
                 role = assign_role,
             )
+            new_rel.river.status.approve(as_user=request.user, next_state=State.objects.get(slug='approved'))
     else:
         form = CreateTeamForm()
     return render(request, "teams/create_team.html", {"form": form})
@@ -91,7 +90,7 @@ def join_team(request) -> render:
             "name" : team.name,
             "description" : team.description,
             "private" : team.private, 
-            "count" : get_total_members(team)
+            "count" : Relationship.objects.filter(team=team).count()
             })
     return render(request, "teams/join_team.html", {"all_teams": all_teams_count})
 
@@ -99,19 +98,50 @@ def join_team(request) -> render:
 def joining_team_process(request, id, role):
     find_team = Team.objects.get(id=id)
     find_role = Role.objects.get(role=role)
-    Relationship.objects.create(
+    new_rel = Relationship.objects.create(
         user = request.user,
         team = find_team,
         role = find_role,
     )
+    if not find_team.private:
+        new_rel.river.status.approve(as_user=request.user, next_state=State.objects.get(slug='approved'))
+
+
     return redirect("dashboard")
 
 @login_required
 def leave_team(request, id):
     find_relationship = Relationship.objects.get(id=id)
-    find_relationship.delete()
+    find_relationship.custom_delete()
+    team_cleaner(find_relationship)
     return redirect("dashboard")
 
+def team_cleaner(rel):
+    team = Team.objects.get(id=rel.team.id)
+    all_team_relationships = Relationship.objects.filter(team=team)
+    if all_team_relationships.count() == 0:
+        team.delete()
+    return
+
+@login_required
+def team_settings(request, id):
+    """ Checks to see if user is the owner and renders the Setting page """
+    team = Team.objects.get(id=id)
+    user_relation = Relationship.objects.get(team=id, user=request.user)
+    if user_relation.role.role == "Owner":
+        all_pending_relations = Relationship.objects.filter(team=id, status=State.objects.get(slug="pending"))
+        return render(request, "teams/settings.html", {"team" : team, "pending_rels": all_pending_relations})
+    else:
+        return redirect("dashboard")
+
+def joining_team_request(request, id, response):
+    find_rel = Relationship.objects.get(id=id)
+    print(response)
+    if response == "accepted":
+        find_rel.river.status.approve(as_user=request.user, next_state=State.objects.get(slug='approved'))
+    elif response == "declined":
+        find_rel.river.status.approve(as_user=request.user, next_state=State.objects.get(slug='declined'))
+    return redirect("dashboard")
 
 @login_required
 def add(request) -> render:
@@ -146,7 +176,7 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
         year, datetime.datetime.strptime(month, "%B").month
     )[1]
 
-    users = Relationship.objects.all().filter(team=id)
+    users = Relationship.objects.all().filter(team=id, status=State.objects.get(slug="approved"))
 
     absence_content = []
     total_absence_dates = {}
@@ -224,7 +254,7 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
         "next_month": next_month,
         "date": dates,
         "team": team,
-        "team_count": Relationship.objects.filter(team=team.id).count()
+        "team_count": Relationship.objects.filter(team=team.id, status=State.objects.get(slug="approved")).count()
     }
 
     return render(request, "teams/calendar.html", context)
@@ -240,7 +270,7 @@ def all_calendar(request, month=MONTH, year=YEAR):
     all_users = []
     user_relations = Relationship.objects.filter(user=request.user)
     for relation in user_relations:
-        rels = Relationship.objects.filter(team=relation.team)
+        rels = Relationship.objects.filter(team=relation.team, status=State.objects.get(slug="approved"))
         for rel in rels:
             if rel.user in all_users:
                 pass
@@ -326,7 +356,6 @@ def all_calendar(request, month=MONTH, year=YEAR):
     }
 
     return render(request, "plannerapp/calendar.html", context)
-
 
 # Profile page
 @login_required
