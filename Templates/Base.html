@@ -59,13 +59,13 @@
         .text {
             font-weight: bold;
             size: 10rem;
-       }
-       .right {
-           float: right;
-           padding:100px;
-       }
+        }
+        .right {
+            float: right;
+            padding:100px;
+        }
 
-       .attending {
+        .attending {
             color: green;
         }
         
@@ -158,6 +158,8 @@
         </span>
         <span>Teams</span>
       </a>
+
+
 {% else %}
     <a class="navbar-item icon-text" href="/">
       <span class="icon is-size-5">
@@ -174,7 +176,9 @@
       <div class="field is-grouped">
           <div class="buttons">
             {% if user.is_authenticated %}
-                <a href="/profile/" class="button is-info">{{request.user.username}}</a>
+                <a href="/profile/" class="button is-info">{{request.user.username}}
+                  <i class="fas fa-user-circle ml-2 is-size-5"></i>
+                </a>
                 <a href="{% url 'logout' %}" class="button is-light">Log out</a>
             {% else %}
                 <a href="/accounts/signup" class="button is-info">

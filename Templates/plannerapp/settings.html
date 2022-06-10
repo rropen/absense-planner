@@ -5,7 +5,7 @@
 {% block content %}
 <style>
     .collapsible {
-        background-color: #271EA8;
+        /* background-color: #271EA8; */
         color: white;
         cursor: pointer;
         padding: 18px;
@@ -17,7 +17,7 @@
     }
     
     .active, .collapsible:hover {
-      background-color: #555;
+        /* background-color: #555; */
     }
 
     .collapsible:after {
@@ -46,24 +46,32 @@
 
 <div class="columns is-centered">
     <div class="column is-two-thirds">
-        <button class="collapsible has-text-centered">Privacy Settings</button>
-        <div class="content">
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-        </div>
+        <button class="collapsible button is-medium is-link has-text-centered">Privacy Settings</button>
+        <div class="content pt-3">
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <br></div>
 
-        <button class="collapsible has-text-centered">Permissions Settings</button>
-        <div class="content is-size-5">
-            <nav class="level">
-                <p>Users who can edit your absences</p>
-                <form method="POST" action="settings/add-user">
+        <button class="collapsible button is-medium is-link has-text-centered">Permissions Settings</button>
+        <div class="content is-size-5 pt-3">
+            <nav class="level my-1">
+                <p class="level-left m-0">Users who can edit your absences</p>
+                <form method="POST" action="settings/add-user" class="level-right field has-addons">
                     {% csrf_token %}
-                    <input name="username" type="text">
-                    <button class="button is-info" type="submit">Add User</button>
+                    <!-- Text box -->
+                    <div class="control">
+                        <input class="input is-info" name="username" placeholder="Add a user" type="text">
+                    </div>
+                    <!-- Submit icon  -->
+                    <div class="control">
+                        <a class="button is-info" type="submit"><i class="fas fa-user-plus"></i></a>
+                    </div>
                 </form>
             </nav>
+            <span class="tag is-dark">Scott Malkinson</span>
+
             {% for absence in absences %}
                 {% for user in absence.edit_whitelist.all %}
-                    user: {{ user.username }}<br>
+                    user: {{ user.username }}
                 {% endfor %}
                 <br>
             {% endfor %}

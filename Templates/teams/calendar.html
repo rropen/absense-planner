@@ -22,6 +22,7 @@
         <div class="container">
             <div class="level">
                 <div class="level-left">
+
                     <h1 class="title is-3 level-item">{{team.name}} 
                         
                         <i class="fas fa-users ml-3"></i>
@@ -34,7 +35,10 @@
                         {% endif %}
                     </h1>
                 </div>
+                
                 <div class="level-right">
+                    <a class="button is-primary is-outlined modal-button" data-target = "#modal"><i class="fas fa-user-plus"></i></a>
+                        
                     <a class="button is-info is-outlined mx-1" href="{% url 'team_settings' team.id %}"><i class="fas fa-cog"></i></a>
                     <a class="button is-danger" href="{% url 'leave_team' team.id %}">Leave</a>              
                 </div>
@@ -146,7 +150,7 @@
                     </p></a>
                 </div>
                 {% endif %}
-   
+
 <!-- How the page looks by default upon landing -->  
             {% else %} 
                 <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}"><p class="buttons">
@@ -180,6 +184,7 @@
             </div>
         </div>
 
+<!-- Calendar table -->
             <div class="table-container" style="overflow: hidden">
                 <table class="table is-bordered is-striped" style="width:100%">
                     <thead>
@@ -210,4 +215,58 @@
         </div>
     </section>
 </div>
+
+<!-- Invite Users - Modal -->
+<section class = "section">
+    <div class = "container">
+        <div id = "modal" class = "modal">
+            <div class = "modal-background"></div>
+            <div class = "modal-content">
+
+                <div class = "box">
+                    <h1 class = "title">Invite a Member</h1>
+<!-- Search Bar -->
+                    <div class="control block has-icons-left level-right">
+                        <input class="input" type="text" placeholder="Search">
+                        <span class="icon is-left">
+                        <i class="fas fa-search"></i>
+                        </span>
+                    </div>
+
+<!-- For person in database -->
+<!-- !!     Likely will not display every user. Try {{user.username}}    !! -->
+{% for user in users %}
+                    <div class="level mb-0"
+                        <p class="level-left">{{user.user.username}}</p>
+
+                        <span class="button is-primary level-right">Invite</span>
+                    </div>
+<hr class="my-2">
+{% endfor %}
+                    <div class="level mb-0"
+                        <p class="level-left">John Doe Swanson</p>
+                        <span class="button is-primary level-right">Invite</span>
+                    </div>
+
+                </div>
+            </div>
+            
+            <button class = "modal-close is-large" aria-label = "close"></button>
+        </div>
+</div>
+</section>
+
+<script>
+$(".modal-button").click(function() {
+    var target = $(this).data("target");
+    $("html").addClass("is-clipped");
+    $(target).addClass("is-active");
+});
+
+$(".modal-close").click(function() {
+    $("html").removeClass("is-clipped");
+    $(this).parent().removeClass("is-active");
+});
+</script>
+
 {% endblock %}
