@@ -46,8 +46,8 @@ def create_team(request) -> render:
                 user = request.user,
                 team = created_team,
                 role = assign_role,
+                status = State.objects.get(slug='approved')
             )
-            new_rel.river.status.approve(as_user=request.user, next_state=State.objects.get(slug='approved'))
             return redirect("/teams/")
     else:
         form = CreateTeamForm()
