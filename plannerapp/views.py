@@ -42,7 +42,7 @@ def create_team(request) -> render:
             # Gets the created team and "Owner" Role and creates a Link between the user and their team
             created_team = Team.objects.get(name=form.cleaned_data['name'])
             assign_role = Role.objects.get(role="Owner")
-            new_rel = Relationship.objects.create(
+            Relationship.objects.create(
                 user = request.user,
                 team = created_team,
                 role = assign_role,
@@ -116,7 +116,6 @@ def team_settings(request, id):
 
 def joining_team_request(request, id, response):
     find_rel = Relationship.objects.get(id=id)
-    print(response)
     if response == "accepted":
         find_rel.river.status.approve(as_user=request.user, next_state=State.objects.get(slug='approved'))
     elif response == "declined":
