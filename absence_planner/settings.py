@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "river",
     "plannerapp.apps.PlannerappConfig",
     "accounts",
     "django.contrib.admin",
@@ -40,7 +41,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "river",
     "bulma",
 ]
 

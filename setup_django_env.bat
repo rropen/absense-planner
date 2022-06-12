@@ -2,8 +2,8 @@ ECHO OFF
 ECHO ============================================================
 ECHO Setting Up Django Project Enviroment
 ECHO This script will make a new venv and install the requirements, then start the Django Project
-ECHO it will stry to use 'python' command please make sure python is installed and the command to execute it is 'py -3.9'
-ECHO This project is tested on Python 3.9. It may not work on other versions
+ECHO please make sure python is installed and the command to execute it is 'py -3.8'
+ECHO This project is tested on Python 3.8. It may not work on other versions
 ECHO If this script does not work, you will need to start django manually. This script is only a helper to make it easier to start the project.
 ECHO Please follow the instructions in the README.txt file to start the project if you need to.
 ECHO ============================================================
@@ -20,7 +20,7 @@ FOR %%P IN ("py -3.8") DO (
 )
 
 IF PYTHON_EXECUTABLE=notfound (
-    echo Python command not found. Please install python 3.9 or higher and make sure the command to execute it is 'py -3.9'
+    echo Python command not found. Please install python 3.8 or higher and make sure the command to execute it is 'py -3.8'
     PAUSE
     EXIT
 )
