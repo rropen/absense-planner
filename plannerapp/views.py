@@ -240,6 +240,7 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
         "day_range": range(1, month_days + 1),
         "absences": all_absences,
         "absence_dates": total_absence_dates,
+        "current_user": Relationship.objects.get(user=request.user, team=team),
         "users": users,
         "current_day": DAY,
         "current_month": MONTH,
@@ -256,7 +257,6 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
         "all_users": User.objects.all(),
         "team_count": Relationship.objects.filter(team=team.id, status=State.objects.get(slug="approved")).count()
     }
-
     return render(request, "teams/calendar.html", context)
 
 
