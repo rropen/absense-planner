@@ -41,7 +41,7 @@
                     <a class="button is-primary is-outlined modal-button" data-target = "#modal"><i class="fas fa-user-plus"></i></a>
                     <a class="button is-info is-outlined mx-1" href="{% url 'team_settings' team.id %}"><i class="fas fa-cog"></i></a>
                     {% endif %}
-                    <a class="button is-danger" href="{% url 'leave_team' team.id %}">Leave</a>              
+                    <a class="button is-danger" href="{% url 'leave_team' current_user.id %}">Leave</a>              
                 </div>
             </div>
             <p class="my-3">{{team.description}}</p>

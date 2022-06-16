@@ -63,16 +63,7 @@ def join_team(request) -> render:
     for teams in all_user_teams:
         user_teams.append(teams.team.name)   
     all_teams = Team.objects.all().exclude(name__in=user_teams)
-    all_teams_count = []
-    for team in all_teams:
-        all_teams_count.append({
-            "id" : team.id,
-            "name" : team.name,
-            "description" : team.description,
-            "private" : team.private, 
-            "count" : Relationship.objects.filter(team=team).count()
-            })
-    return render(request, "teams/join_team.html", {"all_teams": all_teams_count})
+    return render(request, "teams/join_team.html", {"all_teams": all_teams})
 
 @login_required
 def joining_team_process(request, id, role):
@@ -82,8 +73,12 @@ def joining_team_process(request, id, role):
         user = request.user,
         team = find_team,
         role = find_role,
-        status=State.objects.get(slug='approved')
+        status=State.objects.get(slug="pending")
     )
+    if not find_team.private:
+        Relationship.objects.filter(id=new_rel.id).update(
+            status=State.objects.get(slug="approved")
+        )
 
     return redirect("dashboard")
 
