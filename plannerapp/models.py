@@ -40,6 +40,7 @@ class Role(models.Model):
     def __str__(self):
         return f"{self.role}"
 
+
 class Relationship(models.Model):
     """ This includes all the attributes of a Relationship """
     id          = models.AutoField(primary_key=True)

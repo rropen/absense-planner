@@ -82,12 +82,28 @@ def joining_team_process(request, id, role):
         user = request.user,
         team = find_team,
         role = find_role,
+        status=State.objects.get(slug='approved')
     )
-    if not find_team.private:
-        new_rel.river.status.approve(as_user=request.user, next_state=State.objects.get(slug='approved'))
-
 
     return redirect("dashboard")
+
+
+def team_invite(request, team_id, user_id, role):
+    find_team = Team.objects.get(id=team_id)
+    find_user = User.objects.get(id=user_id)
+    find_role = Role.objects.get(role=role)
+    Relationship.objects.create(
+        user=find_user,
+        team=find_team,
+        role=find_role,
+        status=State.objects.get(slug='invited')
+    )
+    return redirect('dashboard')
+
+@login_required
+def view_invites(request):
+    all_invites = Relationship.objects.filter(user=request.user, status=State.objects.get(slug='invited'))
+    return render(request, 'teams/invites.html', {'invites': all_invites})
 
 @login_required
 def leave_team(request, id):
@@ -117,9 +133,13 @@ def team_settings(request, id):
 def joining_team_request(request, id, response):
     find_rel = Relationship.objects.get(id=id)
     if response == "accepted":
-        find_rel.river.status.approve(as_user=request.user, next_state=State.objects.get(slug='approved'))
+        state_response = State.objects.get(slug='approved')
     elif response == "declined":
-        find_rel.river.status.approve(as_user=request.user, next_state=State.objects.get(slug='declined'))
+        state_response = State.objects.get(slug='declined')
+    Relationship.objects.filter(id=find_rel.id).update(
+        status=state_response
+    )
+    
     return redirect("dashboard")
 
 @login_required
@@ -233,6 +253,7 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
         "next_month": next_month,
         "date": dates,
         "team": team,
+        "all_users": User.objects.all(),
         "team_count": Relationship.objects.filter(team=team.id, status=State.objects.get(slug="approved")).count()
     }
 
