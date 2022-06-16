@@ -30,8 +30,8 @@ def privacy_page(request) -> render:
 @login_required
 def teams_dashboard(request) -> render:
     rels = Relationship.objects.order_by(Lower("team__name")).filter(user=request.user, status=State.objects.get(slug="approved"))
-    
-    return render(request, "teams/dashboard.html", {"rels": rels})
+    invite_rel_count = Relationship.objects.filter(user=request.user, status=State.objects.get(slug="invited")).count()
+    return render(request, "teams/dashboard.html", {"rels": rels, "invite_count":invite_rel_count})
 
 @login_required
 def create_team(request) -> render:
