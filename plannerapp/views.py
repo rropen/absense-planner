@@ -235,6 +235,12 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
         pass
     dates = "dates"
     team = Team.objects.get(id=id)
+
+
+    user_in_teams = []
+    for rel in Relationship.objects.filter(team=team):
+        user_in_teams.append(rel.user.id)
+
     context = {
         "current_date": current_date,
         "day_range": range(1, month_days + 1),
@@ -254,7 +260,7 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
         "next_month": next_month,
         "date": dates,
         "team": team,
-        "all_users": User.objects.all(),
+        "all_users": User.objects.all().exclude(id__in=user_in_teams),
         "team_count": Relationship.objects.filter(team=team.id, status=State.objects.get(slug="approved")).count()
     }
     return render(request, "teams/calendar.html", context)
@@ -336,7 +342,6 @@ def all_calendar(request, month=MONTH, year=YEAR):
         pass
     dates = "dates"
     
-    dates = "dates"
     context = {
         "current_date": current_date,
         "day_range": range(1, month_days + 1),
