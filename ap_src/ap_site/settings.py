@@ -34,7 +34,6 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     "river",
     "ap_app.apps.ap_appConfig",
-    "ap_accounts",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

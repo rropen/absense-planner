@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
+    path('signup/', views.SignUpView.as_view(), name='signup'),
     path("calendar/", views.all_calendar, name="all_Calendar"),
     path("calendar/<str:month>/<int:year>", views.all_calendar, name="all_calendar"),
     path("teams/", views.teams_dashboard, name="dashboard"),
@@ -25,6 +26,5 @@ urlpatterns = [
     path("absence/edit/<int:pk>", views.EditAbsence.as_view(), name="absence_edit"),
     path("profile/settings", views.profile_settings, name="profile settings"),
     path("profile/settings/add-user", views.add_user, name="add-user")
-
     # path("absence/edit/<int:id>", views.absence_edit, name="Absence Edit")
 ]

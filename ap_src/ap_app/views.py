@@ -2,11 +2,12 @@ import calendar
 import datetime 
 
 from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, CreateView
 from django.db.models.functions import Lower
 
 from river.models.fields.state import State
@@ -17,6 +18,9 @@ from .models import Absence, Relationship, Role, Team
 
 User = get_user_model()
 
+
+
+# TODO: Move these global variables to be local variables.
 current_date = datetime.datetime.now()
 YEAR = current_date.year
 MONTH = current_date.strftime("%B")
@@ -28,6 +32,11 @@ def index(request) -> render:
 
 def privacy_page(request) -> render:
     return render(request, "ap_app/privacy.html")
+
+class SignUpView(CreateView):
+    form_class = UserCreationForm
+    success_url = reverse_lazy('login')
+    template_name = 'registration/signup.html'
 
 @login_required
 def teams_dashboard(request) -> render:

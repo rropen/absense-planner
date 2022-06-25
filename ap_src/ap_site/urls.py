@@ -15,12 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic.base import TemplateView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('ap_accounts/', include('ap_accounts.urls')),
     path('ap_accounts/', include('django.contrib.auth.urls')),
-    path('', TemplateView.as_view(template_name='ap_app/index.html'), name='index'),
     path("", include("ap_app.urls")),
 ]

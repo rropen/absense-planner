@@ -179,10 +179,10 @@
                 </a>
                 <a href="{% url 'logout' %}" class="button is-light">Log out</a>
             {% else %}
-                <a href="/ap_accounts/signup" class="button is-info">
+                <a href="{% url 'signup' %}" class="button is-info">
                   <strong>Sign up</strong>
                 </a>
-                <a href="/ap_accounts/login" class="button is-light">
+                <a href="{% url 'login' %}" class="button is-light">
                   Log in
                 </a>
             {% endif %}
