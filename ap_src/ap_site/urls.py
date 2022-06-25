@@ -1,4 +1,4 @@
-"""absence_planner URL Configuration
+"""ap_site URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.2/topics/http/urls/
@@ -19,8 +19,8 @@ from django.views.generic.base import TemplateView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('accounts/', include('accounts.urls')),
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('', TemplateView.as_view(template_name='plannerapp/index.html'), name='index'),
-    path("", include("plannerapp.urls")),
+    path('ap_accounts/', include('ap_accounts.urls')),
+    path('ap_accounts/', include('django.contrib.auth.urls')),
+    path('', TemplateView.as_view(template_name='ap_app/index.html'), name='index'),
+    path("", include("ap_app.urls")),
 ]

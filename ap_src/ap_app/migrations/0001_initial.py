@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('river', '0002_auto_20220604_1911'),
+        ('river', '__latest__'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -46,9 +46,9 @@ class Migration(migrations.Migration):
             name='Relationship',
             fields=[
                 ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('role', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='plannerapp.role')),
+                ('role', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ap_app.role')),
                 ('status', river.models.fields.state.StateField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='river.state')),
-                ('team', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='plannerapp.team')),
+                ('team', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ap_app.team')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
             options={

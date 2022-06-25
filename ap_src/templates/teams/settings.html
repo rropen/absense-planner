@@ -20,7 +20,7 @@
                         </div>
                         <div class="column has-text-right">
                             <a href="{% url 'joining_team_request' pending_rel.id 'accepted' %}" class="button is-success is-size-7 mx-2">Accept</a>
-                            <a href="{% url 'joining_team_request' pending_rel.id 'declined' %}" class="button is-danger is-size-7">Decline</a>
+                            <a href="{% url 'joining_team_request' pending_rel.id 'nonactive' %}" class="button is-danger is-size-7">Decline</a>
                         </div>
                     </td>
                 </tr>

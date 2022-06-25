@@ -3,17 +3,17 @@
     "python.linting.enabled": true,
     "python.linting.pylintEnabled": true,
     "python.autoComplete.extraPaths": [
-        "./plannerapp"
+        "./ap_app"
     ],
     "python.linting.pylintArgs": [
         "--load-plugins",
         "pylint_django",
         "--django-settings-module",
-        "absence_planner.settings",
+        "ap_site.settings",
         "--rcfile",
         ".pylintrc"
     ],
     "python.analysis.extraPaths": [
-        "./plannerapp"
+        "./ap_app"
     ]
 }

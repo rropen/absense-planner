@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class PlannerappConfig(AppConfig):
+class ap_accountsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'plannerapp'
+    name = 'ap_accounts'

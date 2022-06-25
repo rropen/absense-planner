@@ -10,7 +10,7 @@ ECHO ============================================================
 
 SET PYTHON_EXECUTABLE=notfound
 @REM LOOP through the list of python commands  to find the correct one by execute the --version of the command and set it to the variable PYTHON_EXECUTABLE of the one which does not throw an error
-FOR %%P IN ("py -3.8") DO (
+FOR %%P IN ("py -3.8", "python3.8") DO (
     %%~P --version
     IF NOT ERRORLEVEL 1 (
         SET PYTHON_EXECUTABLE=%%~P
@@ -50,20 +50,20 @@ IF NOT EXIST venv\req_installed  (
 
 @REM Start Django
 
-if EXIST manage.py (
+if EXIST ap_src/manage.py (
     ECHO Making migrations
-	"venv\Scripts\python" manage.py makemigrations
+	"venv\Scripts\python" ap_src/manage.py makemigrations
 
     ECHO Running migrations
-	"venv\Scripts\python" manage.py migrate plannerapp
-	"venv\Scripts\python" manage.py migrate
+	"venv\Scripts\python" ap_src/manage.py migrate ap_app
+	"venv\Scripts\python" ap_src/manage.py migrate
 
     ECHO Loading fixtures
 
     @REM LOOP through all fixtures in the fixtures folder in a for loop and load them one by one
-    for %%f in (plannerapp\fixtures\*.*) do (
+    for %%f in (ap_app\fixtures\*.*) do (
         ECHO Loading fixture %%f
-        "venv\Scripts\python" manage.py loaddata %%f
+        "venv\Scripts\python" ap_src/manage.py loaddata %%f
     )
 
     IF NOT EXIST venv\user_created (
@@ -74,13 +74,13 @@ if EXIST manage.py (
         ECHO Create an admin user
 
         COPY NUL venv\user_created
-        "venv\Scripts\python" manage.py createsuperuser
+        "venv\Scripts\python" ap_src/manage.py createsuperuser
     ) ELSE (
         ECHO Super User already created
     )
 
     ECHO Collecting static files
-    "venv\Scripts\python" manage.py collectstatic --noinput
+    "venv\Scripts\python" ap_src/manage.py collectstatic --noinput
 
     ECHO Done
 )

@@ -1,35 +1,37 @@
 import calendar
 import datetime 
+
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import CreateTeamForm, login, sign_up, DeleteUserForm, AbsenceForm
-from .models import Absence, Relationship, Role, Team
+from django.views.generic import UpdateView
 from django.db.models.functions import Lower
-from django.db.models import ProtectedError
+
 from river.models.fields.state import State
 
+from .forms import CreateTeamForm, login, sign_up, DeleteUserForm, AbsenceForm
+from .models import Absence, Relationship, Role, Team
 
-profiles_info = []  # Not too sure how these details are going to be laid out
+
+User = get_user_model()
 
 current_date = datetime.datetime.now()
 YEAR = current_date.year
 MONTH = current_date.strftime("%B")
 DAY = current_date.day
-from django.views.generic import UpdateView
 
 def index(request) -> render:
     """returns the home page"""
-    return render(request, "plannerapp/index.html")
+    return render(request, "ap_app/index.html")
 
 def privacy_page(request) -> render:
-    return render(request, "plannerapp/privacy.html")
+    return render(request, "ap_app/privacy.html")
 
 @login_required
 def teams_dashboard(request) -> render:
-    rels = Relationship.objects.order_by(Lower("team__name")).filter(user=request.user, status=State.objects.get(slug="approved"))
+    rels = Relationship.objects.order_by(Lower("team__name")).filter(user=request.user, status=State.objects.get(slug="active"))
     invite_rel_count = Relationship.objects.filter(user=request.user, status=State.objects.get(slug="invited")).count()
     return render(request, "teams/dashboard.html", {"rels": rels, "invite_count":invite_rel_count})
 
@@ -46,7 +48,7 @@ def create_team(request) -> render:
                 user = request.user,
                 team = created_team,
                 role = assign_role,
-                status = State.objects.get(slug='approved')
+                status = State.objects.get(slug='active')
             )
             return redirect("/teams/")
     else:
@@ -77,7 +79,7 @@ def joining_team_process(request, id, role):
     )
     if not find_team.private:
         Relationship.objects.filter(id=new_rel.id).update(
-            status=State.objects.get(slug="approved")
+            status=State.objects.get(slug="active")
         )
 
     return redirect("dashboard")
@@ -128,9 +130,9 @@ def team_settings(request, id):
 def joining_team_request(request, id, response):
     find_rel = Relationship.objects.get(id=id)
     if response == "accepted":
-        state_response = State.objects.get(slug='approved')
-    elif response == "declined":
-        state_response = State.objects.get(slug='declined')
+        state_response = State.objects.get(slug='active')
+    elif response == "nonactive":
+        state_response = State.objects.get(slug='nonactive')
     Relationship.objects.filter(id=find_rel.id).update(
         status=state_response
     )
@@ -154,14 +156,14 @@ def add(request) -> render:
     else:
         form = AbsenceForm()
     content = {"form": form}
-    return render(request, "plannerapp/add_absence.html", content)
+    return render(request, "ap_app/add_absence.html", content)
 
 @login_required
 def details_page(request) -> render:
     """returns details web page"""
     # TODO: get employee details and add them to context
     context = {"employee_dicts": ""}
-    return render(request, "plannerapp/Details.html", context)
+    return render(request, "ap_app/Details.html", context)
 
 @login_required
 def team_calendar(request, id, month=MONTH, year=YEAR):
@@ -170,7 +172,7 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
         year, datetime.datetime.strptime(month, "%B").month
     )[1]
 
-    users = Relationship.objects.all().filter(team=id, status=State.objects.get(slug="approved"))
+    users = Relationship.objects.all().filter(team=id, status=State.objects.get(slug="active"))
 
     absence_content = []
     total_absence_dates = {}
@@ -256,7 +258,7 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
         "date": dates,
         "team": team,
         "all_users": User.objects.all().exclude(id__in=user_in_teams),
-        "team_count": Relationship.objects.filter(team=team.id, status=State.objects.get(slug="approved")).count()
+        "team_count": Relationship.objects.filter(team=team.id, status=State.objects.get(slug="active")).count()
     }
     return render(request, "teams/calendar.html", context)
 
@@ -272,7 +274,7 @@ def all_calendar(request, month=MONTH, year=YEAR):
     all_users.append(request.user)
     user_relations = Relationship.objects.filter(user=request.user)
     for relation in user_relations:
-        rels = Relationship.objects.filter(team=relation.team, status=State.objects.get(slug="approved"))
+        rels = Relationship.objects.filter(team=relation.team, status=State.objects.get(slug="active"))
         for rel in rels:
             if rel.user in all_users:
                 pass
@@ -356,23 +358,23 @@ def all_calendar(request, month=MONTH, year=YEAR):
         "date": dates,
     }
 
-    return render(request, "plannerapp/calendar.html", context)
+    return render(request, "ap_app/calendar.html", context)
 
 # Profile page
 @login_required
 def profile_page(request):
     absences = Absence.objects.filter(User_ID = request.user.id)
-    return render(request, "plannerapp/profile.html", {"absences":absences})
+    return render(request, "ap_app/profile.html", {"absences":absences})
 
 
 def login_page(request):
     form = login()
-    return render(request, "plannerapp/login.html", {"form": form})
+    return render(request, "ap_app/login.html", {"form": form})
 
 
 def sign_up_page(request):
     form = sign_up()
-    return render(request, "plannerapp/sign_up.html", {"form": form})
+    return render(request, "ap_app/sign_up.html", {"form": form})
 
 @login_required
 def deleteuser(request):
@@ -403,7 +405,7 @@ def absence_delete(request, absence_id:int):
         raise Exception()
 
 class EditAbsence(UpdateView):
-    template_name = "plannerapp/edit_absence.html"
+    template_name = "ap_app/edit_absence.html"
     model = Absence
 
     # specify the fields
@@ -417,7 +419,7 @@ def profile_settings(request) -> render:
     """returns the settings page"""
     absences = Absence.objects.filter(User_ID=request.user.id)
     context = {"absences": absences}
-    return render(request, "plannerapp/settings.html", context)
+    return render(request, "ap_app/settings.html", context)
 
 @login_required
 def add_user(request) -> render:

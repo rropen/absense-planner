@@ -1,8 +1,9 @@
 from django.db import models
+from django.contrib.auth import get_user_model
 from river.models.fields.state import StateField, State
 from river.models import TransitionApproval
-from django.contrib.auth.models import User
 
+User = get_user_model()
 
 class Absence(models.Model):
     ID = models.AutoField(primary_key=True)
@@ -30,7 +31,7 @@ class Team(models.Model):
 
     @property
     def count(self):
-        return Relationship.objects.filter(team=self, status=State.objects.get(slug="approved")).count()
+        return Relationship.objects.filter(team=self, status=State.objects.get(slug="active")).count()
 
 class Role(models.Model):
     """ This includes all the attributes of a Role """

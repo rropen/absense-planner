@@ -8,7 +8,7 @@ project.
 
 ## Private Software Policy
 
-The `ChangeMe` repository and project are intended to be internally accessible to Rolls-Royce employees and approved partners. This project should not public facing or used publicly without the express permission of Rolls-Royce. If you find this package in the public, please contact the lead maintainer at [Josh.Haines@Rolls-Royce.com](mailto:Josh.Haines@Rolls-Royce.com).
+The `ChangeMe` repository and project are intended to be internally accessible to Rolls-Royce employees and active partners. This project should not public facing or used publicly without the express permission of Rolls-Royce. If you find this package in the public, please contact the lead maintainer at [Josh.Haines@Rolls-Royce.com](mailto:Josh.Haines@Rolls-Royce.com).
 
 ## Reporting a Bug
 
