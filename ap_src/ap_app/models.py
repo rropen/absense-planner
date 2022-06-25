@@ -5,6 +5,8 @@ from river.models import TransitionApproval
 
 User = get_user_model()
 
+# TODO: is the ID, id field needed. Django has this built in as part of the Model class
+
 class Absence(models.Model):
     ID = models.AutoField(primary_key=True)
     User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="absences")
@@ -16,8 +18,6 @@ class Absence(models.Model):
     def __str__(self):
         return f"{self.User_ID}, {self.absence_date_start} - {self.absence_date_end}"
     
-
-
 
 class Team(models.Model):
     """ This includes all the attributes of a Team """

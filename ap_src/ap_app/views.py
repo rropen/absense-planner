@@ -1,3 +1,7 @@
+# TODO: Review functions and variables names and ensure that they
+#   ..  have meaningful names that represent what they do.
+
+
 import calendar
 import datetime 
 
@@ -12,19 +16,21 @@ from django.db.models.functions import Lower
 
 from river.models.fields.state import State
 
-from .forms import CreateTeamForm, login, sign_up, DeleteUserForm, AbsenceForm
+from .forms import CreateTeamForm, DeleteUserForm, AbsenceForm
 from .models import Absence, Relationship, Role, Team
 
 
 User = get_user_model()
 
 
+# TODO: Move these global variables to be local variables. They must be local variables as this data is not a constant. It changes every day ^_^.
+#       ... and by defining these variables as global variables they will stay the same until the app is restarted and the module is reloaded 
 
-# TODO: Move these global variables to be local variables.
 current_date = datetime.datetime.now()
 YEAR = current_date.year
 MONTH = current_date.strftime("%B")
 DAY = current_date.day
+
 
 def index(request) -> render:
     """returns the home page"""
@@ -174,6 +180,8 @@ def details_page(request) -> render:
     context = {"employee_dicts": ""}
     return render(request, "ap_app/Details.html", context)
 
+
+# TODO: team_calender and all_calender seem to have duplicate code. DRY (Don't repeat yourself) principle
 @login_required
 def team_calendar(request, id, month=MONTH, year=YEAR):
 
@@ -226,6 +234,9 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
 
     previous_month = 1
     next_month = 12
+
+    # TODO: find a better way to handle this without passing all exceptions.
+    #        What if an unexpected error happens? this will be very hard to find as it is been ignored.
     try:
 
         next_month = datetime.datetime.strptime(
@@ -239,6 +250,7 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
         ).strftime("%B")
     except:
         pass
+
     dates = "dates"
     team = Team.objects.get(id=id)
 
@@ -247,6 +259,7 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
     for rel in Relationship.objects.filter(team=team):
         user_in_teams.append(rel.user.id)
 
+    # TODO: Maybe a better data structure to pass less data using context
     context = {
         "current_date": current_date,
         "day_range": range(1, month_days + 1),
@@ -375,15 +388,6 @@ def profile_page(request):
     absences = Absence.objects.filter(User_ID = request.user.id)
     return render(request, "ap_app/profile.html", {"absences":absences})
 
-
-def login_page(request):
-    form = login()
-    return render(request, "ap_app/login.html", {"form": form})
-
-
-def sign_up_page(request):
-    form = sign_up()
-    return render(request, "ap_app/sign_up.html", {"form": form})
 
 @login_required
 def deleteuser(request):
