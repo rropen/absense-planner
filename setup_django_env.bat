@@ -61,7 +61,7 @@ if EXIST ap_src/manage.py (
     ECHO Loading fixtures
 
     @REM LOOP through all fixtures in the fixtures folder in a for loop and load them one by one
-    for %%f in (ap_app\fixtures\*.*) do (
+    for %%f in (ap_src\ap_app\fixtures\*.*) do (
         ECHO Loading fixture %%f
         "venv\Scripts\python" ap_src/manage.py loaddata %%f
     )
