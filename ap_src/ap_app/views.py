@@ -3,7 +3,7 @@
 
 
 import calendar
-import datetime 
+import datetime
 
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
@@ -24,7 +24,7 @@ User = get_user_model()
 
 
 # TODO: Move these global variables to be local variables. They must be local variables as this data is not a constant. It changes every day ^_^.
-#       ... and by defining these variables as global variables they will stay the same until the app is restarted and the module is reloaded 
+#       ... and by defining these variables as global variables they will stay the same until the app is restarted and the module is reloaded
 
 current_date = datetime.datetime.now()
 YEAR = current_date.year
@@ -36,19 +36,31 @@ def index(request) -> render:
     """returns the home page"""
     return render(request, "ap_app/index.html")
 
+
 def privacy_page(request) -> render:
     return render(request, "ap_app/privacy.html")
 
+
 class SignUpView(CreateView):
     form_class = UserCreationForm
-    success_url = reverse_lazy('login')
-    template_name = 'registration/signup.html'
+    success_url = reverse_lazy("login")
+    template_name = "registration/signup.html"
+
 
 @login_required
 def teams_dashboard(request) -> render:
-    rels = Relationship.objects.order_by(Lower("team__name")).filter(user=request.user, status=State.objects.get(slug="active"))
-    invite_rel_count = Relationship.objects.filter(user=request.user, status=State.objects.get(slug="invited")).count()
-    return render(request, "teams/dashboard.html", {"rels": rels, "invite_count":invite_rel_count})
+    rels = Relationship.objects.order_by(Lower("team__name")).filter(
+        user=request.user, status=State.objects.get(slug="active")
+    )
+    invite_rel_count = Relationship.objects.filter(
+        user=request.user, status=State.objects.get(slug="invited")
+    ).count()
+    return render(
+        request,
+        "teams/dashboard.html",
+        {"rels": rels, "invite_count": invite_rel_count},
+    )
+
 
 @login_required
 def create_team(request) -> render:
@@ -57,40 +69,40 @@ def create_team(request) -> render:
         if form.is_valid():
             form.save()
             # Gets the created team and "Owner" Role and creates a Link between the user and their team
-            created_team = Team.objects.get(name=form.cleaned_data['name'])
+            created_team = Team.objects.get(name=form.cleaned_data["name"])
             assign_role = Role.objects.get(role="Owner")
             Relationship.objects.create(
-                user = request.user,
-                team = created_team,
-                role = assign_role,
-                status = State.objects.get(slug='active')
+                user=request.user,
+                team=created_team,
+                role=assign_role,
+                status=State.objects.get(slug="active"),
             )
             return redirect("/teams/")
     else:
         form = CreateTeamForm()
     return render(request, "teams/create_team.html", {"form": form})
-     
 
 
 @login_required
 def join_team(request) -> render:
-    """ Renders page with all teams the user is not currently in """
+    """Renders page with all teams the user is not currently in"""
     user_teams = []
     all_user_teams = Relationship.objects.all().filter(user=request.user)
     for teams in all_user_teams:
-        user_teams.append(teams.team.name)   
+        user_teams.append(teams.team.name)
     all_teams = Team.objects.all().exclude(name__in=user_teams)
     return render(request, "teams/join_team.html", {"all_teams": all_teams})
+
 
 @login_required
 def joining_team_process(request, id, role):
     find_team = Team.objects.get(id=id)
     find_role = Role.objects.get(role=role)
     new_rel = Relationship.objects.create(
-        user = request.user,
-        team = find_team,
-        role = find_role,
-        status=State.objects.get(slug="pending")
+        user=request.user,
+        team=find_team,
+        role=find_role,
+        status=State.objects.get(slug="pending"),
     )
     if not find_team.private:
         Relationship.objects.filter(id=new_rel.id).update(
@@ -108,14 +120,18 @@ def team_invite(request, team_id, user_id, role):
         user=find_user,
         team=find_team,
         role=find_role,
-        status=State.objects.get(slug='invited')
+        status=State.objects.get(slug="invited"),
     )
-    return redirect('dashboard')
+    return redirect("dashboard")
+
 
 @login_required
 def view_invites(request):
-    all_invites = Relationship.objects.filter(user=request.user, status=State.objects.get(slug='invited'))
-    return render(request, 'teams/invites.html', {'invites': all_invites})
+    all_invites = Relationship.objects.filter(
+        user=request.user, status=State.objects.get(slug="invited")
+    )
+    return render(request, "teams/invites.html", {"invites": all_invites})
+
 
 @login_required
 def leave_team(request, id):
@@ -124,6 +140,7 @@ def leave_team(request, id):
     team_cleaner(find_relationship)
     return redirect("dashboard")
 
+
 def team_cleaner(rel):
     team = Team.objects.get(id=rel.team.id)
     all_team_relationships = Relationship.objects.filter(team=team)
@@ -131,28 +148,35 @@ def team_cleaner(rel):
         team.delete()
     return
 
+
 @login_required
 def team_settings(request, id):
-    """ Checks to see if user is the owner and renders the Setting page """
+    """Checks to see if user is the owner and renders the Setting page"""
     team = Team.objects.get(id=id)
     user_relation = Relationship.objects.get(team=id, user=request.user)
     if user_relation.role.role == "Owner":
-        all_pending_relations = Relationship.objects.filter(team=id, status=State.objects.get(slug="pending"))
-        return render(request, "teams/settings.html", {"team" : team, "pending_rels": all_pending_relations})
+        all_pending_relations = Relationship.objects.filter(
+            team=id, status=State.objects.get(slug="pending")
+        )
+        return render(
+            request,
+            "teams/settings.html",
+            {"team": team, "pending_rels": all_pending_relations},
+        )
     else:
         return redirect("dashboard")
+
 
 def joining_team_request(request, id, response):
     find_rel = Relationship.objects.get(id=id)
     if response == "accepted":
-        state_response = State.objects.get(slug='active')
+        state_response = State.objects.get(slug="active")
     elif response == "nonactive":
-        state_response = State.objects.get(slug='nonactive')
-    Relationship.objects.filter(id=find_rel.id).update(
-        status=state_response
-    )
-    
+        state_response = State.objects.get(slug="nonactive")
+    Relationship.objects.filter(id=find_rel.id).update(status=state_response)
+
     return redirect("dashboard")
+
 
 @login_required
 def add(request) -> render:
@@ -173,6 +197,7 @@ def add(request) -> render:
     content = {"form": form}
     return render(request, "ap_app/add_absence.html", content)
 
+
 @login_required
 def details_page(request) -> render:
     """returns details web page"""
@@ -189,7 +214,9 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
         year, datetime.datetime.strptime(month, "%B").month
     )[1]
 
-    users = Relationship.objects.all().filter(team=id, status=State.objects.get(slug="active"))
+    users = Relationship.objects.all().filter(
+        team=id, status=State.objects.get(slug="active")
+    )
 
     absence_content = []
     total_absence_dates = {}
@@ -205,7 +232,9 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
         # if they have any absences
         if absence_info:
             # mapping the absence content to keys in dictionary
-            for x in range(len(absence_info)): # pylint: disable=consider-using-enumerate
+            for x in range(
+                len(absence_info)
+            ):  # pylint: disable=consider-using-enumerate
 
                 absence_id = absence_info[x].ID
 
@@ -215,8 +244,6 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
                 while dates <= absence_date_end:
                     total_absence_dates[user].append(dates)
                     dates += delta
-
-
 
                 absence_content.append(
                     {
@@ -230,7 +257,6 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
             # for each user it maps the set of dates to a dictionary key labelled as the users name
             total_absence_dates[user] = total_absence_dates[user]
             all_absences[user] = absence_content
-
 
     previous_month = 1
     next_month = 12
@@ -253,7 +279,6 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
 
     dates = "dates"
     team = Team.objects.get(id=id)
-
 
     user_in_teams = []
     for rel in Relationship.objects.filter(team=team):
@@ -280,7 +305,9 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
         "date": dates,
         "team": team,
         "all_users": User.objects.all().exclude(id__in=user_in_teams),
-        "team_count": Relationship.objects.filter(team=team.id, status=State.objects.get(slug="active")).count()
+        "team_count": Relationship.objects.filter(
+            team=team.id, status=State.objects.get(slug="active")
+        ).count(),
     }
     return render(request, "teams/calendar.html", context)
 
@@ -291,18 +318,19 @@ def all_calendar(request, month=MONTH, year=YEAR):
         year, datetime.datetime.strptime(month, "%B").month
     )[1]
 
-
     all_users = []
     all_users.append(request.user)
     user_relations = Relationship.objects.filter(user=request.user)
     for relation in user_relations:
-        rels = Relationship.objects.filter(team=relation.team, status=State.objects.get(slug="active"))
+        rels = Relationship.objects.filter(
+            team=relation.team, status=State.objects.get(slug="active")
+        )
         for rel in rels:
             if rel.user in all_users:
                 pass
             else:
                 all_users.append(rel.user)
-    
+
     absence_content = []
     total_absence_dates = {}
     all_absences = {}
@@ -317,7 +345,9 @@ def all_calendar(request, month=MONTH, year=YEAR):
         # if they have any absences
         if absence_info:
             # mapping the absence content to keys in dictionary
-            for x in range(len(absence_info)): # pylint: disable=consider-using-enumerate
+            for x in range(
+                len(absence_info)
+            ):  # pylint: disable=consider-using-enumerate
                 absence_id = absence_info[x].ID
                 absence_date_start = absence_info[x].absence_date_start
                 absence_date_end = absence_info[x].absence_date_end
@@ -339,10 +369,9 @@ def all_calendar(request, month=MONTH, year=YEAR):
             total_absence_dates[user] = total_absence_dates[user]
             all_absences[user] = absence_content
 
-        else: 
+        else:
             total_absence_dates[user] = []
             all_absences[user] = []
-       
 
     previous_month = 1
     next_month = 12
@@ -360,7 +389,13 @@ def all_calendar(request, month=MONTH, year=YEAR):
     except:
         pass
     dates = "dates"
-    
+    day_names = []
+    for day in range(1, month_days+1):
+        date = f"{day} {month} {year}"
+        date = datetime.datetime.strptime(date, "%d %B %Y")
+        date = date.strftime("%A")[0:2]
+        day_names.append(date)
+
     context = {
         "current_date": current_date,
         "day_range": range(1, month_days + 1),
@@ -378,21 +413,25 @@ def all_calendar(request, month=MONTH, year=YEAR):
         "previous_month": previous_month,
         "next_month": next_month,
         "date": dates,
+        "days_name": day_names,
+        "Sa" :"Sa",
+        "Su" :"Su",
     }
 
     return render(request, "ap_app/calendar.html", context)
 
+
 # Profile page
 @login_required
 def profile_page(request):
-    absences = Absence.objects.filter(User_ID = request.user.id)
-    return render(request, "ap_app/profile.html", {"absences":absences})
+    absences = Absence.objects.filter(User_ID=request.user.id)
+    return render(request, "ap_app/profile.html", {"absences": absences})
 
 
 @login_required
 def deleteuser(request):
     """delete a user account"""
-    if request.method == 'POST':
+    if request.method == "POST":
         delete_form = DeleteUserForm(request.POST, instance=request.user)
         user = request.user
         user.delete()
@@ -401,14 +440,13 @@ def deleteuser(request):
     else:
         delete_form = DeleteUserForm(instance=request.user)
 
-    context = {
-        'delete_form' : delete_form
-    }
-    
-    return render(request, 'registration/delete_account.html', context)
+    context = {"delete_form": delete_form}
+
+    return render(request, "registration/delete_account.html", context)
+
 
 @login_required
-def absence_delete(request, absence_id:int):
+def absence_delete(request, absence_id: int):
     absence = Absence.objects.get(pk=absence_id)
     user = request.user
     if user == absence.User_ID:
@@ -416,6 +454,7 @@ def absence_delete(request, absence_id:int):
         return redirect("profile")
     else:
         raise Exception()
+
 
 class EditAbsence(UpdateView):
     template_name = "ap_app/edit_absence.html"
@@ -427,6 +466,7 @@ class EditAbsence(UpdateView):
     def get_success_url(self) -> str:
         return reverse("profile")
 
+
 @login_required
 def profile_settings(request) -> render:
     """returns the settings page"""
@@ -434,22 +474,23 @@ def profile_settings(request) -> render:
     context = {"absences": absences}
     return render(request, "ap_app/settings.html", context)
 
+
 @login_required
 def add_user(request) -> render:
-    if request.method == 'POST':
-        username = request.POST.get('username')
+    if request.method == "POST":
+        username = request.POST.get("username")
         try:
-            absence:Absence = Absence.objects.filter(User_ID=request.user.id)[0]
+            absence: Absence = Absence.objects.filter(User_ID=request.user.id)[0]
         except IndexError:
-            #TODO Create error page
-            return redirect('/')
+            # TODO Create error page
+            return redirect("/")
 
         try:
             user = User.objects.filter(username=username)[0]
         except IndexError:
-            #TODO Create error page
-            return redirect('/')
-        
+            # TODO Create error page
+            return redirect("/")
+
         absence.edit_whitelist.add(user)
         absence.save()
-    return redirect('/profile/settings')
+    return redirect("/profile/settings")
