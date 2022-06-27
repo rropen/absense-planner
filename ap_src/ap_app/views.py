@@ -22,6 +22,10 @@ from .models import Absence, Relationship, Role, Team
 
 User = get_user_model()
 
+def test_page(request):
+    """ Temp view for figuring functionality out - Patrick"""
+    return render(request, "ap_app/testing.html")
+
 
 # TODO: Move these global variables to be local variables. They must be local variables as this data is not a constant. It changes every day ^_^.
 #       ... and by defining these variables as global variables they will stay the same until the app is restarted and the module is reloaded 
