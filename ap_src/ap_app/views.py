@@ -397,22 +397,17 @@ def all_calendar(request, month=MONTH, year=YEAR):
         day_names.append(date)
 
     context = {
-        "current_date": current_date,
         "day_range": range(1, month_days + 1),
-        "absences": all_absences,
         "absence_dates": total_absence_dates,
         "users": all_users,
-        "current_day": DAY,
         "current_month": MONTH,
         "current_year": YEAR,
         "month_num": datetime.datetime.strptime(month, "%B").month,
-        "month": month,
         "year": year,
         "previous_year": year - 1,
         "next_year": year + 1,
         "previous_month": previous_month,
         "next_month": next_month,
-        "date": dates,
         "days_name": day_names,
         "Sa" :"Sa",
         "Su" :"Su",
