@@ -18,11 +18,11 @@
             </div>
         </div>
     </div>
-        
-    {% for team in all_teams %}
+    
+    {% for team in joined_teams %}
     <div class="container has-background-light box">
         <div class="is-size-5 mb-3">
-            <span class="is-block is-size-5	has-text-weight-bold">{{team.name}} <i class="fas fa-user-alt mx-2"></i>{{team.count}}</span>
+            <span class="is-bloc is-size-5 has-text-weight-bold">{{team.name}} <i class="fas fa-user-alt mx-2"></i>{{team.count}}</span>
             {% if team.private %}
                 <span class="tag is-dark">Private</span>
             {% elif not team.private %}
@@ -31,12 +31,30 @@
         </div>
         <span class="is-block is-size-6">{{team.description}}</span>
         <div class="is-block mt-3">
-            {% if team.private %}
-                <a class="button is-success" href="{% url 'join_team_2' team.id 'Member' %}">Apply as Member</a>
-                <a class="button is-link" href="{% url 'join_team_2' team.id 'Follower' %}">Apply as Follower</a>
+            <span class="is-block is-size-6">You are already a member of this team.</span>
+            <a class="button is-success" href="{% url 'Calendar' team.id %}">View Team</a>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% for teams in all_teams %}
+    <div class="container has-background-light box">
+        <div class="is-size-5 mb-3">
+            <span class="is-block is-size-5	has-text-weight-bold">{{teams.name}} <i class="fas fa-user-alt mx-2"></i>{{teams.count}}</span>
+            {% if teams.private %}
+                <span class="tag is-dark">Private</span>
+            {% elif not teams.private %}
+                <span class="tag is-dark">Public</span>
+            {% endif %}
+        </div>
+        <span class="is-block is-size-6">{{teams.description}}</span>
+        <div class="is-block mt-3">
+            {% if teams.private %}
+                <a class="button is-success" href="{% url 'join_team_2' teams.id 'Member' %}">Apply as Member</a>
+                <a class="button is-link" href="{% url 'join_team_2' teams.id 'Follower' %}">Apply as Follower</a>
             {% else %}
-                <a class="button is-success" href="{% url 'join_team_2' team.id 'Member' %}">Join as Member</a>
-                <a class="button is-link" href="{% url 'join_team_2' team.id 'Follower' %}">Join as Follower</a>
+                <a class="button is-success" href="{% url 'join_team_2' teams.id 'Member' %}">Join as Member</a>
+                <a class="button is-link" href="{% url 'join_team_2' teams.id 'Follower' %}">Join as Follower</a>
             {% endif %}           
         </div>
     </div>
