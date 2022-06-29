@@ -5,20 +5,18 @@
 import calendar
 import datetime
 
-from django.shortcuts import render, redirect
-from django.urls import reverse, reverse_lazy
+from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib import messages
-from django.views.generic import UpdateView, CreateView
 from django.db.models.functions import Lower
-
+from django.shortcuts import redirect, render
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, UpdateView
 from river.models.fields.state import State
 
-from .forms import CreateTeamForm, DeleteUserForm, AbsenceForm
+from .forms import AbsenceForm, CreateTeamForm, DeleteUserForm
 from .models import Absence, Relationship, Role, Team
-
 
 User = get_user_model()
 
@@ -26,10 +24,6 @@ User = get_user_model()
 # TODO: Move these global variables to be local variables. They must be local variables as this data is not a constant. It changes every day ^_^.
 #       ... and by defining these variables as global variables they will stay the same until the app is restarted and the module is reloaded
 
-current_date = datetime.datetime.now()
-YEAR = current_date.year
-MONTH = current_date.strftime("%B")
-DAY = current_date.day
 
 
 def index(request) -> render:
@@ -206,17 +200,108 @@ def details_page(request) -> render:
     return render(request, "ap_app/Details.html", context)
 
 
-# TODO: team_calender and all_calender seem to have duplicate code. DRY (Don't repeat yourself) principle
-@login_required
-def team_calendar(request, id, month=MONTH, year=YEAR):
+def get_date_data(year = datetime.datetime.now().year, month = datetime.datetime.now().strftime("%B")):
 
-    month_days = calendar.monthrange(
+    data = {}
+    data["day_range"] = calendar.monthrange(
         year, datetime.datetime.strptime(month, "%B").month
     )[1]
 
+    data["current_year"] = year
+    data["current_month"] = month
+    data["month_num"] = datetime.datetime.strptime(month, "%B").month,
+    data["year"] = year
+    data["previous_month"] = 1
+    data["next_month"] = 12
+    data["previous_year"] = year - 1
+    data["next_year"] = year + 1
+
+    try:
+
+        data["next_month"] = datetime.datetime.strptime(
+            str((datetime.datetime.strptime(data["month"], "%B")).month + 1), "%m"
+        ).strftime("%B")
+    except ValueError:
+        pass
+    try:
+        data["previous_month"] = datetime.datetime.strptime(
+            str((datetime.datetime.strptime(data["month"], "%B")).month - 1), "%m"
+        ).strftime("%B")
+    except ValueError:
+        pass
+    
+    
+
+
+    day_names = []
+    for day in range(1, month_days+1):
+        date = f"{day} {month} {year}"
+        date = datetime.datetime.strptime(date, "%d %B %Y")
+        date = date.strftime("%A")[0:2]
+        day_names.append(date)
+
+    data["days_names"] = day_names
+
+    return data
+def get_user_data(users):
+    
+    data  = {}
+
+    absence_content = []
+    total_absence_dates = {}
+    all_absences = {}
+    delta = datetime.timedelta(days=1)
+    for user in users:
+        # all the absences for the user
+        absence_info = Absence.objects.filter(User_ID=user.id)
+        total_absence_dates[user] = []
+        all_absences[user] = []
+
+        # if they have any absences
+        if absence_info:
+            # mapping the absence content to keys in dictionary
+            for x in range(
+                len(absence_info)
+            ):  # pylint: disable=consider-using-enumerate
+                absence_id = absence_info[x].ID
+                absence_date_start = absence_info[x].absence_date_start
+                absence_date_end = absence_info[x].absence_date_end
+                dates = absence_date_start
+                while dates <= absence_date_end:
+                    total_absence_dates[user].append(dates)
+                    dates += delta
+
+                absence_content.append(
+                    {
+                        "ID": absence_id,
+                        "absence_date_start": absence_date_start,
+                        "absence_date_end": absence_date_end,
+                        "dates": total_absence_dates[user],
+                    }
+                )
+
+            # for each user it maps the set of dates to a dictionary key labelled as the users name
+            total_absence_dates[user] = total_absence_dates[user]
+            all_absences[user] = absence_content
+
+        else:
+            total_absence_dates[user] = []
+            all_absences[user] = []
+
+
+    return data
+
+# TODO: team_calender and all_calender seem to have duplicate code. DRY (Don't repeat yourself) principle
+@login_required
+def team_calendar(request, id):
+
+    
     users = Relationship.objects.all().filter(
         team=id, status=State.objects.get(slug="active")
     )
+    month_days = calendar.monthrange(
+        year, datetime.datetime.strptime(month, "%B").month
+    )[1]
 
     absence_content = []
     total_absence_dates = {}
@@ -313,10 +398,8 @@ def team_calendar(request, id, month=MONTH, year=YEAR):
 
 
 @login_required
-def all_calendar(request, month=MONTH, year=YEAR):
-    month_days = calendar.monthrange(
-        year, datetime.datetime.strptime(month, "%B").month
-    )[1]
+def all_calendar(request):
+    
 
     all_users = []
     all_users.append(request.user)
@@ -330,7 +413,11 @@ def all_calendar(request, month=MONTH, year=YEAR):
                 pass
             else:
                 all_users.append(rel.user)
-
+    
+    
+    month_days = calendar.monthrange(
+        year, datetime.datetime.strptime(month, "%B").month
+    )[1]
     absence_content = []
     total_absence_dates = {}
     all_absences = {}
