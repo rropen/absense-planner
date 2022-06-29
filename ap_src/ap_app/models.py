@@ -86,10 +86,20 @@ class UserProfile(models.Model):
             user = user_to_find,
             accepted_policy = False
             )
-        
+
+        # Users object
         user_found = UserProfile.objects.filter(user=user_to_find)[0]
    
         return user_found
+
+
+    def obj_exists(user):
+        """ Determines if a user has a 'UserProfile' Object"""
+        objs = UserProfile.objects.filter(user=user)
+        if objs.count() == 0:
+            return False
+
+        return True 
 
 
    

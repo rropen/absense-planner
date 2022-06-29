@@ -38,17 +38,26 @@ def index(request) -> render:
     ELSE: returns the calendar page """
     
     # If its the first time a user is logging in, will create an object of UserProfile model for that user.
-    if not request.user.id:
-        user = UserProfile.find_user_obj(request.user)
+    if not request.user.is_anonymous:
+        if not UserProfile.obj_exists(request.user):
+
+            user = UserProfile.find_user_obj(request.user)
+        else:
+            user = UserProfile.objects.filter(user=request.user)[0]
+
         # Until the accepted_policy field is checked, the user will keep being redirected to the policy page to accept
         if not user.accepted_policy:
             return privacy_page(request, to_accept=True)
         
+
     # Change: If user is logged in, will be redirected to the calendar
     if request.user.is_authenticated:       
         return all_calendar(request, month=MONTH, year=YEAR)
     
     return render(request, "ap_app/index.html")
+
+
+
 
 
 def privacy_page(request, to_accept=False) -> render:
@@ -61,6 +70,7 @@ def privacy_page(request, to_accept=False) -> render:
 
     # If the user has been redirected from home page to accepted policy
     elif to_accept:
+
         return render(request, "registration/accept_policy.html", {"form": AcceptPolicyForm()})
     
     # Viewing general policy page - (Without the acceptancy form)
