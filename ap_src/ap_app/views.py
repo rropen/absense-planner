@@ -199,12 +199,13 @@ def details_page(request) -> render:
     return render(request, "ap_app/Details.html", context)
 
 
-def get_date_data(month, year):
+def get_date_data(month=datetime.datetime.now().strftime("%B"),
+    year=datetime.datetime.now().year,):
     data = {}
-    data["current_year"] = year
-    data["current_month"] = month
-    data["year"] = data["current_year"]
-    data["month"] = data["current_month"]
+    data["current_year"] = datetime.datetime.now().year
+    data["current_month"] = datetime.datetime.now().strftime("%B")
+    data["year"] = year
+    data["month"] = month
     data["day_range"] = range(
         1,
         calendar.monthrange(
