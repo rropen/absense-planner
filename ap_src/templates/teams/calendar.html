@@ -7,14 +7,14 @@
 
 <style>
     .RefreshBox {
-        pointer-events:none;
-        text-align:right;
+        pointer-events: none;
+        text-align: right;
         background-color: ghostwhite;
         border: 0px;
-        font-size:11pt;
+        font-size: 11pt;
         width: 24px;
         height: 12px;
-        }
+    }
 </style>
 
 <div class="main">
@@ -23,249 +23,282 @@
             <div class="level">
                 <div class="level-left">
 
-                    <h1 class="title is-3 level-item">{{team.name}} 
-                        
+                    <h1 class="title is-3 level-item">{{team.name}}
+
                         <i class="fas fa-users ml-3"></i>
                         <span class="ml-2">{{team_count}}</span>
 
                         {% if team.private %}
                         <span class="tag is-dark ml-2">Private</span>
                         {% elif not team.private %}
-                            <span class="tag is-dark ml-2">Public</span>
+                        <span class="tag is-dark ml-2">Public</span>
                         {% endif %}
                     </h1>
                 </div>
-                
+
                 <div class="level-right">
                     {% if current_user.role.role == "Owner" %}
-                    <a class="button is-primary is-outlined modal-button" data-target = "#modal"><i class="fas fa-user-plus"></i></a>
-                    <a class="button is-info is-outlined mx-1" href="{% url 'team_settings' team.id %}"><i class="fas fa-cog"></i></a>
+                    <a class="button is-primary is-outlined modal-button" data-target="#modal"><i
+                            class="fas fa-user-plus"></i></a>
+                    <a class="button is-info is-outlined mx-1" href="{% url 'team_settings' team.id %}"><i
+                            class="fas fa-cog"></i></a>
                     {% endif %}
-                    <a class="button is-danger" href="{% url 'leave_team' current_user.id %}">Leave</a>              
+                    <a class="button is-danger" href="{% url 'leave_team' current_user.id %}">Leave</a>
                 </div>
             </div>
             <p class="my-3">{{team.description}}</p>
 
             <div class="level mb-6">
-                <span class="level-left is-size-4 mb-0">{{month}} {{year}}</span>
 
-            <span class="tag">
+                <span class="tag">
                     <form class="level-right" name="LastRefreshFrm">
                         Last refreshed
-                            <input type="text" name="refreshSecBox" size="1" class="RefreshBox" readonly>
+                        <input type="text" name="refreshSecBox" size="1" class="RefreshBox" readonly>
 
-                            <script language="javascript">
-                                SecondsSinceLastRefresh ();
-                            </script>
+                        <script language="javascript">
+                            SecondsSinceLastRefresh();
+                        </script>
                         minute(s) ago.
                     </form>
-                </div>
+            </div>
             </span>
 
             <div class="level">
                 <div class="level-left">
-                    <a href="/teams/calendar/{{team.id}}/{{current_month}}/{{year}}" class="mr-4"><p class="buttons">
-                        <button class="button ">
-                        <span class="icon ">
-                            <i class="fas fa-sync"></i>
-                        </span>
-                        </button>
-                    </p></a>
+                    <a href="/teams/calendar/{{team.id}}/{{current_month}}/{{year}}" class="mr-4">
+                        <p class="buttons">
+                            <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-sync"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
 
-<!-- Month limiter - December the next year -->
-            {% if month_num == 12 %}
-                {% if current_year|add:2 == next_year %}
-                    <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}"><p class="buttons">
-                        <button class="button ">
-                            <span class="icon ">
-                            <i class="fas fa-arrow-left"></i>
-                            </span>
-                        </button>
-                    </p></a>
+                    <!-- Month limiter - December the next year -->
+                    {% if month_num == 12 %}
+                    {% if current_year|add:2 == next_year %}
+                    <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}">
+                        <p class="buttons">
+                            <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
 
-                    <a href="" class="noHover"><p class="buttons">
-                        <button class="button " disabled>
-                            <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
-                            </span>
-                        </button>
-                    </p></a>      
+                    <a href="" class="noHover">
+                        <p class="buttons">
+                            <button class="button " disabled>
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-right"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
                 </div>
 
-                
+
                 {% else %}
-                    <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}"><p class="buttons">
-                        <button class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-left"></i>
-                        </span>
-                        </button>
-                    </p></a>
-
-
-                    <a href="/teams/calendar/{{team.id}}/January/{{next_year}}""><p class="buttons">
+                <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}">
+                    <p class="buttons">
                         <button class="button">
                             <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
+                                <i class="fas fa-arrow-left"></i>
                             </span>
                         </button>
-                        </p></a>
-                </div>
+                    </p>
+                </a>
+
+
+                <a href="/teams/calendar/{{team.id}}/January/{{next_year}}""><p class=" buttons">
+                    <button class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </button>
+                    </p></a>
+            </div>
             {% endif %}
 
 
-<!-- Start of the previous year - January -->
+            <!-- Start of the previous year - January -->
             {% elif month_num == 1 %}
-                {% if current_year|add:"-2" == previous_year %}
-                    <a href="" class="noHover"><p class="buttons">
-                        <button class="button" disabled>
+            {% if current_year|add:"-2" == previous_year %}
+            <a href="" class="noHover">
+                <p class="buttons">
+                    <button class="button" disabled>
                         <span class="icon">
                             <i class="fas fa-arrow-left"></i>
                         </span>
-                        </button>
-                    </p></a>
+                    </button>
+                </p>
+            </a>
 
-                    <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}"><p class="buttons">
-                        <button class="button ">
-                            <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
-                            </span>
-                        </button>
-                    </p></a>
-                </div> 
-                {% else %}
-                    <a href="/teams/calendar/{{team.id}}/December/{{previous_year}}"><p class="buttons">
-                        <button class="button ">
-                            <span class="icon ">
-                            <i class="fas fa-arrow-left"></i>
-                            </span>
-                        </button>
-                        </p></a>
-
-                    <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}"><p class="buttons">
-                        <button class="button ">
+            <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}">
+                <p class="buttons">
+                    <button class="button ">
                         <span class="icon ">
                             <i class="fas fa-arrow-right"></i>
                         </span>
-                        </button>
-                    </p></a>
-                </div>
-                {% endif %}
-
-<!-- How the page looks by default upon landing -->  
-            {% else %} 
-                <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}"><p class="buttons">
-                    <button class="button ">
+                    </button>
+                </p>
+            </a>
+        </div>
+        {% else %}
+        <a href="/teams/calendar/{{team.id}}/December/{{previous_year}}">
+            <p class="buttons">
+                <button class="button ">
                     <span class="icon ">
                         <i class="fas fa-arrow-left"></i>
                     </span>
-                    </button>
-                </p></a>
+                </button>
+            </p>
+        </a>
 
-                <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}"><p class="buttons">
-                    <button class="button ">
+        <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}">
+            <p class="buttons">
+                <button class="button ">
                     <span class="icon ">
                         <i class="fas fa-arrow-right"></i>
                     </span>
-                    </button>
-                </p></a>
-            </div>
-            {% endif %}
+                </button>
+            </p>
+        </a>
+</div>
+{% endif %}
+
+<!-- How the page looks by default upon landing -->
+{% else %}
+<a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}">
+    <p class="buttons">
+        <button class="button ">
+            <span class="icon ">
+                <i class="fas fa-arrow-left"></i>
+            </span>
+        </button>
+    </p>
+</a>
+
+<a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}">
+    <p class="buttons">
+        <button class="button ">
+            <span class="icon ">
+                <i class="fas fa-arrow-right"></i>
+            </span>
+        </button>
+    </p>
+</a>
+</div>
+{% endif %}
 
 
 <!-- Search box and filter button -->
-            <div class="level">
-                <div class="control has-icons-left level-right">
-                    <input class="input" type="text" placeholder="Search">
-                    <span class="icon is-left">
-                    <i class="fas fa-search"></i>
-                    </span>
-                </div>
-                <a class="button is-info is-outlined mx-1 level-right" href="#"><i class="fas fa-filter"></i></a>
-            </div>
-        </div>
+<div class="level">
+    <div class="control has-icons-left level-right">
+        <input class="input" type="text" placeholder="Search">
+        <span class="icon is-left">
+            <i class="fas fa-search"></i>
+        </span>
+    </div>
+    <a class="button is-info is-outlined mx-1 level-right" href="#"><i class="fas fa-filter"></i></a>
+</div>
+</div>
 
 <!-- Calendar table -->
-            <div class="table-container" style="overflow: hidden">
-                <table class="table is-bordered is-striped" style="width:100%">
-                    <thead>
-                        <th style="background-color: black; color: white;">Person</th>
-                        {% for day in day_range %}
-                            <th style="background-color: black; color: white;">{{day}}</th>
-                        {% endfor %}
-                    </thead>
-                    <tbody>
-                        {% for user in users %}
-                            <tr>
-                                <td>{{user.user.username}}</td>
-                                <!-- for every day in current month- -->
-                                {% for day in day_range %}
-                                    <!-- if absence day equals day then highlights red -->
-                                    {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
-                                    {% if check_absence %}
-                                        <td style="background-color: #926AA6"></td>
-                                    {% else %}
-                                        <td></td>
-                                    {% endif %}
-                                {% endfor %}
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
+<span class="level-left is-size-4 mb-0">{{month}} {{year}}</span>
+<div class="table-container" style="overflow: auto">
+    <table class="table is-bordered is-striped" style="width:100%">
+        <thead>
+            <th style="color: black;">Day</th>
+            {% for day in days_name %}
+            {% if day == Sa or day == Su%}
+            <th style="background-color: rgb(255, 255, 255); color: rgb(2, 193, 252);">{{day}}</th>
+            {% else %}
+            <th style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);">{{day}}</th>
+            {% endif %}
+            {% endfor %}
+        </thead>
+        <thead>
+            <th style="color: black;">Name</th>
+            {% for day in day_range %}
+            <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
+            {% endfor %}
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{user.user.username}}</td>
+                <!-- for every day in current month- -->
+                {% for day in day_range %}
+                <!-- if absence day equals day then highlights red -->
+                {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
+                {% if check_absence %}
+                <td style="background-color: #926AA6"></td>
+                {% else %}
+                <td></td>
+                {% endif %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+</section>
 </div>
 
 <!-- Invite Users - Modal -->
-<section class = "section">
-    <div class = "container">
-        <div id = "modal" class = "modal">
-            <div class = "modal-background"></div>
-            <div class = "modal-content">
+<section class="section">
+    <div class="container">
+        <div id="modal" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-content">
 
-                <div class = "box">
-                    <h1 class = "title">Invite a Member</h1>
-<!-- Search Bar -->
+                <div class="box">
+                    <h1 class="title">Invite a Member</h1>
+                    <!-- Search Bar -->
                     <div class="control block has-icons-left level-right">
                         <input class="input" type="text" placeholder="Search">
                         <span class="icon is-left">
-                        <i class="fas fa-search"></i>
+                            <i class="fas fa-search"></i>
                         </span>
                     </div>
 
-<!-- For person in database -->
-<!-- !!     Likely will not display every user. Try {{user.username}}    !! -->
-{% for user in all_users %}
-                    <div class="level mb-0"
-                    <p class="level-left">{{user.username}}</p>
-                    <div class="level-right">
-                        <a href="{% url 'team_invite' team.id user.id 'Member' %}" class="button is-success mx-2">Invite as Member</a>
-                        <a href="{% url 'team_invite' team.id user.id 'Follower' %}" class="button is-link">Invite as Follower</a>    
+                    <!-- For person in database -->
+                    <!-- !!     Likely will not display every user. Try {{user.username}}    !! -->
+                    {% for user in all_users %}
+                    <div class="level mb-0" <p class="level-left">{{user.username}}</p>
+                        <div class="level-right">
+                            <a href="{% url 'team_invite' team.id user.id 'Member' %}"
+                                class="button is-success mx-2">Invite as Member</a>
+                            <a href="{% url 'team_invite' team.id user.id 'Follower' %}" class="button is-link">Invite
+                                as Follower</a>
+                        </div>
                     </div>
-                    </div>
-<hr class="my-2">
-{% endfor %}
+                    <hr class="my-2">
+                    {% endfor %}
 
                 </div>
             </div>
-            
-            <button class = "modal-close is-large" aria-label = "close"></button>
+
+            <button class="modal-close is-large" aria-label="close"></button>
         </div>
-</div>
+    </div>
 </section>
 
 <script>
-$(".modal-button").click(function() {
-    var target = $(this).data("target");
-    $("html").addClass("is-clipped");
-    $(target).addClass("is-active");
-});
+    $(".modal-button").click(function () {
+        var target = $(this).data("target");
+        $("html").addClass("is-clipped");
+        $(target).addClass("is-active");
+    });
 
-$(".modal-close").click(function() {
-    $("html").removeClass("is-clipped");
-    $(this).parent().removeClass("is-active");
-});
+    $(".modal-close").click(function () {
+        $("html").removeClass("is-clipped");
+        $(this).parent().removeClass("is-active");
+    });
 </script>
 
 {% endblock %}

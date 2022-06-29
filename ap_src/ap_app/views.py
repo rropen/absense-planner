@@ -25,7 +25,6 @@ User = get_user_model()
 #       ... and by defining these variables as global variables they will stay the same until the app is restarted and the module is reloaded
 
 
-
 def index(request) -> render:
     """returns the home page"""
     return render(request, "ap_app/index.html")
@@ -157,8 +156,8 @@ def team_settings(request, id):
             "teams/settings.html",
             {"team": team, "pending_rels": all_pending_relations},
         )
-    else:
-        return redirect("dashboard")
+
+    return redirect("dashboard")
 
 
 def joining_team_request(request, id, response):
@@ -200,21 +199,25 @@ def details_page(request) -> render:
     return render(request, "ap_app/Details.html", context)
 
 
-def get_date_data(year = datetime.datetime.now().year, month = datetime.datetime.now().strftime("%B")):
-
+def get_date_data(month, year):
     data = {}
-    data["day_range"] = calendar.monthrange(
-        year, datetime.datetime.strptime(month, "%B").month
-    )[1]
-
     data["current_year"] = year
     data["current_month"] = month
-    data["month_num"] = datetime.datetime.strptime(month, "%B").month,
-    data["year"] = year
-    data["previous_month"] = 1
-    data["next_month"] = 12
-    data["previous_year"] = year - 1
-    data["next_year"] = year + 1
+    data["year"] = data["current_year"]
+    data["month"] = data["current_month"]
+    data["day_range"] = range(
+        1,
+        calendar.monthrange(
+            data["year"], datetime.datetime.strptime(data["month"], "%B").month
+        )[1]
+        + 1,
+    )
+    data["month_num"] = datetime.datetime.strptime(data["month"], "%B").month
+
+    data["previous_month"] = 12
+    data["next_month"] = 1
+    data["previous_year"] = data["year"] - 1
+    data["next_year"] = data["year"] + 1
 
     try:
 
@@ -229,43 +232,41 @@ def get_date_data(year = datetime.datetime.now().year, month = datetime.datetime
         ).strftime("%B")
     except ValueError:
         pass
-    
-    
-
-
-    day_names = []
-    for day in range(1, month_days+1):
+    data["day_names"] = []
+    month = data["month"]
+    year = data["year"]
+    for day in data["day_range"]:
         date = f"{day} {month} {year}"
         date = datetime.datetime.strptime(date, "%d %B %Y")
         date = date.strftime("%A")[0:2]
-        day_names.append(date)
-
-    data["days_names"] = day_names
+        data["day_names"].append(date)
 
     return data
-def get_user_data(users):
-    
-    data  = {}
 
+
+def get_user_data(users, user_type):
+    data = {}
     absence_content = []
     total_absence_dates = {}
     all_absences = {}
     delta = datetime.timedelta(days=1)
+
     for user in users:
         # all the absences for the user
-        absence_info = Absence.objects.filter(User_ID=user.id)
+        if user_type == 1:
+            absence_info = Absence.objects.filter(User_ID=user.user.id)
+        else:
+            absence_info = Absence.objects.filter(User_ID=user.id)
         total_absence_dates[user] = []
         all_absences[user] = []
 
         # if they have any absences
         if absence_info:
             # mapping the absence content to keys in dictionary
-            for x in range(
-                len(absence_info)
-            ):  # pylint: disable=consider-using-enumerate
-                absence_id = absence_info[x].ID
-                absence_date_start = absence_info[x].absence_date_start
-                absence_date_end = absence_info[x].absence_date_end
+            for i, x in enumerate(absence_info):
+                absence_id = x.ID
+                absence_date_start = x.absence_date_start
+                absence_date_end = x.absence_date_end
                 dates = absence_date_start
                 while dates <= absence_date_end:
                     total_absence_dates[user].append(dates)
@@ -283,123 +284,58 @@ def get_user_data(users):
             # for each user it maps the set of dates to a dictionary key labelled as the users name
             total_absence_dates[user] = total_absence_dates[user]
             all_absences[user] = absence_content
-
         else:
             total_absence_dates[user] = []
             all_absences[user] = []
 
+    data["absence_dates"] = total_absence_dates
 
     return data
 
+
 # TODO: team_calender and all_calender seem to have duplicate code. DRY (Don't repeat yourself) principle
 @login_required
-def team_calendar(request, id):
+def team_calendar(
+    request,
+    id,
+    month=datetime.datetime.now().strftime("%B"),
+    year=datetime.datetime.now().year,
+):
+    data_1 = get_date_data(month, year)
 
-    
     users = Relationship.objects.all().filter(
         team=id, status=State.objects.get(slug="active")
     )
-    month_days = calendar.monthrange(
-        year, datetime.datetime.strptime(month, "%B").month
-    )[1]
+    print(users)
+    data_2 = get_user_data(users, 1)
 
-    absence_content = []
-    total_absence_dates = {}
-    all_absences = {}
-    delta = datetime.timedelta(days=1)
-
-    for user in users:
-        # all the absences for the user
-        absence_info = Absence.objects.filter(User_ID=user.user.id)
-        total_absence_dates[user] = []
-        all_absences[user] = []
-
-        # if they have any absences
-        if absence_info:
-            # mapping the absence content to keys in dictionary
-            for x in range(
-                len(absence_info)
-            ):  # pylint: disable=consider-using-enumerate
-
-                absence_id = absence_info[x].ID
-
-                absence_date_start = absence_info[x].absence_date_start
-                absence_date_end = absence_info[x].absence_date_end
-                dates = absence_date_start
-                while dates <= absence_date_end:
-                    total_absence_dates[user].append(dates)
-                    dates += delta
-
-                absence_content.append(
-                    {
-                        "ID": absence_id,
-                        "absence_date_start": absence_date_start,
-                        "absence_date_end": absence_date_end,
-                        "dates": total_absence_dates[user],
-                    }
-                )
-
-            # for each user it maps the set of dates to a dictionary key labelled as the users name
-            total_absence_dates[user] = total_absence_dates[user]
-            all_absences[user] = absence_content
-
-    previous_month = 1
-    next_month = 12
-
-    # TODO: find a better way to handle this without passing all exceptions.
-    #        What if an unexpected error happens? this will be very hard to find as it is been ignored.
-    try:
-
-        next_month = datetime.datetime.strptime(
-            str((datetime.datetime.strptime(month, "%B")).month + 1), "%m"
-        ).strftime("%B")
-    except:
-        pass
-    try:
-        previous_month = datetime.datetime.strptime(
-            str((datetime.datetime.strptime(month, "%B")).month - 1), "%m"
-        ).strftime("%B")
-    except:
-        pass
-
-    dates = "dates"
     team = Team.objects.get(id=id)
 
     user_in_teams = []
     for rel in Relationship.objects.filter(team=team):
         user_in_teams.append(rel.user.id)
+    print(user_in_teams)
 
-    # TODO: Maybe a better data structure to pass less data using context
-    context = {
-        "current_date": current_date,
-        "day_range": range(1, month_days + 1),
-        "absences": all_absences,
-        "absence_dates": total_absence_dates,
+    data_3 = {
         "current_user": Relationship.objects.get(user=request.user, team=team),
-        "users": users,
-        "current_day": DAY,
-        "current_month": MONTH,
-        "current_year": YEAR,
-        "month_num": datetime.datetime.strptime(month, "%B").month,
-        "month": month,
-        "year": year,
-        "previous_year": year - 1,
-        "next_year": year + 1,
-        "previous_month": previous_month,
-        "next_month": next_month,
-        "date": dates,
         "team": team,
         "all_users": User.objects.all().exclude(id__in=user_in_teams),
         "team_count": Relationship.objects.filter(
             team=team.id, status=State.objects.get(slug="active")
         ).count(),
     }
+
+    context = {**data_1, **data_2, **data_3}
     return render(request, "teams/calendar.html", context)
 
 
 @login_required
-def all_calendar(request):
-    
+def all_calendar(
+    request,
+    month=datetime.datetime.now().strftime("%B"),
+    year=datetime.datetime.now().year,
+):
+    data_1 = get_date_data(month, year)
 
     all_users = []
     all_users.append(request.user)
@@ -413,92 +349,12 @@ def all_calendar(request):
                 pass
             else:
                 all_users.append(rel.user)
-    
-    
-    month_days = calendar.monthrange(
-        year, datetime.datetime.strptime(month, "%B").month
-    )[1]
-    absence_content = []
-    total_absence_dates = {}
-    all_absences = {}
-    delta = datetime.timedelta(days=1)
+    print(all_users)
+    data_2 = get_user_data(all_users, 2)
 
-    for user in all_users:
-        # all the absences for the user
-        absence_info = Absence.objects.filter(User_ID=user.id)
-        total_absence_dates[user] = []
-        all_absences[user] = []
+    data_3 = {"Sa": "Sa", "Su": "Su"}
 
-        # if they have any absences
-        if absence_info:
-            # mapping the absence content to keys in dictionary
-            for x in range(
-                len(absence_info)
-            ):  # pylint: disable=consider-using-enumerate
-                absence_id = absence_info[x].ID
-                absence_date_start = absence_info[x].absence_date_start
-                absence_date_end = absence_info[x].absence_date_end
-                dates = absence_date_start
-                while dates <= absence_date_end:
-                    total_absence_dates[user].append(dates)
-                    dates += delta
-
-                absence_content.append(
-                    {
-                        "ID": absence_id,
-                        "absence_date_start": absence_date_start,
-                        "absence_date_end": absence_date_end,
-                        "dates": total_absence_dates[user],
-                    }
-                )
-
-            # for each user it maps the set of dates to a dictionary key labelled as the users name
-            total_absence_dates[user] = total_absence_dates[user]
-            all_absences[user] = absence_content
-
-        else:
-            total_absence_dates[user] = []
-            all_absences[user] = []
-
-    previous_month = 1
-    next_month = 12
-    try:
-
-        next_month = datetime.datetime.strptime(
-            str((datetime.datetime.strptime(month, "%B")).month + 1), "%m"
-        ).strftime("%B")
-    except:
-        pass
-    try:
-        previous_month = datetime.datetime.strptime(
-            str((datetime.datetime.strptime(month, "%B")).month - 1), "%m"
-        ).strftime("%B")
-    except:
-        pass
-    dates = "dates"
-    day_names = []
-    for day in range(1, month_days+1):
-        date = f"{day} {month} {year}"
-        date = datetime.datetime.strptime(date, "%d %B %Y")
-        date = date.strftime("%A")[0:2]
-        day_names.append(date)
-
-    context = {
-        "day_range": range(1, month_days + 1),
-        "absence_dates": total_absence_dates,
-        "users": all_users,
-        "current_month": MONTH,
-        "current_year": YEAR,
-        "month_num": datetime.datetime.strptime(month, "%B").month,
-        "year": year,
-        "previous_year": year - 1,
-        "next_year": year + 1,
-        "previous_month": previous_month,
-        "next_month": next_month,
-        "days_name": day_names,
-        "Sa" :"Sa",
-        "Su" :"Su",
-    }
+    context = {**data_1, **data_2, **data_3}
 
     return render(request, "ap_app/calendar.html", context)
 
