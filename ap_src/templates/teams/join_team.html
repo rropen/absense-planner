@@ -2,6 +2,7 @@
 {% block title %}Join Team{% endblock %}
 {% load static %}
 {% block content %}
+
 <div class="container">
     <div class="level">
         <div class="level-left">
@@ -18,6 +19,15 @@
             </div>
         </div>
     </div>
+
+{% if not all_teams or not joined_teams %}
+<div class="container has-background-light box">
+    <div class="is-size-5 mb-3">
+        <span class="is-block is-size-5">There are no teams to join.</span>
+        <a class="button is-link" href="{% url 'create_team' %}">Create a team</a>
+    </div>
+</div>
+{% endif %}
     
     <label for="chkJoined" class="checkbox">
         <input type="checkbox" id="chkJoined" onclick="ShowHideDiv(this)"> Show joined teams </input>

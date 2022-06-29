@@ -31,6 +31,17 @@
         </div>
     </div>
 
+    {% if not rels %}
+        <div class="container has-background-light box">
+            <div class="is-size-5 mb-3">
+                <span class="is-block is-size-5">There are no teams yet.</span>
+            </div>
+            <div class="is-block is-size-6">
+                <a class="button is-link" href="{% url 'create_team' %}">Create a team</a>
+            </div>
+        </div>
+    {% endif %}
+
     {% for rel in rels %}
         <div class="container has-background-light box">
             <div class="is-size-5 mb-3">
