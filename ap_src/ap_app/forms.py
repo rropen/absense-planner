@@ -15,17 +15,16 @@ class CreateTeamForm(forms.ModelForm):
     description     = forms.CharField(max_length=512, required=False, widget=forms.Textarea(attrs={"class":"", "placeholder":"Team Description"}))
     private         = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={"class":""}))
 
-    def _name_similarity(self) -> float:
+    def _name_similarity(self, name:str) -> float:
         """Returns float between 0 and 1 depending on the similarity
         of the current name compared to existing team names. Returns
         NoneType if there are no similarities."""
 
         teams = Team.objects.all()
         for team in teams:
-            similarity = SequenceMatcher(self.name, team.name).ratio()
+            similarity = SequenceMatcher(None, name, team.name).ratio()
             if similarity >= .5:
                 return similarity
-
 
 from .models import Absence
 
