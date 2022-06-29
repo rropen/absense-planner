@@ -16,15 +16,11 @@ from django.db.models.functions import Lower
 
 from river.models.fields.state import State
 
-from .forms import CreateTeamForm, DeleteUserForm, AbsenceForm
-from .models import Absence, Relationship, Role, Team
+from .forms import CreateTeamForm, DeleteUserForm, AbsenceForm, AcceptPolicyForm
+from .models import Absence, Relationship, Role, Team, UserProfile
 
 
 User = get_user_model()
-
-def test_page(request):
-    """ Temp view for figuring functionality out - Patrick"""
-    return render(request, "ap_app/testing.html")
 
 
 # TODO: Move these global variables to be local variables. They must be local variables as this data is not a constant. It changes every day ^_^.
@@ -37,16 +33,59 @@ DAY = current_date.day
 
 
 def index(request) -> render:
-    """returns the home page"""
+    """Branched view.                       \n
+    IF NOT Logged in: returns the home page \n
+    ELSE: returns the calendar page """
+
+    
+    # If its the first time a user is logging in, will create an object of UserProfile model for that user.
+    if request.user.id != None:
+        user = UserProfile.find_user_obj(request.user)
+        # Until the accepted_policy field is checked, the user will keep being redirected to the policy page to accept
+        if not user.accepted_policy:
+            return privacy_page(request, to_accept=True)
+        
+
+    # Change: If user is logged in, will be redirected to the calendar
+    if request.user.is_authenticated:       
+        return all_calendar(request, month=MONTH, year=YEAR)
+    
+
+    
     return render(request, "ap_app/index.html")
 
-def privacy_page(request) -> render:
+
+
+
+
+def privacy_page(request, to_accept=False) -> render:
+
+    # If true, the user accepted the policy
+    if request.method == "POST":
+        print("User accepted policy")
+        user = UserProfile.find_user_obj(request.user)
+        user.accepted_policy = True
+        user.save()
+        print(user.accepted_policy)
+        print(UserProfile.find_user_obj(request.user).accepted_policy)
+
+
+
+    # If the user has been redirected from home page to accepted policy
+    elif to_accept:
+        print("User NOT accepted policy")
+        return render(request, "registration/accept_policy.html", {"form": AcceptPolicyForm()})
+    
+    # Viewing general policy page - (Without the acceptancy form)
     return render(request, "ap_app/privacy.html")
+
 
 class SignUpView(CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy('login')
     template_name = 'registration/signup.html'
+
+
 
 @login_required
 def teams_dashboard(request) -> render:

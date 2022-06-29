@@ -62,3 +62,38 @@ class Relationship(models.Model):
         for obj in to_delete:
             obj.delete()
         self.delete()
+
+
+class UserProfile(models.Model):
+    """ Extension of fields for User class """
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    # Extra Fields
+    accepted_policy = models.BooleanField()
+
+    def __str__(self):
+        return f"{self.user.username}"
+    
+
+
+    def find_user_obj(user_to_find):
+        
+        users = UserProfile.objects.filter(user=user_to_find)    
+        if users.count() <= 0:
+            UserProfile.objects.create(
+            user = user_to_find,
+            accepted_policy = False
+            )
+            
+        user_found = UserProfile.objects.filter(user=user_to_find)[0]
+   
+        return user_found
+
+
+    def create_user_profile(user):
+        """ Creates an object for specific user """
+        UserProfile.objects.create(
+            user = user,
+            accepted_policy = False
+        )
+      

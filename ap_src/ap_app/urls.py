@@ -28,5 +28,6 @@ urlpatterns = [
     path("profile/settings/add-user", views.add_user, name="add-user"),
     # path("absence/edit/<int:id>", views.absence_edit, name="Absence Edit")
 
-    path("testing/", views.test_page, name="")
+    
+
 ]
