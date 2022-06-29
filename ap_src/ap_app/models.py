@@ -75,25 +75,22 @@ class UserProfile(models.Model):
         return f"{self.user.username}"
     
 
-
     def find_user_obj(user_to_find):
-        
+        """ Finds & Returns object of 'UserProfile' for a user 
+        \n-param (type)User user_to_find 
+        """    
         users = UserProfile.objects.filter(user=user_to_find)    
+        # If cannot find object for a user, than creates on
         if users.count() <= 0:
             UserProfile.objects.create(
             user = user_to_find,
             accepted_policy = False
             )
-            
+        
         user_found = UserProfile.objects.filter(user=user_to_find)[0]
    
         return user_found
 
 
-    def create_user_profile(user):
-        """ Creates an object for specific user """
-        UserProfile.objects.create(
-            user = user,
-            accepted_policy = False
-        )
+   
       
