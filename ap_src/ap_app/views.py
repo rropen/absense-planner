@@ -4,8 +4,8 @@
 
 import calendar
 import datetime
-from http.client import HTTPResponse 
 
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth import get_user_model
@@ -55,10 +55,10 @@ def teams_dashboard(request) -> render:
 def create_team(request) -> render:
     if request.method == "POST":
         form = CreateTeamForm(request.POST)
-        if form._name_similarity(form['name'].value()):
+        if form._name_similarity():
             # TODO: write code to tell the user that their team name is similar and to give them
             # options to change the team name.
-            pass
+            return HttpResponse('Debug: Did not create form because the name is too similar to another team name')
 
         elif form.is_valid():
             form.save()
