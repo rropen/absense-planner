@@ -232,14 +232,14 @@ def get_date_data(month, year):
         ).strftime("%B")
     except ValueError:
         pass
-    data["day_names"] = []
+    data["days_name"] = []
     month = data["month"]
     year = data["year"]
     for day in data["day_range"]:
         date = f"{day} {month} {year}"
         date = datetime.datetime.strptime(date, "%d %B %Y")
         date = date.strftime("%A")[0:2]
-        data["day_names"].append(date)
+        data["days_name"].append(date)
 
     return data
 
@@ -289,7 +289,7 @@ def get_user_data(users, user_type):
             all_absences[user] = []
 
     data["absence_dates"] = total_absence_dates
-
+    data["users"] = users
     return data
 
 
