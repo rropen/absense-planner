@@ -24,7 +24,7 @@
             <div class="level mb-1">
                 <div class="level-left">
                     <h1 class="title is-3 level-item">Absence Calendar
-                        <i class="fas fa-users mx-3"></i>{{users|length}}
+                        
                     </h1>
                 </div>
             </div>
@@ -194,7 +194,7 @@
 <div class="table-container" style="overflow: auto">
     <table class="table is-bordered is-striped" style="width:100%">
         <thead>
-            <th style="color: black;">Day</th>
+            <th style="color: black;"></th>
             {% for day in days_name %}
             {% if day == Sa or day == Su%}
             <th style="background-color: rgb(255, 255, 255); color: rgb(2, 193, 252);">{{day}}</th>
@@ -204,7 +204,7 @@
             {% endfor %}
         </thead>
         <thead>
-            <th style="color: black;">Name</th>
+            <th style="color: black;"></th>
             {% for day in day_range %}
             <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
             {% endfor %}
