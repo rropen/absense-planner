@@ -244,7 +244,7 @@ def get_date_data(month, year):
     return data
 
 
-def get_user_data(users):
+def get_user_data(users, user_type):
     data = {}
     absence_content = []
     total_absence_dates = {}
@@ -253,7 +253,10 @@ def get_user_data(users):
 
     for user in users:
         # all the absences for the user
-        absence_info = Absence.objects.filter(User_ID=user.user.id)
+        if user_type == 1:
+            absence_info = Absence.objects.filter(User_ID=user.user.id)
+        else:
+            absence_info = Absence.objects.filter(User_ID=user.id)
         total_absence_dates[user] = []
         all_absences[user] = []
 
@@ -304,13 +307,14 @@ def team_calendar(
         team=id, status=State.objects.get(slug="active")
     )
     print(users)
-    data_2 = get_user_data(users)
+    data_2 = get_user_data(users, 1)
 
     team = Team.objects.get(id=id)
 
     user_in_teams = []
     for rel in Relationship.objects.filter(team=team):
         user_in_teams.append(rel.user.id)
+    print(user_in_teams)
 
     data_3 = {
         "current_user": Relationship.objects.get(user=request.user, team=team),
@@ -346,7 +350,7 @@ def all_calendar(
             else:
                 all_users.append(rel.user)
     print(all_users)
-    data_2 = get_user_data(all_users)
+    data_2 = get_user_data(all_users, 2)
 
     data_3 = {"Sa": "Sa", "Su": "Su"}
 
