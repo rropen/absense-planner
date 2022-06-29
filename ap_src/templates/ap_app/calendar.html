@@ -24,7 +24,7 @@
             <div class="level mb-1">
                 <div class="level-left">
                     <h1 class="title is-3 level-item">Absence Calendar
-                        
+
                     </h1>
                 </div>
             </div>
@@ -223,7 +223,7 @@
                 <!-- if absence day equals day then highlights red -->
                 {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
                 {% if check_absence %}
-                <td style="background-color: #926AA6"></td>
+                <td style="background-color: #ff0000"></td>
                 {% else %}
                 <td></td>
                 {% endif %}

@@ -235,7 +235,7 @@
                 <!-- if absence day equals day then highlights red -->
                 {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
                 {% if check_absence %}
-                <td style="background-color: #926AA6"></td>
+                <td style="background-color: #ff0000"></td>
                 {% else %}
                 <td></td>
                 {% endif %}
