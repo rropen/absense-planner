@@ -25,8 +25,8 @@
 
                     <h1 class="title is-3 level-item">{{team.name}}
 
-                        <i class="fas fa-users ml-3"></i>
-                        <span class="ml-2">{{team_count}}</span>
+
+                        
 
                         {% if team.private %}
                         <span class="tag is-dark ml-2">Private</span>
@@ -190,10 +190,10 @@
         </button>
     </p>
 </a>
-</div>
+
 {% endif %}
-
-
+<span class="level-left is-size-4 mb-0 px-3">{{month}} {{year}}</span>
+</div>
 <!-- Search box and filter button -->
 <div class="level">
     <div class="control has-icons-left level-right">
@@ -207,11 +207,11 @@
 </div>
 
 <!-- Calendar table -->
-<span class="level-left is-size-4 mb-0">{{month}} {{year}}</span>
+
 <div class="table-container" style="overflow: auto">
     <table class="table is-bordered is-striped" style="width:100%">
         <thead>
-            <th style="color: black;">Day</th>
+            <th style="color: black;"></th>
             {% for day in days_name %}
             {% if day == Sa or day == Su%}
             <th style="background-color: rgb(255, 255, 255); color: rgb(2, 193, 252);">{{day}}</th>
@@ -221,7 +221,7 @@
             {% endfor %}
         </thead>
         <thead>
-            <th style="color: black;">Name</th>
+            <th style="color: black;"></th>
             {% for day in day_range %}
             <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
             {% endfor %}

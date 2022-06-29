@@ -317,6 +317,8 @@ def team_calendar(
     print(user_in_teams)
 
     data_3 = {
+        "Sa": "Sa", 
+        "Su": "Su",
         "current_user": Relationship.objects.get(user=request.user, team=team),
         "team": team,
         "all_users": User.objects.all().exclude(id__in=user_in_teams),
