@@ -55,7 +55,7 @@ def teams_dashboard(request) -> render:
 def create_team(request) -> render:
     if request.method == "POST":
         form = CreateTeamForm(request.POST)
-        if form._name_similarity():
+        if form.name_similarity():
             # TODO: write code to tell the user that their team name is similar and to give them
             # options to change the team name.
             return HttpResponse('Debug: Did not create form because the name is too similar to another team name')
