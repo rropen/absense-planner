@@ -3,7 +3,8 @@
 
 
 import calendar
-import datetime 
+import datetime
+from http.client import HTTPResponse 
 
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
@@ -54,7 +55,12 @@ def teams_dashboard(request) -> render:
 def create_team(request) -> render:
     if request.method == "POST":
         form = CreateTeamForm(request.POST)
-        if form.is_valid():
+        if form._name_similarity(form['name'].value()):
+            # TODO: write code to tell the user that their team name is similar and to give them
+            # options to change the team name.
+            pass
+
+        elif form.is_valid():
             form.save()
             # Gets the created team and "Owner" Role and creates a Link between the user and their team
             created_team = Team.objects.get(name=form.cleaned_data['name'])
