@@ -155,16 +155,23 @@
             </div>
             {% endif %}
 
-
+            
 <!-- Search box and filter button -->
+        
             <div class="level">
                 <div class="control has-icons-left level-right">
-                    <input class="input" type="text" placeholder="Search">
-                    <span class="icon is-left">
-                    <i class="fas fa-search"></i>
-                    </span>
+                    <form method="get">
+
+                        <div class="input" type=text placeholder="Search">
+                            {{ filter.form.username }}
+                        </div>
+                        <span class="icon is-left">
+                        <i class="fas fa-search"></i>
+                                                      
+                        </span>
+                        <button class="button is-info is-outlined mx-1 level-right" type="submit"><i class="fas fa-filter"></i></a>
+                    </form>
                 </div>
-                <a class="button is-info is-outlined mx-1 level-right" href="#"><i class="fas fa-filter"></i></a>
             </div>
         </div>
 
@@ -178,8 +185,9 @@
                             <th style="background-color: black; color: white;">{{day}}</th>
                         {% endfor %}
                     </thead>
-                    <tbody>
-                        {% for user in users %}
+                    <tbody> 
+                        <!-- Iterates through values in filter queryset -->
+                        {% for user in filter.qs %}
                             <tr>
                                 <td>{{user.username}}</td>
                                 <!-- for every day in current month- -->

@@ -18,7 +18,7 @@ from river.models.fields.state import State
 
 from .forms import CreateTeamForm, DeleteUserForm, AbsenceForm, AcceptPolicyForm
 from .models import Absence, Relationship, Role, Team, UserProfile
-
+from .filters import CalendarFilter
 
 User = get_user_model()
 
@@ -225,11 +225,15 @@ def details_page(request) -> render:
 @login_required
 def team_calendar(request, id, month=MONTH, year=YEAR):
 
+
+
+
     month_days = calendar.monthrange(
         year, datetime.datetime.strptime(month, "%B").month
     )[1]
 
     users = Relationship.objects.all().filter(team=id, status=State.objects.get(slug="active"))
+
 
     absence_content = []
     total_absence_dates = {}
@@ -335,6 +339,9 @@ def all_calendar(request, month=MONTH, year=YEAR):
     all_users = []
     all_users.append(request.user)
     user_relations = Relationship.objects.filter(user=request.user)
+   
+
+    #NOTE: need to convert filtered queryset back to list for "all_users"
     for relation in user_relations:
         rels = Relationship.objects.filter(team=relation.team, status=State.objects.get(slug="active"))
         for rel in rels:
@@ -343,10 +350,14 @@ def all_calendar(request, month=MONTH, year=YEAR):
             else:
                 all_users.append(rel.user)
     
+    # Filters all_users list by id's of users found in search/filter bar
+    user_filter = CalendarFilter(request.GET, queryset=User.objects.filter(pk__in=[user.id for user in all_users]))  
+
     absence_content = []
     total_absence_dates = {}
     all_absences = {}
     delta = datetime.timedelta(days=1)
+ 
 
     for user in all_users:
         # all the absences for the user
@@ -401,6 +412,7 @@ def all_calendar(request, month=MONTH, year=YEAR):
         pass
     dates = "dates"
     
+
     context = {
         "current_date": current_date,
         "day_range": range(1, month_days + 1),
@@ -418,7 +430,10 @@ def all_calendar(request, month=MONTH, year=YEAR):
         "previous_month": previous_month,
         "next_month": next_month,
         "date": dates,
+        "filter": user_filter
     }
+
+    
 
     return render(request, "ap_app/calendar.html", context)
 

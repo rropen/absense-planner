@@ -1,6 +1,0 @@
-[MASTER]
-disable=
-    missing-docstring,
-    missing-final-newline,
-    trailing-whitespace,
-    multiple-imports,
