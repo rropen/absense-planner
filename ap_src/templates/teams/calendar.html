@@ -22,21 +22,14 @@
         <div class="container">
             <div class="level">
                 <div class="level-left">
-
                     <h1 class="title is-3 level-item">{{team.name}}
-
-
-                        
-
                         {% if team.private %}
                         <span class="tag is-dark ml-2">Private</span>
                         {% elif not team.private %}
                         <span class="tag is-dark ml-2">Public</span>
                         {% endif %}
                     </h1>
-                </div>
 
-                <div class="level-right">
                     {% if current_user.role.role == "Owner" %}
                     <a class="button is-primary is-outlined modal-button" data-target="#modal"><i
                             class="fas fa-user-plus"></i></a>
@@ -49,20 +42,17 @@
             <p class="my-3">{{team.description}}</p>
 
             <div class="level mb-6">
-
                 <span class="tag">
                     <form class="level-right" name="LastRefreshFrm">
                         Last refreshed
                         <input type="text" name="refreshSecBox" size="1" class="RefreshBox" readonly>
-
                         <script language="javascript">
                             SecondsSinceLastRefresh();
                         </script>
                         minute(s) ago.
                     </form>
+                </span>
             </div>
-            </span>
-
             <div class="level">
                 <div class="level-left">
                     <a href="/teams/calendar/{{team.id}}/{{current_month}}/{{year}}" class="mr-4">
@@ -97,156 +87,158 @@
                             </button>
                         </p>
                     </a>
+
+
+
+                    {% else %}
+                    <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}">
+                        <p class="buttons">
+                            <button class="button">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+
+
+                    <a href="/teams/calendar/{{team.id}}/January/{{next_year}}"">
+                        <p class=" buttons">
+                            <button class="button">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-right"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+
+                    {% endif %}
+
+
+                    <!-- Start of the previous year - January -->
+                    {% elif month_num == 1 %}
+                    {% if current_year|add:"-2" == previous_year %}
+                    <a href="" class="noHover">
+                        <p class="buttons">
+                            <button class="button" disabled>
+                                <span class="icon">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+
+                    <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}">
+                        <p class="buttons">
+                            <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-right"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+                
+                    {% else %}
+                    <a href="/teams/calendar/{{team.id}}/December/{{previous_year}}">
+                        <p class="buttons">
+                            <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+
+                    <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}">
+                        <p class="buttons">
+                            <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-right"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+            
+                    {% endif %}
+
+                    <!-- How the page looks by default upon landing -->
+                    {% else %}
+                    <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}">
+                        <p class="buttons">
+                            <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+
+                    <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}">
+                        <p class="buttons">
+                            <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-right"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+
+                    {% endif %}
+                    <span class="is-size-4 mb-0 px-3">{{month}} {{year}}</span>
                 </div>
-
-
-                {% else %}
-                <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}">
-                    <p class="buttons">
-                        <button class="button">
-                            <span class="icon ">
-                                <i class="fas fa-arrow-left"></i>
+                <!-- Search box and filter button -->
+                <div class="level-right">
+                    <div class="control has-icons-left">
+                        <input class="input" type="text" placeholder="Search">
+                            <span class="icon is-left">
+                                <i class="fas fa-search"></i>
                             </span>
-                        </button>
-                    </p>
-                </a>
-
-
-                <a href="/teams/calendar/{{team.id}}/January/{{next_year}}""><p class=" buttons">
-                    <button class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                    </button>
-                    </p></a>
+                    </div>
+                    <a class="button is-info is-outlined mx-1" href="#"><i class="fas fa-filter"></i></a>
+                </div>
             </div>
-            {% endif %}
 
+            <!-- Calendar table -->
 
-            <!-- Start of the previous year - January -->
-            {% elif month_num == 1 %}
-            {% if current_year|add:"-2" == previous_year %}
-            <a href="" class="noHover">
-                <p class="buttons">
-                    <button class="button" disabled>
-                        <span class="icon">
-                            <i class="fas fa-arrow-left"></i>
-                        </span>
-                    </button>
-                </p>
-            </a>
-
-            <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}">
-                <p class="buttons">
-                    <button class="button ">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                    </button>
-                </p>
-            </a>
+            <div class="table-container" style="overflow: auto">
+                <table class="table is-bordered is-striped" style="width:100%; overflow: auto">
+                    <thead>
+                        <th style="color: black;"></th>
+                        {% for day in days_name %}
+                        {% if day == Sa or day == Su%}
+                        <th style="background-color: rgb(255, 255, 255); color: rgb(2, 193, 252);">{{day}}</th>
+                        {% else %}
+                        <th style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);">{{day}}</th>
+                        {% endif %}
+                        {% endfor %}
+                    </thead>
+                    <thead>
+                        <th style="color: black;"></th>
+                        {% for day in day_range %}
+                        <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
+                        {% endfor %}
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{user.user.username}}</td>
+                            <!-- for every day in current month- -->
+                            {% for day in day_range %}
+                            <!-- if absence day equals day then highlights red -->
+                            {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
+                            {% if check_absence %}
+                            <td style="background-color: #ff0000"></td>
+                            {% else %}
+                            <td></td>
+                            {% endif %}
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-        {% else %}
-        <a href="/teams/calendar/{{team.id}}/December/{{previous_year}}">
-            <p class="buttons">
-                <button class="button ">
-                    <span class="icon ">
-                        <i class="fas fa-arrow-left"></i>
-                    </span>
-                </button>
-            </p>
-        </a>
-
-        <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}">
-            <p class="buttons">
-                <button class="button ">
-                    <span class="icon ">
-                        <i class="fas fa-arrow-right"></i>
-                    </span>
-                </button>
-            </p>
-        </a>
-</div>
-{% endif %}
-
-<!-- How the page looks by default upon landing -->
-{% else %}
-<a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}">
-    <p class="buttons">
-        <button class="button ">
-            <span class="icon ">
-                <i class="fas fa-arrow-left"></i>
-            </span>
-        </button>
-    </p>
-</a>
-
-<a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}">
-    <p class="buttons">
-        <button class="button ">
-            <span class="icon ">
-                <i class="fas fa-arrow-right"></i>
-            </span>
-        </button>
-    </p>
-</a>
-
-{% endif %}
-<span class="level-left is-size-4 mb-0 px-3">{{month}} {{year}}</span>
-</div>
-<!-- Search box and filter button -->
-<div class="level">
-    <div class="control has-icons-left level-right">
-        <input class="input" type="text" placeholder="Search">
-        <span class="icon is-left">
-            <i class="fas fa-search"></i>
-        </span>
-    </div>
-    <a class="button is-info is-outlined mx-1 level-right" href="#"><i class="fas fa-filter"></i></a>
-</div>
-</div>
-
-<!-- Calendar table -->
-
-<div class="table-container" style="overflow: auto">
-    <table class="table is-bordered is-striped" style="width:100%">
-        <thead>
-            <th style="color: black;"></th>
-            {% for day in days_name %}
-            {% if day == Sa or day == Su%}
-            <th style="background-color: rgb(255, 255, 255); color: rgb(2, 193, 252);">{{day}}</th>
-            {% else %}
-            <th style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);">{{day}}</th>
-            {% endif %}
-            {% endfor %}
-        </thead>
-        <thead>
-            <th style="color: black;"></th>
-            {% for day in day_range %}
-            <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
-            {% endfor %}
-        </thead>
-        <tbody>
-            {% for user in users %}
-            <tr>
-                <td>{{user.user.username}}</td>
-                <!-- for every day in current month- -->
-                {% for day in day_range %}
-                <!-- if absence day equals day then highlights red -->
-                {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
-                {% if check_absence %}
-                <td style="background-color: #ff0000"></td>
-                {% else %}
-                <td></td>
-                {% endif %}
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-</div>
-</section>
+    </section>
 </div>
 
 <!-- Invite Users - Modal -->
