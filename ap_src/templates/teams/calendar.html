@@ -29,7 +29,8 @@
                         <span class="tag is-dark ml-2">Public</span>
                         {% endif %}
                     </h1>
-
+                </div>
+                <div class="level-right">
                     {% if current_user.role.role == "Owner" %}
                     <a class="button is-primary is-outlined modal-button" data-target="#modal"><i
                             class="fas fa-user-plus"></i></a>
@@ -186,8 +187,13 @@
                     {% endif %}
                     <span class="is-size-4 mb-0 px-3">{{month}} {{year}}</span>
                 </div>
+                
                 <!-- Search box and filter button -->
                 <div class="level-right">
+                    <!-- Key for table colours -->
+                    <div class="level-item" >
+                        <button class="button" style="background-color: #0e00d6; color:white">You</button>
+                    </div>
                     <div class="control has-icons-left">
                         <input class="input" type="text" placeholder="Search">
                             <span class="icon is-left">
@@ -221,7 +227,15 @@
                     <tbody>
                         {% for user in users %}
                         <tr>
-                            <td>{{user.user.username}}</td>
+                            {% if user.role == owner and user.id == current_user.id %}
+                                <td style="background-color: #0e00d6; color:white">{{user.user.username}}(Owner)</td>
+                            {% elif user.role == owner %}
+                                <td>{{user.user.username}}(Owner)</td>
+                            {% elif user.id == current_user.id %}
+                                <td style="background-color: #0e00d6; color:white">{{user.user.username}}</td>
+                            {% else %}
+                                <td>{{user.user.username}}</td>
+                            {% endif %}
                             <!-- for every day in current month- -->
                             {% for day in day_range %}
                             <!-- if absence day equals day then highlights red -->

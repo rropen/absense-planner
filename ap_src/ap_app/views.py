@@ -21,10 +21,6 @@ from .models import Absence, Relationship, Role, Team
 User = get_user_model()
 
 
-# TODO: Move these global variables to be local variables. They must be local variables as this data is not a constant. It changes every day ^_^.
-#       ... and by defining these variables as global variables they will stay the same until the app is restarted and the module is reloaded
-
-
 def index(request) -> render:
     """returns the home page"""
     return render(request, "ap_app/index.html")
@@ -61,7 +57,8 @@ def create_team(request) -> render:
         form = CreateTeamForm(request.POST)
         if form.is_valid():
             form.save()
-            # Gets the created team and "Owner" Role and creates a Link between the user and their team
+            # Gets the created team and "Owner" Role and creates a Link between 
+            # the user and their team
             created_team = Team.objects.get(name=form.cleaned_data["name"])
             assign_role = Role.objects.get(role="Owner")
             Relationship.objects.create(
@@ -199,8 +196,12 @@ def details_page(request) -> render:
     return render(request, "ap_app/Details.html", context)
 
 
-def get_date_data(month=datetime.datetime.now().strftime("%B"),
-    year=datetime.datetime.now().year,):
+def get_date_data(
+    month=datetime.datetime.now().strftime("%B"),
+    year=datetime.datetime.now().year,
+):
+    #  uses a dictionary to get all the data needed for the context
+    #  and concatenates it to form the full context with other dictionaries
     data = {}
     data["current_year"] = datetime.datetime.now().year
     data["current_month"] = datetime.datetime.now().strftime("%B")
@@ -215,13 +216,16 @@ def get_date_data(month=datetime.datetime.now().strftime("%B"),
     )
     data["month_num"] = datetime.datetime.strptime(data["month"], "%B").month
 
-    data["previous_month"] = 12
-    data["next_month"] = 1
+    data["previous_month"] = 0
+    data["next_month"] = 0
     data["previous_year"] = data["year"] - 1
     data["next_year"] = data["year"] + 1
 
+    # as the month number resets every year try and except statements
+    # have to be used as at the end and start of a year
+    # the month cannot be calculated by adding or subtracting 1
+    # as 13 and 0 are not datetime month numbers
     try:
-
         data["next_month"] = datetime.datetime.strptime(
             str((datetime.datetime.strptime(data["month"], "%B")).month + 1), "%m"
         ).strftime("%B")
@@ -233,6 +237,8 @@ def get_date_data(month=datetime.datetime.now().strftime("%B"),
         ).strftime("%B")
     except ValueError:
         pass
+
+    # calculating which days are weekends to mark them easier in the html
     data["days_name"] = []
     month = data["month"]
     year = data["year"]
@@ -255,9 +261,11 @@ def get_user_data(users, user_type):
     for user in users:
         # all the absences for the user
         if user_type == 1:
-            absence_info = Absence.objects.filter(User_ID=user.user.id)
+            user_id = user.user.id
         else:
-            absence_info = Absence.objects.filter(User_ID=user.id)
+            user_id = user.id
+
+        absence_info = Absence.objects.filter(User_ID=user_id)
         total_absence_dates[user] = []
         all_absences[user] = []
 
@@ -288,13 +296,12 @@ def get_user_data(users, user_type):
         else:
             total_absence_dates[user] = []
             all_absences[user] = []
-
+    data["all_absences"] = all_absences
     data["absence_dates"] = total_absence_dates
     data["users"] = users
     return data
 
 
-# TODO: team_calender and all_calender seem to have duplicate code. DRY (Don't repeat yourself) principle
 @login_required
 def team_calendar(
     request,
@@ -307,7 +314,8 @@ def team_calendar(
     users = Relationship.objects.all().filter(
         team=id, status=State.objects.get(slug="active")
     )
-    print(users)
+    
+    
     data_2 = get_user_data(users, 1)
 
     team = Team.objects.get(id=id)
@@ -315,10 +323,12 @@ def team_calendar(
     user_in_teams = []
     for rel in Relationship.objects.filter(team=team):
         user_in_teams.append(rel.user.id)
-    print(user_in_teams)
+        
+    
 
     data_3 = {
-        "Sa": "Sa", 
+        "owner":Role.objects.all()[0],
+        "Sa": "Sa",
         "Su": "Su",
         "current_user": Relationship.objects.get(user=request.user, team=team),
         "team": team,
@@ -352,7 +362,7 @@ def all_calendar(
                 pass
             else:
                 all_users.append(rel.user)
-    print(all_users)
+
     data_2 = get_user_data(all_users, 2)
 
     data_3 = {"Sa": "Sa", "Su": "Su"}

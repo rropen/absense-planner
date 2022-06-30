@@ -3,7 +3,7 @@ from django.db.models.base import Model
 from django.forms import models
 from django.contrib.auth.models import User
 from .models import Team
-
+from .models import Absence
 
 class CreateTeamForm(forms.ModelForm):
     class Meta:
@@ -14,7 +14,7 @@ class CreateTeamForm(forms.ModelForm):
     description     = forms.CharField(max_length=512, required=False, widget=forms.Textarea(attrs={"class":"", "placeholder":"Team Description"}))
     private         = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={"class":""}))
 
-from .models import Absence
+
 
 class login(forms.Form):
     name = forms.CharField(
