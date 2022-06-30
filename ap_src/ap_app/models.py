@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from river.models.fields.state import StateField, State
 from river.models import TransitionApproval
+from django.utils.timezone import now
+from django.utils.translation import gettext_lazy
 
 User = get_user_model()
 
@@ -10,7 +12,7 @@ User = get_user_model()
 class Absence(models.Model):
     ID = models.AutoField(primary_key=True)
     User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="absences")
-    absence_date_start = models.DateField(max_length=200)
+    absence_date_start = models.DateField(gettext_lazy("Date"), max_length=200, default=now)
     absence_date_end = models.DateField(max_length=200)
     # #issue #11
     edit_whitelist = models.ManyToManyField(to=User)

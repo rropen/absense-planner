@@ -3,7 +3,9 @@ from django.db.models.base import Model
 from django.forms import models
 from django.contrib.auth.models import User
 from .models import Team
+from django.utils.timezone import now
 
+import datetime
 
 class CreateTeamForm(forms.ModelForm):
     class Meta:
@@ -48,12 +50,13 @@ class register(forms.Form):
 
 
 class AbsenceForm(forms.ModelForm):
-    
     class Meta:
         model = Absence
         fields = ["start_date", "end_date"]
 
     def clean(self):
+
+
         def end_date_valid():
             if start_date > end_date:
                 return False
@@ -67,8 +70,8 @@ class AbsenceForm(forms.ModelForm):
         if not end_date_valid():
             raise forms.ValidationError(f"End Date must be after start date {start_date}, {end_date}")
 
-    start_date = forms.DateField(label="Starting Date:", required=True, input_formats=['%Y-%m-%d'], widget=forms.DateTimeInput(attrs={"type":"date"}))
-    end_date = forms.DateField(label="Ending Date:", required=True, input_formats=['%Y-%m-%d'], widget=forms.DateTimeInput(attrs={"type":"date"}))
+    start_date = forms.DateField(label="Starting Date:", required=True, input_formats=['%Y-%m-%d'], widget=forms.DateInput(attrs={"type":"date"}), initial=now().date())
+    end_date = forms.DateField(label="Ending Date:", required=True, input_formats=['%Y-%m-%d'], widget=forms.DateInput(attrs={"type":"date"}), initial= lambda: now().date()+datetime.timedelta(days=1))
 
 
 class DeleteUserForm(forms.ModelForm):
