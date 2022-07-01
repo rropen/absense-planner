@@ -388,8 +388,6 @@ def all_calendar(request, month=MONTH, year=YEAR):
         filtered_users = all_users
 
 
-
-
     absence_content = []
     total_absence_dates = {}
     all_absences = {}
