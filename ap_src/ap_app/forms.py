@@ -4,6 +4,7 @@ from django.forms import models
 from django.contrib.auth.models import User
 from .models import Team
 from django.utils.timezone import now
+from difflib import SequenceMatcher
 
 import datetime
 
@@ -15,6 +16,18 @@ class CreateTeamForm(forms.ModelForm):
     name            = forms.CharField(min_length=3, max_length=64, required=True, widget=forms.TextInput(attrs={"class":"", "placeholder":"Team Name"}))
     description     = forms.CharField(max_length=512, required=False, widget=forms.Textarea(attrs={"class":"", "placeholder":"Team Description"}))
     private         = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={"class":""}))
+
+    def name_similarity(self) -> float:
+        """Returns float between 0 and 1 depending on the similarity
+        of the current name compared to existing team names. Returns
+        NoneType if there are no similarities."""
+
+        teams = Team.objects.all()
+        for team in teams:
+            similarity = SequenceMatcher(
+                None, self['name'].value(), team.name).ratio()
+            if similarity >= .5:
+                return similarity
 
 from .models import Absence
 
