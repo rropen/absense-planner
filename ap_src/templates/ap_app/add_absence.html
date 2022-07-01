@@ -9,6 +9,9 @@
             <form method="POST">
                 {% csrf_token %}
                 <div class="">
+                {% if message %}
+                {% include "messages.html" %}
+                {% endif %}
                 {{form | bulma}}
                 
                 {% for error in form.errors %}

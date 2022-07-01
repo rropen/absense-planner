@@ -1,0 +1,11 @@
+{% if message %}
+  <article class="message">
+    <div class="message-header">
+      <p>Alert</p>
+      <button class="delete" aria-label="delete" data-dismiss="message" onclick="this.parentElement.parentElement.style.display='none';" type="button"></button>
+    </div>
+    <div class="message-body">
+      {{message}}
+    </div>
+  </article>
+{% endif %}

@@ -65,7 +65,7 @@ def create_team(request) -> render:
                 role = assign_role,
                 status = State.objects.get(slug='active')
             )
-            return redirect("/teams/")
+            return redirect("/teams/", {"message" : "Team successfully created."})
     else:
         form = CreateTeamForm()
     return render(request, "teams/create_team.html", {"form": form})
@@ -168,7 +168,7 @@ def add(request) -> render:
             obj.request_accepted = False
             obj.User_ID = request.user
             obj.save()
-
+            return render(request, "ap_app/add_absence.html", {"form" : form, "message" : "Absence successfully recorded."})
             # redirect to success page
     else:
         form = AbsenceForm()
