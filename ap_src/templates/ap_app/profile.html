@@ -37,6 +37,14 @@
 
 <div class="main container mt-6">
 
+  {% if not absences %}
+  <div class="container has-background-light box">
+      <div class="is-size-5 mb-3">
+          <span class="is-block is-size-5">No absences reported.</span>
+      </div>
+  </div>
+  {% endif %}
+
 
 <div class="mt-2">
     <div class="columns is-multiline">

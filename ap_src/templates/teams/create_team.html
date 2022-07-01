@@ -6,6 +6,9 @@
 <div class="main container">
     <h1 class="title">Create a Team</h1>
     <form method="post" class="text-center">
+        {% if message %}
+        {% include "messages.html" %}
+        {% endif %}
         {% csrf_token %}
         {{form | bulma}}
     <input class="button is-link" type="submit" value="Submit">

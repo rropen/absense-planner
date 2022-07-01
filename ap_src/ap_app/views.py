@@ -71,7 +71,7 @@ def create_team(request) -> render:
                 role = assign_role,
                 status = State.objects.get(slug='active')
             )
-            return redirect("/teams/")
+            return redirect("/teams/", {"message" : "Team successfully created."})
     else:
         form = CreateTeamForm()
     return render(request, "teams/create_team.html", {"form": form})
@@ -84,9 +84,11 @@ def join_team(request) -> render:
     user_teams = []
     all_user_teams = Relationship.objects.all().filter(user=request.user)
     for teams in all_user_teams:
-        user_teams.append(teams.team.name)   
+        user_teams.append(teams.team)   
     all_teams = Team.objects.all().exclude(name__in=user_teams)
-    return render(request, "teams/join_team.html", {"all_teams": all_teams})
+    print(all_teams)
+    all_teams_list = list(all_teams)
+    return render(request, "teams/join_team.html", {"all_teams": all_teams, "joined_teams": user_teams})
 
 @login_required
 def joining_team_process(request, id, role):
@@ -172,7 +174,7 @@ def add(request) -> render:
             obj.request_accepted = False
             obj.User_ID = request.user
             obj.save()
-
+            return render(request, "ap_app/add_absence.html", {"form" : form, "message" : "Absence successfully recorded."})
             # redirect to success page
     else:
         form = AbsenceForm()
