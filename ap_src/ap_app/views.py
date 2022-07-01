@@ -16,18 +16,52 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, UpdateView
 from river.models.fields.state import State
 
-from .forms import AbsenceForm, CreateTeamForm, DeleteUserForm
-from .models import Absence, Relationship, Role, Team
+from .forms import CreateTeamForm, DeleteUserForm, AbsenceForm, AcceptPolicyForm
+from .models import Absence, Relationship, Role, Team, UserProfile
 
 User = get_user_model()
 
 
 def index(request) -> render:
-    """returns the home page"""
+    """Branched view.                       \n
+    IF NOT Logged in: returns the home page \n
+    ELSE: returns the calendar page """
+    
+    # If its the first time a user is logging in, will create an object of UserProfile model for that user.
+    if not request.user.is_anonymous:
+        if not UserProfile.obj_exists(request.user):
+
+            user = UserProfile.find_user_obj(request.user)
+        else:
+            user = UserProfile.objects.filter(user=request.user)[0]
+
+        # Until the accepted_policy field is checked, the user will keep being redirected to the policy page to accept
+        if not user.accepted_policy:
+            return privacy_page(request, to_accept=True)
+        
+
+    # Change: If user is logged in, will be redirected to the calendar
+    if request.user.is_authenticated:       
+        return all_calendar(request, month=MONTH, year=YEAR)
+    
     return render(request, "ap_app/index.html")
 
 
-def privacy_page(request) -> render:
+
+def privacy_page(request, to_accept=False) -> render:
+
+    # If true, the user accepted the policy
+    if request.method == "POST":
+        user = UserProfile.find_user_obj(request.user)
+        user.accepted_policy = True
+        user.save()
+
+    # If the user has been redirected from home page to accepted policy
+    elif to_accept:
+
+        return render(request, "registration/accept_policy.html", {"form": AcceptPolicyForm()})
+    
+    # Viewing general policy page - (Without the acceptancy form)
     return render(request, "ap_app/privacy.html")
 
 
@@ -35,6 +69,8 @@ class SignUpView(CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy("login")
     template_name = "registration/signup.html"
+
+
 
 
 @login_required
@@ -361,6 +397,9 @@ def all_calendar(
     all_users = []
     all_users.append(request.user)
     user_relations = Relationship.objects.filter(user=request.user)
+   
+
+    #NOTE: need to convert filtered queryset back to list for "all_users"
     for relation in user_relations:
         rels = Relationship.objects.filter(
             team=relation.team, status=State.objects.get(slug="active")
@@ -370,12 +409,60 @@ def all_calendar(
                 pass
             else:
                 all_users.append(rel.user)
+    
+  
+  
+    #Filtering
+    filtered_users = []
+    # Filtering by both username & absence
+    if "username" in request.GET and "absent" in request.GET:
+        # Get username input & limits the length to 50
+        name_filtered_by = request.GET["username"][:50]
+        
+        for absence in Absence.objects.all():
+            username = User.objects.get(id=absence.User_ID.id).username
+            if not absence.User_ID in filtered_users and name_filtered_by.lower() in username.lower():
+                filtered_users.append(absence.User_ID)
+
+
+    # ONLY filtering by username
+    elif "username" in request.GET:
+        # Name limit is 50 
+        name_filtered_by = request.GET["username"][:50]
+
+        for user in User.objects.all():
+            # same logic as "icontains", searches through users names & finds similarities
+            if name_filtered_by.lower() in user.username.lower():
+                filtered_users.append(user)
+
+
+    # ONLY filtering by absences
+    elif "absent" in request.GET:
+        for absence in Absence.objects.all():
+            username = User.objects.get(id=absence.User_ID.id).username
+            if not absence.User_ID in filtered_users:
+                filtered_users.append(absence.User_ID) 
+
+    # Else, no filtering
+    else:
+        filtered_users = all_users
+
+
+
+
+    absence_content = []
+    total_absence_dates = {}
+    all_absences = {}
+    delta = datetime.timedelta(days=1)
+ 
 
     data_2 = get_user_data(all_users, 2)
 
-    data_3 = {"Sa": "Sa", "Su": "Su"}
+    data_3 = {"Sa": "Sa", "Su": "Su","users_filter": filtered_users}
 
     context = {**data_1, **data_2, **data_3}
+
+    
 
     return render(request, "ap_app/calendar.html", context)
 

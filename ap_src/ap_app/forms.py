@@ -92,3 +92,8 @@ class DeleteUserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = []
+
+
+
+class AcceptPolicyForm(forms.Form):
+    check = forms.CheckboxInput()
