@@ -162,13 +162,10 @@
                 <div class="control has-icons-left level-right">
                     <form method="get">
 
-                        <div class="input" type=text placeholder="Search">
-                            {{ filter.form.username }}
-                        </div>
-                        <span class="icon is-left">
-                        <i class="fas fa-search"></i>
-                                                      
-                        </span>
+                        <input class="input" type=text name="username" placeholder="Search">
+                        <span class="icon is-left"><i class="fas fa-search"></i></span>
+                        <input class="checkbox" type="checkbox" name="absent"> Filter By Absence
+
                         <button class="button is-info is-outlined mx-1 level-right" type="submit"><i class="fas fa-filter"></i></a>
                     </form>
                 </div>
@@ -187,7 +184,7 @@
                     </thead>
                     <tbody> 
                         <!-- Iterates through values in filter queryset -->
-                        {% for user in filter.qs %}
+                        {% for user in users_filter %}
                             <tr>
                                 <td>{{user.username}}</td>
                                 <!-- for every day in current month- -->

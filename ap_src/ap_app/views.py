@@ -18,7 +18,7 @@ from river.models.fields.state import State
 
 from .forms import CreateTeamForm, DeleteUserForm, AbsenceForm, AcceptPolicyForm
 from .models import Absence, Relationship, Role, Team, UserProfile
-from .filters import CalendarFilter
+
 
 User = get_user_model()
 
@@ -350,8 +350,45 @@ def all_calendar(request, month=MONTH, year=YEAR):
             else:
                 all_users.append(rel.user)
     
-    # Filters all_users list by id's of users found in search/filter bar
-    user_filter = CalendarFilter(request.GET, queryset=User.objects.filter(pk__in=[user.id for user in all_users]))  
+  
+  
+    #Filtering
+    filtered_users = []
+    # Filtering by both username & absence
+    if "username" in request.GET and "absent" in request.GET:
+        # Get username input & limits the length to 50
+        name_filtered_by = request.GET["username"][:50]
+        
+        for absence in Absence.objects.all():
+            username = User.objects.get(id=absence.User_ID.id).username
+            if not absence.User_ID in filtered_users and name_filtered_by.lower() in username.lower():
+                filtered_users.append(absence.User_ID)
+
+
+    # ONLY filtering by username
+    elif "username" in request.GET:
+        # Name limit is 50 
+        name_filtered_by = request.GET["username"][:50]
+
+        for user in User.objects.all():
+            # same logic as "icontains", searches through users names & finds similarities
+            if name_filtered_by.lower() in user.username.lower():
+                filtered_users.append(user)
+
+
+    # ONLY filtering by absences
+    elif "absent" in request.GET:
+        for absence in Absence.objects.all():
+            username = User.objects.get(id=absence.User_ID.id).username
+            if not absence.User_ID in filtered_users:
+                filtered_users.append(absence.User_ID) 
+
+    # Else, no filtering
+    else:
+        filtered_users = all_users
+
+
+
 
     absence_content = []
     total_absence_dates = {}
@@ -430,7 +467,7 @@ def all_calendar(request, month=MONTH, year=YEAR):
         "previous_month": previous_month,
         "next_month": next_month,
         "date": dates,
-        "filter": user_filter
+        "users_filter": filtered_users
     }
 
     
