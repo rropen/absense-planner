@@ -9,6 +9,7 @@ User = get_user_model()
 
 # TODO: is the ID, id field needed. Django has this built in as part of the Model class
 
+
 class Absence(models.Model):
     ID = models.AutoField(primary_key=True)
     User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="absences")
@@ -19,42 +20,50 @@ class Absence(models.Model):
 
     def __str__(self):
         return f"{self.User_ID}, {self.absence_date_start} - {self.absence_date_end}"
-    
+
 
 class Team(models.Model):
-    """ This includes all the attributes of a Team """
-    id          = models.AutoField(primary_key=True)
-    name        = models.CharField(max_length=128, unique=True, null=False)
+    """This includes all the attributes of a Team"""
+
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=128, unique=True, null=False)
     description = models.CharField(max_length=512)
-    private     = models.BooleanField(default=False)
+    private = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.name}"
 
     @property
     def count(self):
-        return Relationship.objects.filter(team=self, status=State.objects.get(slug="active")).count()
+        return Relationship.objects.filter(
+            team=self, status=State.objects.get(slug="active")
+        ).count()
+
 
 class Role(models.Model):
-    """ This includes all the attributes of a Role """
-    id              = models.AutoField(primary_key=True)
-    role            = models.CharField(max_length=64, null=False, unique=True)
+    """This includes all the attributes of a Role"""
+
+    id = models.AutoField(primary_key=True)
+    role = models.CharField(max_length=64, null=False, unique=True)
 
     def __str__(self):
         return f"{self.role}"
 
 
 class Relationship(models.Model):
-    """ This includes all the attributes of a Relationship """
-    id          = models.AutoField(primary_key=True)
-    user        = models.ForeignKey(User, on_delete=models.CASCADE)
-    team        = models.ForeignKey(Team, on_delete=models.CASCADE)
-    role        = models.ForeignKey(Role, on_delete=models.CASCADE)
-    status      = StateField(on_delete=models.CASCADE)
+    """This includes all the attributes of a Relationship"""
 
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    role = models.ForeignKey(Role, on_delete=models.CASCADE)
+    status = StateField(on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = ('user', 'team',)
+        unique_together = (
+            "user",
+            "team",
+        )
 
     def __str__(self):
         return f"User: {self.user.username} --> {self.team.name} as {self.role} ({self.status})"

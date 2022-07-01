@@ -5,8 +5,9 @@ from django.contrib.auth.models import User
 from .models import Team
 from django.utils.timezone import now
 from difflib import SequenceMatcher
-
+from .models import Absence
 import datetime
+
 
 class CreateTeamForm(forms.ModelForm):
     class Meta:
@@ -29,7 +30,7 @@ class CreateTeamForm(forms.ModelForm):
             if similarity >= .5:
                 return similarity
 
-from .models import Absence
+
 
 class login(forms.Form):
     name = forms.CharField(

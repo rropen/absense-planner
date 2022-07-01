@@ -6,193 +6,237 @@
 {% block content %}
 <style>
     .RefreshBox {
-        pointer-events:none;
-        text-align:right;
+        pointer-events: none;
+        text-align: right;
         background-color: ghostwhite;
         border: 0px;
-        font-size:11pt;
+        font-size: 11pt;
         width: 24px;
         height: 12px;
-        }
+    }
 </style>
 
 
 <div class="main">
     <section class="section">
         <div class="container">
-
             <div class="level mb-1">
                 <div class="level-left">
-                    <h1 class="title is-3 level-item">Absence Calendar 
-                        <i class="fas fa-users mx-3"></i>{{users|length}}
+                    <h1 class="title is-3 level-item">
+                        Absence Calendar
                     </h1>
                 </div>
             </div>
-
+            <br>
             <div class="level mb-6">
-                <span class="level-left is-size-4 mb-0">{{month}} {{year}}</span>
-
-            <span class="tag">
+                <span class="tag">
                     <form class="level-right" name="LastRefreshFrm">
                         Last refreshed
-                            <input type="text" name="refreshSecBox" size="1" class="RefreshBox"/>
-
-                            <script language="javascript">
-                                SecondsSinceLastRefresh ();
-                            </script>
+                        <input type="text" name="refreshSecBox" size="1" class="RefreshBox" />
+                        <script language="javascript">
+                            SecondsSinceLastRefresh();
+                        </script>
                         minute(s) ago.
                     </form>
-                </div>
-            </span>
+                </span>
+                
+            </div>
+            
 
             <div class="level">
                 <div class="level-left">
-                    <a href="/calendar/{{current_month}}/{{year}}" class="mr-4"><p class="buttons">
-                        <button class="button ">
-                        <span class="icon ">
-                            <i class="fas fa-sync"></i>
-                        </span>
-                        </button>
-                    </p></a>
+                    <a href="/calendar/{{current_month}}/{{current_year}}" class="mr-4">
+                        <p class="buttons">
+                            <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-sync"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
 
-<!-- Month limiter - December the next year -->
-            {% if month_num == 12 %}
-                {% if current_year|add:2 == next_year %}
-                    <a href="/calendar/{{previous_month}}/{{year}}"><p class="buttons">
-                        <button class="button ">
+                    <!-- Month limiter - December the next year -->
+                    {% if month_num == 12 %}
+                    {% if current_year|add:2 == next_year %}
+                    <a href="/calendar/{{previous_month}}/{{year}}">
+                        <p class="buttons">
+                            <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+
+                    <a href="" class="noHover">
+                        <p class="buttons">
+                            <button class="button " disabled>
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-right"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+
+
+
+                    {% else %}
+
+                    <a href="/calendar/{{previous_month}}/{{year}}">
+                        <p class="buttons">
+                            <button class="button">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+
+
+                    <a href="/calendar/January/{{next_year}}""><p class=" buttons">
+                        <button class="button">
                             <span class="icon ">
-                            <i class="fas fa-arrow-left"></i>
+                                <i class="fas fa-arrow-right"></i>
                             </span>
                         </button>
-                    </p></a>
+                        </p>
+                    </a>
 
-                    <a href="" class="noHover"><p class="buttons">
-                        <button class="button " disabled>
-                            <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
-                            </span>
-                        </button>
-                    </p></a>      
+
+                    {% endif %}
+
+
+                    <!-- Start of the previous year - January -->
+                    {% elif month_num == 1 %}
+                    {% if current_year|add:"-2" == previous_year %}
+
+                    <a href="" class="noHover">
+                        <p class="buttons">
+                            <button class="button" disabled>
+                                <span class="icon">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+
+                    <a href="/calendar/{{next_month}}/{{year}}">
+                        <p class="buttons">
+                            <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-right"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+
+
+                    {% else %}
+
+                    <a href="/calendar/December/{{previous_year}}">
+                        <p class="buttons">
+                            <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+
+                    <a href="/calendar/{{next_month}}/{{year}}">
+                        <p class="buttons">
+                            <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-right"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+
+                    {% endif %}
+
+                    <!-- How the page looks by default upon landing -->
+                    {% else %}
+
+                    <a href="/calendar/{{previous_month}}/{{year}}">
+                        <p class="buttons">
+                            <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+
+                    <a href="/calendar/{{next_month}}/{{year}}">
+                        <p class="buttons">
+                            <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-right"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+
+                    {% endif %}
+                    <span class="is-size-4 mb-0 px-3 level-left">{{month}} {{year}}</span>
                 </div>
-
                 
-                {% else %}
-                    <a href="/calendar/{{previous_month}}/{{year}}"><p class="buttons">
-                        <button class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-left"></i>
-                        </span>
-                        </button>
-                    </p></a>
-
-
-                    <a href="/calendar/January/{{next_year}}""><p class="buttons">
-                        <button class="button">
-                            <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
+                <!-- Search box and filter button -->
+                <div class="level-right">
+                    <!-- Key for table colours -->
+                    <div class="level-item" >
+                        <button class="button" style="background-color: #0e00d6; color:white">You</button>
+                    </div>
+                    <div class="control has-icons-left">
+                        <input class="input" type="text" placeholder="Search">
+                            <span class="icon is-left">
+                                <i class="fas fa-search"></i>
                             </span>
-                        </button>
-                        </p></a>
+                    </div>
+                    <a class="button is-info is-outlined mx-1" href="#"><i class="fas fa-filter"></i></a>
                 </div>
-            {% endif %}
-
-
-<!-- Start of the previous year - January -->
-            {% elif month_num == 1 %}
-                {% if current_year|add:"-2" == previous_year %}
-                    <a href="" class="noHover"><p class="buttons">
-                        <button class="button" disabled>
-                        <span class="icon">
-                            <i class="fas fa-arrow-left"></i>
-                        </span>
-                        </button>
-                    </p></a>
-
-                    <a href="/calendar/{{next_month}}/{{year}}"><p class="buttons">
-                        <button class="button ">
-                            <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
-                            </span>
-                        </button>
-                    </p></a>
-                </div> 
-                {% else %}
-                    <a href="/calendar/December/{{previous_year}}"><p class="buttons">
-                        <button class="button ">
-                            <span class="icon ">
-                            <i class="fas fa-arrow-left"></i>
-                            </span>
-                        </button>
-                        </p></a>
-
-                    <a href="/calendar/{{next_month}}/{{year}}"><p class="buttons">
-                        <button class="button ">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                        </button>
-                    </p></a>
-                </div>
-                {% endif %}
-   
-<!-- How the page looks by default upon landing -->  
-            {% else %} 
-                <a href="/calendar/{{previous_month}}/{{year}}"><p class="buttons">
-                    <button class="button ">
-                    <span class="icon ">
-                        <i class="fas fa-arrow-left"></i>
-                    </span>
-                    </button>
-                </p></a>
-
-                <a href="/calendar/{{next_month}}/{{year}}"><p class="buttons">
-                    <button class="button ">
-                    <span class="icon ">
-                        <i class="fas fa-arrow-right"></i>
-                    </span>
-                    </button>
-                </p></a>
             </div>
-            {% endif %}
 
+            <!-- Calendar starts here . . . -->
 
-<!-- Search box and filter button -->
-            <div class="level">
-                <div class="control has-icons-left level-right">
-                    <input class="input" type="text" placeholder="Search">
-                    <span class="icon is-left">
-                    <i class="fas fa-search"></i>
-                    </span>
-                </div>
-                <a class="button is-info is-outlined mx-1 level-right" href="#"><i class="fas fa-filter"></i></a>
-            </div>
-        </div>
-
-
-<!-- Calendar starts here . . . -->
-            <div class="table-container" style="overflow: hidden">
-                <table class="table is-bordered is-striped" style="width:100%">
+            <div class="table-container">
+                <table class="table is-bordered is-striped">
                     <thead>
-                        <th style="background-color: black; color: white;">Person</th>
+                        <th style="color: black;"></th>
+                        {% for day in days_name %}
+                        {% if day == Sa or day == Su%}
+                        <th class="is-primary is is-bordered">{{day}}</th>
+                        {% else %}
+                        <th style="background-color: rgb(255, 255, 255); color: black;">{{day}}</th>
+                        {% endif %}
+                        {% endfor %}
+                    </thead>
+                    <thead>
+                        <th style="color: black;"></th>
                         {% for day in day_range %}
-                            <th style="background-color: black; color: white;">{{day}}</th>
+                        <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
                         {% endfor %}
                     </thead>
                     <tbody>
                         {% for user in users %}
-                            <tr>
-                                <td>{{user.username}}</td>
-                                <!-- for every day in current month- -->
-                                {% for day in day_range %}
-                                    <!-- if absence day equals day then highlights red -->
-                                    {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
-                                    {% if check_absence %}
-                                        <td style="background-color: #926AA6"></td>
-                                    {% else %}
-                                        <td></td>
-                                    {% endif %}
-                                {% endfor %}
-                            </tr>
+                        <tr>
+                            {% if user.id == users.0.id %}
+                            <td style="background-color: #0e00d6;color: white;">{{user.username}}</td>
+                            {% else %}
+                            <td>{{user.username}}</td>
+                            {% endif %}
+                            <!-- for every day in current month- -->
+                            {% for day in day_range %}
+                            <!-- if absence day equals day then highlights red -->
+                            {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
+                            {% if check_absence %}
+                            <td style="background-color: #ff0000"></td>
+                            {% else %}
+                            <td></td>
+                            {% endif %}
+                            {% endfor %}
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
