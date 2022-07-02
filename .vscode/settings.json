@@ -1,0 +1,19 @@
+{
+    "python.pythonPath": "${workspaceFolder}\\venv\\Scripts\\python.exe",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.autoComplete.extraPaths": [
+        "./ap_app"
+    ],
+    "python.linting.pylintArgs": [
+        "--load-plugins",
+        "pylint_django",
+        "--django-settings-module",
+        "ap_site.settings",
+        "--rcfile",
+        ".pylintrc"
+    ],
+    "python.analysis.extraPaths": [
+        "./ap_app"
+    ]
+}

@@ -448,8 +448,6 @@ def all_calendar(
         filtered_users = all_users
 
 
-
-
     absence_content = []
     total_absence_dates = {}
     all_absences = {}
