@@ -449,13 +449,6 @@ def all_calendar(
     # Else, no filtering
     else:
         filtered_users = all_users
-    
-    
-    # NOTE: Are these necessary here? Not in use
-    absence_content = []
-    total_absence_dates = {}
-    all_absences = {}
-    delta = datetime.timedelta(days=1)
  
 
     data_2 = get_user_data(all_users, 2)

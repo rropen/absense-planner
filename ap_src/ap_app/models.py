@@ -15,9 +15,7 @@ class Absence(models.Model):
     User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="absences")
     absence_date_start = models.DateField(gettext_lazy("Date"), max_length=200, default=now)
     absence_date_end = models.DateField(max_length=200)
-    # #issue #11
-    edit_whitelist = models.ManyToManyField(to=User)
-
+    
     def __str__(self):
         return f"{self.User_ID}, {self.absence_date_start} - {self.absence_date_end}"
 
@@ -78,6 +76,9 @@ class Relationship(models.Model):
 class UserProfile(models.Model):
     """ Extension of fields for User class """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # #issue #11
+    edit_whitelist = models.ManyToManyField()
+
 
     # Extra Fields
     accepted_policy = models.BooleanField()
