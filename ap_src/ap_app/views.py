@@ -412,7 +412,6 @@ def all_calendar(
                 all_users.append(rel.user)
     
     
-  
 
     #Filtering
     filtered_users = []
@@ -420,45 +419,41 @@ def all_calendar(
     if "username" in request.GET and "absent" in request.GET:
         # Get username input & limits the length to 50
         name_filtered_by = request.GET["username"][:50]
-        print("both in request")
         for absence in Absence.objects.all():
-            username = User.objects.get(id=absence.User_ID.id).username
-            if not absence.User_ID in filtered_users and name_filtered_by.lower() in username.lower():
-                filtered_users.append(absence.User_ID)
+            user = User.objects.get(id=absence.User_ID.id)
+            if user in all_users:
+                username = user.username
+                if not absence.User_ID in filtered_users and name_filtered_by.lower() in username.lower():
+                    filtered_users.append(absence.User_ID)
 
 
     # ONLY filtering by username
     elif "username" in request.GET:
         # Name limit is 50 
         name_filtered_by = request.GET["username"][:50]
-        print("username in request")
         for user in all_users:
             # same logic as "icontains", searches through users names & finds similarities
             if name_filtered_by.lower() in user.username.lower():
                 filtered_users.append(user)
 
-        print()
-        print(filtered_users)
-        print()
         
 
 
     # ONLY filtering by absences
     elif "absent" in request.GET:
-        print("absence in request")
         for absence in Absence.objects.all():
-            username = User.objects.get(id=absence.User_ID.id).username
-            if not absence.User_ID in filtered_users:
-                filtered_users.append(absence.User_ID) 
-
+            user = User.objects.get(id=absence.User_ID.id)
+            if user in all_users:
+                username = user.username
+                if not absence.User_ID in filtered_users:
+                    filtered_users.append(absence.User_ID) 
 
     # Else, no filtering
     else:
-        print("No Filter")
         filtered_users = all_users
     
     
-
+    # NOTE: Are these necessary here? Not in use
     absence_content = []
     total_absence_dates = {}
     all_absences = {}
