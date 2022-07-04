@@ -198,10 +198,27 @@
                 </div>
             </div>
 
-            <!-- Calendar starts here . . . -->
+            
+<!-- Search box and filter button -->
+        
+            <div class="level">
+                <div class="control has-icons-left level-right">
+                    <form method="get">
 
-            <div class="table-container">
-                <table class="table is-bordered is-striped">
+                        <input class="input" type=text name="username" placeholder="Search">
+                        <span class="icon is-left"><i class="fas fa-search"></i></span>
+                        <input class="checkbox" type="checkbox" name="absent"> Filter By Absence
+
+                        <button class="button is-info is-outlined mx-1 level-right" type="submit"><i class="fas fa-filter"></i></a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+<!-- Calendar starts here . . . -->
+            <div class="table-container" style="overflow: hidden">
+                <table class="table is-bordered is-striped" style="width:100%">
                     <thead>
                         <th style="color: black;"></th>
                         {% for day in days_name %}
@@ -219,7 +236,7 @@
                         {% endfor %}
                     </thead>
                     <tbody>
-                        {% for user in users %}
+                        {% for user in users_filter %}
                         <tr>
                             {% if user.id == users.0.id %}
                             <td style="background-color: #0e00d6;color: white;">{{user.username}}</td>
@@ -237,8 +254,6 @@
                             {% endif %}
                             {% endfor %}
                         </tr>
-                        {% endfor %}
-                    </tbody>
                 </table>
             </div>
         </div>
