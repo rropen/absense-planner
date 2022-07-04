@@ -42,7 +42,7 @@ def index(request) -> render:
 
     # Change: If user is logged in, will be redirected to the calendar
     if request.user.is_authenticated:       
-        return all_calendar(request, month=MONTH, year=YEAR)
+        return all_calendar(request)
     
     return render(request, "ap_app/index.html")
 
