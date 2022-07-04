@@ -29,9 +29,10 @@ def index(request) -> render:
     
     # If its the first time a user is logging in, will create an object of UserProfile model for that user.
     if not request.user.is_anonymous:
-        if not UserProfile.obj_exists(request.user):
+        
+        if not obj_exists(request.user):
 
-            user = UserProfile.find_user_obj(request.user)
+            user = find_user_obj(request.user)
         else:
             user = UserProfile.objects.filter(user=request.user)[0]
 
@@ -52,7 +53,7 @@ def privacy_page(request, to_accept=False) -> render:
 
     # If true, the user accepted the policy
     if request.method == "POST":
-        user = UserProfile.find_user_obj(request.user)
+        user = find_user_obj(request.user)
         user.accepted_policy = True
         user.save()
 
@@ -397,7 +398,7 @@ def all_calendar(
     all_users = []
     all_users.append(request.user)
     user_relations = Relationship.objects.filter(user=request.user)
-   
+    
 
     #NOTE: need to convert filtered queryset back to list for "all_users"
     for relation in user_relations:
@@ -410,15 +411,16 @@ def all_calendar(
             else:
                 all_users.append(rel.user)
     
+    
   
-  
+
     #Filtering
     filtered_users = []
     # Filtering by both username & absence
     if "username" in request.GET and "absent" in request.GET:
         # Get username input & limits the length to 50
         name_filtered_by = request.GET["username"][:50]
-        
+        print("both in request")
         for absence in Absence.objects.all():
             username = User.objects.get(id=absence.User_ID.id).username
             if not absence.User_ID in filtered_users and name_filtered_by.lower() in username.lower():
@@ -429,24 +431,33 @@ def all_calendar(
     elif "username" in request.GET:
         # Name limit is 50 
         name_filtered_by = request.GET["username"][:50]
-
-        for user in User.objects.all():
+        print("username in request")
+        for user in all_users:
             # same logic as "icontains", searches through users names & finds similarities
             if name_filtered_by.lower() in user.username.lower():
                 filtered_users.append(user)
 
+        print()
+        print(filtered_users)
+        print()
+        
+
 
     # ONLY filtering by absences
     elif "absent" in request.GET:
+        print("absence in request")
         for absence in Absence.objects.all():
             username = User.objects.get(id=absence.User_ID.id).username
             if not absence.User_ID in filtered_users:
                 filtered_users.append(absence.User_ID) 
 
+
     # Else, no filtering
     else:
+        print("No Filter")
         filtered_users = all_users
-
+    
+    
 
     absence_content = []
     total_absence_dates = {}
@@ -459,7 +470,6 @@ def all_calendar(
     data_3 = {"Sa": "Sa", "Su": "Su","users_filter": filtered_users}
 
     context = {**data_1, **data_2, **data_3}
-
     
 
     return render(request, "ap_app/calendar.html", context)
@@ -538,3 +548,35 @@ def add_user(request) -> render:
         absence.edit_whitelist.add(user)
         absence.save()
     return redirect("/profile/settings")
+
+
+
+
+def find_user_obj(user_to_find):
+    """ Finds & Returns object of 'UserProfile' for a user 
+    \n-param (type)User user_to_find 
+    """    
+    users = UserProfile.objects.filter(user=user_to_find)    
+    # If cannot find object for a user, than creates on
+    if users.count() <= 0:
+        UserProfile.objects.create(
+        user = user_to_find,
+        accepted_policy = False
+        )
+
+    # Users object
+    user_found = UserProfile.objects.filter(user=user_to_find)[0]
+
+    return user_found
+
+
+def obj_exists(user):
+    """ Determines if a user has a 'UserProfile' Object"""
+    objs = UserProfile.objects.filter(user=user)
+    if objs.count() == 0:
+        return False
+
+    return True 
+
+   
+      
