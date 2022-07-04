@@ -43,7 +43,7 @@
             </div>
             
 
-            <div class="level">
+            <div class="level mb-0">
                 <div class="level-left">
                     <a href="/calendar/{{current_month}}/{{current_year}}" class="mr-4">
                         <p class="buttons">
@@ -186,43 +186,31 @@
                 <div class="level-right">
                     <!-- Key for table colours -->
                     <div class="level-item" >
-                        <button class="button" style="background-color: #0e00d6; color:white">You</button>
+                        <button class="button is-static" style="background-color: #0e00d6; color:white">You</button>
                     </div>
                     <div class="control has-icons-left">
                         <input class="input" type="text" placeholder="Search">
                             <span class="icon is-left">
                                 <i class="fas fa-search"></i>
                             </span>
+                        
                     </div>
                     <a class="button is-info is-outlined mx-1" href="#"><i class="fas fa-filter"></i></a>
                 </div>
             </div>
-
-            
-<!-- Search box and filter button -->
-        
-            <div class="level">
-                <div class="control has-icons-left level-right">
-                    <form method="get">
-
-                        <input class="input" type=text name="username" placeholder="Search">
-                        <span class="icon is-left"><i class="fas fa-search"></i></span>
-                        <input class="checkbox" type="checkbox" name="absent"> Filter By Absence
-
-                        <button class="button is-info is-outlined mx-1 level-right" type="submit"><i class="fas fa-filter"></i></a>
-                    </form>
-                </div>
+            <div class="level-right control mb-3">
+                <input type="checkbox" name="absent"> Filter By Absence
             </div>
-        </div>
+            
 
 
 <!-- Calendar starts here . . . -->
-            <div class="table-container" style="overflow: hidden">
+            <div class="table-container" style="overflow: auto">
                 <table class="table is-bordered is-striped" style="width:100%">
                     <thead>
                         <th style="color: black;"></th>
                         {% for day in days_name %}
-                        {% if day == Sa or day == Su%}
+                        {% if day == Sa or day == Su %}
                         <th class="is-primary is is-bordered">{{day}}</th>
                         {% else %}
                         <th style="background-color: rgb(255, 255, 255); color: black;">{{day}}</th>
