@@ -110,8 +110,4 @@ class UserProfile(models.Model):
         if objs.count() == 0:
             return False
 
-        return True 
-
-
-   
-      
+        return True

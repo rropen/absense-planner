@@ -29,9 +29,10 @@ def index(request) -> render:
     
     # If its the first time a user is logging in, will create an object of UserProfile model for that user.
     if not request.user.is_anonymous:
-        if not UserProfile.obj_exists(request.user):
+        
+        if not obj_exists(request.user):
 
-            user = UserProfile.find_user_obj(request.user)
+            user = find_user_obj(request.user)
         else:
             user = UserProfile.objects.filter(user=request.user)[0]
 
@@ -42,7 +43,7 @@ def index(request) -> render:
 
     # Change: If user is logged in, will be redirected to the calendar
     if request.user.is_authenticated:       
-        return all_calendar(request, month=MONTH, year=YEAR)
+        return all_calendar(request)
     
     return render(request, "ap_app/index.html")
 
@@ -52,7 +53,7 @@ def privacy_page(request, to_accept=False) -> render:
 
     # If true, the user accepted the policy
     if request.method == "POST":
-        user = UserProfile.find_user_obj(request.user)
+        user = find_user_obj(request.user)
         user.accepted_policy = True
         user.save()
 
@@ -121,10 +122,8 @@ def join_team(request) -> render:
     user_teams = []
     all_user_teams = Relationship.objects.all().filter(user=request.user)
     for teams in all_user_teams:
-        user_teams.append(teams.team.name)
+        user_teams.append(teams.team)
     all_teams = Team.objects.all().exclude(name__in=user_teams)
-    print(all_teams)
-    all_teams_list = list(all_teams)
     return render(request, "teams/join_team.html", {"all_teams": all_teams, "joined_teams": user_teams})
 
 
@@ -397,7 +396,7 @@ def all_calendar(
     all_users = []
     all_users.append(request.user)
     user_relations = Relationship.objects.filter(user=request.user)
-   
+    
 
     #NOTE: need to convert filtered queryset back to list for "all_users"
     for relation in user_relations:
@@ -410,44 +409,49 @@ def all_calendar(
             else:
                 all_users.append(rel.user)
     
-  
-  
+    
+
     #Filtering
     filtered_users = []
     # Filtering by both username & absence
     if "username" in request.GET and "absent" in request.GET:
         # Get username input & limits the length to 50
         name_filtered_by = request.GET["username"][:50]
-        
         for absence in Absence.objects.all():
-            username = User.objects.get(id=absence.User_ID.id).username
-            if not absence.User_ID in filtered_users and name_filtered_by.lower() in username.lower():
-                filtered_users.append(absence.User_ID)
+            user = User.objects.get(id=absence.User_ID.id)
+            if user in all_users:
+                username = user.username
+                if not absence.User_ID in filtered_users and name_filtered_by.lower() in username.lower():
+                    filtered_users.append(absence.User_ID)
 
 
     # ONLY filtering by username
     elif "username" in request.GET:
         # Name limit is 50 
         name_filtered_by = request.GET["username"][:50]
-
-        for user in User.objects.all():
+        for user in all_users:
             # same logic as "icontains", searches through users names & finds similarities
             if name_filtered_by.lower() in user.username.lower():
                 filtered_users.append(user)
+
+        
 
 
     # ONLY filtering by absences
     elif "absent" in request.GET:
         for absence in Absence.objects.all():
-            username = User.objects.get(id=absence.User_ID.id).username
-            if not absence.User_ID in filtered_users:
-                filtered_users.append(absence.User_ID) 
+            user = User.objects.get(id=absence.User_ID.id)
+            if user in all_users:
+                username = user.username
+                if not absence.User_ID in filtered_users:
+                    filtered_users.append(absence.User_ID) 
 
     # Else, no filtering
     else:
         filtered_users = all_users
-
-
+    
+    
+    # NOTE: Are these necessary here? Not in use
     absence_content = []
     total_absence_dates = {}
     all_absences = {}
@@ -459,7 +463,6 @@ def all_calendar(
     data_3 = {"Sa": "Sa", "Su": "Su","users_filter": filtered_users}
 
     context = {**data_1, **data_2, **data_3}
-
     
 
     return render(request, "ap_app/calendar.html", context)
@@ -538,3 +541,35 @@ def add_user(request) -> render:
         absence.edit_whitelist.add(user)
         absence.save()
     return redirect("/profile/settings")
+
+
+
+
+def find_user_obj(user_to_find):
+    """ Finds & Returns object of 'UserProfile' for a user 
+    \n-param (type)User user_to_find 
+    """    
+    users = UserProfile.objects.filter(user=user_to_find)    
+    # If cannot find object for a user, than creates on
+    if users.count() <= 0:
+        UserProfile.objects.create(
+        user = user_to_find,
+        accepted_policy = False
+        )
+
+    # Users object
+    user_found = UserProfile.objects.filter(user=user_to_find)[0]
+
+    return user_found
+
+
+def obj_exists(user):
+    """ Determines if a user has a 'UserProfile' Object"""
+    objs = UserProfile.objects.filter(user=user)
+    if objs.count() == 0:
+        return False
+
+    return True 
+
+   
+      
