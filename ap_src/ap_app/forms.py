@@ -2,7 +2,7 @@ from django import forms
 from django.db.models.base import Model
 from django.forms import models
 from django.contrib.auth.models import User
-from .models import Team
+from .models import Team, UserProfile
 from django.utils.timezone import now
 from difflib import SequenceMatcher
 from .models import Absence
@@ -14,9 +14,20 @@ class CreateTeamForm(forms.ModelForm):
         model = Team
         fields = ["name", "description", "private"]
 
-    name            = forms.CharField(min_length=3, max_length=64, required=True, widget=forms.TextInput(attrs={"class":"", "placeholder":"Team Name"}))
-    description     = forms.CharField(max_length=512, required=False, widget=forms.Textarea(attrs={"class":"", "placeholder":"Team Description"}))
-    private         = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={"class":""}))
+    name = forms.CharField(
+        min_length=3,
+        max_length=64,
+        required=True,
+        widget=forms.TextInput(attrs={"class": "", "placeholder": "Team Name"}),
+    )
+    description = forms.CharField(
+        max_length=512,
+        required=False,
+        widget=forms.Textarea(attrs={"class": "", "placeholder": "Team Description"}),
+    )
+    private = forms.BooleanField(
+        required=False, widget=forms.CheckboxInput(attrs={"class": ""})
+    )
 
     def name_similarity(self) -> float:
         """Returns float between 0 and 1 depending on the similarity
@@ -25,11 +36,9 @@ class CreateTeamForm(forms.ModelForm):
 
         teams = Team.objects.all()
         for team in teams:
-            similarity = SequenceMatcher(
-                None, self['name'].value(), team.name).ratio()
-            if similarity >= .5:
+            similarity = SequenceMatcher(None, self["name"].value(), team.name).ratio()
+            if similarity >= 0.5:
                 return similarity
-
 
 
 class login(forms.Form):
@@ -37,7 +46,7 @@ class login(forms.Form):
         label="Name:",
         max_length=200,
     )
-    
+
     password = forms.CharField(
         label="Password:",
         max_length=200,
@@ -66,33 +75,48 @@ class register(forms.Form):
 class AbsenceForm(forms.ModelForm):
     class Meta:
         model = Absence
-        fields = ["start_date", "end_date"]
+        fields = ["start_date", "end_date", "user"]
 
     def clean(self):
-
-
         def end_date_valid():
             if start_date > end_date:
                 return False
             return True
 
-
         cleaned_data = super().clean()
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
+        user = cleaned_data.get("user")
 
         if not end_date_valid():
-            raise forms.ValidationError(f"End Date must be after start date {start_date}, {end_date}")
+            raise forms.ValidationError(
+                f"End Date must be after start date {start_date}, {end_date}"
+            )
 
-    start_date = forms.DateField(label="Starting Date:", required=True, input_formats=['%Y-%m-%d'], widget=forms.DateInput(attrs={"type":"date"}), initial=now().date())
-    end_date = forms.DateField(label="Ending Date:", required=True, input_formats=['%Y-%m-%d'], widget=forms.DateInput(attrs={"type":"date"}), initial= lambda: now().date()+datetime.timedelta(days=1))
+    start_date = forms.DateField(
+        label="Starting Date:",
+        required=True,
+        input_formats=["%Y-%m-%d"],
+        widget=forms.DateInput(attrs={"type": "date"}),
+        initial=now().date(),
+    )
+    end_date = forms.DateField(
+        label="Ending Date:",
+        required=True,
+        input_formats=["%Y-%m-%d"],
+        widget=forms.DateInput(attrs={"type": "date"}),
+        initial=lambda: now().date() + datetime.timedelta(days=1),
+    )
+    print(User.objects)
+    user = forms.ModelChoiceField(
+        label="User:", required=True, queryset=User.objects.all(), initial=User.objects.last()
+    )
 
 
 class DeleteUserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = []
-
 
 
 class AcceptPolicyForm(forms.Form):
