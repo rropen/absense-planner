@@ -46,34 +46,40 @@
 
 $(document).ready(function() {
 
-  words.forEach(function(word) {
-    $(".selection").append("<option value='" + word + "'>" + word + "</option>");
-  });
+    // words.forEach(function(word) {
+    //     $(".selection").append("<option value='" + word + "'>" + word + "</option>");
+    // });
 
-  $("button").click(function() {
-    $("#Find").val('');
-  });
+    // $("button").click(function() {
+    //     $("#Find").val('');
+    // });
 
-  $("#Find").keyup(function() {
-    $(".selection").html('');
+    $("#Find").keyup(function() {
+        $(".selection").html('');
 
-
-    var index = 0; 
-    words.forEach(function(word) {
-        
-
-        if (word.search($("#Find").val()) > -1) {
-            $(".selection").append("<option style='color:red' value='" + word + "'>" + word + "</option>");
-        } else if ($('Find').val() == '') {
-            if (index == 0)
-            {
-                $(".selection").append("<p>Taken:</p>");    
-            }
-            index+=1;
-            $(".selection").append("<option style='color:red' value='" + word + "'>" + word + "</option>");
-        }
+        var nameValid = true;
+        words.forEach(function(word) {
+            
+            // ATM, it checks for similarities - (Not Exact val). This needs changing
+            if (word.search($("#Find").val()) > -1) {
+                nameValid = false;
+            };
+            // else if ($('Find').val() == '') {
+                
+                
+            //     $(".selection").append("<option style='color:red' value='" + word + "'>" + word + "</option>");
+            // }
+            
         });
-  });
+
+        if (nameValid) {
+            $(".selection").append("<p style='color:green'> Name Available </p>");
+        }
+        else {
+            $(".selection").append("<p style='color:red'> Name Taken </p>");
+        };
+
+    });
 });
 
 </script>
