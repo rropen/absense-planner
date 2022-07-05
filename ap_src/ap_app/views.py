@@ -17,7 +17,7 @@ from django.views.generic import CreateView, UpdateView
 from river.models.fields.state import State
 
 from .forms import CreateTeamForm, DeleteUserForm, AbsenceForm, AcceptPolicyForm
-from .models import Absence, Relationship, Role, Team, UserProfile
+from .models import Absence, Relationship, Role, Team, UserProfile, User
 
 User = get_user_model()
 
@@ -510,29 +510,37 @@ class EditAbsence(UpdateView):
 @login_required
 def profile_settings(request) -> render:
     """returns the settings page"""
-    absences = Absence.objects.filter(User_ID=request.user.id)
-    context = {"absences": absences}
+    try:
+        userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
+    except IndexError:
+        # TODO Create error page
+        return redirect("/")
+    context = {"userprofile":userprofile}
     return render(request, "ap_app/settings.html", context)
 
 
 @login_required
 def add_user(request) -> render:
+    try:
+        userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
+    except IndexError:
+        # TODO Create error page
+        return redirect("/")
+    
     if request.method == "POST":
         username = request.POST.get("username")
+        
+
         try:
-            absence: Absence = Absence.objects.filter(User_ID=request.user.id)[0]
+            user = User.objects.get(username=username)
         except IndexError:
             # TODO Create error page
             return redirect("/")
 
-        try:
-            user = User.objects.filter(username=username)[0]
-        except IndexError:
-            # TODO Create error page
-            return redirect("/")
+        userprofile.edit_whitelist.add(user)
+        user.save()
+        print(userprofile)
 
-        absence.edit_whitelist.add(user)
-        absence.save()
     return redirect("/profile/settings")
 
 

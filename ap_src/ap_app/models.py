@@ -77,7 +77,7 @@ class UserProfile(models.Model):
     """ Extension of fields for User class """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # #issue #11
-    edit_whitelist = models.ManyToManyField()
+    edit_whitelist = models.ManyToManyField(User, related_name="+")
 
 
     # Extra Fields
