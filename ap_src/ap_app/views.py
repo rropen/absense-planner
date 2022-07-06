@@ -16,7 +16,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, UpdateView
 from river.models.fields.state import State
 
-from .forms import CreateTeamForm, DeleteUserForm, AbsenceForm, AcceptPolicyForm
+from .forms import CreateTeamForm, DeleteUserForm, AbsenceForm, AcceptPolicyForm, SwitchUser
 from .models import Absence, Relationship, Role, Team, UserProfile, User
 
 User = get_user_model()
@@ -470,7 +470,12 @@ def all_calendar(
 @login_required
 def profile_page(request):
     absences = Absence.objects.filter(User_ID=request.user.id)
-    return render(request, "ap_app/profile.html", {"absences": absences})
+    users = UserProfile.objects.filter(edit_whitelist = request.user)
+    form = SwitchUser(request.POST)
+    form.fields["user"].queryset = users
+    form.fields["user"].initial = UserProfile.objects.get(user = request.user)
+
+    return render(request, "ap_app/profile.html", {"absences": absences,"users":users, "form": form})
 
 
 @login_required

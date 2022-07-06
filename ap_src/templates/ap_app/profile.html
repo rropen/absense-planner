@@ -1,30 +1,37 @@
 {% extends "base.html" %}
 {% block title %}Profile{% endblock %}
+{% load bulma_tags %}
 {% load static %}
 {% block content %}
 
 <div id="delete-modal" class="modal">
-    <div class="modal-background"></div>
-    <div class="modal-card">
-      <header class="modal-card-head">
-        <p class="modal-card-title">Are you sure you want to delete this absence?</p>
-        <button class="delete" aria-label="close"></button>
-      </header>
-      <footer class="modal-card-foot">
-        <a class="button is-danger" href="" id="delete-btn">Delete</a>
-        <a class="button is-info">Cancel</a>
-      </footer>
-    </div>
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Are you sure you want to delete this absence?</p>
+      <button class="delete" aria-label="close"></button>
+    </header>
+    <footer class="modal-card-foot">
+      <a class="button is-danger" href="" id="delete-btn">Delete</a>
+      <a class="button is-info">Cancel</a>
+    </footer>
   </div>
+</div>
 
 <nav class="">
   <div class="block has-text-centered" style="position:absolute; left:0; right:0; margin-top:10px;">
-        <h1 class="title">My Absences</h1>
+    <h1 class="title">My Absences</h1>
   </div>
 
   <!-- Left side -->
   <div class="" style="float:right; position: relative;">
-      <a class="button is-info" href="/profile/settings"><i class="fas fa-cog"></i></a>
+    <a class="button is-info" href="/profile/settings"><i class="fas fa-cog"></i></a>
+  </div>
+  <div class="level-right"  style="position: relative; padding-right: 10px;">
+    <form method="POST">
+      {% csrf_token %}
+      {{form | bulma}}
+    </form>
   </div>
 </nav>
 
@@ -32,85 +39,85 @@
 
   {% if not absences %}
   <div class="container has-background-light box">
-      <div class="is-size-5 mb-3">
-          <span class="is-block is-size-5">No absences reported.</span>
-      </div>
+    <div class="is-size-5 mb-3">
+      <span class="is-block is-size-5">No absences reported.</span>
+    </div>
   </div>
   {% endif %}
 
 
-<div class="mt-2">
+  <div class="mt-2">
     <div class="columns is-multiline">
-    {% for absence in absences %}
-        <div class="column is-one-third">
-            <div class="card has-background-light p-4 has-text-centered">
-                <span class="is-block is-size-5 has-text-weight-bold"> Start date: {{ absence.absence_date_start }}</span>
-                <span class="is-block is-size-5 has-text-weight-bold">End date: {{ absence.absence_date_end }}</span>
-                <div class="mx-auto">
-                    <a class="button is-info" href="/absence/edit/{{ absence.pk }}">Edit</a>
-                    <a class="button is-danger delete-trigger-button" data-id="{{ absence.pk }}">Delete</a>
-                </div>
-            </div>
+      {% for absence in absences %}
+      <div class="column is-one-third">
+        <div class="card has-background-light p-4 has-text-centered">
+          <span class="is-block is-size-5 has-text-weight-bold"> Start date: {{ absence.absence_date_start }}</span>
+          <span class="is-block is-size-5 has-text-weight-bold">End date: {{ absence.absence_date_end }}</span>
+          <div class="mx-auto">
+            <a class="button is-info" href="/absence/edit/{{ absence.pk }}">Edit</a>
+            <a class="button is-danger delete-trigger-button" data-id="{{ absence.pk }}">Delete</a>
+          </div>
         </div>
-    {% endfor %}
+      </div>
+      {% endfor %}
     </div>
-</div>
+  </div>
 
 
 </div>
 <script>
 
-    document.addEventListener('DOMContentLoaded', () => {
-  // Functions to open and close a modal
-  function openModal() {
-    $el = document.getElementById("delete-modal");
-    $el.classList.add('is-active');
-  }
-
-  function closeModal($el) {
-    $el.classList.remove('is-active');
-  }
-
-  function closeAllModals() {
-    (document.querySelectorAll('.modal') || []).forEach(($modal) => {
-      closeModal($modal);
-    });
-  }
-
-  // Add a click event on buttons to open a specific modal
-  (document.querySelectorAll('.js-modal-trigger') || []).forEach(($trigger) => {
-    const modal = $trigger.dataset.target;
-    const $target = 
-
-    $trigger.addEventListener('click', (e) => {
-      openModal($target);
-    });
-    $("#delete-btn").attr("href", "/absence/delete/" + $trigger.dataset.id)
-  });
-
-  // Add a click event on various child elements to close the parent modal
-  (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button') || []).forEach(($close) => {
-    const $target = $close.closest('.modal');
-
-    $close.addEventListener('click', () => {
-      closeModal($target);
-    });
-  });
-
-  // Add a keyboard event to close all modals
-  document.addEventListener('keydown', (event) => {
-    const e = event || window.event;
-
-    if (e.keyCode === 27) { // Escape key
-      closeAllModals();
+  document.addEventListener('DOMContentLoaded', () => {
+    // Functions to open and close a modal
+    function openModal() {
+      $el = document.getElementById("delete-modal");
+      $el.classList.add('is-active');
     }
-  });
 
-  $(".delete-trigger-button").click(function(e){
-        $("#delete-btn").attr("href", "/absence/delete/" + $(this).attr("data-id"))
-        openModal();
+    function closeModal($el) {
+      $el.classList.remove('is-active');
+    }
+
+    function closeAllModals() {
+      (document.querySelectorAll('.modal') || []).forEach(($modal) => {
+        closeModal($modal);
+      });
+    }
+
+    // Add a click event on buttons to open a specific modal
+    (document.querySelectorAll('.js-modal-trigger') || []).forEach(($trigger) => {
+      const modal = $trigger.dataset.target;
+      const $target =
+
+        $trigger.addEventListener('click', (e) => {
+          openModal($target);
+        });
+      $("#delete-btn").attr("href", "/absence/delete/" + $trigger.dataset.id)
     });
-});
+
+    // Add a click event on various child elements to close the parent modal
+    (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button') || []).forEach(($close) => {
+      const $target = $close.closest('.modal');
+
+      $close.addEventListener('click', () => {
+        closeModal($target);
+      });
+    });
+
+    // Add a keyboard event to close all modals
+    document.addEventListener('keydown', (event) => {
+      const e = event || window.event;
+
+      if (e.keyCode === 27) { // Escape key
+        closeAllModals();
+      }
+    });
+
+    $(".delete-trigger-button").click(function (e) {
+      $("#delete-btn").attr("href", "/absence/delete/" + $(this).attr("data-id"))
+      openModal();
+    });
+  });
 
 
 </script>

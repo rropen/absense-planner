@@ -2,11 +2,9 @@ from django import forms
 from django.db.models.base import Model
 from django.forms import models
 from django.contrib.auth.models import User
-
-from .models import Team, UserProfile
+from .models import Team, UserProfile, Absence
 from django.utils.timezone import now
 from difflib import SequenceMatcher
-from .models import Absence
 import datetime
 
 
@@ -116,6 +114,14 @@ class AbsenceForm(forms.ModelForm):
         label="User:", required=True, queryset=User.objects.all(), initial=None
     )
 
+class SwitchUser(forms.Form):
+    class Meta:
+        fields = ["User"]
+
+    user = forms.ModelChoiceField(
+        label="User:", queryset=User.objects.all(), initial=None
+    )
+    
 
 class DeleteUserForm(forms.ModelForm):
     class Meta:
