@@ -4,11 +4,21 @@ from river.models.fields.state import StateField, State
 from river.models import TransitionApproval
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy
-
-User = get_user_model()
+from recurrence.fields import RecurrenceField
 
 # TODO: is the ID, id field needed. Django has this built in as part of the Model class
 
+class AbsenceRecurring(models.Model):
+    ID = models.AutoField(primary_key=True)
+    User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="absences")
+    absence_date_start = models.DateField(gettext_lazy("Date"), max_length=200, default=now)
+    absence_date_end = models.DateField(max_length=200)
+    # #issue #11
+    edit_whitelist = models.ManyToManyField(to=User)
+    recurrences = RecurrenceField()
+
+    def __str__(self):
+        return f"{self.User_ID}, {self.absence_date_start} - {self.absence_date_end}"
 
 class Absence(models.Model):
     ID = models.AutoField(primary_key=True)

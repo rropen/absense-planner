@@ -1,5 +1,11 @@
 from django.urls import path
+from django.conf.urls import url
+from django.views.i18n import JavaScriptCatalog
 from . import views
+
+js_info_dict = {
+    'packages' : ('recurrence', ),
+}
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -26,8 +32,6 @@ urlpatterns = [
     path("absence/edit/<int:pk>", views.EditAbsence.as_view(), name="absence_edit"),
     path("profile/settings", views.profile_settings, name="profile settings"),
     path("profile/settings/add-user", views.add_user, name="add-user"),
+    url(r'^jsil18n', JavaScriptCatalog.as_view(), js_info_dict)
     # path("absence/edit/<int:id>", views.absence_edit, name="Absence Edit")
-
-    
-
 ]

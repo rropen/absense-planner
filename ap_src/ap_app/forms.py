@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from .models import Team
 from django.utils.timezone import now
 from difflib import SequenceMatcher
-from .models import Absence
+from .models import Absence, AbsenceRecurring
 import datetime
 
 
@@ -62,6 +62,10 @@ class sign_up(forms.Form):
 class register(forms.Form):
     check = forms.BooleanField()
 
+class AbsenceFormRecurring(forms.ModelForm):
+    class Meta:
+        model = AbsenceRecurring
+        fields = ('title', 'recurrences', )
 
 class AbsenceForm(forms.ModelForm):
     class Meta:
