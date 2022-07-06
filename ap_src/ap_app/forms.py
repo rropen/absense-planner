@@ -2,6 +2,7 @@ from django import forms
 from django.db.models.base import Model
 from django.forms import models
 from django.contrib.auth.models import User
+
 from .models import Team, UserProfile
 from django.utils.timezone import now
 from difflib import SequenceMatcher
@@ -77,6 +78,11 @@ class AbsenceForm(forms.ModelForm):
         model = Absence
         fields = ["start_date", "end_date", "user"]
 
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user")
+        super(AbsenceForm, self).__init__(*args, **kwargs)
+        self.fields["user"].initial = UserProfile.objects.get(user=self.user)
+
     def clean(self):
         def end_date_valid():
             if start_date > end_date:
@@ -86,7 +92,6 @@ class AbsenceForm(forms.ModelForm):
         cleaned_data = super().clean()
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
-        user = cleaned_data.get("user")
 
         if not end_date_valid():
             raise forms.ValidationError(
@@ -107,9 +112,8 @@ class AbsenceForm(forms.ModelForm):
         widget=forms.DateInput(attrs={"type": "date"}),
         initial=lambda: now().date() + datetime.timedelta(days=1),
     )
-    print(User.objects)
     user = forms.ModelChoiceField(
-        label="User:", required=True, queryset=User.objects.all(), initial=User.objects.last()
+        label="User:", required=True, queryset=User.objects.all(), initial=None
     )
 
 

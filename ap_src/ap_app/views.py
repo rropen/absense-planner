@@ -219,7 +219,7 @@ def joining_team_request(request, id, response):
 def add(request) -> render:
     """create new absence record"""
     if request.method == "POST":
-        form = AbsenceForm(request.POST)
+        form = AbsenceForm(request.POST, user = request.user)
         if form.is_valid():
             obj = Absence()
             obj.absence_date_start = form.cleaned_data["start_date"]
@@ -236,7 +236,7 @@ def add(request) -> render:
             # redirect to success page
     else:
 
-        form = AbsenceForm()
+        form = AbsenceForm(user = request.user)
         form.fields["user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
         )
@@ -322,7 +322,7 @@ def get_user_data(users, user_type):
         else:
             user_id = user.id
 
-        absence_info = Absence.objects.filter(User_ID=user_id)
+        absence_info = Absence.objects.filter(Target_User_ID=user_id)
         total_absence_dates[user] = []
         all_absences[user] = []
 
@@ -426,14 +426,14 @@ def all_calendar(
         # Get username input & limits the length to 50
         name_filtered_by = request.GET["username"][:50]
         for absence in Absence.objects.all():
-            user = User.objects.get(id=absence.User_ID.id)
+            user = User.objects.get(id=absence.Target_User_ID.id)
             if user in all_users:
                 username = user.username
                 if (
-                    not absence.User_ID in filtered_users
+                    not absence.Target_User_ID in filtered_users
                     and name_filtered_by.lower() in username.lower()
                 ):
-                    filtered_users.append(absence.User_ID)
+                    filtered_users.append(absence.Target_User_ID)
 
     # ONLY filtering by username
     elif "username" in request.GET:
@@ -447,11 +447,11 @@ def all_calendar(
     # ONLY filtering by absences
     elif "absent" in request.GET:
         for absence in Absence.objects.all():
-            user = User.objects.get(id=absence.User_ID.id)
+            user = User.objects.get(id=absence.Target_User_ID.id)
             if user in all_users:
                 username = user.username
-                if not absence.User_ID in filtered_users:
-                    filtered_users.append(absence.User_ID)
+                if not absence.Target_User_ID in filtered_users:
+                    filtered_users.append(absence.Target_User_ID)
 
     # Else, no filtering
     else:
@@ -543,7 +543,7 @@ def add_user(request) -> render:
 
         userprofile.edit_whitelist.add(user)
         user.save()
-        print(userprofile)
+
 
     return redirect("/profile/settings")
 
@@ -554,11 +554,14 @@ def find_user_obj(user_to_find):
     """
     users = UserProfile.objects.filter(user=user_to_find)
     # If cannot find object for a user, than creates on
+
     if users.count() <= 0:
         UserProfile.objects.create(user=user_to_find, accepted_policy=False)
-
+        user_found = UserProfile.objects.filter(user=user_to_find)[0]
+        user_found.edit_whitelist.add(user_to_find)
+        print(user_found.edit_whitelist)
     # Users object
-    user_found = UserProfile.objects.filter(user=user_to_find)[0]
+    user_found = UserProfile.objects.filter(user_=user_to_find)[0]
 
     return user_found
 
