@@ -11,22 +11,21 @@
 
 
 <div class="main container">
-    <h1 class="title">Learning JS</h1>
-    <input id="Find">
-    <p id="LearningJS" class="selection"></p>
+    <!-- <h1 class="title">Learning JS</h1>
+    <input id="nameInput2">
+    <p id="LearningJS" class="selection"></p> -->
 
-    <br>
-    <hr>
+    <!-- <br>
+    <hr> -->
     
-
-
     <h1 class="title">Create a Team</h1>
     <form method="post" class="text-center">
         {% if message %}
         {% include "messages.html" %}
         {% endif %}
         {% csrf_token %}
-         
+      
+        <p id="namePromt"></p>
         {{ form | bulma }}
         
         
@@ -44,43 +43,41 @@
     ];
 
 
-$(document).ready(function() {
+    const existingTeams = "{{ existing_teams|safe }}".split(",");
+    
 
-    // words.forEach(function(word) {
-    //     $(".selection").append("<option value='" + word + "'>" + word + "</option>");
-    // });
+    // {{ existing_teams|safe }};
+    
+    
+    var nameFound = false;
+    function determineValid(item, index, arr){
+        if (item == $("#nameInput").val())
+        {
+            nameFound = true;
+        }
+    }
 
-    // $("button").click(function() {
-    //     $("#Find").val('');
-    // });
-
-    $("#Find").keyup(function() {
-        $(".selection").html('');
-
-        var nameValid = true;
-        words.forEach(function(word) {
+    $(document).ready(function(){
+        $("#nameInput").keyup(function(){
+            nameFound = false;
+            var inputVal = $("#nameInput").val();
+            existingTeams.forEach(determineValid);
             
-            // ATM, it checks for similarities - (Not Exact val). This needs changing
-            if (word.search($("#Find").val()) > -1) {
-                nameValid = false;
-            };
-            // else if ($('Find').val() == '') {
-                
-                
-            //     $(".selection").append("<option style='color:red' value='" + word + "'>" + word + "</option>");
-            // }
+            $("#namePromt").html("");
             
+            if (nameFound)
+            {
+                $("#nameInput").css("color", "red");
+                $("#namePromt").append("<strong style='color:red'> Name Taken </strong>");
+            }            
+            else
+            {
+                $("#nameInput").css("color", "green");
+            }
         });
 
-        if (nameValid) {
-            $(".selection").append("<p style='color:green'> Name Available </p>");
-        }
-        else {
-            $(".selection").append("<p style='color:red'> Name Taken </p>");
-        };
-
     });
-});
+  
 
 </script>
 
