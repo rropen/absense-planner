@@ -25,11 +25,11 @@ User = get_user_model()
 def index(request) -> render:
     """Branched view.                       \n
     IF NOT Logged in: returns the home page \n
-    ELSE: returns the calendar page """
-    
+    ELSE: returns the calendar page"""
+
     # If its the first time a user is logging in, will create an object of UserProfile model for that user.
     if not request.user.is_anonymous:
-        
+
         if not obj_exists(request.user):
 
             user = find_user_obj(request.user)
@@ -39,14 +39,12 @@ def index(request) -> render:
         # Until the accepted_policy field is checked, the user will keep being redirected to the policy page to accept
         if not user.accepted_policy:
             return privacy_page(request, to_accept=True)
-        
 
     # Change: If user is logged in, will be redirected to the calendar
-    if request.user.is_authenticated:       
+    if request.user.is_authenticated:
         return all_calendar(request)
-    
-    return render(request, "ap_app/index.html")
 
+    return render(request, "ap_app/index.html")
 
 
 def privacy_page(request, to_accept=False) -> render:
@@ -60,8 +58,10 @@ def privacy_page(request, to_accept=False) -> render:
     # If the user has been redirected from home page to accepted policy
     elif to_accept:
 
-        return render(request, "registration/accept_policy.html", {"form": AcceptPolicyForm()})
-    
+        return render(
+            request, "registration/accept_policy.html", {"form": AcceptPolicyForm()}
+        )
+
     # Viewing general policy page - (Without the acceptancy form)
     return render(request, "ap_app/privacy.html")
 
@@ -70,8 +70,6 @@ class SignUpView(CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy("login")
     template_name = "registration/signup.html"
-
-
 
 
 @login_required
@@ -96,11 +94,13 @@ def create_team(request) -> render:
         if form.name_similarity():
             # TODO: write code to tell the user that their team name is similar and to give them
             # options to change the team name.
-            return HttpResponse('Debug: Did not create form because the name is too similar to another team name')
+            return HttpResponse(
+                "Debug: Did not create form because the name is too similar to another team name"
+            )
 
         elif form.is_valid():
             form.save()
-            # Gets the created team and "Owner" Role and creates a Link between 
+            # Gets the created team and "Owner" Role and creates a Link between
             # the user and their team
             created_team = Team.objects.get(name=form.cleaned_data["name"])
             assign_role = Role.objects.get(role="Owner")
@@ -110,7 +110,7 @@ def create_team(request) -> render:
                 role=assign_role,
                 status=State.objects.get(slug="active"),
             )
-            return redirect("/teams/", {"message" : "Team successfully created."})
+            return redirect("/teams/", {"message": "Team successfully created."})
     else:
         form = CreateTeamForm()
     return render(request, "teams/create_team.html", {"form": form})
@@ -124,7 +124,11 @@ def join_team(request) -> render:
     for teams in all_user_teams:
         user_teams.append(teams.team)
     all_teams = Team.objects.all().exclude(name__in=user_teams)
-    return render(request, "teams/join_team.html", {"all_teams": all_teams, "joined_teams": user_teams})
+    return render(
+        request,
+        "teams/join_team.html",
+        {"all_teams": all_teams, "joined_teams": user_teams},
+    )
 
 
 @login_required
@@ -222,11 +226,21 @@ def add(request) -> render:
             obj.absence_date_end = form.cleaned_data["end_date"]
             obj.request_accepted = False
             obj.User_ID = request.user
+            obj.Target_User_ID = form.cleaned_data["user"]
             obj.save()
-            return render(request, "ap_app/add_absence.html", {"form" : form, "message" : "Absence successfully recorded."})
+            return render(
+                request,
+                "ap_app/add_absence.html",
+                {"form": form, "message": "Absence successfully recorded."},
+            )
             # redirect to success page
     else:
+
         form = AbsenceForm()
+        form.fields["user"].queryset = UserProfile.objects.filter(
+            edit_whitelist__in=[request.user]
+        )
+
     content = {"form": form}
     return render(request, "ap_app/add_absence.html", content)
 
@@ -357,8 +371,7 @@ def team_calendar(
     users = Relationship.objects.all().filter(
         team=id, status=State.objects.get(slug="active")
     )
-    
-    
+
     data_2 = get_user_data(users, 1)
 
     team = Team.objects.get(id=id)
@@ -366,11 +379,9 @@ def team_calendar(
     user_in_teams = []
     for rel in Relationship.objects.filter(team=team):
         user_in_teams.append(rel.user.id)
-        
-    
 
     data_3 = {
-        "owner":Role.objects.all()[0],
+        "owner": Role.objects.all()[0],
         "Sa": "Sa",
         "Su": "Su",
         "current_user": Relationship.objects.get(user=request.user, team=team),
@@ -396,9 +407,8 @@ def all_calendar(
     all_users = []
     all_users.append(request.user)
     user_relations = Relationship.objects.filter(user=request.user)
-    
 
-    #NOTE: need to convert filtered queryset back to list for "all_users"
+    # NOTE: need to convert filtered queryset back to list for "all_users"
     for relation in user_relations:
         rels = Relationship.objects.filter(
             team=relation.team, status=State.objects.get(slug="active")
@@ -408,10 +418,8 @@ def all_calendar(
                 pass
             else:
                 all_users.append(rel.user)
-    
-    
 
-    #Filtering
+    # Filtering
     filtered_users = []
     # Filtering by both username & absence
     if "username" in request.GET and "absent" in request.GET:
@@ -421,21 +429,20 @@ def all_calendar(
             user = User.objects.get(id=absence.User_ID.id)
             if user in all_users:
                 username = user.username
-                if not absence.User_ID in filtered_users and name_filtered_by.lower() in username.lower():
+                if (
+                    not absence.User_ID in filtered_users
+                    and name_filtered_by.lower() in username.lower()
+                ):
                     filtered_users.append(absence.User_ID)
-
 
     # ONLY filtering by username
     elif "username" in request.GET:
-        # Name limit is 50 
+        # Name limit is 50
         name_filtered_by = request.GET["username"][:50]
         for user in all_users:
             # same logic as "icontains", searches through users names & finds similarities
             if name_filtered_by.lower() in user.username.lower():
                 filtered_users.append(user)
-
-        
-
 
     # ONLY filtering by absences
     elif "absent" in request.GET:
@@ -444,19 +451,17 @@ def all_calendar(
             if user in all_users:
                 username = user.username
                 if not absence.User_ID in filtered_users:
-                    filtered_users.append(absence.User_ID) 
+                    filtered_users.append(absence.User_ID)
 
     # Else, no filtering
     else:
         filtered_users = all_users
- 
 
     data_2 = get_user_data(all_users, 2)
 
-    data_3 = {"Sa": "Sa", "Su": "Su","users_filter": filtered_users}
+    data_3 = {"Sa": "Sa", "Su": "Su", "users_filter": filtered_users}
 
     context = {**data_1, **data_2, **data_3}
-    
 
     return render(request, "ap_app/calendar.html", context)
 
@@ -515,7 +520,7 @@ def profile_settings(request) -> render:
     except IndexError:
         # TODO Create error page
         return redirect("/")
-    context = {"userprofile":userprofile}
+    context = {"userprofile": userprofile}
     return render(request, "ap_app/settings.html", context)
 
 
@@ -526,10 +531,9 @@ def add_user(request) -> render:
     except IndexError:
         # TODO Create error page
         return redirect("/")
-    
+
     if request.method == "POST":
         username = request.POST.get("username")
-        
 
         try:
             user = User.objects.get(username=username)
@@ -544,19 +548,14 @@ def add_user(request) -> render:
     return redirect("/profile/settings")
 
 
-
-
 def find_user_obj(user_to_find):
-    """ Finds & Returns object of 'UserProfile' for a user 
-    \n-param (type)User user_to_find 
-    """    
-    users = UserProfile.objects.filter(user=user_to_find)    
+    """Finds & Returns object of 'UserProfile' for a user
+    \n-param (type)User user_to_find
+    """
+    users = UserProfile.objects.filter(user=user_to_find)
     # If cannot find object for a user, than creates on
     if users.count() <= 0:
-        UserProfile.objects.create(
-        user = user_to_find,
-        accepted_policy = False
-        )
+        UserProfile.objects.create(user=user_to_find, accepted_policy=False)
 
     # Users object
     user_found = UserProfile.objects.filter(user=user_to_find)[0]
@@ -565,12 +564,9 @@ def find_user_obj(user_to_find):
 
 
 def obj_exists(user):
-    """ Determines if a user has a 'UserProfile' Object"""
+    """Determines if a user has a 'UserProfile' Object"""
     objs = UserProfile.objects.filter(user=user)
     if objs.count() == 0:
         return False
 
-    return True 
-
-   
-      
+    return True

@@ -13,11 +13,12 @@ User = get_user_model()
 class Absence(models.Model):
     ID = models.AutoField(primary_key=True)
     User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="absences")
+    Target_User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="+")
     absence_date_start = models.DateField(gettext_lazy("Date"), max_length=200, default=now)
     absence_date_end = models.DateField(max_length=200)
     
     def __str__(self):
-        return f"{self.User_ID}, {self.absence_date_start} - {self.absence_date_end}"
+        return f"{self.Target_User_ID}, {self.absence_date_start} - {self.absence_date_end}, made by {self.User_ID}"
 
 
 class Team(models.Model):
