@@ -28,23 +28,26 @@
     <a class="button is-info" href="/profile/settings"><i class="fas fa-cog"></i></a>
   </div>
   <div class="level-right submit" style="position: relative; padding-right: 10px;">
-    <form method="POST" class="level" >
+    <form method="POST" class="level">
       {% csrf_token %}
-      <input type="submit" class="button is-link level-item mt-2" value="Switch" >
+      <input type="submit" class="button is-link level-item mt-2" value="Switch" onclick="setTimeout(close_message() ,2000)" id="button">
       <div class="level-item">
         {{form | bulma}}
       </div>
-      
+
     </form>
-    
+
   </div>
 </nav>
-{% if message %}
-      {% include "messages.html" %}
-      {% endif %}
-<div class="main container mt-6">
 
+<div class="main container mt-6">
+  <div id="message">
+    {% if message %}
+    {% include "messages.html" %}
+    {% endif %}
+  </div>
   {% if not absences %}
+
   <div class="container has-background-light box">
     <div class="is-size-5 mb-3">
       <span class="is-block is-size-5">No absences reported.</span>
@@ -126,6 +129,18 @@
     });
   });
 
+
+
+  function close_message() {
+    var elem = document.getElementById("message");
+    elem.style.display = "none";
+  }
+
+    $(document).ready(function(){
+      $("#button").click(setTimeout(close_message(), 2000));
+      
+    })
+ 
 
 </script>
 {% endblock %}
