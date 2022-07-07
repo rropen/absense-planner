@@ -135,6 +135,7 @@ def join_team(request) -> render:
     for teams in all_user_teams:
         user_teams.append(teams.team)
     all_teams = Team.objects.all().exclude(name__in=user_teams)
+
     all_teams_filtered = []
 
     # Filtering by team name
@@ -146,6 +147,8 @@ def join_team(request) -> render:
         all_teams_filtered = all_teams
 
     return render(request, "teams/join_team.html", {"all_teams": all_teams_filtered, "joined_teams": user_teams})
+
+
 
 
 @login_required
