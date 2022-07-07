@@ -391,8 +391,17 @@ def all_calendar(request, month=MONTH, year=YEAR):
 # Profile page
 @login_required
 def profile_page(request):
+<<<<<<< Updated upstream
     absences = Absence.objects.filter(User_ID = request.user.id)
     return render(request, "ap_app/profile.html", {"absences":absences})
+=======
+    absences = Absence.objects.filter(User_ID=request.user.id)
+    users = UserProfile.objects.filter(edit_whitelist = request.user)
+    form = SwitchUser(None, initial={"user": request.user})
+    form.fields["user"].queryset = users
+
+    return render(request, "ap_app/profile.html", {"absences": absences,"users":users, "form": form})
+>>>>>>> Stashed changes
 
 
 @login_required
