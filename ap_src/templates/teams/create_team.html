@@ -65,12 +65,14 @@
         if (!document.getElementById("temp"))
         {
             
-
-            var teamLink = "calendar/" + foundTeamId;
+            // Patrick Note: Will continue here once implemented filtering system in join team page.
+            // Must provide link to teams to join page with filtering for team name.
+            //var teamLink = "calendar/" + foundTeamId;
+            
+            var teamLink = "join";
+            
             var str = "<a id='temp' href='" + teamLink + "'>See <strong>" + $("#nameInput").val() + "</strong>" + " Info</a>";
 
-            //$("#nameInput").insertBefore(str);
-            
             teamInputTag.insertAdjacentHTML("afterend", str);
         }
     };
