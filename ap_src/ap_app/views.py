@@ -476,20 +476,34 @@ def all_calendar(
 # Profile page
 @login_required
 def profile_page(request):
-    absences = Absence.objects.filter(User_ID=request.user.id)
-    users = UserProfile.objects.filter(edit_whitelist=request.user).exclude(user=request.user)
-    user = UserProfile.objects.filter(user=request.user)
-    form = SwitchUser(request.POST)
-    combined_results = chain(user, users)
-    form.fields["user"].queryset = combined_results
-    # form.fields["user"].initial = form.fields["user"].queryset.get(user = request.user)
-    # form.user = form.fields["user"].queryset.get(user=request.user)
 
-    return render(
-        request,
-        "ap_app/profile.html",
-        {"absences": absences, "users": users, "form": form},
-    )
+    if request.method == "POST":
+        form = SwitchUser(
+            request.POST,
+            initial={"user": request.user},
+        )
+        form.fields["user"].queryset= UserProfile.objects.filter(edit_whitelist=request.user)
+        users = UserProfile.objects.filter(edit_whitelist=request.user)
+        if form.is_valid():
+            absence_user = form.cleaned_data["user"]
+            absences = Absence.objects.filter(User_ID=absence_user.id)
+            return render(
+                request,
+                "ap_app/profile.html",
+                {"form": form, "message": "Successfully switched user", "absences": absences, "users": users,},
+            )
+    else:
+        absences = Absence.objects.filter(User_ID=request.user.id)
+        users = UserProfile.objects.filter(edit_whitelist=request.user)
+        form = SwitchUser()
+        form.fields["user"].queryset = users
+        form.fields["user"].initial = request.user
+
+        return render(
+            request,
+            "ap_app/profile.html",
+            {"absences": absences, "users": users, "form": form},
+        )
 
 
 @login_required
@@ -516,8 +530,8 @@ def absence_delete(request, absence_id: int):
     if user == absence.User_ID:
         absence.delete()
         return redirect("profile")
-    else:
-        raise Exception()
+
+    raise Exception()
 
 
 class EditAbsence(UpdateView):

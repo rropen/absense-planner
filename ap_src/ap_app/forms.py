@@ -113,15 +113,18 @@ class AbsenceForm(forms.ModelForm):
         initial=lambda: now().date() + datetime.timedelta(days=1),
     )
     user = forms.ModelChoiceField(
-        label="User:", required=True, queryset=User.objects.all(), initial=None
+        label="User:", required=True, queryset=User.objects.all(), initial=None, 
     )
 
 class SwitchUser(forms.Form):
     class Meta:
         fields = ["user"]
+    
+    def clean(self):
+        cleaned_data = super().clean()
 
     user = forms.ModelChoiceField(
-        label="", required = True, queryset=User.objects.all(), initial=queryset.objects.first()
+        label="", required = True, queryset=User.objects.all(), initial=None
     )
     
 
