@@ -11,12 +11,6 @@
 
 
 <div class="main container">
-    <!-- <h1 class="title">Learning JS</h1>
-    <input id="nameInput2">
-    <p id="LearningJS" class="selection"></p> -->
-
-    <!-- <br>
-    <hr> -->
     
     <h1 class="title">Create a Team</h1>
     <form method="post" class="text-center">
@@ -25,7 +19,10 @@
         {% endif %}
         {% csrf_token %}
       
+
         <p id="namePromt"></p>
+        
+
         {{ form | bulma }}
         
         
@@ -44,18 +41,39 @@
 
 
     const existingTeams = "{{ existing_teams|safe }}".split(",");
-    
+    const existingTeamIds = "{{ existing_teams_ids|safe }}".split(",")
+
+    const teamInputTag = document.getElementById("nameInput");
 
     // {{ existing_teams|safe }};
     
     
     var nameFound = false;
+    var foundTeamIndex = null;
+
     function determineValid(item, index, arr){
         if (item == $("#nameInput").val())
         {
+            foundTeamId = existingTeamIds[index];
             nameFound = true;
         }
     }
+
+    function teamsInfoBox()
+    {
+        // If link has not already been implemented below team-name input
+        if (!document.getElementById("temp"))
+        {
+            
+
+            var teamLink = "calendar/" + foundTeamId;
+            var str = "<a id='temp' href='" + teamLink + "'>See <strong>" + $("#nameInput").val() + "</strong>" + " Info</a>";
+
+            //$("#nameInput").insertBefore(str);
+            
+            teamInputTag.insertAdjacentHTML("afterend", str);
+        }
+    };
 
     $(document).ready(function(){
         $("#nameInput").keyup(function(){
@@ -69,10 +87,12 @@
             {
                 $("#nameInput").css("color", "red");
                 $("#namePromt").append("<strong style='color:red'> Name Taken </strong>");
+                teamsInfoBox(inputVal);
             }            
             else
             {
                 $("#nameInput").css("color", "green");
+                $("#temp").remove()
             }
         });
 

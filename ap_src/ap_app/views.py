@@ -113,7 +113,18 @@ def create_team(request) -> render:
             return redirect("/teams/", {"message" : "Team successfully created."})
     else:
         form = CreateTeamForm()
-    return render(request, "teams/create_team.html", {"form": form})
+    teams = Team.objects.all()
+    existing_teams = ""
+    existing_teams_ids = ""
+    for i, team in enumerate(teams):
+        existing_teams += team.name
+        existing_teams_ids += str(team.id)
+        if i != len(teams)-1:
+            existing_teams += ","
+            existing_teams_ids += ","
+    
+
+    return render(request, "teams/create_team.html", {"form": form, "existing_teams":existing_teams, "existing_teams_ids":existing_teams_ids })
 
 
 @login_required
