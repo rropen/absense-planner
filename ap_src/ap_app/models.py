@@ -6,19 +6,10 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy
 from recurrence.fields import RecurrenceField
 
+User = get_user_model()
+
 # TODO: is the ID, id field needed. Django has this built in as part of the Model class
 
-class AbsenceRecurring(models.Model):
-    ID = models.AutoField(primary_key=True)
-    User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="absences")
-    absence_date_start = models.DateField(gettext_lazy("Date"), max_length=200, default=now)
-    absence_date_end = models.DateField(max_length=200)
-    # #issue #11
-    edit_whitelist = models.ManyToManyField(to=User)
-    recurrences = RecurrenceField()
-
-    def __str__(self):
-        return f"{self.User_ID}, {self.absence_date_start} - {self.absence_date_end}"
 
 class Absence(models.Model):
     ID = models.AutoField(primary_key=True)
@@ -31,6 +22,13 @@ class Absence(models.Model):
     def __str__(self):
         return f"{self.User_ID}, {self.absence_date_start} - {self.absence_date_end}"
 
+class RecurringAbsences(models.Model):
+    ID = models.AutoField(primary_key=True)
+    User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="recurring_absences")
+    edit_whitelist = models.ManyToManyField(to=User)
+    recurrences = RecurrenceField()
+    def __str__(self):
+        return f"{self.User_ID}"
 
 class Team(models.Model):
     """This includes all the attributes of a Team"""
@@ -94,30 +92,3 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username}"
-    
-
-    def find_user_obj(user_to_find):
-        """ Finds & Returns object of 'UserProfile' for a user 
-        \n-param (type)User user_to_find 
-        """    
-        users = UserProfile.objects.filter(user=user_to_find)    
-        # If cannot find object for a user, than creates on
-        if users.count() <= 0:
-            UserProfile.objects.create(
-            user = user_to_find,
-            accepted_policy = False
-            )
-
-        # Users object
-        user_found = UserProfile.objects.filter(user=user_to_find)[0]
-   
-        return user_found
-
-
-    def obj_exists(user):
-        """ Determines if a user has a 'UserProfile' Object"""
-        objs = UserProfile.objects.filter(user=user)
-        if objs.count() == 0:
-            return False
-
-        return True

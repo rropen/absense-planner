@@ -1,18 +1,18 @@
 {% extends 'Base.html' %}
-{% load get_key %}
-{% load check_absences %}
 {% block title %}Create Recurring Absence{% endblock %}
 {% load static %}
 {% block content %}
 
+
+
 <div class="main container column is-3">
     <h1 class="title has-text-centered"> Create Recurring Absence </h1>
-        <form method="POST">
+        <form method="POST" class="post-form">
             {% csrf_token %}
-            <div class="">
-            {{form.media}}
-            {{form | bulma}}
-            <input type="submit" class="button is-fullwidth is-link" value="Save">
+                <div class="container">
+                {{ form.media }}
+                {{ form }}
+                <button type="submit" class="button is-fullwidth is-link">Submit</button>
             </div>
 
         </form>

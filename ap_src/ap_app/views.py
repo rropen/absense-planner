@@ -16,8 +16,8 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, UpdateView
 from river.models.fields.state import State
 
-from .forms import CreateTeamForm, DeleteUserForm, AbsenceForm, AcceptPolicyForm
-from .models import Absence, Relationship, Role, Team, UserProfile
+from .forms import RecurringAbsencesForm, CreateTeamForm, DeleteUserForm, AbsenceForm, AcceptPolicyForm
+from .models import RecurringAbsences, Relationship, Role, Team, UserProfile, Absence
 
 User = get_user_model()
 
@@ -229,6 +229,12 @@ def add(request) -> render:
         form = AbsenceForm()
     content = {"form": form}
     return render(request, "ap_app/add_absence.html", content)
+
+@login_required
+def add_recurring(request) -> render:
+    form = RecurringAbsencesForm()
+    content = {'form' : form}
+    return render(request, "ap_app/add_recurring_absence.html", content)
 
 
 @login_required

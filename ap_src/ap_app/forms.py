@@ -2,12 +2,12 @@ from django import forms
 from django.db.models.base import Model
 from django.forms import models
 from django.contrib.auth.models import User
-from .models import Team
+from .models import RecurringAbsences, Team
 from django.utils.timezone import now
 from difflib import SequenceMatcher
-from .models import Absence, AbsenceRecurring
+from .models import Absence
 import datetime
-
+from recurrence.forms import RecurrenceWidget
 
 class CreateTeamForm(forms.ModelForm):
     class Meta:
@@ -62,11 +62,15 @@ class sign_up(forms.Form):
 class register(forms.Form):
     check = forms.BooleanField()
 
-class AbsenceFormRecurring(forms.ModelForm):
+class RecurringAbsencesForm(forms.ModelForm):
     class Meta:
-        model = AbsenceRecurring
-        fields = ('title', 'recurrences', )
+        model = RecurringAbsences
+        fields = ['ID','recurrences']
+    class Media:
+        js = ('/admin/jsi18n', '/admin/js/core.js',)
 
+    recurrences = RecurrenceWidget()
+    
 class AbsenceForm(forms.ModelForm):
     class Meta:
         model = Absence
