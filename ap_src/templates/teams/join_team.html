@@ -14,35 +14,37 @@
             <div class="level-item">
                 <div class="field has-addons">
                     <form method="get">
-                        <div class="control"><input class="input" name="teamsName" type="text" placeholder="Search for a Team"></div>
-                        <div class="control"><a class="button is-link" type="submit">Search</a></div>
+                        <div class="control"><input class="input" type="text" name="teamName" placeholder="Search for a Team"></div>
+                        <div class="control"><button class="button is-link" type="submit">Search</button></div>
                     </form>
-                </div>            
+                </div>
             </div>
         </div>
     </div>
 
-{% if not all_teams or not joined_teams %}
-<div class="container has-background-light box">
-    <div class="is-size-5 mb-3">
-        <span class="is-block is-size-5">There are no teams to join.</span>
-        <a class="button is-link" href="{% url 'create_team' %}">Create a team</a>
+    {% if not all_teams or not joined_teams %}
+    <div class="container has-background-light box">
+        <div class="is-size-5 mb-3">
+            <span class="is-block is-size-5">There are no teams to join.</span>
+            <a class="button is-link" href="{% url 'create_team' %}">Create a team</a>
+        </div>
     </div>
-</div>
-{% endif %}
-    
+    {% endif %}
+
     <label for="chkJoined" class="checkbox">
         <input type="checkbox" id="chkJoined" onclick="ShowHideDiv(this)"> Show joined teams </input>
     </label>
 
     {% for team in joined_teams %}
-    <div id="dvJoined" style = "display: none" class="container has-background-light box">
+
+    <div style="display: none" class="container has-background-light box joined_teams">
         <div class="is-size-5 mb-3">
-            <span class="is-block is-size-5 has-text-weight-bold">{{team.name}} <i class="fas fa-user-alt mx-2"></i>{{team.count}}</span>
+            <span class="is-block is-size-5 has-text-weight-bold">{{team.name}} <i
+                    class="fas fa-user-alt mx-2"></i>{{team.count}}</span>
             {% if team.private %}
-                <span class="tag is-dark">Private</span>
+            <span class="tag is-dark">Private</span>
             {% elif not team.private %}
-                <span class="tag is-dark">Public</span>
+            <span class="tag is-dark">Public</span>
             {% endif %}
         </div>
         <span class="is-block is-size-6">{{team.description}}</span>
@@ -56,30 +58,34 @@
     {% for teams in all_teams %}
     <div class="container has-background-light box">
         <div class="is-size-5 mb-3">
-            <span class="is-block is-size-5	has-text-weight-bold">{{teams.name}} <i class="fas fa-user-alt mx-2"></i>{{teams.count}}</span>
+            <span class="is-block is-size-5	has-text-weight-bold">{{teams.name}} <i
+                    class="fas fa-user-alt mx-2"></i>{{teams.count}}</span>
             {% if teams.private %}
-                <span class="tag is-dark">Private</span>
+            <span class="tag is-dark">Private</span>
             {% elif not teams.private %}
-                <span class="tag is-dark">Public</span>
+            <span class="tag is-dark">Public</span>
             {% endif %}
         </div>
         <span class="is-block is-size-6">{{teams.description}}</span>
         <div class="is-block mt-3">
             {% if teams.private %}
-                <a class="button is-success" href="{% url 'join_team_2' teams.id 'Member' %}">Apply as Member</a>
-                <a class="button is-link" href="{% url 'join_team_2' teams.id 'Follower' %}">Apply as Follower</a>
+            <a class="button is-success" href="{% url 'join_team_2' teams.id 'Member' %}">Apply as Member</a>
+            <a class="button is-link" href="{% url 'join_team_2' teams.id 'Follower' %}">Apply as Follower</a>
             {% else %}
-                <a class="button is-success" href="{% url 'join_team_2' teams.id 'Member' %}">Join as Member</a>
-                <a class="button is-link" href="{% url 'join_team_2' teams.id 'Follower' %}">Join as Follower</a>
-            {% endif %}           
+            <a class="button is-success" href="{% url 'join_team_2' teams.id 'Member' %}">Join as Member</a>
+            <a class="button is-link" href="{% url 'join_team_2' teams.id 'Follower' %}">Join as Follower</a>
+            {% endif %}
         </div>
     </div>
     {% endfor %}
 </div>
 <script type="text/javascript">
-    function ShowHideDiv(chkJoined){
-        var dvJoined = document.getElementById("dvJoined")
-        dvJoined.style.display = chkJoined.checked ? "block" : "none";
+    function ShowHideDiv(chkJoined) {
+        var dvJoined = document.getElementsByClassName("joined_teams")
+        for (var i = 0; i < dvJoined.length; i += 1) {
+            dvJoined[i].style.display = chkJoined.checked ? "block" : "none";
+        }
     }
+    
 </script>
 {% endblock %}
