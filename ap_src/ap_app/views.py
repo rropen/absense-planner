@@ -15,8 +15,15 @@ from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, UpdateView
 from river.models.fields.state import State
+from itertools import chain
 
-from .forms import CreateTeamForm, DeleteUserForm, AbsenceForm, AcceptPolicyForm, SwitchUser
+from .forms import (
+    CreateTeamForm,
+    DeleteUserForm,
+    AbsenceForm,
+    AcceptPolicyForm,
+    SwitchUser,
+)
 from .models import Absence, Relationship, Role, Team, UserProfile, User
 
 User = get_user_model()
@@ -219,7 +226,7 @@ def joining_team_request(request, id, response):
 def add(request) -> render:
     """create new absence record"""
     if request.method == "POST":
-        form = AbsenceForm(request.POST, user = request.user)
+        form = AbsenceForm(request.POST, user=request.user)
         if form.is_valid():
             obj = Absence()
             obj.absence_date_start = form.cleaned_data["start_date"]
@@ -236,7 +243,7 @@ def add(request) -> render:
             # redirect to success page
     else:
 
-        form = AbsenceForm(user = request.user)
+        form = AbsenceForm(user=request.user)
         form.fields["user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
         )
@@ -470,12 +477,19 @@ def all_calendar(
 @login_required
 def profile_page(request):
     absences = Absence.objects.filter(User_ID=request.user.id)
-    users = UserProfile.objects.filter(edit_whitelist = request.user)
+    users = UserProfile.objects.filter(edit_whitelist=request.user).exclude(user=request.user)
+    user = UserProfile.objects.filter(user=request.user)
     form = SwitchUser(request.POST)
-    form.fields["user"].queryset = users
-    form.fields["user"].initial = UserProfile.objects.get(user = request.user)
+    combined_results = chain(user, users)
+    form.fields["user"].queryset = combined_results
+    # form.fields["user"].initial = form.fields["user"].queryset.get(user = request.user)
+    # form.user = form.fields["user"].queryset.get(user=request.user)
 
-    return render(request, "ap_app/profile.html", {"absences": absences,"users":users, "form": form})
+    return render(
+        request,
+        "ap_app/profile.html",
+        {"absences": absences, "users": users, "form": form},
+    )
 
 
 @login_required
@@ -548,7 +562,6 @@ def add_user(request) -> render:
 
         userprofile.edit_whitelist.add(user)
         user.save()
-
 
     return redirect("/profile/settings")
 

@@ -6,7 +6,9 @@ from .models import Team, UserProfile, Absence
 from django.utils.timezone import now
 from difflib import SequenceMatcher
 import datetime
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 class CreateTeamForm(forms.ModelForm):
     class Meta:
@@ -78,7 +80,7 @@ class AbsenceForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user")
-        super(AbsenceForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["user"].initial = UserProfile.objects.get(user=self.user)
 
     def clean(self):
@@ -116,10 +118,10 @@ class AbsenceForm(forms.ModelForm):
 
 class SwitchUser(forms.Form):
     class Meta:
-        fields = ["User"]
+        fields = ["user"]
 
     user = forms.ModelChoiceField(
-        label="User:", queryset=User.objects.all(), initial=None
+        label="", required = True, queryset=User.objects.all(), initial=queryset.objects.first()
     )
     
 
