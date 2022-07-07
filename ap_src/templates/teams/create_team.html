@@ -33,28 +33,20 @@
 </div>
 
 <script>
-    var words = [
-        "Team1",
-        "Team2",
-        "team3"
-    ];
-
-
+    
     const existingTeams = "{{ existing_teams|safe }}".split(",");
     const existingTeamIds = "{{ existing_teams_ids|safe }}".split(",")
 
     const teamInputTag = document.getElementById("nameInput");
 
-    // {{ existing_teams|safe }};
-    
     
     var nameFound = false;
     var foundTeamIndex = null;
 
     function determineValid(item, index, arr){
+        // If name is similar to an already made team-name, than will set 'nameFound' to true to perform necessary actions 
         if (item == $("#nameInput").val())
         {
-            foundTeamId = existingTeamIds[index];
             nameFound = true;
         }
     }
@@ -64,20 +56,15 @@
         // If link has not already been implemented below team-name input
         if (!document.getElementById("temp"))
         {
-            
-            // Patrick Note: Will continue here once implemented filtering system in join team page.
-            // Must provide link to teams to join page with filtering for team name.
-            //var teamLink = "calendar/" + foundTeamId;
-            
-            var teamLink = "join";
-            
+            // Sets string for url to search - (with filter applied to find similar names of already made teams)
+            var teamLink = "join?" + "teamName=" + $("#nameInput").val();
             var str = "<a id='temp' href='" + teamLink + "'>See <strong>" + $("#nameInput").val() + "</strong>" + " Info</a>";
-
             teamInputTag.insertAdjacentHTML("afterend", str);
         }
     };
 
     $(document).ready(function(){
+        // Event handling for key-up in name input
         $("#nameInput").keyup(function(){
             nameFound = false;
             var inputVal = $("#nameInput").val();
@@ -100,7 +87,6 @@
 
     });
   
-
 </script>
 
 
