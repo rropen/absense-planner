@@ -4,7 +4,8 @@
 
 import calendar
 import datetime
-
+from datetime import timedelta
+from django.utils.timezone import now
 from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -15,6 +16,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, UpdateView
 from river.models.fields.state import State
+import recurrence
 
 from .forms import RecurringAbsencesForm, CreateTeamForm, DeleteUserForm, AbsenceForm, AcceptPolicyForm
 from .models import RecurringAbsences, Relationship, Role, Team, UserProfile, Absence
@@ -233,7 +235,14 @@ def add(request) -> render:
 @login_required
 def add_recurring(request) -> render:
     form = RecurringAbsencesForm()
+    obj = RecurringAbsences()
     content = {'form' : form}
+    obj.User_ID = request.user
+    #obj.recurrences.between(
+    #    now().date(),
+    #    now().date().timedelta(yea+=)
+    #)
+    obj.save()
     return render(request, "ap_app/add_recurring_absence.html", content)
 
 
