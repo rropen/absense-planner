@@ -15,7 +15,6 @@ from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, UpdateView
 from river.models.fields.state import State
-from itertools import chain
 
 from .forms import (
     CreateTeamForm,
@@ -24,7 +23,7 @@ from .forms import (
     AcceptPolicyForm,
     SwitchUser,
 )
-from .models import Absence, Relationship, Role, Team, UserProfile, User
+from .models import Absence, Relationship, Role, Team, UserProfile
 
 User = get_user_model()
 
@@ -40,15 +39,18 @@ def index(request) -> render:
         if not obj_exists(request.user):
 
             user = find_user_obj(request.user)
+            user.edit_whitelist.add(request.user)
         else:
             user = UserProfile.objects.filter(user=request.user)[0]
-
+            user.edit_whitelist.add(request.user)
         # Until the accepted_policy field is checked, the user will keep being redirected to the policy page to accept
         if not user.accepted_policy:
             return privacy_page(request, to_accept=True)
 
     # Change: If user is logged in, will be redirected to the calendar
     if request.user.is_authenticated:
+        user = UserProfile.objects.get(user = request.user)
+        user.edit_whitelist.add(request.user)
         return all_calendar(request)
 
     return render(request, "ap_app/index.html")
@@ -591,7 +593,7 @@ def find_user_obj(user_to_find):
         UserProfile.objects.create(user=user_to_find, accepted_policy=False)
         user_found = UserProfile.objects.filter(user=user_to_find)[0]
         user_found.edit_whitelist.add(user_to_find)
-        print(user_found.edit_whitelist)
+
     # Users object
     user_found = UserProfile.objects.filter(user=user_to_find)[0]
 
