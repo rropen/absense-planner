@@ -2,21 +2,33 @@ from django import forms
 from django.db.models.base import Model
 from django.forms import models
 from django.contrib.auth.models import User
-from .models import Team
+from .models import Team, UserProfile, Absence
 from django.utils.timezone import now
 from difflib import SequenceMatcher
-from .models import Absence
 import datetime
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 class CreateTeamForm(forms.ModelForm):
     class Meta:
         model = Team
         fields = ["name", "description", "private"]
 
-    name            = forms.CharField(min_length=3, max_length=64, required=True, widget=forms.TextInput(attrs={"class":"", "placeholder":"Team Name", "id":"nameInput"}))
-    description     = forms.CharField(max_length=512, required=False, widget=forms.Textarea(attrs={"class":"", "placeholder":"Team Description"}))
-    private         = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={"class":""}))
+    name = forms.CharField(
+        min_length=3,
+        max_length=64,
+        required=True,
+        widget=forms.TextInput(attrs={"class": "", "placeholder": "Team Name"}),
+    )
+    description = forms.CharField(
+        max_length=512,
+        required=False,
+        widget=forms.Textarea(attrs={"class": "", "placeholder": "Team Description"}),
+    )
+    private = forms.BooleanField(
+        required=False, widget=forms.CheckboxInput(attrs={"class": ""})
+    )
 
     def name_similarity(self) -> float:
         """Returns float between 0 and 1 depending on the similarity
@@ -25,11 +37,9 @@ class CreateTeamForm(forms.ModelForm):
 
         teams = Team.objects.all()
         for team in teams:
-            similarity = SequenceMatcher(
-                None, self['name'].value(), team.name).ratio()
-            if similarity >= .5:
+            similarity = SequenceMatcher(None, self["name"].value(), team.name).ratio()
+            if similarity >= 0.5:
                 return similarity
-
 
 
 class login(forms.Form):
@@ -37,7 +47,7 @@ class login(forms.Form):
         label="Name:",
         max_length=200,
     )
-    
+
     password = forms.CharField(
         label="Password:",
         max_length=200,
@@ -66,33 +76,62 @@ class register(forms.Form):
 class AbsenceForm(forms.ModelForm):
     class Meta:
         model = Absence
-        fields = ["start_date", "end_date"]
+        fields = ["start_date", "end_date", "user"]
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user")
+        super().__init__(*args, **kwargs)
+        self.fields["user"].initial = UserProfile.objects.get(user=self.user)
 
     def clean(self):
-
-
         def end_date_valid():
             if start_date > end_date:
                 return False
             return True
-
 
         cleaned_data = super().clean()
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
 
         if not end_date_valid():
-            raise forms.ValidationError(f"End Date must be after start date {start_date}, {end_date}")
+            raise forms.ValidationError(
+                f"End Date must be after start date {start_date}, {end_date}"
+            )
 
-    start_date = forms.DateField(label="Starting Date:", required=True, input_formats=['%Y-%m-%d'], widget=forms.DateInput(attrs={"type":"date"}), initial=now().date())
-    end_date = forms.DateField(label="Ending Date:", required=True, input_formats=['%Y-%m-%d'], widget=forms.DateInput(attrs={"type":"date"}), initial= lambda: now().date()+datetime.timedelta(days=1))
+    start_date = forms.DateField(
+        label="Starting Date:",
+        required=True,
+        input_formats=["%Y-%m-%d"],
+        widget=forms.DateInput(attrs={"type": "date"}),
+        initial=now().date(),
+    )
+    end_date = forms.DateField(
+        label="Ending Date:",
+        required=True,
+        input_formats=["%Y-%m-%d"],
+        widget=forms.DateInput(attrs={"type": "date"}),
+        initial=lambda: now().date() + datetime.timedelta(days=1),
+    )
+    user = forms.ModelChoiceField(
+        label="User:", required=True, queryset=User.objects.all(), initial=None, 
+    )
 
+class SwitchUser(forms.Form):
+    class Meta:
+        fields = ["user"]
+    
+    def clean(self):
+        cleaned_data = super().clean()
+
+    user = forms.ModelChoiceField(
+        label="", required = True, queryset=User.objects.all(), initial=None
+    )
+    
 
 class DeleteUserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = []
-
 
 
 class AcceptPolicyForm(forms.Form):

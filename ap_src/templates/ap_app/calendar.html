@@ -93,7 +93,7 @@
                     </a>
 
 
-                    <a href="/calendar/January/{{next_year}}""><p class=" buttons">
+                    <a href="/calendar/January/{{next_year}}"><p class=" buttons">
                         <button class="button">
                             <span class="icon ">
                                 <i class="fas fa-arrow-right"></i>
@@ -107,8 +107,8 @@
 
 
                     <!-- Start of the previous year - January -->
-                    {% elif month_num == 1 %}
-                    {% if current_year|add:"-2" == previous_year %}
+                    {% elif month_num == 1 or current_month_num == month_num %}
+                    {% if current_year > previous_year %}
 
                     <a href="" class="noHover">
                         <p class="buttons">

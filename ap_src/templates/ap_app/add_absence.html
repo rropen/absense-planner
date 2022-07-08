@@ -4,23 +4,25 @@
 {% block title %}Register Absence{% endblock %}
 {% block content %}
 
-    <div class="main container column is-3">
-        <h1 class="title has-text-centered"> Create Absence </h1>
-            <form method="POST">
-                {% csrf_token %}
-                <div class="">
-                {% if message %}
-                {% include "messages.html" %}
-                {% endif %}
-                {{form | bulma}}
-                
-                {% for error in form.errors %}
-                <p>{{error}}</p>
-                {% endfor %}
-                <input type="submit" class="button is-fullwidth is-link" value="Save">
-                </div>
 
-            </form>
-    </div>
+
+<div class="main container column is-4">
+    <h1 class="title has-text-centered"> Create Absence </h1>
+    <form method="POST">
+        {% csrf_token %}
+        {% if message %}
+        {% include "messages.html" %}
+        {% endif %}
+        {{form | bulma}}
+
+        {% for error in form.errors %}
+        <p>{{error}}</p>
+        {% endfor %}
+        <input type="submit" class="button is-link is-fullwidth" value="Save">
+
+    </form>
+
+</div>
+
 
 {% endblock %}

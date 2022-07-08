@@ -15,8 +15,9 @@
         outline: none;
         font-size: 15px;
     }
-    
-    .active, .collapsible:hover {
+
+    .active,
+    .collapsible:hover {
         /* background-color: #555; */
     }
 
@@ -44,58 +45,60 @@
 
 <body>
 
-<div class="columns is-centered">
-    <div class="column is-two-thirds">
-        <button class="collapsible button is-medium is-link has-text-centered">Privacy Settings</button>
-        <div class="content pt-3">
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-        <br></div>
-
-        <button class="collapsible button is-medium is-link has-text-centered">Permissions Settings</button>
-        <div class="content is-size-5 pt-3">
-            <nav class="level my-1">
-                <p class="level-left m-0">Users who can edit your absences</p>
-                <form method="POST" action="settings/add-user" class="level-right field has-addons">
-                    {% csrf_token %}
-                    <!-- Text box -->
-                    <div class="control">
-                        <input class="input is-info" name="username" placeholder="Add a user" type="text">
-                    </div>
-                    <!-- Submit icon  -->
-                    <div class="control">
-                        <a class="button is-info" type="submit"><i class="fas fa-user-plus"></i></a>
-                    </div>
-                </form>
-            </nav>
-            <span class="tag is-dark">Scott Malkinson</span>
-
-            {% for absence in absences %}
-                {% for user in absence.edit_whitelist.all %}
-                    user: {{ user.username }}
-                {% endfor %}
+    <div class="columns is-centered">
+        <div class="column is-two-thirds">
+            <button class="collapsible button is-medium is-link has-text-centered">Privacy Settings</button>
+            <div class="content pt-3">
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
+                    et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                    aliquip ex ea commodo consequat.</p>
                 <br>
-            {% endfor %}
+            </div>
+
+            <button class="collapsible button is-medium is-link has-text-centered">Permissions Settings</button>
+            <div class="content is-size-5 pt-3">
+                <nav class="level my-1">
+                    <p class="level-left m-0">Users who can edit your absences</p>
+                    <form method="POST" action="settings/add-user" class="level-right field has-addons">
+                        {% csrf_token %}
+                        <!-- Text box -->
+                        <div class="control">
+                            <input class="input is-info" name="username" placeholder="Add a user" type="text">
+                        </div>
+                        <!-- Submit icon  -->
+                        <div class="control">
+                            <input class="button is-info" type="submit"></input>
+                        </div>
+                    </form>
+                </nav>
+                <div class="tags">
+                    {% for user in userprofile.edit_whitelist.all %}
+                    <span class="tag is-dark">{{user}}</span>
+                    <br>
+                    {% endfor %}
+                    
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
 
-<script>
-var coll = document.getElementsByClassName("collapsible");
-var i;
-    
-for (i = 0; i < coll.length; i++) {
-    coll[i].addEventListener("click", function() {
-        this.classList.toggle("active");
-        var content = this.nextElementSibling;
-        if (content.style.maxHeight){
-            content.style.maxHeight = null;
-        } else {
-            content.style.maxHeight = content.scrollHeight + "px";
-        } 
-    });
-}
-</script>
+    <script>
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            });
+        }
+    </script>
 
 </body>
 {% endblock %}

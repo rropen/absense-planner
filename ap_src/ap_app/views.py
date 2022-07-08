@@ -16,7 +16,13 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, UpdateView
 from river.models.fields.state import State
 
-from .forms import CreateTeamForm, DeleteUserForm, AbsenceForm, AcceptPolicyForm
+from .forms import (
+    CreateTeamForm,
+    DeleteUserForm,
+    AbsenceForm,
+    AcceptPolicyForm,
+    SwitchUser,
+)
 from .models import Absence, Relationship, Role, Team, UserProfile
 
 User = get_user_model()
@@ -25,28 +31,29 @@ User = get_user_model()
 def index(request) -> render:
     """Branched view.                       \n
     IF NOT Logged in: returns the home page \n
-    ELSE: returns the calendar page """
-    
+    ELSE: returns the calendar page"""
+
     # If its the first time a user is logging in, will create an object of UserProfile model for that user.
     if not request.user.is_anonymous:
-        
+
         if not obj_exists(request.user):
 
             user = find_user_obj(request.user)
+            user.edit_whitelist.add(request.user)
         else:
             user = UserProfile.objects.filter(user=request.user)[0]
-
+            user.edit_whitelist.add(request.user)
         # Until the accepted_policy field is checked, the user will keep being redirected to the policy page to accept
         if not user.accepted_policy:
             return privacy_page(request, to_accept=True)
-        
 
     # Change: If user is logged in, will be redirected to the calendar
-    if request.user.is_authenticated:       
+    if request.user.is_authenticated:
+        user = UserProfile.objects.get(user = request.user)
+        user.edit_whitelist.add(request.user)
         return all_calendar(request)
-    
-    return render(request, "ap_app/index.html")
 
+    return render(request, "ap_app/index.html")
 
 
 def privacy_page(request, to_accept=False) -> render:
@@ -60,8 +67,10 @@ def privacy_page(request, to_accept=False) -> render:
     # If the user has been redirected from home page to accepted policy
     elif to_accept:
 
-        return render(request, "registration/accept_policy.html", {"form": AcceptPolicyForm()})
-    
+        return render(
+            request, "registration/accept_policy.html", {"form": AcceptPolicyForm()}
+        )
+
     # Viewing general policy page - (Without the acceptancy form)
     return render(request, "ap_app/privacy.html")
 
@@ -70,8 +79,6 @@ class SignUpView(CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy("login")
     template_name = "registration/signup.html"
-
-
 
 
 @login_required
@@ -96,11 +103,13 @@ def create_team(request) -> render:
         if form.name_similarity():
             # TODO: write code to tell the user that their team name is similar and to give them
             # options to change the team name.
-            return HttpResponse('Debug: Did not create form because the name is too similar to another team name')
+            return HttpResponse(
+                "Debug: Did not create form because the name is too similar to another team name"
+            )
 
         elif form.is_valid():
             form.save()
-            # Gets the created team and "Owner" Role and creates a Link between 
+            # Gets the created team and "Owner" Role and creates a Link between
             # the user and their team
             created_team = Team.objects.get(name=form.cleaned_data["name"])
             assign_role = Role.objects.get(role="Owner")
@@ -110,21 +119,10 @@ def create_team(request) -> render:
                 role=assign_role,
                 status=State.objects.get(slug="active"),
             )
-            return redirect("/teams/", {"message" : "Team successfully created."})
+            return redirect("/teams/", {"message": "Team successfully created."})
     else:
         form = CreateTeamForm()
-    teams = Team.objects.all()
-    existing_teams = ""
-    existing_teams_ids = ""
-    for i, team in enumerate(teams):
-        existing_teams += team.name
-        existing_teams_ids += str(team.id)
-        if i != len(teams)-1:
-            existing_teams += ","
-            existing_teams_ids += ","
-    
-
-    return render(request, "teams/create_team.html", {"form": form, "existing_teams":existing_teams, "existing_teams_ids":existing_teams_ids })
+    return render(request, "teams/create_team.html", {"form": form})
 
 
 @login_required
@@ -135,20 +133,11 @@ def join_team(request) -> render:
     for teams in all_user_teams:
         user_teams.append(teams.team)
     all_teams = Team.objects.all().exclude(name__in=user_teams)
-
-    all_teams_filtered = []
-
-    # Filtering by team name
-    if "teamName" in request.GET:
-        for team in all_teams:
-            if request.GET["teamName"].lower() in team.name.lower():
-                all_teams_filtered.append(team)
-    else:
-        all_teams_filtered = all_teams
-
-    return render(request, "teams/join_team.html", {"all_teams": all_teams_filtered, "joined_teams": user_teams})
-
-
+    return render(
+        request,
+        "teams/join_team.html",
+        {"all_teams": all_teams, "joined_teams": user_teams},
+    )
 
 
 @login_required
@@ -239,18 +228,28 @@ def joining_team_request(request, id, response):
 def add(request) -> render:
     """create new absence record"""
     if request.method == "POST":
-        form = AbsenceForm(request.POST)
+        form = AbsenceForm(request.POST, user=request.user)
         if form.is_valid():
             obj = Absence()
             obj.absence_date_start = form.cleaned_data["start_date"]
             obj.absence_date_end = form.cleaned_data["end_date"]
             obj.request_accepted = False
             obj.User_ID = request.user
+            obj.Target_User_ID = form.cleaned_data["user"]
             obj.save()
-            return render(request, "ap_app/add_absence.html", {"form" : form, "message" : "Absence successfully recorded."})
+            return render(
+                request,
+                "ap_app/add_absence.html",
+                {"form": form, "message": "Absence successfully recorded."},
+            )
             # redirect to success page
     else:
-        form = AbsenceForm()
+
+        form = AbsenceForm(user=request.user)
+        form.fields["user"].queryset = UserProfile.objects.filter(
+            edit_whitelist__in=[request.user]
+        )
+
     content = {"form": form}
     return render(request, "ap_app/add_absence.html", content)
 
@@ -272,19 +271,21 @@ def get_date_data(
     data = {}
     data["current_year"] = datetime.datetime.now().year
     data["current_month"] = datetime.datetime.now().strftime("%B")
+    data["current_month_num"] = datetime.datetime.now().strftime("%m")
+    
     data["year"] = year
     data["month"] = month
     data["day_range"] = range(
         1,
         calendar.monthrange(
-            data["year"], datetime.datetime.strptime(data["month"], "%B").month
+            data["year"], datetime.datetime.strptime(month, "%B").month
         )[1]
         + 1,
     )
-    data["month_num"] = datetime.datetime.strptime(data["month"], "%B").month
+    data["month_num"] = datetime.datetime.strptime(data["month"], "%B").strftime("%m")
 
-    data["previous_month"] = 0
-    data["next_month"] = 0
+    data["previous_month"] = "December"
+    data["next_month"] = "January"
     data["previous_year"] = data["year"] - 1
     data["next_year"] = data["year"] + 1
 
@@ -296,6 +297,7 @@ def get_date_data(
         data["next_month"] = datetime.datetime.strptime(
             str((datetime.datetime.strptime(data["month"], "%B")).month + 1), "%m"
         ).strftime("%B")
+
     except ValueError:
         pass
     try:
@@ -332,7 +334,7 @@ def get_user_data(users, user_type):
         else:
             user_id = user.id
 
-        absence_info = Absence.objects.filter(User_ID=user_id)
+        absence_info = Absence.objects.filter(Target_User_ID=user_id)
         total_absence_dates[user] = []
         all_absences[user] = []
 
@@ -381,8 +383,7 @@ def team_calendar(
     users = Relationship.objects.all().filter(
         team=id, status=State.objects.get(slug="active")
     )
-    
-    
+
     data_2 = get_user_data(users, 1)
 
     team = Team.objects.get(id=id)
@@ -390,11 +391,9 @@ def team_calendar(
     user_in_teams = []
     for rel in Relationship.objects.filter(team=team):
         user_in_teams.append(rel.user.id)
-        
-    
 
     data_3 = {
-        "owner":Role.objects.all()[0],
+        "owner": Role.objects.all()[0],
         "Sa": "Sa",
         "Su": "Su",
         "current_user": Relationship.objects.get(user=request.user, team=team),
@@ -420,9 +419,8 @@ def all_calendar(
     all_users = []
     all_users.append(request.user)
     user_relations = Relationship.objects.filter(user=request.user)
-    
 
-    #NOTE: need to convert filtered queryset back to list for "all_users"
+    # NOTE: need to convert filtered queryset back to list for "all_users"
     for relation in user_relations:
         rels = Relationship.objects.filter(
             team=relation.team, status=State.objects.get(slug="active")
@@ -432,62 +430,50 @@ def all_calendar(
                 pass
             else:
                 all_users.append(rel.user)
-    
-    
 
-    #Filtering
+    # Filtering
     filtered_users = []
     # Filtering by both username & absence
     if "username" in request.GET and "absent" in request.GET:
         # Get username input & limits the length to 50
         name_filtered_by = request.GET["username"][:50]
         for absence in Absence.objects.all():
-            user = User.objects.get(id=absence.User_ID.id)
+            user = User.objects.get(id=absence.Target_User_ID.id)
             if user in all_users:
                 username = user.username
-                if not absence.User_ID in filtered_users and name_filtered_by.lower() in username.lower():
-                    filtered_users.append(absence.User_ID)
-
+                if (
+                    not absence.Target_User_ID in filtered_users
+                    and name_filtered_by.lower() in username.lower()
+                ):
+                    filtered_users.append(absence.Target_User_ID)
 
     # ONLY filtering by username
     elif "username" in request.GET:
-        # Name limit is 50 
+        # Name limit is 50
         name_filtered_by = request.GET["username"][:50]
         for user in all_users:
             # same logic as "icontains", searches through users names & finds similarities
             if name_filtered_by.lower() in user.username.lower():
                 filtered_users.append(user)
 
-        
-
-
     # ONLY filtering by absences
     elif "absent" in request.GET:
         for absence in Absence.objects.all():
-            user = User.objects.get(id=absence.User_ID.id)
+            user = User.objects.get(id=absence.Target_User_ID.id)
             if user in all_users:
                 username = user.username
-                if not absence.User_ID in filtered_users:
-                    filtered_users.append(absence.User_ID) 
+                if not absence.Target_User_ID in filtered_users:
+                    filtered_users.append(absence.Target_User_ID)
 
     # Else, no filtering
     else:
         filtered_users = all_users
-    
-    
-    # NOTE: Are these necessary here? Not in use
-    absence_content = []
-    total_absence_dates = {}
-    all_absences = {}
-    delta = datetime.timedelta(days=1)
- 
 
     data_2 = get_user_data(all_users, 2)
 
-    data_3 = {"Sa": "Sa", "Su": "Su","users_filter": filtered_users}
+    data_3 = {"Sa": "Sa", "Su": "Su", "users_filter": filtered_users}
 
     context = {**data_1, **data_2, **data_3}
-    
 
     return render(request, "ap_app/calendar.html", context)
 
@@ -495,8 +481,34 @@ def all_calendar(
 # Profile page
 @login_required
 def profile_page(request):
-    absences = Absence.objects.filter(User_ID=request.user.id)
-    return render(request, "ap_app/profile.html", {"absences": absences})
+
+    if request.method == "POST":
+        form = SwitchUser(
+            request.POST,
+            initial={"user": request.user},
+        )
+        form.fields["user"].queryset= UserProfile.objects.filter(edit_whitelist=request.user)
+        users = UserProfile.objects.filter(edit_whitelist=request.user)
+        if form.is_valid():
+            absence_user = form.cleaned_data["user"]
+            absences = Absence.objects.filter(User_ID=absence_user.id)
+            return render(
+                request,
+                "ap_app/profile.html",
+                {"form": form, "message": "Successfully switched user", "absences": absences, "users": users,},
+            )
+    else:
+        absences = Absence.objects.filter(User_ID=request.user.id)
+        users = UserProfile.objects.filter(edit_whitelist=request.user)
+        form = SwitchUser()
+        form.fields["user"].queryset = users
+        form.fields["user"].initial = request.user
+
+        return render(
+            request,
+            "ap_app/profile.html",
+            {"absences": absences, "users": users, "form": form},
+        )
 
 
 @login_required
@@ -523,8 +535,8 @@ def absence_delete(request, absence_id: int):
     if user == absence.User_ID:
         absence.delete()
         return redirect("profile")
-    else:
-        raise Exception()
+
+    raise Exception()
 
 
 class EditAbsence(UpdateView):
@@ -541,45 +553,49 @@ class EditAbsence(UpdateView):
 @login_required
 def profile_settings(request) -> render:
     """returns the settings page"""
-    absences = Absence.objects.filter(User_ID=request.user.id)
-    context = {"absences": absences}
+    try:
+        userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
+    except IndexError:
+        # TODO Create error page
+        return redirect("/")
+    context = {"userprofile": userprofile}
     return render(request, "ap_app/settings.html", context)
 
 
 @login_required
 def add_user(request) -> render:
+    try:
+        userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
+    except IndexError:
+        # TODO Create error page
+        return redirect("/")
+
     if request.method == "POST":
         username = request.POST.get("username")
+
         try:
-            absence: Absence = Absence.objects.filter(User_ID=request.user.id)[0]
+            user = User.objects.get(username=username)
         except IndexError:
             # TODO Create error page
             return redirect("/")
 
-        try:
-            user = User.objects.filter(username=username)[0]
-        except IndexError:
-            # TODO Create error page
-            return redirect("/")
+        userprofile.edit_whitelist.add(user)
+        user.save()
 
-        absence.edit_whitelist.add(user)
-        absence.save()
     return redirect("/profile/settings")
 
 
-
-
 def find_user_obj(user_to_find):
-    """ Finds & Returns object of 'UserProfile' for a user 
-    \n-param (type)User user_to_find 
-    """    
-    users = UserProfile.objects.filter(user=user_to_find)    
+    """Finds & Returns object of 'UserProfile' for a user
+    \n-param (type)User user_to_find
+    """
+    users = UserProfile.objects.filter(user=user_to_find)
     # If cannot find object for a user, than creates on
+
     if users.count() <= 0:
-        UserProfile.objects.create(
-        user = user_to_find,
-        accepted_policy = False
-        )
+        UserProfile.objects.create(user=user_to_find, accepted_policy=False)
+        user_found = UserProfile.objects.filter(user=user_to_find)[0]
+        user_found.edit_whitelist.add(user_to_find)
 
     # Users object
     user_found = UserProfile.objects.filter(user=user_to_find)[0]
@@ -588,12 +604,9 @@ def find_user_obj(user_to_find):
 
 
 def obj_exists(user):
-    """ Determines if a user has a 'UserProfile' Object"""
+    """Determines if a user has a 'UserProfile' Object"""
     objs = UserProfile.objects.filter(user=user)
     if objs.count() == 0:
         return False
 
-    return True 
-
-   
-      
+    return True
