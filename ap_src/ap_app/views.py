@@ -271,6 +271,9 @@ def get_date_data(
     data = {}
     data["current_year"] = datetime.datetime.now().year
     data["current_month"] = datetime.datetime.now().strftime("%B")
+    data["current_month_num"] = datetime.datetime.now().strftime("%m")
+    print(data["current_month_num"])
+    
     data["year"] = year
     data["month"] = month
     data["day_range"] = range(
@@ -280,7 +283,8 @@ def get_date_data(
         )[1]
         + 1,
     )
-    data["month_num"] = datetime.datetime.strptime(data["month"], "%B").month
+    data["month_num"] = datetime.datetime.strptime(data["month"], "%B").strftime("%m")
+    print(data["month_num"])
 
     data["previous_month"] = 0
     data["next_month"] = 0
@@ -295,6 +299,7 @@ def get_date_data(
         data["next_month"] = datetime.datetime.strptime(
             str((datetime.datetime.strptime(data["month"], "%B")).month + 1), "%m"
         ).strftime("%B")
+        
     except ValueError:
         pass
     try:
