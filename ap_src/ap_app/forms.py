@@ -10,6 +10,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 class CreateTeamForm(forms.ModelForm):
     class Meta:
         model = Team
@@ -19,7 +20,9 @@ class CreateTeamForm(forms.ModelForm):
         min_length=3,
         max_length=64,
         required=True,
-        widget=forms.TextInput(attrs={"class": "", "placeholder": "Team Name"}),
+        widget=forms.TextInput(
+            attrs={"class": "", "placeholder": "Team Name", "id": "nameInput"}
+        ),
     )
     description = forms.CharField(
         max_length=512,
@@ -113,20 +116,24 @@ class AbsenceForm(forms.ModelForm):
         initial=lambda: now().date() + datetime.timedelta(days=1),
     )
     user = forms.ModelChoiceField(
-        label="User:", required=True, queryset=User.objects.all(), initial=None, 
+        label="User:",
+        required=True,
+        queryset=User.objects.all(),
+        initial=None,
     )
+
 
 class SwitchUser(forms.Form):
     class Meta:
         fields = ["user"]
-    
+
     def clean(self):
         cleaned_data = super().clean()
 
     user = forms.ModelChoiceField(
-        label="", required = True, queryset=User.objects.all(), initial=None
+        label="", required=True, queryset=User.objects.all(), initial=None
     )
-    
+
 
 class DeleteUserForm(forms.ModelForm):
     class Meta:
