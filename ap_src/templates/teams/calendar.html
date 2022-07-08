@@ -117,7 +117,7 @@
 
 
                     <!-- Start of the previous year - January -->
-                    {% elif month_num == 1 %}
+                    {% elif month_num == 1 or current_month_num == month_num %}
                     {% if current_year|add:"-2" == previous_year %}
                     <a href="" class="noHover">
                         <p class="buttons">
