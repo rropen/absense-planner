@@ -275,6 +275,7 @@ def get_date_data(
     
     data["year"] = year
     data["month"] = month
+    
     data["day_range"] = range(
         1,
         calendar.monthrange(
@@ -282,12 +283,13 @@ def get_date_data(
         )[1]
         + 1,
     )
-    data["month_num"] = datetime.datetime.strptime(data["month"], "%B").strftime("%m")
+    data["month_num"] = datetime.datetime.strptime(month, "%B").strftime("%m")
 
     data["previous_month"] = "December"
     data["next_month"] = "January"
-    data["previous_year"] = data["year"] - 1
-    data["next_year"] = data["year"] + 1
+    data["previous_year"] = year - 1
+    data["next_year"] = year + 1
+    
 
     # as the month number resets every year try and except statements
     # have to be used as at the end and start of a year
@@ -309,8 +311,6 @@ def get_date_data(
 
     # calculating which days are weekends to mark them easier in the html
     data["days_name"] = []
-    month = data["month"]
-    year = data["year"]
     for day in data["day_range"]:
         date = f"{day} {month} {year}"
         date = datetime.datetime.strptime(date, "%d %B %Y")
@@ -405,6 +405,7 @@ def team_calendar(
     }
 
     context = {**data_1, **data_2, **data_3}
+    
     return render(request, "teams/calendar.html", context)
 
 
@@ -415,7 +416,7 @@ def all_calendar(
     year=datetime.datetime.now().year,
 ):
     data_1 = get_date_data(month, year)
-
+    old_records = Absence.objects.filter(absence_date_end =  < data_1["current_month"])
     all_users = []
     all_users.append(request.user)
     user_relations = Relationship.objects.filter(user=request.user)

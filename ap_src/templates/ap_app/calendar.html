@@ -39,9 +39,8 @@
                         minute(s) ago.
                     </form>
                 </span>
-                
+
             </div>
-            
 
             <div class="level mb-0">
                 <div class="level-left">
@@ -55,9 +54,53 @@
                         </p>
                     </a>
 
-                    <!-- Month limiter - December the next year -->
-                    {% if month_num == 12 %}
-                    {% if current_year|add:2 == next_year %}
+                    <!-- If the user is in the current year then they cannot go back a year or month and view historical data -->
+                    {% if current_year == year %}
+                    
+                    {% if current_month_num == month_num %}
+                    
+                    <a href="" class="noHover">
+                        <p class="buttons">
+                            <button class="button " disabled>
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+                    <a href="/calendar/{{next_month}}/{{year}}">
+                        <p class="buttons">
+                            <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-right"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+
+                    {% elif month_num == "12" %}
+                    
+                    <a href="/calendar/{{previous_month}}/{{year}}">
+                        <p class="buttons">
+                            <button class="button " >
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+                    <a href="/calendar/January/{{next_year}}">
+                        <p class=" buttons">
+                            <button class="button">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-right"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+                    
+                    {% else %}
+                    
                     <a href="/calendar/{{previous_month}}/{{year}}">
                         <p class="buttons">
                             <button class="button ">
@@ -67,7 +110,51 @@
                             </button>
                         </p>
                     </a>
+                    <a href="/calendar/{{next_month}}/{{year}}">
+                        <p class="buttons">
+                            <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-right"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
 
+                    {% endif %}
+
+                    {% elif current_year|add:"2" == next_year %}
+                    {% if month_num == "01" %}
+                    
+                    <a href="/calendar/December/{{previous_year}}">
+                        <p class="buttons">
+                            <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>                    
+                    <a href="/calendar/{{next_month}}/{{year}}">
+                        <p class="buttons">
+                            <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-right"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+
+                    {% elif month_num == "12" %}
+                    
+                    <a href="/calendar/{{previous_month}}/{{year}}">
+                        <p class="buttons">
+                            <button class="button ">
+                                <span class="icon ">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
                     <a href="" class="noHover">
                         <p class="buttons">
                             <button class="button " disabled>
@@ -77,87 +164,10 @@
                             </button>
                         </p>
                     </a>
-
-
-
-                    {% else %}
-
-                    <a href="/calendar/{{previous_month}}/{{year}}">
-                        <p class="buttons">
-                            <button class="button">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-left"></i>
-                                </span>
-                            </button>
-                        </p>
-                    </a>
-
-
-                    <a href="/calendar/January/{{next_year}}"><p class=" buttons">
-                        <button class="button">
-                            <span class="icon ">
-                                <i class="fas fa-arrow-right"></i>
-                            </span>
-                        </button>
-                        </p>
-                    </a>
-
-
-                    {% endif %}
-
-
-                    <!-- Start of the previous year - January -->
-                    {% elif month_num == 1 or current_month_num == month_num %}
-                    {% if current_year > previous_year %}
-
-                    <a href="" class="noHover">
-                        <p class="buttons">
-                            <button class="button" disabled>
-                                <span class="icon">
-                                    <i class="fas fa-arrow-left"></i>
-                                </span>
-                            </button>
-                        </p>
-                    </a>
-
-                    <a href="/calendar/{{next_month}}/{{year}}">
-                        <p class="buttons">
-                            <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-right"></i>
-                                </span>
-                            </button>
-                        </p>
-                    </a>
-
+                    
 
                     {% else %}
-
-                    <a href="/calendar/December/{{previous_year}}">
-                        <p class="buttons">
-                            <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-left"></i>
-                                </span>
-                            </button>
-                        </p>
-                    </a>
-
-                    <a href="/calendar/{{next_month}}/{{year}}">
-                        <p class="buttons">
-                            <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-right"></i>
-                                </span>
-                            </button>
-                        </p>
-                    </a>
-
-                    {% endif %}
-
-                    <!-- How the page looks by default upon landing -->
-                    {% else %}
-
+                    
                     <a href="/calendar/{{previous_month}}/{{year}}">
                         <p class="buttons">
                             <button class="button ">
@@ -167,7 +177,6 @@
                             </button>
                         </p>
                     </a>
-
                     <a href="/calendar/{{next_month}}/{{year}}">
                         <p class="buttons">
                             <button class="button ">
@@ -177,23 +186,24 @@
                             </button>
                         </p>
                     </a>
-
                     {% endif %}
+                    {% endif %}                   
+
                     <span class="is-size-4 mb-0 px-3 level-left">{{month}} {{year}}</span>
                 </div>
-                
+
                 <!-- Search box and filter button -->
                 <div class="level-right">
                     <!-- Key for table colours -->
-                    <div class="level-item" >
+                    <div class="level-item">
                         <button class="button is-static" style="background-color: #0e00d6; color:white">You</button>
                     </div>
                     <div class="control has-icons-left">
                         <input class="input" type="text" placeholder="Search">
-                            <span class="icon is-left">
-                                <i class="fas fa-search"></i>
-                            </span>
-                        
+                        <span class="icon is-left">
+                            <i class="fas fa-search"></i>
+                        </span>
+
                     </div>
                     <a class="button is-info is-outlined mx-1" href="#"><i class="fas fa-filter"></i></a>
                 </div>
@@ -201,10 +211,10 @@
             <div class="level-right control mb-3">
                 <input type="checkbox" name="absent"> Filter By Absence
             </div>
-            
 
 
-<!-- Calendar starts here . . . -->
+
+            <!-- Calendar starts here . . . -->
             <div class="table-container" style="overflow: auto">
                 <table class="table is-bordered is-striped" style="width:100%">
                     <thead>
