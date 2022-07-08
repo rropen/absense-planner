@@ -30,7 +30,8 @@
   <div class="level-right submit" style="position: relative; padding-right: 10px;">
     <form method="POST" class="level">
       {% csrf_token %}
-      <input type="submit" class="button is-link level-item mt-2" value="Switch" onclick="setTimeout(close_message() ,2000)" id="button">
+      <input type="submit" class="button is-link level-item mt-2" value="Switch" id="button">
+      
       <div class="level-item">
         {{form | bulma}}
       </div>
@@ -41,11 +42,12 @@
 </nav>
 
 <div class="main container mt-6">
-  <div id="message">
+  <div id="message" onclick="close_message()">
     {% if message %}
     {% include "messages.html" %}
     {% endif %}
   </div>
+  <br>
   {% if not absences %}
 
   <div class="container has-background-light box">
@@ -123,6 +125,7 @@
       }
     });
 
+    
     $(".delete-trigger-button").click(function (e) {
       $("#delete-btn").attr("href", "/absence/delete/" + $(this).attr("data-id"))
       openModal();
@@ -132,14 +135,15 @@
 
 
   function close_message() {
+    
     var elem = document.getElementById("message");
     elem.style.display = "none";
-  }
 
-    $(document).ready(function(){
-      $("#button").click(setTimeout(close_message(), 2000));
+  }
+    // $(document).ready(function(){
+    //   $("#button").click(setTimeout(close_message(), 2000));
       
-    })
+    // })
  
 
 </script>
