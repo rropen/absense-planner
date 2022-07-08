@@ -7,7 +7,7 @@ from django.utils.timezone import now
 from difflib import SequenceMatcher
 from .models import Absence
 import datetime
-from recurrence.forms import RecurrenceWidget
+from recurrence.forms import RecurrenceWidget, RecurrenceField
 
 class CreateTeamForm(forms.ModelForm):
     class Meta:
@@ -69,7 +69,7 @@ class RecurringAbsencesForm(forms.ModelForm):
     class Media:
         js = ('/admin/jsi18n', '/admin/js/core.js',)
 
-    recurrences = RecurrenceWidget()
+    recurrences = RecurrenceField(widget=RecurrenceWidget(attrs={"format" : "%d/%m/%Y"}))
     
 class AbsenceForm(forms.ModelForm):
     class Meta:
