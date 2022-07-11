@@ -127,3 +127,5 @@ db.sqlite3
 
 venv
 static_root
+*.sqlite3
+*.pyc
