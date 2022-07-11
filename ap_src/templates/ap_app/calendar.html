@@ -184,22 +184,23 @@
                 
                 <!-- Search box and filter button -->
                 <div class="level-right">
-                    <!-- Key for table colours -->
-                    <div class="level-item" >
-                        <button class="button is-static" style="background-color: #0e00d6; color:white">You</button>
-                    </div>
-                    <div class="control has-icons-left">
-                        <input class="input" type="text" placeholder="Search">
-                            <span class="icon is-left">
-                                <i class="fas fa-search"></i>
-                            </span>
+                    <form method="get">
+
+                        <!-- Key for table colours -->
+                        <div class="level-item" >
+                            <!-- <button class="button" style="background-color: #0e00d6; color:white">You</button> -->
+                        </div>
+                        <div class="control has-icons-left">
+                            <input class="input" type="text" name="username" placeholder="Search">
+                                <span class="icon is-left">
+                                    <i class="fas fa-search"></i>
+                                </span>
                         
-                    </div>
-                    <a class="button is-info is-outlined mx-1" href="#"><i class="fas fa-filter"></i></a>
+                                <input class="checkbox" type="checkbox" name="absent"> Filter By Absence
+                            </div>
+                            <button class="button is-info is-outlined mx-1" type="submit"><i class="fas fa-filter"></i></button>
+                    </form>
                 </div>
-            </div>
-            <div class="level-right control mb-3">
-                <input type="checkbox" name="absent"> Filter By Absence
             </div>
             
 
