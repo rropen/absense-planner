@@ -86,6 +86,8 @@ class UserProfile(models.Model):
     edit_whitelist = models.ManyToManyField(User, related_name="permissions",)
     # Extra Fields
     accepted_policy = models.BooleanField()
+    
+    privacy = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.username}"
