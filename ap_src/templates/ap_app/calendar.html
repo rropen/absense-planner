@@ -78,7 +78,7 @@
                         </p>
                     </a>
 
-                    {% elif month_num == "12" %}
+                    {% elif month_num == 12 %}
                     
                     <a href="/calendar/{{previous_month}}/{{year}}">
                         <p class="buttons">
@@ -123,7 +123,7 @@
                     {% endif %}
 
                     {% elif current_year|add:"2" == next_year %}
-                    {% if month_num == "01" %}
+                    {% if month_num == 1 %}
                     
                     <a href="/calendar/December/{{previous_year}}">
                         <p class="buttons">
@@ -144,7 +144,7 @@
                         </p>
                     </a>
 
-                    {% elif month_num == "12" %}
+                    {% elif month_num == 12 %}
                     
                     <a href="/calendar/{{previous_month}}/{{year}}">
                         <p class="buttons">
@@ -230,7 +230,11 @@
                     <thead>
                         <th style="color: black;"></th>
                         {% for day in day_range %}
+                        {% if day == today and month == current_month and year == current_year%}
+                        <th style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255);">{{day}}</th>
+                        {% else %}
                         <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
+                        {% endif %}
                         {% endfor %}
                     </thead>
                     <tbody>

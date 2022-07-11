@@ -129,3 +129,4 @@ venv
 static_root
 *.sqlite3
 *.pyc
+ap_src/db.sqlite3
