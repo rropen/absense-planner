@@ -16,6 +16,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, UpdateView
 from river.models.fields.state import State
+from dateutil.relativedelta import relativedelta
 import recurrence
 
 from .forms import RecurringAbsencesForm, CreateTeamForm, DeleteUserForm, AbsenceForm, AcceptPolicyForm
@@ -234,14 +235,15 @@ def add(request) -> render:
 
 @login_required
 def add_recurring(request) -> render:
-    form = RecurringAbsencesForm()
+    form = RecurringAbsencesForm(request.POST)
     obj = RecurringAbsences()
     content = {'form' : form}
     obj.User_ID = request.user
-    #obj.recurrences.between(
-    #    now().date(),
-    #    now().date().timedelta(yea+=)
-    #)
+    obj.recurrences.between(
+        now().date(),
+        datetime.datetime.now() + relativedelta(years=3),
+        inc=True,
+    )
     obj.save()
     return render(request, "ap_app/add_recurring_absence.html", content)
 
