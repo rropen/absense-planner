@@ -441,17 +441,44 @@ def all_calendar(
     all_users = []
     all_users.append(request.user)
     user_relations = Relationship.objects.filter(user=request.user)
-
+    
     # NOTE: need to convert filtered queryset back to list for "all_users"
-    for relation in user_relations:
+    for index, relation in enumerate(user_relations):
         rels = Relationship.objects.filter(
             team=relation.team, status=State.objects.get(slug="active")
         )
+
+
+
+        #TODO: Apply this filtering to team calendar, Also could implement onto page that users have been hidden as view is a follower        
+        # Filter users out who have privated data - (if the user viewing is not a Memember/Owner of the team).
+        
+        # Finds the viewers role in the team
+        for user in rels:
+            if user.user == request.user:
+                viewers_role = Role.objects.get(id=user.role_id)
+
+
         for rel in rels:
-            if rel.user in all_users:
-                pass
-            else:
-                all_users.append(rel.user)
+            if rel.user not in all_users:
+                if viewers_role.role == "Follower":
+                    # Than hide users data who have privacy on
+
+
+                    role = Role.objects.get(id=rel.role_id)
+                    user_profile = UserProfile.objects.get(user=rel.user)
+                    if not user_profile.privacy:
+                        # If user hasn't got their data privacy on
+                        all_users.append(rel.user)
+
+
+                else:
+                    # Only followers cannot view those who have privacy set for their data. - (Members & Owners can see the data) 
+                    all_users.append(rel.user)
+
+    
+    
+
 
     # Filtering
     filtered_users = []
