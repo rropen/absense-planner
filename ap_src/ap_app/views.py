@@ -580,8 +580,28 @@ def profile_settings(request) -> render:
     except IndexError:
         # TODO Create error page
         return redirect("/")
+
+    if "userPrivacy" in request.POST:
+        user_profile = UserProfile.objects.get(user=request.user)
+
+        
+        print("\n\n User privacy altered \n\n")
+        if user_profile.privacy:
+            user_profile.privacy = False
+        else:
+            user_profile.privacy = True
+
+        user_profile.save()
+
+        
+        
+
+
+
     context = {"userprofile": userprofile}
     return render(request, "ap_app/settings.html", context)
+
+
 
 
 @login_required

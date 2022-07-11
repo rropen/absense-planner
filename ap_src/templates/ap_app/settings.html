@@ -49,9 +49,12 @@
         <div class="column is-two-thirds">
             <button class="collapsible button is-medium is-link has-text-centered">Privacy Settings</button>
             <div class="content pt-3">
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                    aliquip ex ea commodo consequat.</p>
+                <p>Private data - (Hide data from external users/followers)</p>
+                <form method="POST">
+                    {% csrf_token %}
+                    <!-- Text box -->
+                        <button class="checkbox" name="userPrivacy">Private Data</button>
+                </form>
                 <br>
             </div>
 
