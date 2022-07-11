@@ -1,7 +1,6 @@
 from django import forms
 from django.db.models.base import Model
 from django.forms import models
-from django.contrib.auth.models import User
 from .models import Team, UserProfile, Absence
 from django.utils.timezone import now
 from difflib import SequenceMatcher
@@ -19,7 +18,7 @@ class CreateTeamForm(forms.ModelForm):
         min_length=3,
         max_length=64,
         required=True,
-        widget=forms.TextInput(attrs={"class": "", "placeholder": "Team Name"}),
+        widget=forms.TextInput(attrs={"class": "", "placeholder": "Team Name", "id":"nameInput"}),
     )
     description = forms.CharField(
         max_length=512,
