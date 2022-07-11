@@ -122,7 +122,18 @@ def create_team(request) -> render:
             return redirect("/teams/", {"message": "Team successfully created."})
     else:
         form = CreateTeamForm()
-    return render(request, "teams/create_team.html", {"form": form})
+    teams = Team.objects.all()
+    existing_teams = ""
+    existing_teams_ids = ""
+    for i, team in enumerate(teams):
+        existing_teams += team.name
+        existing_teams_ids += str(team.id)
+        if i != len(teams)-1:
+            existing_teams += ","
+            existing_teams_ids += ","
+    
+
+    return render(request, "teams/create_team.html", {"form": form, "existing_teams":existing_teams, "existing_teams_ids":existing_teams_ids })
 
 
 @login_required
@@ -133,10 +144,21 @@ def join_team(request) -> render:
     for teams in all_user_teams:
         user_teams.append(teams.team)
     all_teams = Team.objects.all().exclude(name__in=user_teams)
+    
+    all_teams_filtered = []
+
+    # Filtering by team name
+    if "teamName" in request.GET:
+        for team in all_teams:
+            if request.GET["teamName"].lower() in team.name.lower():
+                all_teams_filtered.append(team)
+    else:
+        all_teams_filtered = all_teams
+
     return render(
         request,
         "teams/join_team.html",
-        {"all_teams": all_teams, "joined_teams": user_teams},
+        {"all_teams": all_teams_filtered, "joined_teams": user_teams},
     )
 
 
