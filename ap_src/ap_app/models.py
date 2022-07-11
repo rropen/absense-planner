@@ -42,6 +42,12 @@ class Team(models.Model):
         return Relationship.objects.filter(
             team=self, status=State.objects.get(slug="active")
         ).count()
+    
+    @property
+    def users(self):
+        return Relationship.objects.filter(
+            team=self, status=State.objects.get(slug="active")
+        )
 
 
 class Role(models.Model):
@@ -82,7 +88,7 @@ class Relationship(models.Model):
 class UserProfile(models.Model):
     """ Extension of fields for User class """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # #issue #11
+
     edit_whitelist = models.ManyToManyField(User, related_name="permissions",)
     # Extra Fields
     accepted_policy = models.BooleanField()

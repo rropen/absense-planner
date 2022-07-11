@@ -30,7 +30,7 @@
   <div class="level-right submit" style="position: relative; padding-right: 10px;">
     <form method="POST" class="level">
       {% csrf_token %}
-      <input type="submit" class="button is-link level-item mt-2" value="Switch" id="button">
+      <input type="submit" class="button is-link level-item mt-2" value="Switch" id="button", href="{% url 'profile' %}">
       
       <div class="level-item">
         {{form | bulma}}
