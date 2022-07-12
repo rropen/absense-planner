@@ -443,16 +443,15 @@ def all_calendar(
     user_relations = Relationship.objects.filter(user=request.user)
     hiding_users = False
 
-    # NOTE: need to convert filtered queryset back to list for "all_users"
+    #TODO: Apply this filtering to team calendar, Also could implement onto page that users have been hidden as view is a follower        
+    # Filter users out who have privated data - (if the user viewing is not a Memember/Owner of the team).
+
+
     for index, relation in enumerate(user_relations):
         rels = Relationship.objects.filter(
             team=relation.team, status=State.objects.get(slug="active")
         )
 
-
-
-        #TODO: Apply this filtering to team calendar, Also could implement onto page that users have been hidden as view is a follower        
-        # Filter users out who have privated data - (if the user viewing is not a Memember/Owner of the team).
         
         # Finds the viewers role in the team
         for user in rels:
@@ -610,11 +609,9 @@ def profile_settings(request) -> render:
         # TODO Create error page
         return redirect("/")
 
+    user_profile = UserProfile.objects.get(user=request.user)
     if "userPrivacy" in request.POST:
-        user_profile = UserProfile.objects.get(user=request.user)
 
-        
-        print("\n\n User privacy altered \n\n")
         if user_profile.privacy:
             user_profile.privacy = False
         else:
@@ -623,11 +620,8 @@ def profile_settings(request) -> render:
         user_profile.save()
 
         
-        
-
-
-
-    context = {"userprofile": userprofile}
+    privacy_status = user_profile.privacy
+    context = {"userprofile": userprofile, "data_privacy_mode":privacy_status}
     return render(request, "ap_app/settings.html", context)
 
 

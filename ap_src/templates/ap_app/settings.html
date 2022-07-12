@@ -49,11 +49,23 @@
         <div class="column is-two-thirds">
             <button class="collapsible button is-medium is-link has-text-centered">Privacy Settings</button>
             <div class="content pt-3">
-                <p>Private data - (Hide data from external users/followers)</p>
+                <p>Private data - (Hide data from external users/followers) - <a href=""></i>See more here</a></p>
                 <form method="POST">
                     {% csrf_token %}
                     <!-- Text box -->
-                        <button class="checkbox" name="userPrivacy">Private Data</button>
+                        
+                    
+                    {% if data_privacy_mode %}
+                    <p>You're currently hiding your data from non team members</p>
+                    <button type="checkbox" checked="checked" class="switch" style="color:red" name="userPrivacy">
+                        Turn OFF    
+                    </button>
+                    {% else %}
+                    <p>You're NOT hiding your data from non team members</p>
+                    <button class="switch" style="color:green" name="userPrivacy">
+                        Turn ON    
+                    </button>
+                    {% endif %}
                 </form>
                 <br>
             </div>
