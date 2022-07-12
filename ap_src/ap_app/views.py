@@ -441,7 +441,8 @@ def all_calendar(
     all_users = []
     all_users.append(request.user)
     user_relations = Relationship.objects.filter(user=request.user)
-    
+    hiding_users = False
+
     # NOTE: need to convert filtered queryset back to list for "all_users"
     for index, relation in enumerate(user_relations):
         rels = Relationship.objects.filter(
@@ -465,12 +466,13 @@ def all_calendar(
                     # Than hide users data who have privacy on
 
 
-                    role = Role.objects.get(id=rel.role_id)
                     user_profile = UserProfile.objects.get(user=rel.user)
                     if not user_profile.privacy:
                         # If user hasn't got their data privacy on
                         all_users.append(rel.user)
-
+                    else:
+                        # Used to inform user on calendar page if there are hiden users
+                        hiding_users = True
 
                 else:
                     # Only followers cannot view those who have privacy set for their data. - (Members & Owners can see the data) 
@@ -491,7 +493,7 @@ def all_calendar(
             if user in all_users:
                 username = user.username
                 if (
-                    not absence.Target_User_ID in filtered_users
+                    absence.Target_User_ID not in filtered_users
                     and name_filtered_by.lower() in username.lower()
                 ):
                     filtered_users.append(absence.Target_User_ID)
@@ -511,7 +513,7 @@ def all_calendar(
             user = User.objects.get(id=absence.Target_User_ID.id)
             if user in all_users:
                 username = user.username
-                if not absence.Target_User_ID in filtered_users:
+                if absence.Target_User_ID not in filtered_users:
                     filtered_users.append(absence.Target_User_ID)
 
     # Else, no filtering
@@ -522,7 +524,7 @@ def all_calendar(
 
     data_3 = {"Sa": "Sa", "Su": "Su", "users_filter": filtered_users}
 
-    context = {**data_1, **data_2, **data_3}
+    context = {**data_1, **data_2, **data_3, "users_hidden":hiding_users}
 
     return render(request, "ap_app/calendar.html", context)
 
