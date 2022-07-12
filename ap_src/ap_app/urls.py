@@ -24,7 +24,7 @@ urlpatterns = [
     path("teams/calendar/<int:id>", views.team_calendar, name="Calendar"),
     path("teams/calendar/<int:id>/<str:month>/<int:year>", views.team_calendar, name="calendar"),
     path("absence/add", views.add, name="add"),
-    path("absence/add_recurring", views.add_recurring),
+    path("absence/add_recurring", views.add_recurring, name="add_recurring"),
     path("profile/", views.profile_page, name="profile"),
     path("details/", views.details_page, name="details"),
     path("privacy/", views.privacy_page, name="privacy"),

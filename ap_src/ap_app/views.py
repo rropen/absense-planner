@@ -309,10 +309,11 @@ def get_date_data(
     return data
 
 
-def get_user_data(users, user_type):
+def get_absence_data(users, user_type):
     data = {}
     absence_content = []
     total_absence_dates = {}
+    total_recurring_dates = {}
     all_absences = {}
     delta = datetime.timedelta(days=1)
 
@@ -326,7 +327,7 @@ def get_user_data(users, user_type):
         absence_info = Absence.objects.filter(User_ID=user_id)
         total_absence_dates[user] = []
         all_absences[user] = []
-
+        
         # if they have any absences
         if absence_info:
             # mapping the absence content to keys in dictionary
@@ -351,9 +352,20 @@ def get_user_data(users, user_type):
             # for each user it maps the set of dates to a dictionary key labelled as the users name
             total_absence_dates[user] = total_absence_dates[user]
             all_absences[user] = absence_content
-        else:
-            total_absence_dates[user] = []
-            all_absences[user] = []
+
+        recurring = RecurringAbsences.objects.filter(User_ID=user_id)
+        total_recurring_dates[user] = []
+        if recurring:
+            for recurrence_ in recurring:
+                dates = recurrence_.Recurrences.occurrences(dtend = datetime.datetime.strptime(str(datetime.datetime.now().year + 2),"%Y"))
+                for x in list(dates)[:-1]:
+                    time_const = "23:00:00"
+                    time_var = datetime.datetime.strftime(x, "%H:%M:%S")
+                    if time_const == time_var:
+                        x = x + timedelta(hours=2)
+                    total_recurring_dates[user].append(x) 
+        
+    data["recurring_absence_dates"] = total_recurring_dates
     data["all_absences"] = all_absences
     data["absence_dates"] = total_absence_dates
     data["users"] = users
@@ -374,7 +386,7 @@ def team_calendar(
     )
     
     
-    data_2 = get_user_data(users, 1)
+    data_2 = get_absence_data(users, 1)
 
     team = Team.objects.get(id=id)
 
@@ -473,7 +485,7 @@ def all_calendar(
     delta = datetime.timedelta(days=1)
  
 
-    data_2 = get_user_data(all_users, 2)
+    data_2 = get_absence_data(all_users, 2)
 
     data_3 = {"Sa": "Sa", "Su": "Su","users_filter": filtered_users}
 
