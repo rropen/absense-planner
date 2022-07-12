@@ -432,7 +432,7 @@ def all_calendar(
     old_records.delete()
     all_users = []
     all_users.append(request.user)
-    user_relations = Relationship.objects.filter(user=request.user)
+    user_relations = Relationship.objects.filter(user=request.user, status=State.objects.get(slug="active"))
 
     # NOTE: need to convert filtered queryset back to list for "all_users"
     for relation in user_relations:
