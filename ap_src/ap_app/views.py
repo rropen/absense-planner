@@ -92,7 +92,7 @@ def teams_dashboard(request) -> render:
     return render(
         request,
         "teams/dashboard.html",
-        {"rels": rels, "invite_count": invite_rel_count},
+        {"rels": rels, "invite_count": invite_rel_count, "teamspage_active":True},
     )
 
 
@@ -267,7 +267,7 @@ def add(request) -> render:
             return render(
                 request,
                 "ap_app/add_absence.html",
-                {"form": form, "message": "Absence successfully recorded."},
+                {"form": form, "message": "Absence successfully recorded.", "add_absence_active": True},
             )
             # redirect to success page
     else:
@@ -277,7 +277,7 @@ def add(request) -> render:
             edit_whitelist__in=[request.user]
         )
 
-    content = {"form": form}
+    content = {"form": form, "add_absence_active": True}
     return render(request, "ap_app/add_absence.html", content)
 
 
@@ -538,7 +538,7 @@ def all_calendar(
 
     data_3 = {"Sa": "Sa", "Su": "Su", "users_filter": filtered_users}
 
-    context = {**data_1, **data_2, **data_3, "users_hidden":hiding_users}
+    context = {**data_1, **data_2, **data_3, "users_hidden":hiding_users, "home_active":True}
 
     return render(request, "ap_app/calendar.html", context)
 
