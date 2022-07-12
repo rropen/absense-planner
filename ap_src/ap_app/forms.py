@@ -65,11 +65,12 @@ class register(forms.Form):
 class RecurringAbsencesForm(forms.ModelForm):
     class Meta:
         model = RecurringAbsences
-        fields = ['ID','recurrences']
+        fields = ['ID','Recurrences']
     class Media:
         js = ('/admin/jsi18n', '/admin/js/core.js',)
+    def clean(self):
+        cleaned_data = super().clean()
 
-    recurrences = RecurrenceField(widget=RecurrenceWidget(attrs={"format" : "%d/%m/%Y"}))
     
 class AbsenceForm(forms.ModelForm):
     class Meta:

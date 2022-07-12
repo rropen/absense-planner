@@ -26,7 +26,7 @@ class RecurringAbsences(models.Model):
     ID = models.AutoField(primary_key=True)
     User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="recurring_absences")
     edit_whitelist = models.ManyToManyField(to=User)
-    recurrences = RecurrenceField()
+    Recurrences = RecurrenceField()
     def __str__(self):
         return f"{self.User_ID}"
 

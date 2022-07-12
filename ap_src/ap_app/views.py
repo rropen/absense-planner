@@ -235,16 +235,14 @@ def add(request) -> render:
 
 @login_required
 def add_recurring(request) -> render:
-    form = RecurringAbsencesForm(request.POST)
-    obj = RecurringAbsences()
+    if request.method == "POST":
+        form = RecurringAbsencesForm(request.POST)
+        form.instance.User_ID = request.user  
+        form.save()
+    else:
+        form = RecurringAbsencesForm()
+
     content = {'form' : form}
-    obj.User_ID = request.user
-    obj.recurrences.between(
-        now().date(),
-        datetime.datetime.now() + relativedelta(years=3),
-        inc=True,
-    )
-    obj.save()
     return render(request, "ap_app/add_recurring_absence.html", content)
 
 
