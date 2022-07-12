@@ -70,10 +70,10 @@ def privacy_page(request, to_accept=False) -> render:
         return render(
             request, "registration/accept_policy.html", {"form": AcceptPolicyForm()}
         )
-
-    # Viewing general policy page - (Without the acceptancy form)
-    return render(request, "ap_app/privacy.html")
-
+    else:
+        # Viewing general policy page - (Without the acceptancy form)
+        return render(request, "ap_app/privacy.html")
+    return all_calendar(request)
 
 class SignUpView(CreateView):
     form_class = UserCreationForm
