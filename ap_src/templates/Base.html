@@ -89,16 +89,25 @@
         .navbar a {
             color: white;
         }
+        
+        .navbar .active {
+            color: #10069f;
+            background-color: white;
+        }
 
         .noHover{
           pointer-events: none;
         }
+        
+        
 
         footer {
           margin-top: auto;
           height: 150px;
           width: 100%;
         }
+        
+        
     </style>
 </head>
 
@@ -131,28 +140,37 @@
   <div id="navbarExampleTransparentExample" class="navbar-menu rr-secondary" >
     <div class="navbar-start" style="margin-left: 48px">
 {% if user.is_authenticated %}
+  
+      {% if home_active %}
+      <a class="navbar-item icon-text active" href="/">
+      {% else %}
       <a class="navbar-item icon-text" href="/">
+      {% endif %}
+          
         <span class="icon is-size-5">
           <i class="fas fa-home"></i>
         </span>
         <span>Home/Calendar</span>
       </a>
-      <!--Home-Page is now Calendar-Page-->
-      <!-- <a class="navbar-item icon-text" href="/calendar/">
-        <span class="icon is-size-5">
-          <i class="fas fa-calendar-alt"></i>
-        </span>
-        <span>Calendar</span>
-      </a> -->
 
+      {% if add_absence_active %}
+      <a class="navbar-item icon-text active" href="/absence/add">
+      {% else %}
       <a class="navbar-item icon-text" href="/absence/add">
+      {% endif %}
+
         <span class="icon is-size-5">
           <i class="fas fa-calendar-plus"></i>
         </span>
         <span>Add Absence</span>
       </a>
-
+      
+      {% if teamspage_active %}
+      <a class="navbar-item icon-text active" href="/teams">
+      {% else %}
       <a class="navbar-item icon-text" href="/teams">
+      {% endif %} 
+
         <span class="icon is-size-5">
           <i class="fas fa-users"></i>
         </span>

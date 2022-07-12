@@ -92,7 +92,7 @@ def teams_dashboard(request) -> render:
     return render(
         request,
         "teams/dashboard.html",
-        {"rels": rels, "invite_count": invite_rel_count},
+        {"rels": rels, "invite_count": invite_rel_count, "teamspage_active":True},
     )
 
 
@@ -288,7 +288,7 @@ def add(request) -> render:
             return render(
                 request,
                 "ap_app/add_absence.html",
-                {"form": form, "message": "Absence successfully recorded."},
+                {"form": form, "message": "Absence successfully recorded.", "add_absence_active": True},
             )
             # redirect to success page
     else:
@@ -298,7 +298,7 @@ def add(request) -> render:
             edit_whitelist__in=[request.user]
         )
 
-    content = {"form": form}
+    content = {"form": form, "add_absence_active": True}
     return render(request, "ap_app/add_absence.html", content)
 
 
@@ -475,18 +475,47 @@ def all_calendar(
     old_records.delete()
     all_users = []
     all_users.append(request.user)
-    user_relations = Relationship.objects.filter(user=request.user, status=State.objects.get(slug="active"))
 
-    # NOTE: need to convert filtered queryset back to list for "all_users"
-    for relation in user_relations:
+    user_relations = Relationship.objects.filter(user=request.user, status=State.objects.get(slug="active"))
+    hiding_users = False
+
+    #TODO: Apply this filtering to team calendar, Also could implement onto page that users have been hidden as view is a follower        
+    # Filter users out who have privated data - (if the user viewing is not a Memember/Owner of the team).
+
+
+    for index, relation in enumerate(user_relations):
         rels = Relationship.objects.filter(
             team=relation.team, status=State.objects.get(slug="active")
         )
+
+        
+        # Finds the viewers role in the team
+        for user in rels:
+            if user.user == request.user:
+                viewers_role = Role.objects.get(id=user.role_id)
+
+
         for rel in rels:
-            if rel.user in all_users:
-                pass
-            else:
-                all_users.append(rel.user)
+            if rel.user not in all_users:
+                if viewers_role.role == "Follower":
+                    # Than hide users data who have privacy on
+
+
+                    user_profile = UserProfile.objects.get(user=rel.user)
+                    if not user_profile.privacy:
+                        # If user hasn't got their data privacy on
+                        all_users.append(rel.user)
+                    else:
+                        # Used to inform user on calendar page if there are hiden users
+                        hiding_users = True
+
+                else:
+                    # Only followers cannot view those who have privacy set for their data. - (Members & Owners can see the data) 
+                    all_users.append(rel.user)
+
+    
+    
+
 
     # Filtering
     filtered_users = []
@@ -499,7 +528,7 @@ def all_calendar(
             if user in all_users:
                 username = user.username
                 if (
-                    not absence.Target_User_ID in filtered_users
+                    absence.Target_User_ID not in filtered_users
                     and name_filtered_by.lower() in username.lower()
                 ):
                     filtered_users.append(absence.Target_User_ID)
@@ -519,7 +548,7 @@ def all_calendar(
             user = User.objects.get(id=absence.Target_User_ID.id)
             if user in all_users:
                 username = user.username
-                if not absence.Target_User_ID in filtered_users:
+                if absence.Target_User_ID not in filtered_users:
                     filtered_users.append(absence.Target_User_ID)
 
     # Else, no filtering
@@ -530,7 +559,7 @@ def all_calendar(
 
     data_3 = {"Sa": "Sa", "Su": "Su", "users_filter": filtered_users}
 
-    context = {**data_1, **data_2, **data_3}
+    context = {**data_1, **data_2, **data_3, "users_hidden":hiding_users, "home_active":True}
 
     return render(request, "ap_app/calendar.html", context)
 
@@ -630,8 +659,23 @@ def profile_settings(request) -> render:
     except IndexError:
         # TODO Create error page
         return redirect("/")
-    context = {"userprofile": userprofile}
+
+    user_profile = UserProfile.objects.get(user=request.user)
+    if "userPrivacy" in request.POST:
+
+        if user_profile.privacy:
+            user_profile.privacy = False
+        else:
+            user_profile.privacy = True
+
+        user_profile.save()
+
+        
+    privacy_status = user_profile.privacy
+    context = {"userprofile": userprofile, "data_privacy_mode":privacy_status}
     return render(request, "ap_app/settings.html", context)
+
+
 
 
 @login_required
