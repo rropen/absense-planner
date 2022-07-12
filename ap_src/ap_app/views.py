@@ -239,6 +239,27 @@ def team_settings(request, id):
 
     return redirect("dashboard")
 
+@login_required
+def edit_team_absence(request, id, user_id):
+    """Checks to see if user is the owner and renders the Edit absences page"""
+    team = Team.objects.get(id=id)
+    user_relation = Relationship.objects.get(team=id, user=request.user)
+    if user_relation.role.role == "Owner":
+        all_pending_relations = Relationship.objects.filter(
+            team=id, status=State.objects.get(slug="pending")
+        )
+        return render(
+            request,
+            "teams/settings.html",
+            {
+                "user": request.user,
+                "team": team,
+                "pending_rels": all_pending_relations,
+                "Team_users": team.users,
+            },
+        )
+
+    return redirect("dashboard")
 
 def joining_team_request(request, id, response):
     find_rel = Relationship.objects.get(id=id)

@@ -17,6 +17,7 @@ urlpatterns = [
     path("teams/settings/<int:id>", views.team_settings, name="team_settings"),
     path("teams/calendar/<int:id>", views.team_calendar, name="Calendar"),
     path("teams/calendar/<int:id>/<str:month>/<int:year>", views.team_calendar, name="calendar"),
+    path("teams/settings/<int:id>/<int:user_id>", views.edit_team_absence, name="edit_absences"),
     path("absence/add", views.add, name="add"),
     path("profile/", views.profile_page, name="profile"),
     path("details/", views.details_page, name="details"),
