@@ -49,7 +49,7 @@ def index(request) -> render:
 
     # Change: If user is logged in, will be redirected to the calendar
     if request.user.is_authenticated:
-        user = UserProfile.objects.get(user = request.user)
+        user = UserProfile.objects.get(user=request.user)
         user.edit_whitelist.add(request.user)
         return all_calendar(request)
 
@@ -70,10 +70,10 @@ def privacy_page(request, to_accept=False) -> render:
         return render(
             request, "registration/accept_policy.html", {"form": AcceptPolicyForm()}
         )
-
-    # Viewing general policy page - (Without the acceptancy form)
-    return render(request, "ap_app/privacy.html")
-
+    else:
+        # Viewing general policy page - (Without the acceptancy form)
+        return render(request, "ap_app/privacy.html")
+    return all_calendar(request)
 
 class SignUpView(CreateView):
     form_class = UserCreationForm
@@ -229,7 +229,12 @@ def team_settings(request, id):
         return render(
             request,
             "teams/settings.html",
-            {"team": team, "pending_rels": all_pending_relations},
+            {
+                "user": request.user,
+                "team": team,
+                "pending_rels": all_pending_relations,
+                "Team_users": team.users,
+            },
         )
 
     return redirect("dashboard")
@@ -293,10 +298,11 @@ def get_date_data(
     data = {}
     data["current_year"] = datetime.datetime.now().year
     data["current_month"] = datetime.datetime.now().strftime("%B")
-    data["current_month_num"] = datetime.datetime.now().strftime("%m")
-    
+    data["current_month_num"] = datetime.datetime.now().month
+    data["today"] = datetime.datetime.now().day
     data["year"] = year
     data["month"] = month
+
     data["day_range"] = range(
         1,
         calendar.monthrange(
@@ -304,12 +310,13 @@ def get_date_data(
         )[1]
         + 1,
     )
-    data["month_num"] = datetime.datetime.strptime(data["month"], "%B").strftime("%m")
+    data["month_num"] = datetime.datetime.strptime(month, "%B").month
+
 
     data["previous_month"] = "December"
     data["next_month"] = "January"
-    data["previous_year"] = data["year"] - 1
-    data["next_year"] = data["year"] + 1
+    data["previous_year"] = year - 1
+    data["next_year"] = year + 1
 
     # as the month number resets every year try and except statements
     # have to be used as at the end and start of a year
@@ -331,8 +338,6 @@ def get_date_data(
 
     # calculating which days are weekends to mark them easier in the html
     data["days_name"] = []
-    month = data["month"]
-    year = data["year"]
     for day in data["day_range"]:
         date = f"{day} {month} {year}"
         date = datetime.datetime.strptime(date, "%d %B %Y")
@@ -389,6 +394,7 @@ def get_user_data(users, user_type):
             all_absences[user] = []
     data["all_absences"] = all_absences
     data["absence_dates"] = total_absence_dates
+
     data["users"] = users
     return data
 
@@ -427,6 +433,7 @@ def team_calendar(
     }
 
     context = {**data_1, **data_2, **data_3}
+
     return render(request, "teams/calendar.html", context)
 
 
@@ -437,10 +444,18 @@ def all_calendar(
     year=datetime.datetime.now().year,
 ):
     data_1 = get_date_data(month, year)
+    current_month = data_1["current_month"]
+    current_year = data_1["current_year"]
+    current_day = datetime.datetime.now().day
+    date = f"{current_day} {current_month} {current_year}"
+    date = datetime.datetime.strptime(date, "%d %B %Y")
 
+    old_records = Absence.objects.filter(absence_date_end__lt=date)
+    old_records.delete()
     all_users = []
     all_users.append(request.user)
-    user_relations = Relationship.objects.filter(user=request.user)
+
+    user_relations = Relationship.objects.filter(user=request.user, status=State.objects.get(slug="active"))
     hiding_users = False
 
     #TODO: Apply this filtering to team calendar, Also could implement onto page that users have been hidden as view is a follower        
@@ -537,18 +552,29 @@ def profile_page(request):
             request.POST,
             initial={"user": request.user},
         )
-        form.fields["user"].queryset= UserProfile.objects.filter(edit_whitelist=request.user)
+        form.fields["user"].queryset = UserProfile.objects.filter(
+            edit_whitelist=request.user
+        )
         users = UserProfile.objects.filter(edit_whitelist=request.user)
         if form.is_valid():
             absence_user = form.cleaned_data["user"]
-            absences = Absence.objects.filter(User_ID=absence_user.id)
+            
+            absences = Absence.objects.filter(Target_User_ID=absence_user.user.id)
+
             return render(
                 request,
                 "ap_app/profile.html",
-                {"form": form, "message": "Successfully switched user", "absences": absences, "users": users,},
+                {
+                    "form": form,
+                    "message": "Successfully switched user",
+                    "absences": absences,
+                    "users": users,
+                },
             )
     else:
-        absences = Absence.objects.filter(User_ID=request.user.id)
+        
+        absences = Absence.objects.filter(Target_User_ID=request.user.id)
+
         users = UserProfile.objects.filter(edit_whitelist=request.user)
         form = SwitchUser()
         form.fields["user"].queryset = users
@@ -557,7 +583,11 @@ def profile_page(request):
         return render(
             request,
             "ap_app/profile.html",
-            {"absences": absences, "users": users, "form": form},
+            {
+                "absences": absences,
+                "users": users,
+                "form": form,
+            },
         )
 
 
