@@ -45,6 +45,7 @@
             <div class="level mb-6">
                 <span class="tag">
                     <form class="level-right" name="LastRefreshFrm">
+                        {% csrf_token %}
                         Last refreshed
                         <input type="text" name="refreshSecBox" size="1" class="RefreshBox" readonly>
                         <script language="javascript">
