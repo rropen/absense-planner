@@ -114,14 +114,14 @@ class AbsenceForm(forms.ModelForm):
     start_date = forms.DateField(
         label="Starting Date:",
         required=True,
-        input_formats=["%Y-%m-%d"],
+        input_formats=["dd/mm/YYYY"],
         widget=forms.DateInput(attrs={"type": "date"}),
         initial=now().date(),
     )
     end_date = forms.DateField(
         label="Ending Date:",
         required=True,
-        input_formats=["%Y-%m-%d"],
+        input_formats=["dd/mm/YYYY"],
         widget=forms.DateInput(attrs={"type": "date"}),
         initial=lambda: now().date() + datetime.timedelta(days=1),
     )

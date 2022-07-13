@@ -20,10 +20,15 @@ from django.utils.timezone import now
 from django.views.generic import CreateView, UpdateView
 from river.models.fields.state import State
 
-from .forms import (AbsenceForm, AcceptPolicyForm, CreateTeamForm,
-                    DeleteUserForm, RecurringAbsencesForm, SwitchUser)
-from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
-                     UserProfile)
+from .forms import (
+    AbsenceForm,
+    AcceptPolicyForm,
+    CreateTeamForm,
+    DeleteUserForm,
+    RecurringAbsencesForm,
+    SwitchUser,
+)
+from .models import Absence, RecurringAbsences, Relationship, Role, Team, UserProfile
 
 User = get_user_model()
 
@@ -75,6 +80,7 @@ def privacy_page(request, to_accept=False) -> render:
         return render(request, "ap_app/privacy.html")
     return all_calendar(request)
 
+
 class SignUpView(CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy("login")
@@ -92,7 +98,7 @@ def teams_dashboard(request) -> render:
     return render(
         request,
         "teams/dashboard.html",
-        {"rels": rels, "invite_count": invite_rel_count, "teamspage_active":True},
+        {"rels": rels, "invite_count": invite_rel_count, "teamspage_active": True},
     )
 
 
@@ -128,12 +134,19 @@ def create_team(request) -> render:
     for i, team in enumerate(teams):
         existing_teams += team.name
         existing_teams_ids += str(team.id)
-        if i != len(teams)-1:
+        if i != len(teams) - 1:
             existing_teams += ","
             existing_teams_ids += ","
-    
 
-    return render(request, "teams/create_team.html", {"form": form, "existing_teams":existing_teams, "existing_teams_ids":existing_teams_ids })
+    return render(
+        request,
+        "teams/create_team.html",
+        {
+            "form": form,
+            "existing_teams": existing_teams,
+            "existing_teams_ids": existing_teams_ids,
+        },
+    )
 
 
 @login_required
@@ -144,7 +157,7 @@ def join_team(request) -> render:
     for teams in all_user_teams:
         user_teams.append(teams.team)
     all_teams = Team.objects.all().exclude(name__in=user_teams)
-    
+
     all_teams_filtered = []
 
     # Filtering by team name
@@ -239,6 +252,7 @@ def team_settings(request, id):
 
     return redirect("dashboard")
 
+
 @login_required
 def edit_team_absence(request, id, user_id):
     """Checks to see if user is the owner and renders the Edit absences page"""
@@ -261,6 +275,7 @@ def edit_team_absence(request, id, user_id):
 
     return redirect("dashboard")
 
+
 def joining_team_request(request, id, response):
     find_rel = Relationship.objects.get(id=id)
     if response == "accepted":
@@ -280,7 +295,9 @@ def add(request) -> render:
         if form.is_valid():
             obj = Absence()
             obj.absence_date_start = form.cleaned_data["start_date"]
+            print(form.cleaned_data["start_date"])
             obj.absence_date_end = form.cleaned_data["end_date"]
+            print(form.cleaned_data["end_date"])
             obj.request_accepted = False
             obj.User_ID = request.user
             obj.Target_User_ID = form.cleaned_data["user"]
@@ -288,7 +305,11 @@ def add(request) -> render:
             return render(
                 request,
                 "ap_app/add_absence.html",
-                {"form": form, "message": "Absence successfully recorded.", "add_absence_active": True},
+                {
+                    "form": form,
+                    "message": "Absence successfully recorded.",
+                    "add_absence_active": True,
+                },
             )
             # redirect to success page
     else:
@@ -301,16 +322,17 @@ def add(request) -> render:
     content = {"form": form, "add_absence_active": True}
     return render(request, "ap_app/add_absence.html", content)
 
+
 @login_required
 def add_recurring(request) -> render:
     if request.method == "POST":
         form = RecurringAbsencesForm(request.POST)
-        form.instance.User_ID = request.user  
+        form.instance.User_ID = request.user
         form.save()
     else:
         form = RecurringAbsencesForm()
 
-    content = {'form' : form}
+    content = {"form": form}
     return render(request, "ap_app/add_recurring_absence.html", content)
 
 
@@ -344,7 +366,6 @@ def get_date_data(
         + 1,
     )
     data["month_num"] = datetime.datetime.strptime(month, "%B").month
-
 
     data["previous_month"] = "December"
     data["next_month"] = "January"
@@ -398,7 +419,7 @@ def get_absence_data(users, user_type):
         absence_info = Absence.objects.filter(Target_User_ID=user_id)
         total_absence_dates[user] = []
         all_absences[user] = []
-        
+
         # if they have any absences
         if absence_info:
             # mapping the absence content to keys in dictionary
@@ -428,18 +449,21 @@ def get_absence_data(users, user_type):
         total_recurring_dates[user] = []
         if recurring:
             for recurrence_ in recurring:
-                dates = recurrence_.Recurrences.occurrences(dtend = datetime.datetime.strptime(str(datetime.datetime.now().year + 2),"%Y"))
+                dates = recurrence_.Recurrences.occurrences(
+                    dtend=datetime.datetime.strptime(
+                        str(datetime.datetime.now().year + 2), "%Y"
+                    )
+                )
                 for x in list(dates)[:-1]:
                     time_const = "23:00:00"
                     time_var = datetime.datetime.strftime(x, "%H:%M:%S")
                     if time_const == time_var:
                         x = x + timedelta(hours=2)
-                    total_recurring_dates[user].append(x) 
-        
+                    total_recurring_dates[user].append(x)
+
     data["recurring_absence_dates"] = total_recurring_dates
     data["all_absences"] = all_absences
     data["absence_dates"] = total_absence_dates
-
     data["users"] = users
     return data
 
@@ -456,8 +480,7 @@ def team_calendar(
     users = Relationship.objects.all().filter(
         team=id, status=State.objects.get(slug="active")
     )
-    
-    
+
     data_2 = get_absence_data(users, 1)
 
     team = Team.objects.get(id=id)
@@ -501,30 +524,28 @@ def all_calendar(
     all_users = []
     all_users.append(request.user)
 
-    user_relations = Relationship.objects.filter(user=request.user, status=State.objects.get(slug="active"))
+    user_relations = Relationship.objects.filter(
+        user=request.user, status=State.objects.get(slug="active")
+    )
     hiding_users = False
 
-    #TODO: Apply this filtering to team calendar, Also could implement onto page that users have been hidden as view is a follower        
+    # TODO: Apply this filtering to team calendar, Also could implement onto page that users have been hidden as view is a follower
     # Filter users out who have privated data - (if the user viewing is not a Memember/Owner of the team).
-
 
     for index, relation in enumerate(user_relations):
         rels = Relationship.objects.filter(
             team=relation.team, status=State.objects.get(slug="active")
         )
 
-        
         # Finds the viewers role in the team
         for user in rels:
             if user.user == request.user:
                 viewers_role = Role.objects.get(id=user.role_id)
 
-
         for rel in rels:
             if rel.user not in all_users:
                 if viewers_role.role == "Follower":
                     # Than hide users data who have privacy on
-
 
                     user_profile = UserProfile.objects.get(user=rel.user)
                     if not user_profile.privacy:
@@ -535,12 +556,8 @@ def all_calendar(
                         hiding_users = True
 
                 else:
-                    # Only followers cannot view those who have privacy set for their data. - (Members & Owners can see the data) 
+                    # Only followers cannot view those who have privacy set for their data. - (Members & Owners can see the data)
                     all_users.append(rel.user)
-
-    
-    
-
 
     # Filtering
     filtered_users = []
@@ -584,7 +601,13 @@ def all_calendar(
 
     data_3 = {"Sa": "Sa", "Su": "Su", "users_filter": filtered_users}
 
-    context = {**data_1, **data_2, **data_3, "users_hidden":hiding_users, "home_active":True}
+    context = {
+        **data_1,
+        **data_2,
+        **data_3,
+        "users_hidden": hiding_users,
+        "home_active": True,
+    }
 
     return render(request, "ap_app/calendar.html", context)
 
@@ -602,11 +625,13 @@ def profile_page(request):
             edit_whitelist=request.user
         )
         users = UserProfile.objects.filter(edit_whitelist=request.user)
+        recurring_absences = RecurringAbsences.objects.filter(User_ID = request.user.id)
+
         if form.is_valid():
             absence_user = form.cleaned_data["user"]
-            
-            absences = Absence.objects.filter(Target_User_ID=absence_user.user.id)
 
+            absences = Absence.objects.filter(Target_User_ID=absence_user.user.id)
+            print(absences)
             return render(
                 request,
                 "ap_app/profile.html",
@@ -615,12 +640,14 @@ def profile_page(request):
                     "message": "Successfully switched user",
                     "absences": absences,
                     "users": users,
+                    "recurring_absences":recurring_absences
                 },
             )
     else:
-        
-        absences = Absence.objects.filter(Target_User_ID=request.user.id)
 
+        absences = Absence.objects.filter(Target_User_ID=request.user.id)
+        print(absences[0])
+        recurring_absences = RecurringAbsences.objects.filter(User_ID = request.user.id)
         users = UserProfile.objects.filter(edit_whitelist=request.user)
         form = SwitchUser()
         form.fields["user"].queryset = users
@@ -633,6 +660,7 @@ def profile_page(request):
                 "absences": absences,
                 "users": users,
                 "form": form,
+                "recurring_absences":recurring_absences
             },
         )
 
@@ -675,6 +703,16 @@ class EditAbsence(UpdateView):
     def get_success_url(self) -> str:
         return reverse("profile")
 
+class EditRecurringAbsence(UpdateView):
+    template_name = "ap_app/edit_recurring_absence.html"
+    model = RecurringAbsences
+
+    # specify the fields
+    fields = ["Recurrences"]
+
+    def get_success_url(self) -> str:
+        return reverse("profile")
+
 
 @login_required
 def profile_settings(request) -> render:
@@ -695,12 +733,9 @@ def profile_settings(request) -> render:
 
         user_profile.save()
 
-        
     privacy_status = user_profile.privacy
-    context = {"userprofile": userprofile, "data_privacy_mode":privacy_status}
+    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status}
     return render(request, "ap_app/settings.html", context)
-
-
 
 
 @login_required

@@ -1,3 +1,4 @@
+from datetime import timedelta
 from django.db import models
 from django.contrib.auth import get_user_model
 from river.models.fields.state import StateField, State
@@ -16,7 +17,7 @@ class Absence(models.Model):
     User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="absences")
     Target_User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="+",)
     absence_date_start = models.DateField(gettext_lazy("Date"), max_length=200, default=now)
-    absence_date_end = models.DateField(max_length=200)
+    absence_date_end = models.DateField(gettext_lazy("Date"), max_length=200, default=now)
 
     def save(self, *args, **kwargs):
         if not self.Target_User_ID:
