@@ -433,15 +433,22 @@ def team_calendar(
                 
         data_2["users"] = filtered_users
 
-
+    # Gets filtered users by filtering system on page
+    filtered_users = get_filter_users(request, [user.user for user in data_2["users"]])
+   
+    actual_filtered_users = []
+    for user in data_2["users"]:
+        if user.user in filtered_users:
+            actual_filtered_users.append(user)
     
+
+    # Reconstructs users list to be in desired form for template - (QuerySet of relationships)
+    data_2["users"] = actual_filtered_users
+
 
     user_in_teams = []
-
     for rel in Relationship.objects.filter(team=team):
         user_in_teams.append(rel.user.id)
-
-    
 
 
     data_3 = {
@@ -517,46 +524,10 @@ def all_calendar(
                     all_users.append(rel.user)
 
     
-    
-
 
     # Filtering
-    filtered_users = []
-    # Filtering by both username & absence
-    if "username" in request.GET and "absent" in request.GET:
-        # Get username input & limits the length to 50
-        name_filtered_by = request.GET["username"][:50]
-        for absence in Absence.objects.all():
-            user = User.objects.get(id=absence.Target_User_ID.id)
-            if user in all_users:
-                username = user.username
-                if (
-                    absence.Target_User_ID not in filtered_users
-                    and name_filtered_by.lower() in username.lower()
-                ):
-                    filtered_users.append(absence.Target_User_ID)
+    filtered_users = get_filter_users(request, all_users)
 
-    # ONLY filtering by username
-    elif "username" in request.GET:
-        # Name limit is 50
-        name_filtered_by = request.GET["username"][:50]
-        for user in all_users:
-            # same logic as "icontains", searches through users names & finds similarities
-            if name_filtered_by.lower() in user.username.lower():
-                filtered_users.append(user)
-
-    # ONLY filtering by absences
-    elif "absent" in request.GET:
-        for absence in Absence.objects.all():
-            user = User.objects.get(id=absence.Target_User_ID.id)
-            if user in all_users:
-                username = user.username
-                if absence.Target_User_ID not in filtered_users:
-                    filtered_users.append(absence.Target_User_ID)
-
-    # Else, no filtering
-    else:
-        filtered_users = all_users
 
     data_2 = get_user_data(all_users, 2)
 
@@ -729,3 +700,46 @@ def obj_exists(user):
         return False
 
     return True
+
+
+def get_filter_users(request, users) -> list:
+    """Used for calendar filtering system - (Returns list of filtered users depending on 
+    search-bar and 'filter by absence' checkbox """
+    
+    filtered_users = []
+
+    # Filtering by both username & absence
+    if "username" in request.GET and "absent" in request.GET:
+        # Get username input & limits the length to 50
+        name_filtered_by = request.GET["username"][:50]
+        for absence in Absence.objects.all():
+            user = User.objects.get(id=absence.Target_User_ID.id)
+            if user in users:
+                username = user.username
+                if (
+                    absence.Target_User_ID not in filtered_users
+                    and name_filtered_by.lower() in username.lower()
+                ):
+                    filtered_users.append(absence.Target_User_ID)
+
+    # ONLY filtering by username
+    elif "username" in request.GET:
+        # Name limit is 50
+        name_filtered_by = request.GET["username"][:50]
+        for user in users:
+            # same logic as "icontains", searches through users names & finds similarities
+            if name_filtered_by.lower() in user.username.lower():
+                filtered_users.append(user)
+
+    # ONLY filtering by absences
+    elif "absent" in request.GET:
+        for absence in Absence.objects.all():
+            user = User.objects.get(id=absence.Target_User_ID.id)
+            if user in users and absence.Target_User_ID not in filtered_users:
+                filtered_users.append(absence.Target_User_ID)
+
+    # Else, no filtering
+    else:
+        filtered_users = users
+
+    return filtered_users
