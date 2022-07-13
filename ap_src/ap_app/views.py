@@ -415,10 +415,34 @@ def team_calendar(
     data_2 = get_user_data(users, 1)
 
     team = Team.objects.get(id=id)
+    
+
+    #Filtering users by privacy
+    filtered_users = []
+    viewer = data_2["users"].get(user=request.user)
+    if str(viewer.role) == "Follower":
+        # Than hide data of users with privacy on
+        for user in data_2["users"]:
+            user_profile = UserProfile.objects.get(user=user.user)
+            if not user_profile.privacy:
+                filtered_users.append(user)
+            
+            else:
+                # For pop-up to inform viewer that there are hidden users
+                data_2.update({"hiding_users":True})
+                
+        data_2["users"] = filtered_users
+
+
+    
 
     user_in_teams = []
+
     for rel in Relationship.objects.filter(team=team):
         user_in_teams.append(rel.user.id)
+
+    
+
 
     data_3 = {
         "owner": Role.objects.all()[0],

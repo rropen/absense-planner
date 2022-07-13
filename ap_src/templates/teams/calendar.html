@@ -54,6 +54,11 @@
                         minute(s) ago.
                     </form>
                 </span>
+                <span class="tag">
+                    {% if hiding_users %}
+                    Some users are hidden due to privacy
+                    {% endif %}
+                </span>
             </div>
             <div class="level">
                 <div class="level-left">
