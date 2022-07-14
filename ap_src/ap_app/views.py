@@ -298,9 +298,7 @@ def add(request) -> render:
             obj.absence_date_start = request.POST.get("start_date") 
             obj.absence_date_end = request.POST.get("end_date")
             obj.absence_date_start = form.cleaned_data["start_date"]
-            print(form.cleaned_data["start_date"])
             obj.absence_date_end = form.cleaned_data["end_date"]
-            print(form.cleaned_data["end_date"])
             obj.request_accepted = False
             obj.User_ID = request.user
             obj.Target_User_ID = form.cleaned_data["user"]

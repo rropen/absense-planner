@@ -104,7 +104,6 @@ class AbsenceForm(forms.ModelForm):
 
         
         cleaned_data = super().clean()
-        print(cleaned_data)
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
 
