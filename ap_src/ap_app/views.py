@@ -649,7 +649,24 @@ def profile_page(request):
     else:
 
         absences = Absence.objects.filter(Target_User_ID=request.user.id)
-        recurring_absences = RecurringAbsences.objects.filter(User_ID = request.user.id)
+        recurring_absences = list(RecurringAbsences.objects.filter(User_ID = request.user.id))
+        rec_absences = {}
+        
+        for x in recurring_absences.copy():  
+            absence_ = str(x).count("/n") 
+            if absence_:      
+                for y in absence_:
+                    recurring_absences.append(y)
+            
+        for x in recurring_absences:
+            parts = str(x.Recurrences).split(";")
+            if parts[0].startswith("RR"):
+                
+            elif parts[0].startswith("RD"):
+                print("date")
+            else:
+                print("else")
+            
         users = UserProfile.objects.filter(edit_whitelist=request.user)
         form = SwitchUser()
         form.fields["user"].queryset = users

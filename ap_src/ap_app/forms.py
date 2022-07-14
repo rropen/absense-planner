@@ -76,6 +76,7 @@ class sign_up(forms.Form):
 class register(forms.Form):
     check = forms.BooleanField()
 
+# maybe add name field
 class RecurringAbsencesForm(forms.ModelForm):
     class Meta:
         model = RecurringAbsences
