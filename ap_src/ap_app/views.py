@@ -197,12 +197,19 @@ def team_invite(request, team_id, user_id, role):
     find_team = Team.objects.get(id=team_id)
     find_user = User.objects.get(id=user_id)
     find_role = Role.objects.get(role=role)
-    Relationship.objects.create(
-        user=find_user,
-        team=find_team,
-        role=find_role,
-        status=State.objects.get(slug="invited"),
-    )
+    print()
+    print(f"Viewer: {str(request.user)}")
+    print(f"User Invited: {User.objects.get(id=user_id)}")
+    print()
+    if str(request.user.id) != str(user_id):
+        Relationship.objects.create(
+            user=find_user,
+            team=find_team,
+            role=find_role,
+            status=State.objects.get(slug="invited"),
+        )
+    # Else user is requesting to invite themselves from URL
+    
     return redirect("dashboard")
 
 
