@@ -30,7 +30,7 @@
   <div class="level-right submit" style="position: relative; padding-right: 10px;">
     <form method="POST" class="level">
       {% csrf_token %}
-      <input type="submit" class="button is-link level-item mt-2" value="Switch" id="button">
+      <input type="submit" class="button is-link level-item mt-2" value="Switch" id="button", href="{% url 'profile' %}">
       
       <div class="level-item">
         {{form | bulma}}
@@ -69,6 +69,17 @@
             <a class="button is-info" href="/absence/edit/{{ absence.pk }}">Edit</a>
             <a class="button is-danger delete-trigger-button" data-id="{{ absence.pk }}">Delete</a>
           </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="mt-2">
+    <div class="columns is-multiline">
+      {% for absence in recurring_absences %}
+      <div class="column is-6">
+        <div class="card has-background-light p-4 has-text-centered">
+          {{absence.Recurrences}}
         </div>
       </div>
       {% endfor %}

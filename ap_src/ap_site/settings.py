@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "bulma",
+    "recurrence",
 ]
 
 
@@ -112,14 +113,14 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = "en-uk"
+LANGUAGE_CODE = "en-gb"
 
 
 TIME_ZONE = "UTC"
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False
 
 USE_TZ = True
 
@@ -140,3 +141,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_REDIRECT_URL = "index"
 LOGOUT_REDIRECT_URL = "index"
+
+DATE_FORMAT = "d/m/Y"
+DATE_INPUT_FORMATS = ["%d/%m/%Y"]
+SHORT_DATE_FORMAT = "dd/mm/YYYY"
