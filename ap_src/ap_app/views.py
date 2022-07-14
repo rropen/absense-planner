@@ -56,7 +56,17 @@ def index(request) -> render:
     if request.user.is_authenticated:
         user = UserProfile.objects.get(user=request.user)
         user.edit_whitelist.add(request.user)
+   
+        #Delete:
+        teams = Team.objects.all()
+        print(request.user.id)
+        for team in teams:  
+            print(team.id)
+            print(team.private)
+            print()
         return all_calendar(request)
+
+
 
     return render(request, "ap_app/index.html")
 
@@ -200,8 +210,22 @@ def team_invite(request, team_id, user_id, role):
     print()
     print(f"Viewer: {str(request.user)}")
     print(f"User Invited: {User.objects.get(id=user_id)}")
+    
+    test = Relationship.objects.filter(team=find_team)
+    print(test)
+    # Boolean determines if viewer is in this team trying to invite others
+    user_acceptable = False 
+    for rel in test:
+        if rel.user == request.user and str(rel.role) == "Owner":
+            user_acceptable = True
+    
+    # if user_acceptable:
+    #     print(f"found user: {str(request.user)}")   
+    # else:
+    #     print("Not allowed - (URL change)")   
+
     print()
-    if str(request.user.id) != str(user_id):
+    if str(request.user.id) != str(user_id) and user_acceptable:
         Relationship.objects.create(
             user=find_user,
             team=find_team,
@@ -209,7 +233,7 @@ def team_invite(request, team_id, user_id, role):
             status=State.objects.get(slug="invited"),
         )
     # Else user is requesting to invite themselves from URL
-    
+
     return redirect("dashboard")
 
 
