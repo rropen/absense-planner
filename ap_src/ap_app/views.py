@@ -59,8 +59,10 @@ def create_team(request) -> render:
         form = CreateTeamForm(request.POST)
         
         # Check team name similarity
-        if form.name_similarity() and not request.POST.get('ignore_name_similarity'):
-            form.add_error('name', 'Team name is too similar to another team name.')
+        team, name_similarity = form.name_similarity()
+        max_name_similarity = .8  # tweak this value to change the threshold for name similarity (0.0 <-> 1.0)
+        if name_similarity >= max_name_similarity and not request.POST.get('ignore_name_similarity'):
+            form.add_error('name', f'Team Name is too similar to another Team Name: {team.name}')
 
         elif form.is_valid():
             form.save()
