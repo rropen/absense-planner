@@ -1,5 +1,11 @@
 from django.urls import path
+from django.conf.urls import url
+from django.views.i18n import JavaScriptCatalog
 from . import views
+
+js_info_dict = {
+    'packages' : ('recurrence', ),
+}
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -17,15 +23,18 @@ urlpatterns = [
     path("teams/settings/<int:id>", views.team_settings, name="team_settings"),
     path("teams/calendar/<int:id>", views.team_calendar, name="Calendar"),
     path("teams/calendar/<int:id>/<str:month>/<int:year>", views.team_calendar, name="calendar"),
+    path("teams/settings/<int:id>/<int:user_id>", views.edit_team_absence, name="edit_absences"),
     path("absence/add", views.add, name="add"),
+    path("absence/add_recurring", views.add_recurring, name="add_recurring"),
     path("profile/", views.profile_page, name="profile"),
     path("details/", views.details_page, name="details"),
     path("privacy/", views.privacy_page, name="privacy"),
     path("ap_accounts/delete_user", views.deleteuser, name="delete_user"),
     path("absence/delete/<int:absence_id>", views.absence_delete, name="Absence Delete"),
     path("absence/edit/<int:pk>", views.EditAbsence.as_view(), name="absence_edit"),
+    path("absence/edit_recurring/<int:pk>", views.EditRecurringAbsence.as_view(), name="recurring_absence_edit"),
     path("profile/settings", views.profile_settings, name="profile settings"),
     path("profile/settings/add-user", views.add_user, name="add-user"),
-
-
+    url(r'^jsil18n', JavaScriptCatalog.as_view(), js_info_dict),
+    # path("absence/edit/<int:id>", views.absence_edit, name="Absence Edit")
 ]

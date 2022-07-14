@@ -1,14 +1,18 @@
+import datetime
+from difflib import SequenceMatcher
+
 from django import forms
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.db.models.base import Model
 from django.forms import models
-from django.contrib.auth.models import User
-from .models import Team, UserProfile, Absence
 from django.utils.timezone import now
-from difflib import SequenceMatcher
-import datetime
-from django.contrib.auth import get_user_model
+
+from .models import Absence, RecurringAbsences, Team, UserProfile
 
 User = get_user_model()
+from recurrence.forms import RecurrenceField, RecurrenceWidget
+
 
 class CreateTeamForm(forms.ModelForm):
     class Meta:
@@ -19,7 +23,7 @@ class CreateTeamForm(forms.ModelForm):
         min_length=3,
         max_length=64,
         required=True,
-        widget=forms.TextInput(attrs={"class": "", "placeholder": "Team Name"}),
+        widget=forms.TextInput(attrs={"class": "", "placeholder": "Team Name", "id":"nameInput"}),
     )
     description = forms.CharField(
         max_length=512,
@@ -72,7 +76,16 @@ class sign_up(forms.Form):
 class register(forms.Form):
     check = forms.BooleanField()
 
+class RecurringAbsencesForm(forms.ModelForm):
+    class Meta:
+        model = RecurringAbsences
+        fields = ['ID','Recurrences']
+    class Media:
+        js = ('/admin/jsi18n', '/admin/js/core.js',)
+    def clean(self):
+        cleaned_data = super().clean()
 
+    
 class AbsenceForm(forms.ModelForm):
     class Meta:
         model = Absence
@@ -101,14 +114,14 @@ class AbsenceForm(forms.ModelForm):
     start_date = forms.DateField(
         label="Starting Date:",
         required=True,
-        input_formats=["%Y-%m-%d"],
+        input_formats=["dd/mm/YYYY"],
         widget=forms.DateInput(attrs={"type": "date"}),
         initial=now().date(),
     )
     end_date = forms.DateField(
         label="Ending Date:",
         required=True,
-        input_formats=["%Y-%m-%d"],
+        input_formats=["dd/mm/YYYY"],
         widget=forms.DateInput(attrs={"type": "date"}),
         initial=lambda: now().date() + datetime.timedelta(days=1),
     )

@@ -1,9 +1,11 @@
+from datetime import timedelta
 from django.db import models
 from django.contrib.auth import get_user_model
 from river.models.fields.state import StateField, State
 from river.models import TransitionApproval
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy
+from recurrence.fields import RecurrenceField
 
 User = get_user_model()
 
@@ -15,7 +17,7 @@ class Absence(models.Model):
     User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="absences")
     Target_User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="+",)
     absence_date_start = models.DateField(gettext_lazy("Date"), max_length=200, default=now)
-    absence_date_end = models.DateField(max_length=200)
+    absence_date_end = models.DateField(gettext_lazy("Date"), max_length=200, default=now)
 
     def save(self, *args, **kwargs):
         if not self.Target_User_ID:
@@ -25,6 +27,12 @@ class Absence(models.Model):
     def __str__(self):
         return f"{self.Target_User_ID}, {self.absence_date_start} - {self.absence_date_end}, made by {self.User_ID}"
 
+class RecurringAbsences(models.Model):
+    ID = models.AutoField(primary_key=True)
+    User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="recurring_absences")
+    Recurrences = RecurrenceField()
+    def __str__(self):
+        return f"{self.User_ID}"
 
 class Team(models.Model):
     """This includes all the attributes of a Team"""
@@ -92,6 +100,8 @@ class UserProfile(models.Model):
     edit_whitelist = models.ManyToManyField(User, related_name="permissions",)
     # Extra Fields
     accepted_policy = models.BooleanField()
+    
+    privacy = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.username}"

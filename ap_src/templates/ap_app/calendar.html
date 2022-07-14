@@ -38,7 +38,14 @@
                         </script>
                         minute(s) ago.
                     </form>
+                    
                 </span>
+
+                {% if users_hidden %}
+                <span class="tag">
+                    <p>Some Users are hidden due to privacy</p>
+                </span>
+                {% endif %}
 
             </div>
 
@@ -256,7 +263,10 @@
                             {% for day in day_range %}
                             <!-- if absence day equals day then highlights red -->
                             {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
-                            {% if check_absence %}
+                            {% check_absences recurring_absence_dates|get_key:user year month_num day as check_recurring_absence %}
+                            {% if check_recurring_absence %}
+                            <td style="background-color: #ffaa00"></td>
+                            {% elif check_absence %}
                             <td style="background-color: #ff0000"></td>
                             {% else %}
                             <td></td>

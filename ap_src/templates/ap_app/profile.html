@@ -74,6 +74,17 @@
       {% endfor %}
     </div>
   </div>
+  <div class="mt-2">
+    <div class="columns is-multiline">
+      {% for absence in recurring_absences %}
+      <div class="column is-6">
+        <div class="card has-background-light p-4 has-text-centered">
+          {{absence.Recurrences}}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 
 
 </div>

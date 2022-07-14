@@ -10,14 +10,15 @@
                 <a class="button is-link" href="/teams/">Back to Dashboard</a>
             </div>
         </div>
+
         <div class="level-right">
-            <div class="level-item">
-                <div class="field has-addons">
-                    <div class="control"><input class="input" type="text" placeholder="Search for a Team"></div>
-                    <div class="control"><a class="button is-link">Search</a></div>
-                </div>
-            </div>
+            <form method="get" class="field has-addons">
+                <input class="input" type="text" name="teamName" placeholder="Search for a Team">
+                <button class="button is-link" type="submit">Search</button>
+            </form>
+
         </div>
+
     </div>
 
     {% if not all_teams or not joined_teams %}
@@ -84,6 +85,6 @@
             dvJoined[i].style.display = chkJoined.checked ? "block" : "none";
         }
     }
-    
+
 </script>
 {% endblock %}
