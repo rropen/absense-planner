@@ -102,6 +102,7 @@ class AbsenceForm(forms.ModelForm):
                 return False
             return True
 
+        
         cleaned_data = super().clean()
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
@@ -114,15 +115,15 @@ class AbsenceForm(forms.ModelForm):
     start_date = forms.DateField(
         label="Starting Date:",
         required=True,
-        input_formats=["dd/mm/YYYY"],
-        widget=forms.DateInput(attrs={"type": "date"}),
-        initial=now().date(),
+        input_formats=['%d/%m/%Y', '%Y-%m-%d', '%d-%m-%Y'],
+        widget=forms.DateInput(attrs={"type": "date"},format='%d-%m-%Y'),
     )
+    
     end_date = forms.DateField(
         label="Ending Date:",
         required=True,
-        input_formats=["dd/mm/YYYY"],
-        widget=forms.DateInput(attrs={"type": "date"}),
+        input_formats=['%d/%m/%Y', '%Y-%m-%d', '%d-%m-%Y'],
+        widget=forms.DateInput(attrs={"type": "date"},format='%d-%m-%Y'),
         initial=lambda: now().date() + datetime.timedelta(days=1),
     )
     user = forms.ModelChoiceField(
