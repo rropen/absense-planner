@@ -80,18 +80,12 @@ class AbsenceForm(forms.ModelForm):
         if not end_date_valid():
             raise forms.ValidationError(f"End Date must be after start date {start_date}, {end_date}")
 
-<<<<<<< Updated upstream
-    start_date = forms.DateField(label="Starting Date:", required=True, input_formats=['%Y-%m-%d'], widget=forms.DateTimeInput(attrs={"type":"date"}))
-    end_date = forms.DateField(label="Ending Date:", required=True, input_formats=['%Y-%m-%d'], widget=forms.DateTimeInput(attrs={"type":"date"}))
-
-=======
 class SwitchUser(forms.Form):
 
     user = forms.ModelChoiceField(
         label="User:", queryset=User.objects.all()
     )
 
->>>>>>> Stashed changes
 
 class DeleteUserForm(forms.ModelForm):
     class Meta:
