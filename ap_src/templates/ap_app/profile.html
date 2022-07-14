@@ -80,6 +80,10 @@
       <div class="column is-6">
         <div class="card has-background-light p-4 has-text-centered">
           {{absence.Recurrences}}
+          <div class="mx-auto">
+            <a class="button is-info" href="/absence/edit_recurring/{{ absence.pk }}">Edit</a>
+            <a class="button is-danger delete-trigger-button" data-id="{{ absence.pk }}">Delete</a>
+          </div>
         </div>
       </div>
       {% endfor %}
