@@ -253,6 +253,7 @@ def team_settings(request, id):
     return redirect("dashboard")
 
 
+#TODO: issue: 50
 @login_required
 def edit_team_absence(request, id, user_id):
     """Checks to see if user is the owner and renders the Edit absences page"""
@@ -291,9 +292,11 @@ def joining_team_request(request, id, response):
 def add(request) -> render:
     """create new absence record"""
     if request.method == "POST":
-        form = AbsenceForm(request.POST, user=request.user)
+        form = AbsenceForm(request.POST, user=request.user, initial={"start_date":datetime.datetime.now().now(),"end_date":lambda: datetime.datetime.now().date() + datetime.timedelta(days=1),})
         if form.is_valid():
             obj = Absence()
+            obj.absence_date_start = request.POST.get("start_date") 
+            obj.absence_date_end = request.POST.get("end_date")
             obj.absence_date_start = form.cleaned_data["start_date"]
             print(form.cleaned_data["start_date"])
             obj.absence_date_end = form.cleaned_data["end_date"]
@@ -648,7 +651,6 @@ def profile_page(request):
     else:
 
         absences = Absence.objects.filter(Target_User_ID=request.user.id)
-        print(absences[0])
         recurring_absences = RecurringAbsences.objects.filter(User_ID = request.user.id)
         users = UserProfile.objects.filter(edit_whitelist=request.user)
         form = SwitchUser()
