@@ -715,6 +715,16 @@ class EditRecurringAbsence(UpdateView):
     def get_success_url(self) -> str:
         return reverse("profile")
 
+def edit_recurring_absences(request, pk):
+    absence = RecurringAbsences.objects.get(ID=pk)
+    if request.method == "POST":
+        form = RecurringAbsencesForm(request.POST, instance=absence)
+        form.instance.User_ID = request.user
+        form.save()
+    else:
+        form = RecurringAbsencesForm(instance=absence)
+
+    return render(request, "ap_app/edit_recurring_absence.html",{"form":form})
 
 @login_required
 def profile_settings(request) -> render:
