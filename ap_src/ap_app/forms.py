@@ -9,13 +9,14 @@ from difflib import SequenceMatcher
 class CreateTeamForm(forms.ModelForm):
     class Meta:
         model = Team
-        fields = ["name", "description", "private"]
+        fields = ["name", "description", "private", "ignore_name_similarity"]
 
     name            = forms.CharField(min_length=3, max_length=64, required=True, widget=forms.TextInput(attrs={"class":"", "placeholder":"Team Name"}))
     description     = forms.CharField(max_length=512, required=False, widget=forms.Textarea(attrs={"class":"", "placeholder":"Team Description"}))
     private         = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={"class":""}))
+    ignore_name_similarity = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={"class":""}))
 
-    def name_similarity(self) -> float:
+    def name_similarity(self, max_similarity:float=.9) -> float:
         """Returns float between 0 and 1 depending on the similarity
         of the current name compared to existing team names. Returns
         NoneType if there are no similarities."""
@@ -24,7 +25,7 @@ class CreateTeamForm(forms.ModelForm):
         for team in teams:
             similarity = SequenceMatcher(
                 None, self['name'].value(), team.name).ratio()
-            if similarity >= .5:
+            if similarity >= max_similarity:
                 return similarity
 
 from .models import Absence

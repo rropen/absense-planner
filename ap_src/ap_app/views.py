@@ -53,12 +53,14 @@ def teams_dashboard(request) -> render:
 
 @login_required
 def create_team(request) -> render:
+    context = {}
+    
     if request.method == "POST":
         form = CreateTeamForm(request.POST)
-        if form.name_similarity():
-            # TODO: write code to tell the user that their team name is similar and to give them
-            # options to change the team name.
-            return HttpResponse('Debug: Did not create form because the name is too similar to another team name')
+        
+        # Check team name similarity
+        if form.name_similarity() and not request.POST.get('ignore_name_similarity'):
+            form.add_error('name', 'Team name is too similar to another team name.')
 
         elif form.is_valid():
             form.save()
@@ -74,7 +76,9 @@ def create_team(request) -> render:
             return redirect("/teams/")
     else:
         form = CreateTeamForm()
-    return render(request, "teams/create_team.html", {"form": form})
+        
+    context['form'] = form
+    return render(request, "teams/create_team.html", context)
      
 
 
