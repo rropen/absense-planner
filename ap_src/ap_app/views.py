@@ -675,11 +675,6 @@ def profile_page(request):
 
         absences = Absence.objects.filter(Target_User_ID=request.user.id)
         rec_absences = text_rules(request)
-
-
-                    
-
-            
         users = UserProfile.objects.filter(edit_whitelist=request.user)
         form = SwitchUser()
         form.fields["user"].queryset = users
