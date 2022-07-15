@@ -207,24 +207,16 @@ def team_invite(request, team_id, user_id, role):
     find_team = Team.objects.get(id=team_id)
     find_user = User.objects.get(id=user_id)
     find_role = Role.objects.get(role=role)
-    print()
-    print(f"Viewer: {str(request.user)}")
-    print(f"User Invited: {User.objects.get(id=user_id)}")
     
     test = Relationship.objects.filter(team=find_team)
-    print(test)
+    
     # Boolean determines if viewer is in this team trying to invite others
     user_acceptable = False 
     for rel in test:
         if rel.user == request.user and str(rel.role) == "Owner":
             user_acceptable = True
-    
-    # if user_acceptable:
-    #     print(f"found user: {str(request.user)}")   
-    # else:
-    #     print("Not allowed - (URL change)")   
+            break
 
-    print()
     if str(request.user.id) != str(user_id) and user_acceptable:
         Relationship.objects.create(
             user=find_user,
@@ -232,7 +224,7 @@ def team_invite(request, team_id, user_id, role):
             role=find_role,
             status=State.objects.get(slug="invited"),
         )
-    # Else user is requesting to invite themselves from URL
+    # Else user is messing with URL making non-allowed invites - (Therefore doesn't create a relationship)
 
     return redirect("dashboard")
 
