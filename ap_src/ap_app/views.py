@@ -56,7 +56,17 @@ def index(request) -> render:
     if request.user.is_authenticated:
         user = UserProfile.objects.get(user=request.user)
         user.edit_whitelist.add(request.user)
+   
+        #Delete:
+        teams = Team.objects.all()
+        print(request.user.id)
+        for team in teams:  
+            print(team.id)
+            print(team.private)
+            print()
         return all_calendar(request)
+
+
 
     return render(request, "ap_app/index.html")
 
@@ -197,12 +207,25 @@ def team_invite(request, team_id, user_id, role):
     find_team = Team.objects.get(id=team_id)
     find_user = User.objects.get(id=user_id)
     find_role = Role.objects.get(role=role)
-    Relationship.objects.create(
-        user=find_user,
-        team=find_team,
-        role=find_role,
-        status=State.objects.get(slug="invited"),
-    )
+    
+    test = Relationship.objects.filter(team=find_team)
+    
+    # Boolean determines if viewer is in this team trying to invite others
+    user_acceptable = False 
+    for rel in test:
+        if rel.user == request.user and str(rel.role) == "Owner":
+            user_acceptable = True
+            break
+
+    if str(request.user.id) != str(user_id) and user_acceptable:
+        Relationship.objects.create(
+            user=find_user,
+            team=find_team,
+            role=find_role,
+            status=State.objects.get(slug="invited"),
+        )
+    # Else user is messing with URL making non-allowed invites - (Therefore doesn't create a relationship)
+
     return redirect("dashboard")
 
 
