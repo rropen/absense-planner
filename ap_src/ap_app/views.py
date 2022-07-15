@@ -179,6 +179,9 @@ def join_team(request) -> render:
 def joining_team_process(request, id, role):
     find_team = Team.objects.get(id=id)
     find_role = Role.objects.get(role=role)
+    rels = Relationship.objects.filter(user = request.user, role = "Owner"|"Member",status=State.objects.get(slug="active"))
+    if rels:
+        return redirect("dashboard")
     new_rel = Relationship.objects.create(
         user=request.user,
         team=find_team,
