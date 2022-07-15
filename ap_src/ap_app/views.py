@@ -330,6 +330,7 @@ def add_recurring(request) -> render:
         form = RecurringAbsencesForm(request.POST)
         form.instance.User_ID = request.user
         form.save()
+        return redirect("index")
     else:
         form = RecurringAbsencesForm()
 
@@ -614,6 +615,30 @@ def all_calendar(
 
     return render(request, "ap_app/calendar.html", context)
 
+def text_rules(request):
+    recurring_absences = RecurringAbsences.objects.filter(User_ID = request.user.id).values("Recurrences", "ID")
+    rec_absences = {}
+
+    for x in recurring_absences:  
+        absence_ = x["Recurrences"]
+
+        if absence_:      
+            for w in absence_.rdates:
+                try:
+                    rec_absences[x["ID"]].append("Date: "+w.strftime("%A,%d %B,%Y"))
+                except KeyError:
+                    rec_absences[x["ID"]] = ["Date: "+w.strftime("%A,%d %B,%Y")]
+            for y in absence_.rrules:
+                try:
+                    rec_absences[x["ID"]].append("Rule: "+str(y.to_text()))
+                except KeyError:
+                    rec_absences[x["ID"]] = ["Rule: "+str(y.to_text())]
+            for z in absence_.exrules:
+                try:
+                    rec_absences[x["ID"]].append("Excluding Rule: "+str(z.to_text()))
+                except KeyError:
+                    rec_absences[x["ID"]] = ["Excluding Rule: "+str(z.to_text())]
+    return rec_absences
 
 # Profile page
 @login_required
@@ -628,7 +653,7 @@ def profile_page(request):
             edit_whitelist=request.user
         )
         users = UserProfile.objects.filter(edit_whitelist=request.user)
-        recurring_absences = RecurringAbsences.objects.filter(User_ID = request.user.id)
+        rec_absences = text_rules(request)
 
         if form.is_valid():
             absence_user = form.cleaned_data["user"]
@@ -643,29 +668,17 @@ def profile_page(request):
                     "message": "Successfully switched user",
                     "absences": absences,
                     "users": users,
-                    "recurring_absences":recurring_absences
+                    "recurring_absences":rec_absences
                 },
             )
     else:
 
         absences = Absence.objects.filter(Target_User_ID=request.user.id)
-        recurring_absences = list(RecurringAbsences.objects.filter(User_ID = request.user.id))
-        rec_absences = {}
-        
-        for x in recurring_absences.copy():  
-            absence_ = str(x).count("/n") 
-            if absence_:      
-                for y in absence_:
-                    recurring_absences.append(y)
-            
-        for x in recurring_absences:
-            parts = str(x.Recurrences).split(";")
-            if parts[0].startswith("RR"):
-                
-            elif parts[0].startswith("RD"):
-                print("date")
-            else:
-                print("else")
+        rec_absences = text_rules(request)
+
+
+                    
+
             
         users = UserProfile.objects.filter(edit_whitelist=request.user)
         form = SwitchUser()
@@ -679,7 +692,7 @@ def profile_page(request):
                 "absences": absences,
                 "users": users,
                 "form": form,
-                "recurring_absences":recurring_absences
+                "recurring_absences":rec_absences
             },
         )
 
@@ -711,6 +724,16 @@ def absence_delete(request, absence_id: int):
 
     raise Exception()
 
+@login_required
+def absence_recurring_delete(request, absence_id: int):
+    absence = RecurringAbsences.objects.get(pk=absence_id)
+    user = request.user
+    if user == absence.User_ID:
+        absence.delete()
+        return redirect("profile")
+
+    raise Exception()
+
 
 class EditAbsence(UpdateView):
     template_name = "ap_app/edit_absence.html"
@@ -722,15 +745,6 @@ class EditAbsence(UpdateView):
     def get_success_url(self) -> str:
         return reverse("profile")
 
-class EditRecurringAbsence(UpdateView):
-    template_name = "ap_app/edit_recurring_absence.html"
-    model = RecurringAbsences
-
-    # specify the fields
-    fields = ["Recurrences"]
-
-    def get_success_url(self) -> str:
-        return reverse("profile")
 
 def edit_recurring_absences(request, pk):
     absence = RecurringAbsences.objects.get(ID=pk)
@@ -738,6 +752,7 @@ def edit_recurring_absences(request, pk):
         form = RecurringAbsencesForm(request.POST, instance=absence)
         form.instance.User_ID = request.user
         form.save()
+        return redirect("index")
     else:
         form = RecurringAbsencesForm(instance=absence)
 
