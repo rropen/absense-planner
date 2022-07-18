@@ -32,6 +32,7 @@
                     </h1>
                 </div>
                 <div class="level-right">
+                    <a class="button is-info is-outlined mx-1" href="{% url 'misc' team.id %}"><em class="fas fa-clipboard"></em></a>
                     {% if current_user.role.role == "Owner" %}
                     <a class="button is-primary is-outlined modal-button js-modal-trigger" id="#modal">
                         <i class="fas fa-user-plus"></i>
@@ -40,6 +41,7 @@
                         <i class="fas fa-cog"></i>
                     </a>
                     {% endif %}
+                    
                     <a class="button is-danger" href="{% url 'leave_team' current_user.id %}">Leave</a>
                 </div>
             </div>

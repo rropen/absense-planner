@@ -262,6 +262,17 @@ def team_cleaner(rel):
 
 
 @login_required
+def team_misc(request, id):
+    """ Teams Miscellaneous/Notes page """
+    team = Team.objects.get(id=id)
+    
+    # TODO: Add a field to each team with a notes section - (for now it's just the teams description)
+    notes = team.description
+
+    return render(request, "teams/misc.html", {"team":team, "notes":notes})
+
+
+@login_required
 def team_settings(request, id):
     """Checks to see if user is the owner and renders the Setting page"""
     team = Team.objects.get(id=id)
