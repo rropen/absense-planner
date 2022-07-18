@@ -258,7 +258,7 @@ def team_misc(request, id):
     """ Teams Miscellaneous/Notes page """
     team = Team.objects.get(id=id)
     
-    # TODO: Added a field to each team with a notes section - (for now it's just the teams description)
+    # TODO: Add a field to each team with a notes section - (for now it's just the teams description)
     notes = team.description
 
     return render(request, "teams/misc.html", {"team":team, "notes":notes})
