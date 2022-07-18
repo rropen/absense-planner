@@ -33,6 +33,7 @@ from .models import Absence, RecurringAbsences, Relationship, Role, Team, UserPr
 User = get_user_model()
 
 
+
 def index(request) -> render:
     """Branched view.                       \n
     IF NOT Logged in: returns the home page \n
@@ -57,17 +58,6 @@ def index(request) -> render:
         user = UserProfile.objects.get(user=request.user)
         user.edit_whitelist.add(request.user)
    
-        #Delete:
-        teams = Team.objects.all()
-        print(request.user.id)
-        for team in teams:  
-            print(team.id)
-            print(team.private)
-            print()
-        return all_calendar(request)
-
-
-
     return render(request, "ap_app/index.html")
 
 
@@ -216,6 +206,7 @@ def team_invite(request, team_id, user_id, role):
     find_user = User.objects.get(id=user_id)
     find_role = Role.objects.get(role=role)
     
+    
     test = Relationship.objects.filter(team=find_team)
     
     # Boolean determines if viewer is in this team trying to invite others
@@ -232,7 +223,7 @@ def team_invite(request, team_id, user_id, role):
             role=find_role,
             status=State.objects.get(slug="invited"),
         )
-    # Else user is messing with URL making non-allowed invites - (Therefore doesn't create a relationship)
+    # Else user is manipulating the URL making non-allowed invites - (Therefore doesn't create a relationship)
 
     return redirect("dashboard")
 
@@ -261,15 +252,18 @@ def team_cleaner(rel):
     return
 
 
+
 @login_required
 def team_misc(request, id):
     """ Teams Miscellaneous/Notes page """
-    team = Team.objects.get(id=id)
-    
-    # TODO: Add a field to each team with a notes section - (for now it's just the teams description)
-    notes = team.description
+    if is_member(request.user, id):
+        team = Team.objects.get(id=id)
+        
+        # TODO: Add a field to each team with a notes section - (for now it's just the teams description)
+        notes = team.description
 
-    return render(request, "teams/misc.html", {"team":team, "notes":notes})
+        return render(request, "teams/misc.html", {"team":team, "notes":notes})
+    return redirect("dashboard")
 
 
 @login_required
@@ -536,62 +530,64 @@ def team_calendar(
     month=datetime.datetime.now().strftime("%B"),
     year=datetime.datetime.now().year,
 ):
-    data_1 = get_date_data(month, year)
+    if is_member(request.user, id):
+        data_1 = get_date_data(month, year)
 
-    users = Relationship.objects.all().filter(
-        team=id, status=State.objects.get(slug="active")
-    )
+        users = Relationship.objects.all().filter(
+            team=id, status=State.objects.get(slug="active")
+        )
 
-    data_2 = get_absence_data(users, 1)
+        data_2 = get_absence_data(users, 1)
 
-    team = Team.objects.get(id=id)
+        team = Team.objects.get(id=id)
 
-    # Filtering users by privacy
-    filtered_users = []
-    viewer = data_2["users"].get(user=request.user)
-    if str(viewer.role) == "Follower":
-        # Than hide data of users with privacy on
+        # Filtering users by privacy
+        filtered_users = []
+        viewer = data_2["users"].get(user=request.user)
+        if str(viewer.role) == "Follower":
+            # Than hide data of users with privacy on
+            for user in data_2["users"]:
+                user_profile = UserProfile.objects.get(user=user.user)
+                if not user_profile.privacy:
+                    filtered_users.append(user)
+
+                else:
+                    # For pop-up to inform viewer that there are hidden users
+                    data_2.update({"hiding_users": True})
+
+            data_2["users"] = filtered_users
+
+        # Gets filtered users by filtering system on page
+        filtered_users = get_filter_users(request, [user.user for user in data_2["users"]])
+
+        actual_filtered_users = []
         for user in data_2["users"]:
-            user_profile = UserProfile.objects.get(user=user.user)
-            if not user_profile.privacy:
-                filtered_users.append(user)
+            if user.user in filtered_users:
+                actual_filtered_users.append(user)
 
-            else:
-                # For pop-up to inform viewer that there are hidden users
-                data_2.update({"hiding_users": True})
+        # Reconstructs users list to be in desired form for template - (QuerySet of relationships)
+        data_2["users"] = actual_filtered_users
 
-        data_2["users"] = filtered_users
+        user_in_teams = []
+        for rel in Relationship.objects.filter(team=team):
+            user_in_teams.append(rel.user.id)
 
-    # Gets filtered users by filtering system on page
-    filtered_users = get_filter_users(request, [user.user for user in data_2["users"]])
+        data_3 = {
+            "owner": Role.objects.all()[0],
+            "Sa": "Sa",
+            "Su": "Su",
+            "current_user": Relationship.objects.get(user=request.user, team=team),
+            "team": team,
+            "all_users": User.objects.all().exclude(id__in=user_in_teams),
+            "team_count": Relationship.objects.filter(
+                team=team.id, status=State.objects.get(slug="active")
+            ).count(),
+        }
 
-    actual_filtered_users = []
-    for user in data_2["users"]:
-        if user.user in filtered_users:
-            actual_filtered_users.append(user)
+        context = {**data_1, **data_2, **data_3}
 
-    # Reconstructs users list to be in desired form for template - (QuerySet of relationships)
-    data_2["users"] = actual_filtered_users
-
-    user_in_teams = []
-    for rel in Relationship.objects.filter(team=team):
-        user_in_teams.append(rel.user.id)
-
-    data_3 = {
-        "owner": Role.objects.all()[0],
-        "Sa": "Sa",
-        "Su": "Su",
-        "current_user": Relationship.objects.get(user=request.user, team=team),
-        "team": team,
-        "all_users": User.objects.all().exclude(id__in=user_in_teams),
-        "team_count": Relationship.objects.filter(
-            team=team.id, status=State.objects.get(slug="active")
-        ).count(),
-    }
-
-    context = {**data_1, **data_2, **data_3}
-
-    return render(request, "teams/calendar.html", context)
+        return render(request, "teams/calendar.html", context)
+    return redirect("dashboard")
 
 
 @login_required
@@ -931,3 +927,20 @@ def get_filter_users(request, users) -> list:
         filtered_users = users
 
     return filtered_users
+
+
+
+
+def is_member(user, team_id) -> bool:
+    """ The user be a member of the team before accessing its contents """
+    
+    team = Relationship.objects.filter(team=Team.objects.get(id=team_id))
+
+
+    # Boolean determines if viewer is in this team 
+    for rel in team:
+        if rel.user == user and str(rel.role) == "Owner":
+            return True
+
+    # Else user has changed URL & is attempting to view other teams content
+    return False
