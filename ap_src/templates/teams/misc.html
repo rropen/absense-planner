@@ -1,0 +1,28 @@
+{% extends 'Base.html' %}
+{% load get_key %}
+{% load check_absences %}
+{% block title %}Miscellaneous{% endblock %}
+{% load static %}
+{% block content %}
+
+<style>
+    .RefreshBox {
+        pointer-events: none;
+        text-align: right;
+        background-color: ghostwhite;
+        border: 0px;
+        font-size: 11pt;
+        width: 24px;
+        height: 12px;
+    }
+</style>
+
+<div class="main">
+    <h1 class="title is-3">{{ team.name }} notes</h1>
+    <p> {{ team.description }}  </p>
+    <p> Notes section/board for viewing teams miscs & notes </p>
+</div>
+
+
+
+{% endblock %}
