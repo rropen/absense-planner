@@ -31,6 +31,7 @@ urlpatterns = [
     path("privacy/", views.privacy_page, name="privacy"),
     path("ap_accounts/delete_user", views.deleteuser, name="delete_user"),
     path("absence/delete/<int:absence_id>", views.absence_delete, name="Absence Delete"),
+    path("absence_recurring/delete/<int:absence_id>", views.absence_recurring_delete, name="Recurring Absence Delete"),
     path("absence/edit/<int:pk>", views.EditAbsence.as_view(), name="absence_edit"),
     path("absence/edit_recurring/<int:pk>", views.edit_recurring_absences, name="recurring_absence_edit"),
     path("profile/settings", views.profile_settings, name="profile settings"),
