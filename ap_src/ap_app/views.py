@@ -57,7 +57,7 @@ def index(request) -> render:
     if request.user.is_authenticated:
         user = UserProfile.objects.get(user=request.user)
         user.edit_whitelist.add(request.user)
-   
+        return all_calendar(request)
     return render(request, "ap_app/index.html")
 
 
