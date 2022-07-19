@@ -1,0 +1,23 @@
+[
+    {
+      "model": "ap_app.role",
+      "pk": 1,
+      "fields": {
+        "role": "Owner"
+      }
+    },
+    {
+        "model": "ap_app.role",
+        "pk": 2,
+        "fields": {
+          "role": "Member"
+        }
+      },
+      {
+        "model": "ap_app.role",
+        "pk": 3,
+        "fields": {
+          "role": "Follower"
+        }
+      }
+  ]

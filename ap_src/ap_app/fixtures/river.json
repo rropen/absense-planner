@@ -1,0 +1,86 @@
+[
+  {
+    "model": "river.state",
+    "pk": 1,
+    "fields": {
+      "slug": "active",
+      "label": "Active",
+      "description": "Your team membership is active."
+    }
+  },
+  {
+    "model": "river.state",
+    "pk": 2,
+    "fields": {
+      "slug": "pending",
+      "label": "Pending",
+      "description": "Your team membership is pending."
+    }
+  },
+  {
+    "model": "river.state",
+    "pk": 3,
+    "fields": {
+      "slug": "nonactive",
+      "label": "Non-Active",
+      "description": "Your team membership is not active."
+    }
+  },
+  {
+    "model": "river.state",
+    "pk": 3,
+    "fields": {
+      "slug": "invited",
+      "label": "Invited",
+      "description": "Invited"
+    }
+  },
+  {
+    "model": "river.workflow",
+    "pk": 1,
+    "fields": {
+      "field_name": "status",
+      "content_type_id": [
+        "ap_app",
+        "relationship"
+      ],
+      "initial_state_id": 2
+    }
+  },
+  {
+    "model": "river.transitionmeta",
+    "pk": 1,
+    "fields": {
+      "destination_state_id": 1,
+      "source_state_id": 2,
+      "workflow_id": 1
+    }
+  },
+  {
+    "model": "river.transitionmeta",
+    "pk": 2,
+    "fields": {
+      "destination_state_id": 3,
+      "source_state_id": 2,
+      "workflow_id": 1
+    }
+  },
+  {
+    "model": "river.transitionapprovalmeta",
+    "pk": 1,
+    "fields": {
+      "priority": 3,
+      "transition_meta_id": 1,
+      "workflow_id": 1
+    }
+  },
+  {
+    "model": "river.transitionapprovalmeta",
+    "pk": 2,
+    "fields": {
+      "priority": 3,
+      "transition_meta_id": 2,
+      "workflow_id": 1
+    }
+  }
+]

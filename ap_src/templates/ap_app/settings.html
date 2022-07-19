@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load bulma_tags %}
+{% load static %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<style>
+    .collapsible {
+        /* background-color: #271EA8; */
+        color: white;
+        cursor: pointer;
+        padding: 18px;
+        width: 100%;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size: 15px;
+    }
+
+    .active,
+    .collapsible:hover {
+        /* background-color: #555; */
+    }
+
+    .collapsible:after {
+        content: '\002B';
+        color: white;
+        font-weight: bold;
+        float: right;
+        margin-left: 5px;
+    }
+
+    .active:after {
+        content: "\2212";
+    }
+
+
+    .content {
+        padding: 0 18px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.2s ease-out;
+        background-color: #f1f1f1;
+    }
+</style>
+
+<body>
+
+    <div class="columns is-centered">
+        <div class="column is-two-thirds">
+            <button class="collapsible button is-medium is-link has-text-centered">Privacy Settings</button>
+            <div class="content pt-3">
+                <p>Private data - (Hide data from external users/followers) - <a href=""></i>See more here</a></p>
+                <form method="POST">
+                    {% csrf_token %}
+                    <!-- Text box -->
+                        
+                    
+                    {% if data_privacy_mode %}
+                    <p>You're currently hiding your data from non team members</p>
+                    <button type="checkbox" checked="checked" class="switch" style="color:red" name="userPrivacy">
+                        Turn OFF    
+                    </button>
+                    {% else %}
+                    <p>You're NOT hiding your data from non team members</p>
+                    <button class="switch" style="color:green" name="userPrivacy">
+                        Turn ON    
+                    </button>
+                    {% endif %}
+                </form>
+                <br>
+            </div>
+
+            <button class="collapsible button is-medium is-link has-text-centered">Permissions Settings</button>
+            <div class="content is-size-5 pt-3">
+                <nav class="level my-1">
+                    <p class="level-left m-0">Users who can edit your absences</p>
+                    <form method="POST" action="settings/add-user" class="level-right field has-addons">
+                        {% csrf_token %}
+                        <!-- Text box -->
+                        <div class="control">
+                            <input class="input is-info" name="username" placeholder="Add a user" type="text">
+                        </div>
+                        <!-- Submit icon  -->
+                        <div class="control">
+                            <input class="button is-info" type="submit"></input>
+                        </div>
+                    </form>
+                </nav>
+                <div class="tags">
+                    {% for user in userprofile.edit_whitelist.all %}
+                    <span class="tag is-dark">{{user}}</span>
+                    <br>
+                    {% endfor %}
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            });
+        }
+    </script>
+
+</body>
+{% endblock %}

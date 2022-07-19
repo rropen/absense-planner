@@ -7,6 +7,9 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
+#python
+__pycache__
+
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
@@ -118,3 +121,12 @@ dist
 .pnp.*
 workspace.code-workspace
 .dccache
+
+.venv
+db.sqlite3
+
+venv
+static_root
+*.sqlite3
+*.pyc
+ap_src/db.sqlite3
