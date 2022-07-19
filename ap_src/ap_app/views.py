@@ -259,8 +259,7 @@ def team_misc(request, id):
     if is_member(request.user, id):
         team = Team.objects.get(id=id)
         
-        # TODO: Add a field to each team with a notes section - (for now it's just the teams description)
-        notes = team.description
+        notes = CreateTeamForm(instance=team)
 
         return render(request, "teams/misc.html", {"team":team, "notes":notes})
     return redirect("dashboard")
