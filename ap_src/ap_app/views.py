@@ -586,6 +586,7 @@ def team_calendar(
         context = {**data_1, **data_2, **data_3}
 
         return render(request, "teams/calendar.html", context)
+
     return redirect("dashboard")
 
 
@@ -938,7 +939,7 @@ def is_member(user, team_id) -> bool:
 
     # Boolean determines if viewer is in this team 
     for rel in team:
-        if rel.user == user and str(rel.role) == "Owner":
+        if rel.user == user:
             return True
 
     # Else user has changed URL & is attempting to view other teams content
