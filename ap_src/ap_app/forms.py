@@ -42,7 +42,7 @@ class CreateTeamForm(forms.ModelForm):
         teams = Team.objects.all()
         for team in teams:
             similarity = SequenceMatcher(None, self["name"].value(), team.name).ratio()
-            if similarity >= 0.5:
+            if similarity >= 0.9:
                 return similarity
 
 
