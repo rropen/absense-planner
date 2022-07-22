@@ -469,7 +469,7 @@ def get_absence_data(users, user_type):
         absence_info = Absence.objects.filter(Target_User_ID=user_id)
         total_absence_dates[user] = []
         all_absences[user] = []
-
+        pattern = reccurence.recurrence()
         # if they have any absences
         if absence_info:
             # mapping the absence content to keys in dictionary
@@ -481,6 +481,7 @@ def get_absence_data(users, user_type):
                 while dates <= absence_date_end:
                     total_absence_dates[user].append(dates)
                     dates += delta
+                    pattern.rdates.append(dates)
 
                 absence_content.append(
                     {
@@ -504,6 +505,7 @@ def get_absence_data(users, user_type):
                         str(datetime.datetime.now().year + 2), "%Y"
                     )
                 )
+            
                 for x in list(dates)[:-1]:
                     time_const = "23:00:00"
                     time_var = datetime.datetime.strftime(x, "%H:%M:%S")
@@ -511,14 +513,14 @@ def get_absence_data(users, user_type):
                         x += timedelta(days=1)
                     total_recurring_dates[user].append(x)
                 # TODO: add auto deleting for recurring absences once last date of absences in before now
-                if x < datetime.datetime.now():
-                    pass
+                # if x < datetime.datetime.now():
+                #     pass
 
     data["recurring_absence_dates"] = total_recurring_dates
     data["all_absences"] = all_absences
     data["absence_dates"] = total_absence_dates
-
     data["users"] = users
+    pattern
     return data
 
 
@@ -603,8 +605,8 @@ def all_calendar(
     date = f"{current_day} {current_month} {current_year}"
     date = datetime.datetime.strptime(date, "%d %B %Y")
 
-    old_records = Absence.objects.filter(absence_date_end__lt=date)
-    old_records.delete()
+    # old_records = Absence.objects.filter(absence_date_end__lt=date)
+    # old_records.delete()
     all_users = []
     all_users.append(request.user)
     user_relations = Relationship.objects.filter(
@@ -674,6 +676,15 @@ def text_rules(request):
         absence_ = x["Recurrences"]
 
         if absence_:
+            for u in absence_.exdates:
+                try:
+                    rec_absences[x["ID"]].append(
+                        "Excluding Date: " + (u + timedelta(days=1)).strftime("%A,%d %B,%Y")
+                    )
+                except KeyError:
+                    rec_absences[x["ID"]] = [
+                        "Excluding Date: " + (u + timedelta(days=1)).strftime("%A,%d %B,%Y")
+                    ]
             for w in absence_.rdates:
                 try:
                     rec_absences[x["ID"]].append(
