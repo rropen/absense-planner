@@ -50,12 +50,14 @@
                     <div class="container">
 
                         <p>Colour Key:</p>
-                        <li>
-                            <button style="background-color: #ffaa00; font-weight:bold;">Recurring</button> 
-                        </li>
-                        <li>
+                        
+                            <button id="Hoverable-Recurring" style="background-color: #ffaa00; font-weight:bold;">Recurring
+                            </button> 
+                        
+                            <p id="InfoPopup-Recurring">Absence which will recurre on specified day for user</p>
+                        
                             <button style="background-color: #ff0000; font-weight:bold;">Absent</button> 
-                        </li>
+                 
                     </div>
                 </div>
                 
@@ -292,4 +294,22 @@
         </div>
     </section>
 </div>
+
+
+
+<script>
+    $(document).ready(function()
+    {
+        $("#Hoverable-Recurring").hover(function()
+        {
+            $("#InfoPopup-Recurring").show();
+        },
+        function()
+        {
+            $("#InfoPopup-Recurring").hide();
+        }
+        )
+    });
+    
+</script>
 {% endblock %}
