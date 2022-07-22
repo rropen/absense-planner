@@ -80,7 +80,7 @@
       {% for x in absence %}
       <div class="column is-6">
         <div class="card has-background-light p-4 has-text-centered">
-          {{x}}
+          {{x.0}}
           <div class="mx-auto">
             <a class="button is-info" href="/absence/edit_recurring/{{ id }}">Edit</a>
             <a class="button is-danger delete-trigger-button2" data-id="{{ id }}">Delete</a>
