@@ -33,7 +33,6 @@ from .models import Absence, RecurringAbsences, Relationship, Role, Team, UserPr
 User = get_user_model()
 
 
-
 def index(request) -> render:
     """Branched view.                       \n
     IF NOT Logged in: returns the home page \n
@@ -180,10 +179,14 @@ def joining_team_process(request, id, role):
     find_team = Team.objects.get(id=id)
     find_role = Role.objects.get(role=role)
     rels = Relationship.objects.filter(
-        user=request.user.id, role=Role.objects.get(role="Member"), status=State.objects.get(slug="active")
+        user=request.user.id,
+        role=Role.objects.get(role="Member"),
+        status=State.objects.get(slug="active"),
     )
     rels2 = Relationship.objects.filter(
-        user=request.user.id, role=Role.objects.get(role="Owner"), status=State.objects.get(slug="active")
+        user=request.user.id,
+        role=Role.objects.get(role="Owner"),
+        status=State.objects.get(slug="active"),
     )
     if rels or rels2:
         return redirect("dashboard")
@@ -205,12 +208,11 @@ def team_invite(request, team_id, user_id, role):
     find_team = Team.objects.get(id=team_id)
     find_user = User.objects.get(id=user_id)
     find_role = Role.objects.get(role=role)
-    
-    
+
     test = Relationship.objects.filter(team=find_team)
-    
+
     # Boolean determines if viewer is in this team trying to invite others
-    user_acceptable = False 
+    user_acceptable = False
     for rel in test:
         if rel.user == request.user and str(rel.role) == "Owner":
             user_acceptable = True
@@ -252,16 +254,15 @@ def team_cleaner(rel):
     return
 
 
-
 @login_required
 def team_misc(request, id):
-    """ Teams Miscellaneous/Notes page """
+    """Teams Miscellaneous/Notes page"""
     if is_member(request.user, id):
         team = Team.objects.get(id=id)
-        
+
         notes = CreateTeamForm(instance=team)
 
-        return render(request, "teams/misc.html", {"team":team, "notes":notes})
+        return render(request, "teams/misc.html", {"team": team, "notes": notes})
     return redirect("dashboard")
 
 
@@ -469,7 +470,7 @@ def get_absence_data(users, user_type):
         absence_info = Absence.objects.filter(Target_User_ID=user_id)
         total_absence_dates[user] = []
         all_absences[user] = []
-        pattern = reccurence.recurrence()
+
         # if they have any absences
         if absence_info:
             # mapping the absence content to keys in dictionary
@@ -481,7 +482,6 @@ def get_absence_data(users, user_type):
                 while dates <= absence_date_end:
                     total_absence_dates[user].append(dates)
                     dates += delta
-                    pattern.rdates.append(dates)
 
                 absence_content.append(
                     {
@@ -493,11 +493,12 @@ def get_absence_data(users, user_type):
                 )
 
             # for each user it maps the set of dates to a dictionary key labelled as the users name
-            total_absence_dates[user] = total_absence_dates[user]
             all_absences[user] = absence_content
 
+        total_recurring_dates[user] = recurrence.Recurrence(rdates=total_absence_dates[user])
+        print(total_recurring_dates[user].occurrences())
         recurring = RecurringAbsences.objects.filter(User_ID=user_id)
-        total_recurring_dates[user] = []
+
         if recurring:
             for recurrence_ in recurring:
                 dates = recurrence_.Recurrences.occurrences(
@@ -505,7 +506,7 @@ def get_absence_data(users, user_type):
                         str(datetime.datetime.now().year + 2), "%Y"
                     )
                 )
-            
+
                 for x in list(dates)[:-1]:
                     time_const = "23:00:00"
                     time_var = datetime.datetime.strftime(x, "%H:%M:%S")
@@ -520,7 +521,6 @@ def get_absence_data(users, user_type):
     data["all_absences"] = all_absences
     data["absence_dates"] = total_absence_dates
     data["users"] = users
-    pattern
     return data
 
 
@@ -559,7 +559,9 @@ def team_calendar(
             data_2["users"] = filtered_users
 
         # Gets filtered users by filtering system on page
-        filtered_users = get_filter_users(request, [user.user for user in data_2["users"]])
+        filtered_users = get_filter_users(
+            request, [user.user for user in data_2["users"]]
+        )
 
         actual_filtered_users = []
         for user in data_2["users"]:
@@ -674,36 +676,31 @@ def text_rules(request):
 
     for x in recurring_absences:
         absence_ = x["Recurrences"]
-
         if absence_:
-            for u in absence_.exdates:
-                try:
-                    rec_absences[x["ID"]].append(
-                        "Excluding Date: " + (u + timedelta(days=1)).strftime("%A,%d %B,%Y")
-                    )
-                except KeyError:
-                    rec_absences[x["ID"]] = [
-                        "Excluding Date: " + (u + timedelta(days=1)).strftime("%A,%d %B,%Y")
-                    ]
-            for w in absence_.rdates:
-                try:
-                    rec_absences[x["ID"]].append(
-                        "Date: " + (w + timedelta(days=1)).strftime("%A,%d %B,%Y")
-                    )
-                except KeyError:
-                    rec_absences[x["ID"]] = [
-                        "Date: " + (w + timedelta(days=1)).strftime("%A,%d %B,%Y")
-                    ]
-            for y in absence_.rrules:
-                try:
-                    rec_absences[x["ID"]].append("Rule: " + str(y.to_text()))
-                except KeyError:
-                    rec_absences[x["ID"]] = ["Rule: " + str(y.to_text())]
-            for z in absence_.exrules:
-                try:
-                    rec_absences[x["ID"]].append("Excluding Rule: " + str(z.to_text()))
-                except KeyError:
-                    rec_absences[x["ID"]] = ["Excluding Rule: " + str(z.to_text())]
+            rec_absences[x["ID"]] = []
+        if absence_.exdates:
+            rec_absences[x["ID"]].append(
+                [
+                    "Excluding Date: " + (y + timedelta(days=1)).strftime("%A,%d %B,%Y")
+                    for y in absence_.exdates
+                ]
+            )
+        if absence_.rdates:
+            rec_absences[x["ID"]].append(
+                [
+                    "Date: " + (y + timedelta(days=1)).strftime("%A,%d %B,%Y")
+                    for y in absence_.rdates
+                ]
+            )
+        if absence_.rrules:
+            rec_absences[x["ID"]].append(
+                ["Rule: " + str(y.to_text()) for y in absence_.rrules]
+            )
+        if absence_.exrules:
+            rec_absences[x["ID"]].append(
+                ["Excluding Rule: " + str(y.to_text()) for y in absence_.exrules]
+            )
+
     return rec_absences
 
 
@@ -940,15 +937,12 @@ def get_filter_users(request, users) -> list:
     return filtered_users
 
 
-
-
 def is_member(user, team_id) -> bool:
-    """ The user be a member of the team before accessing its contents """
-    
+    """The user be a member of the team before accessing its contents"""
+
     team = Relationship.objects.filter(team=Team.objects.get(id=team_id))
 
-
-    # Boolean determines if viewer is in this team 
+    # Boolean determines if viewer is in this team
     for rel in team:
         if rel.user == user:
             return True
