@@ -260,9 +260,16 @@ def team_misc(request, id):
         team = Team.objects.get(id=id)
         
         # TODO: Add a field to each team with a notes section - (for now it's just the teams description)
-        notes = team.description
+        
+        if "value" in request.GET:
+            team.notes = request.GET["value"]
+            print(team.notes)
 
-        return render(request, "teams/misc.html", {"team":team, "notes":notes})
+
+        desc  = team.description
+        notes = team.notes
+        
+        return render(request, "teams/misc.html", {"team":team, "desc":desc, "notes":notes})
     return redirect("dashboard")
 
 
