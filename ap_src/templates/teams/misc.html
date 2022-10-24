@@ -30,13 +30,17 @@
 
     </div>
     
+    <form method="get" id="form">
+        <input class="textbox" name="value">
+        <button class="button is-info is-outlined mx-1" type="submit"><bold>Submit</bold></button>
+    </form>
     
     <!-- <p> Notes section/board for viewing teams miscs & notes </p> -->
 </div>
 
 
 <script>
-    const form_content = '<form method="get" id="form"> <input class="textbox" name="value"> <button class="button is-info is-outlined mx-1" type="submit"><i class=""></i></button> </form>'
+    const form_content = '<form method="get" id="form"> <input class="textbox" name="value"> <button class="button is-info is-outlined mx-1" type="submit"><bold>Submit</bold></button></form>'
     $(document).ready(function(){
         $("#EditNotes").click(function()
         {
