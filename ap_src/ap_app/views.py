@@ -188,7 +188,8 @@ def joining_team_process(request, id, role):
         role=Role.objects.get(role="Owner"),
         status=State.objects.get(slug="active"),
     )
-    if rels or rels2:
+    print(role)
+    if (rels or rels2) and role == "Member":
         return redirect("dashboard")
     new_rel = Relationship.objects.create(
         user=request.user,
@@ -317,6 +318,7 @@ def joining_team_request(request, id, response):
     find_rel = Relationship.objects.get(id=id)
     if response == "accepted":
         state_response = State.objects.get(slug="active")
+        #TODO: fix decline error
     elif response == "nonactive":
         state_response = State.objects.get(slug="nonactive")
     Relationship.objects.filter(id=find_rel.id).update(status=state_response)
@@ -469,6 +471,7 @@ def get_absence_data(users, user_type):
 
         absence_info = Absence.objects.filter(Target_User_ID=user_id)
         total_absence_dates[user] = []
+        total_recurring_dates[user] = []
         all_absences[user] = []
 
         # if they have any absences
@@ -495,8 +498,6 @@ def get_absence_data(users, user_type):
             # for each user it maps the set of dates to a dictionary key labelled as the users name
             all_absences[user] = absence_content
 
-        total_recurring_dates[user] = recurrence.Recurrence(rdates=total_absence_dates[user])
-        print(total_recurring_dates[user].occurrences())
         recurring = RecurringAbsences.objects.filter(User_ID=user_id)
 
         if recurring:
@@ -508,6 +509,7 @@ def get_absence_data(users, user_type):
                 )
 
                 for x in list(dates)[:-1]:
+
                     time_const = "23:00:00"
                     time_var = datetime.datetime.strftime(x, "%H:%M:%S")
                     if time_const == time_var:
