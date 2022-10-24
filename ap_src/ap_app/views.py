@@ -511,8 +511,8 @@ def get_absence_data(users, user_type):
                         x += timedelta(days=1)
                     total_recurring_dates[user].append(x)
                 # TODO: add auto deleting for recurring absences once last date of absences in before now
-                if x < datetime.datetime.now():
-                    pass
+                #if x < datetime.datetime.now():
+                #    pass
 
     data["recurring_absence_dates"] = total_recurring_dates
     data["all_absences"] = all_absences
