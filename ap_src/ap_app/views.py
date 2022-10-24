@@ -5,6 +5,7 @@
 import calendar
 import datetime
 from datetime import timedelta
+from xml.sax import xmlreader
 
 import recurrence
 from dateutil.relativedelta import relativedelta
@@ -188,7 +189,6 @@ def joining_team_process(request, id, role):
         role=Role.objects.get(role="Owner"),
         status=State.objects.get(slug="active"),
     )
-    print(role)
     if (rels or rels2) and role == "Member":
         return redirect("dashboard")
     new_rel = Relationship.objects.create(
@@ -318,7 +318,7 @@ def joining_team_request(request, id, response):
     find_rel = Relationship.objects.get(id=id)
     if response == "accepted":
         state_response = State.objects.get(slug="active")
-        #TODO: fix decline error
+        # TODO: fix decline error
     elif response == "nonactive":
         state_response = State.objects.get(slug="nonactive")
     Relationship.objects.filter(id=find_rel.id).update(status=state_response)
@@ -379,6 +379,12 @@ def add(request) -> render:
 def add_recurring(request) -> render:
     if request.method == "POST":
         form = RecurringAbsencesForm(request.POST)
+        for x in form:
+            print(x)
+            if not ("Daily" in x or "on" in x or "each" in x):
+                print("hey")
+                content = {"form": form, "message": "Must select a day/month"}
+                return render(request, "ap_app/add_recurring_absence.html", content)
         form.instance.User_ID = request.user
         form.save()
         return redirect("index")
@@ -509,7 +515,6 @@ def get_absence_data(users, user_type):
                 )
 
                 for x in list(dates)[:-1]:
-
                     time_const = "23:00:00"
                     time_var = datetime.datetime.strftime(x, "%H:%M:%S")
                     if time_const == time_var:

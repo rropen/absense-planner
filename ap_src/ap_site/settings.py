@@ -15,7 +15,7 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-FIXTURE_DIRS = ((os.path.join('fixtures'),))
+FIXTURE_DIRS = (os.path.join("fixtures"),)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -72,6 +72,7 @@ TEMPLATES = [
             "libraries": {
                 "get_key": "ap_app.templatetags.get_key",
                 "check_absences": "ap_app.templatetags.check_absences",
+                "check_day": "ap_app.templatetags.check_day",
             },
         },
     },

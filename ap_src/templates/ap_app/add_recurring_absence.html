@@ -7,15 +7,21 @@
 
 <div class="main container column is-3">
     <h1 class="title has-text-centered"> Create Recurring Absence </h1>
-        <form method="POST" class="post-form">
-            {% csrf_token %}
-                <div class="container">
-                {{ form.media }}
-                {{ form }}
-                <button type="submit" class="button is-fullwidth is-link">Submit</button>
-            </div>
+    <form method="POST" class="post-form">
+        {% csrf_token %}
+        <div class="container">
 
-        </form>
+            {% csrf_token %}
+            {% if message %}
+            {% include "messages.html" %}
+            {% endif %}
+
+            {{ form.media }}
+            {{ form }}
+            <button type="submit" class="button is-fullwidth is-link">Submit</button>
+        </div>
+
+    </form>
 </div>
 
 {% endblock %}
