@@ -74,6 +74,9 @@ TEMPLATES = [
                 "check_absences": "ap_app.templatetags.check_absences",
                 "check_day": "ap_app.templatetags.check_day",
             },
+            'builtins': [
+                "ap_app.templatetags.check_rule",
+            ],
         },
     },
 ]

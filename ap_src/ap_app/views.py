@@ -379,12 +379,13 @@ def add(request) -> render:
 def add_recurring(request) -> render:
     if request.method == "POST":
         form = RecurringAbsencesForm(request.POST)
-        for x in form:
-            print(x)
-            if not ("Daily" in x or "on" in x or "each" in x):
-                print("hey")
-                content = {"form": form, "message": "Must select a day/month"}
-                return render(request, "ap_app/add_recurring_absence.html", content)
+        rule = str(form["Recurrences"].value())
+
+        print(rule)
+        if not ("DAILY" in rule or "BY" in rule):
+
+            content = {"form": form, "message": "Must select a day/month"}
+            return render(request, "ap_app/add_recurring_absence.html", content)
         form.instance.User_ID = request.user
         form.save()
         return redirect("index")
@@ -682,31 +683,27 @@ def text_rules(request):
     rec_absences = {}
 
     for x in recurring_absences:
+
         absence_ = x["Recurrences"]
         if absence_:
             rec_absences[x["ID"]] = []
         if absence_.exdates:
-            rec_absences[x["ID"]].append(
-                [
+            for y in absence_.exdates:
+                rec_absences[x["ID"]].append(
                     "Excluding Date: " + (y + timedelta(days=1)).strftime("%A,%d %B,%Y")
-                    for y in absence_.exdates
-                ]
-            )
+                )
         if absence_.rdates:
-            rec_absences[x["ID"]].append(
-                [
+            for y in absence_.rdates:
+                rec_absences[x["ID"]].append(
                     "Date: " + (y + timedelta(days=1)).strftime("%A,%d %B,%Y")
-                    for y in absence_.rdates
-                ]
-            )
+                )
         if absence_.rrules:
-            rec_absences[x["ID"]].append(
-                ["Rule: " + str(y.to_text()) for y in absence_.rrules]
-            )
+            for y in absence_.rrules:
+                rec_absences[x["ID"]].append("Rule: " + str(y.to_text()))
+
         if absence_.exrules:
-            rec_absences[x["ID"]].append(
-                ["Excluding Rule: " + str(y.to_text()) for y in absence_.exrules]
-            )
+            for y in absence_.exrules:
+                rec_absences[x["ID"]].append("Excluding Rule: " + str(y.to_text()))
 
     return rec_absences
 
