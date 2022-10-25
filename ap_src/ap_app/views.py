@@ -5,7 +5,6 @@
 import calendar
 import datetime
 from datetime import timedelta
-from xml.sax import xmlreader
 
 import recurrence
 from dateutil.relativedelta import relativedelta
@@ -201,7 +200,10 @@ def joining_team_process(request, id, role):
         Relationship.objects.filter(id=new_rel.id).update(
             status=State.objects.get(slug="active")
         )
-
+        leader = Relationship.objects.get(team=id, role=Role.objects.get(role="Owner"))
+        userprofile = UserProfile.objects.get(user=request.user)
+        userprofile.edit_whitelist.add(leader.user)
+        userprofile.save()
     return redirect("dashboard")
 
 
@@ -264,16 +266,17 @@ def team_misc(request, id):
         notes = CreateTeamForm(instance=team)
 
         # TODO: Add a field to each team with a notes section - (for now it's just the teams description)
-        
+
         if "value" in request.GET:
             team.notes = request.GET["value"]
             team.save()
 
-
-        desc  = team.description
+        desc = team.description
         notes = team.notes
-        
-        return render(request, "teams/misc.html", {"team":team, "desc":desc, "notes":notes})
+
+        return render(
+            request, "teams/misc.html", {"team": team, "desc": desc, "notes": notes}
+        )
     return redirect("dashboard")
 
 
@@ -286,6 +289,7 @@ def team_settings(request, id):
         all_pending_relations = Relationship.objects.filter(
             team=id, status=State.objects.get(slug="pending")
         )
+
         return render(
             request,
             "teams/settings.html",
@@ -300,35 +304,59 @@ def team_settings(request, id):
     return redirect("dashboard")
 
 
-# TODO: issue: 50
+# TODO: issue #143
+
+
+def edit_team_member_absence(request, id, user_id) -> render:
+    """Checks to see if user is the owner and renders the Edit absences page for that user"""
+    target_user = User.objects.get(id=user_id)
+    leader = Relationship.objects.get(team=id, role=Role.objects.get(role="Owner"))
+    userprofile = UserProfile.objects.get(user=target_user)
+    userprofile.edit_whitelist.add(leader.user)
+    userprofile.save()
+
+    absences = Absence.objects.filter(Target_User_ID=target_user.id)
+    rec_absences = text_rules(target_user)
+    print(target_user.is_authenticated)
+    return render(
+        request,
+        "teams/edit_absences.html",
+        {
+            "user": target_user.username,
+            "absences": absences,
+            "recurring_absences": rec_absences,
+        },
+    )
+
+
+# TODO: Issue #144
 @login_required
-def edit_team_absence(request, id, user_id):
-    """Checks to see if user is the owner and renders the Edit absences page"""
-    team = Team.objects.get(id=id)
-    user_relation = Relationship.objects.get(team=id, user=request.user)
-    if user_relation.role.role == "Owner":
-        all_pending_relations = Relationship.objects.filter(
-            team=id, status=State.objects.get(slug="pending")
-        )
-        return render(
-            request,
-            "teams/settings.html",
-            {
-                "user": request.user,
-                "team": team,
-                "pending_rels": all_pending_relations,
-                "Team_users": team.users,
-            },
-        )
+def remove_user():
+    pass
 
-    return redirect("dashboard")
+
+# TODO: Issue #145
+@login_required
+def promote_user():
+    pass
+
+
+# TODO
+@login_required
+def deomote_user():
+    pass
 
 
 def joining_team_request(request, id, response):
     find_rel = Relationship.objects.get(id=id)
     if response == "accepted":
         state_response = State.objects.get(slug="active")
-        # TODO: fix decline error
+        leader = Relationship.objects.get(team=id, role=Role.objects.get(role="Owner"))
+        userprofile = UserProfile.objects.get(user=find_rel.user)
+        userprofile.edit_whitelist.add(leader)
+        userprofile.save()
+
+    # TODO: fix decline error
     elif response == "nonactive":
         state_response = State.objects.get(slug="nonactive")
     Relationship.objects.filter(id=find_rel.id).update(status=state_response)
@@ -532,7 +560,7 @@ def get_absence_data(users, user_type):
                         x += timedelta(days=1)
                     total_recurring_dates[user].append(x)
                 # TODO: add auto deleting for recurring absences once last date of absences in before now
-                #if x < datetime.datetime.now():
+                # if x < datetime.datetime.now():
                 #    pass
 
     data["recurring_absence_dates"] = total_recurring_dates
@@ -686,10 +714,10 @@ def all_calendar(
     return render(request, "ap_app/calendar.html", context)
 
 
-def text_rules(request):
-    recurring_absences = RecurringAbsences.objects.filter(
-        User_ID=request.user.id
-    ).values("Recurrences", "ID")
+def text_rules(user):
+    recurring_absences = RecurringAbsences.objects.filter(User_ID=user.id).values(
+        "Recurrences", "ID"
+    )
     rec_absences = {}
 
     for x in recurring_absences:
@@ -731,13 +759,13 @@ def profile_page(request):
             edit_whitelist=request.user
         )
         users = UserProfile.objects.filter(edit_whitelist=request.user)
-        rec_absences = text_rules(request)
+        rec_absences = text_rules(request.user)
 
         if form.is_valid():
             absence_user = form.cleaned_data["user"]
 
             absences = Absence.objects.filter(Target_User_ID=absence_user.user.id)
-
+            rec_absences = text_rules(absence_user)
             return render(
                 request,
                 "ap_app/profile.html",
@@ -752,7 +780,7 @@ def profile_page(request):
     else:
 
         absences = Absence.objects.filter(Target_User_ID=request.user.id)
-        rec_absences = text_rules(request)
+        rec_absences = text_rules(request.user)
 
         users = UserProfile.objects.filter(edit_whitelist=request.user)
         form = SwitchUser()

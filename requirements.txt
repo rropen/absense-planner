@@ -4,6 +4,7 @@ colorama==0.4.4
 dill==0.3.4
 Django==3.2.9
 django-bulma==0.8.3
+django-ckeditor==6.5.0
 django-codemirror2==0.2
 django-cte==1.1.4
 django-js-asset==2.0.0
