@@ -5,7 +5,9 @@ from river.models.fields.state import StateField, State
 from river.models import TransitionApproval
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy
+
 from recurrence.fields import RecurrenceField
+from ckeditor.fields import RichTextField
 
 User = get_user_model()
 
@@ -76,6 +78,8 @@ class Team(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=128, unique=True, null=False)
     description = models.CharField(max_length=512)
+    notes = RichTextField()  #models.CharField(max_length=512, null=False, default="")
+
     private = models.BooleanField(default=False)
 
     def __str__(self):

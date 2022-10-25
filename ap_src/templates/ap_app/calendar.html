@@ -35,18 +35,35 @@
                         <input type="text" name="refreshSecBox" size="1" class="RefreshBox" />
                         <script language="javascript">
                             SecondsSinceLastRefresh();
-                        </script>
+                            </script>
                         minute(s) ago.
                     </form>
                     
                 </span>
-
+                
                 {% if users_hidden %}
                 <span class="tag">
                     <p>Some Users are hidden due to privacy</p>
                 </span>
                 {% endif %}
+                
+                <!-- Colour Key Prototype -->
+                <!-- <div class="level-right">
+                    <div class="container">
 
+                        <p>Colour Key:</p>
+                        
+                            <button id="Hoverable-Recurring" style="background-color: #ffaa00; font-weight:bold;">Recurring
+                            </button> 
+                        
+                            <p id="InfoPopup-Recurring">Absence which will recurre on specified day for user</p>
+                        
+                            <button style="background-color: #ff0000; font-weight:bold;">Absent</button> 
+                 
+                    </div>
+                </div> -->
+                
+                
             </div>
 
             <div class="level mb-0">
@@ -199,6 +216,8 @@
                     <span class="is-size-4 mb-0 px-3 level-left">{{month}} {{year}}</span>
                 </div>
 
+                    
+
                 
                 <div class="level-right">
                     <!-- Key for table colours -->
@@ -210,9 +229,6 @@
                         <form method="get" class="field has-addons">
     
                             <!-- Key for table colours -->
-                            <div class="level-item" >
-                                <!-- <button class="button" style="background-color: #0e00d6; color:white">You</button> -->
-                            </div>
                             <div class="control has-icons-left">
                                 <input class="input" type="text" name="username" placeholder="Search">
                                     <span class="icon is-left">
@@ -283,4 +299,23 @@
         </div>
     </section>
 </div>
+
+
+
+<script>
+    // Colour Key Prototype 
+    // $(document).ready(function()
+    // {
+    //     $("#Hoverable-Recurring").hover(function()
+    //     {
+    //         $("#InfoPopup-Recurring").show();
+    //     },
+    //     function()
+    //     {
+    //         $("#InfoPopup-Recurring").hide();
+    //     }
+    //     )
+    // });
+    
+</script>
 {% endblock %}

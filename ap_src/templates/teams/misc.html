@@ -17,12 +17,36 @@
     }
 </style>
 
+
 <div class="main">
     <h1 class="title is-3">{{ team.name }} notes</h1>
+    <p style="font-weight:bold"> Team Description: </p>
     <p> {{ team.description }}  </p>
-    <p> Notes section/board for viewing teams miscs & notes </p>
+    <p style="font-weight:bold"> Notes: </p>
+    <div id="edit-notes">
+        <p> {{ team.notes }} </p> 
+        <button id="EditNotes"> Edit Notes Here</button>
+    </div> 
+    
+    <!-- <form method="get" id="form">
+        <input class="textbox" name="value">
+        <button class="button is-info is-outlined mx-1" type="submit"><bold>Submit</bold></button>
+    </form> -->
+    
+    <!-- <p> Notes section/board for viewing teams miscs & notes </p> -->
 </div>
 
 
+<script>
+    const form_content = '<form method="get" id="form"> <input class="textarea" name="value" value="{{ team.notes }}"> </input> <button class="button is-info is-outlined mx-1" type="submit"><bold>Submit</bold></button></form>'
+    $(document).ready(function(){
+        $("#EditNotes").click(function()
+        {
+            $("#edit-notes").html(form_content)
 
+        })
+    });
+    
+</script>
 {% endblock %}
+
