@@ -48,7 +48,7 @@
     {% endif %}
   </div>
   <br>
-  {% if not absences  and not recurring_absences.items%}
+  {% if not absences and not recurring_absences.items%}
 
   <div class="container has-background-light box">
     <div class="is-size-5 mb-3">
@@ -81,6 +81,10 @@
       <div class="column is-6">
         <div class="card has-background-light p-4 has-text-centered">
           {{x}}
+          {% if not x|check_rule %}
+          <p style="color:red"> This rule needs editing, there needs to be a day/month specified
+          </p>
+            {% endif %}
           <div class="mx-auto">
             <a class="button is-info" href="/absence/edit_recurring/{{ id }}">Edit</a>
             <a class="button is-danger delete-trigger-button2" data-id="{{ id }}">Delete</a>
