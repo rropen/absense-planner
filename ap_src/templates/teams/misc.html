@@ -23,28 +23,27 @@
     <p style="font-weight:bold"> Team Description: </p>
     <p> {{ team.description }}  </p>
     <p style="font-weight:bold"> Notes: </p>
-    <p> {{ team.notes }} </p> 
-    <button id="EditNotes"> Edit Notes Here</button>
+    <div id="edit-notes">
+        <p> {{ team.notes }} </p> 
+        <button id="EditNotes"> Edit Notes Here</button>
+    </div> 
     
-    <div id="form">
-
-    </div>
-    
-    <form method="get" id="form">
+    <!-- <form method="get" id="form">
         <input class="textbox" name="value">
         <button class="button is-info is-outlined mx-1" type="submit"><bold>Submit</bold></button>
-    </form>
+    </form> -->
     
     <!-- <p> Notes section/board for viewing teams miscs & notes </p> -->
 </div>
 
 
 <script>
-    const form_content = '<form method="get" id="form"> <input class="textbox" name="value"> <button class="button is-info is-outlined mx-1" type="submit"><bold>Submit</bold></button></form>'
+    const form_content = '<form method="get" id="form"> <input class="textarea" name="value" value="{{ team.notes }}"> </input> <button class="button is-info is-outlined mx-1" type="submit"><bold>Submit</bold></button></form>'
     $(document).ready(function(){
         $("#EditNotes").click(function()
         {
-            $("#form").html(form_content)
+            $("#edit-notes").html(form_content)
+
         })
     });
     

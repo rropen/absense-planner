@@ -258,12 +258,13 @@ def team_misc(request, id):
     """ Teams Miscellaneous/Notes page """
     if is_member(request.user, id):
         team = Team.objects.get(id=id)
-        
+        print(team.notes)
+
         # TODO: Add a field to each team with a notes section - (for now it's just the teams description)
         
         if "value" in request.GET:
             team.notes = request.GET["value"]
-            print(team.notes)
+            team.save()
 
 
         desc  = team.description
