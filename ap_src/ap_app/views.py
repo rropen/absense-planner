@@ -309,24 +309,28 @@ def team_settings(request, id):
 
 def edit_team_member_absence(request, id, user_id) -> render:
     """Checks to see if user is the owner and renders the Edit absences page for that user"""
-    target_user = User.objects.get(id=user_id)
-    leader = Relationship.objects.get(team=id, role=Role.objects.get(role="Owner"))
-    userprofile = UserProfile.objects.get(user=target_user)
-    userprofile.edit_whitelist.add(leader.user)
-    userprofile.save()
+    team = Team.objects.get(id=id)
+    user_relation = Relationship.objects.get(team=id, user=request.user)
+    if user_relation.role.role == "Owner":
+        target_user = User.objects.get(id=user_id)
+        leader = Relationship.objects.get(team=id, role=Role.objects.get(role="Owner"))
+        userprofile = UserProfile.objects.get(user=target_user)
+        userprofile.edit_whitelist.add(leader.user)
+        userprofile.save()
 
-    absences = Absence.objects.filter(Target_User_ID=target_user.id)
-    rec_absences = text_rules(target_user)
-    print(target_user.is_authenticated)
-    return render(
-        request,
-        "teams/edit_absences.html",
-        {
-            "user": target_user.username,
-            "absences": absences,
-            "recurring_absences": rec_absences,
-        },
-    )
+        absences = Absence.objects.filter(Target_User_ID=target_user.id)
+        rec_absences = text_rules(target_user)
+
+        return render(
+            request,
+            "teams/edit_absences.html",
+            {
+                "user": target_user,
+                "absences": absences,
+                "recurring_absences": rec_absences,
+            },
+        )
+    return redirect("dashboard")
 
 
 # TODO: Issue #144
@@ -351,10 +355,6 @@ def joining_team_request(request, id, response):
     find_rel = Relationship.objects.get(id=id)
     if response == "accepted":
         state_response = State.objects.get(slug="active")
-        leader = Relationship.objects.get(team=id, role=Role.objects.get(role="Owner"))
-        userprofile = UserProfile.objects.get(user=find_rel.user)
-        userprofile.edit_whitelist.add(leader)
-        userprofile.save()
 
     # TODO: fix decline error
     elif response == "nonactive":
@@ -419,7 +419,6 @@ def add_recurring(request) -> render:
         form = RecurringAbsencesForm(request.POST)
         rule = str(form["Recurrences"].value())
 
-        print(rule)
         if not ("DAILY" in rule or "BY" in rule):
 
             content = {"form": form, "message": "Must select a day/month"}
