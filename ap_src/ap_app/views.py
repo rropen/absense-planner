@@ -228,6 +228,7 @@ def team_invite(request, team_id, user_id, role):
             role=find_role,
             status=State.objects.get(slug="invited"),
         )
+        return redirect("request.path_info")
     # Else user is manipulating the URL making non-allowed invites - (Therefore doesn't create a relationship)
 
     return redirect("dashboard")
@@ -819,22 +820,20 @@ def deleteuser(request):
 def absence_delete(request, absence_id: int):
     absence = Absence.objects.get(pk=absence_id)
     user = request.user
+    absence.delete()
     if user == absence.User_ID:
-        absence.delete()
-        return redirect("profile")
-
-    raise Exception()
+        return redirect("Profile")
+    return redirect("edit_team_member_absence")
 
 
 @login_required
 def absence_recurring_delete(request, absence_id: int):
     absence = RecurringAbsences.objects.get(pk=absence_id)
     user = request.user
+    absence.delete()
     if user == absence.User_ID:
-        absence.delete()
-        return redirect("profile")
-
-    raise Exception()
+        return redirect("Profile")
+    return redirect("edit_team_member_absence")
 
 
 class EditAbsence(UpdateView):
