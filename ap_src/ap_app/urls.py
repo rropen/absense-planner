@@ -2,13 +2,16 @@ from django.urls import path
 from django.conf.urls import url
 from django.views.i18n import JavaScriptCatalog
 from . import views
+from django.contrib.auth import views as django_views
 
 js_info_dict = {
     'packages' : ('recurrence', ),
 }
 
+
 urlpatterns = [
     path("", views.index, name="index"),
+    path("accounts/login/", views.login, name="login"),
     path('signup/', views.SignUpView.as_view(), name='signup'),
     path("calendar/", views.all_calendar, name="all_Calendar"),
     path("calendar/<str:month>/<int:year>", views.all_calendar, name="all_calendar"),

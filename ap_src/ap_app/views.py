@@ -21,6 +21,8 @@ from django.utils.timezone import now
 from django.views.generic import CreateView, UpdateView
 from river.models.fields.state import State
 
+from django.contrib.auth import views as django_view
+
 from .forms import (
     AbsenceForm,
     AcceptPolicyForm,
@@ -28,8 +30,10 @@ from .forms import (
     DeleteUserForm,
     RecurringAbsencesForm,
     SwitchUser,
+    login as login_form
 )
 from .models import Absence, RecurringAbsences, Relationship, Role, Team, UserProfile
+
 
 User = get_user_model()
 
@@ -59,6 +63,18 @@ def index(request) -> render:
         user.edit_whitelist.add(request.user)
         return all_calendar(request)
     return render(request, "ap_app/index.html")
+
+
+default_login_view = django_view.LoginView.as_view()
+
+def login(request) -> render:
+    url = "accounts/login/"
+    print("login page active")
+    
+    return default_login_view
+    
+    #return render(request, "registration/login.html", content)
+
 
 
 def privacy_page(request, to_accept=False) -> render:
@@ -247,18 +263,17 @@ def leave_team(request, id):
     return redirect("dashboard")
 
 
-def team_cleaner(rel):
+def team_cleaner(rel) -> None:
     team = Team.objects.get(id=rel.team.id)
     all_team_relationships = Relationship.objects.filter(team=team)
     if all_team_relationships.count() == 0:
         team.delete()
-    return
 
 
 @login_required
 def team_misc(request, id):
     """Teams Miscellaneous/Notes page"""
-    if is_member(request.user, id):
+    if is_member(user=request.user, team_id=id):
         team = Team.objects.get(id=id)
 
         notes = CreateTeamForm(instance=team)
@@ -281,8 +296,8 @@ def team_misc(request, id):
 def team_settings(request, id):
     """Checks to see if user is the owner and renders the Setting page"""
     team = Team.objects.get(id=id)
-    user_relation = Relationship.objects.get(team=id, user=request.user)
-    if user_relation.role.role == "Owner":
+    
+    if is_owner(user=request.user, team_id=id): 
         all_pending_relations = Relationship.objects.filter(
             team=id, status=State.objects.get(slug="pending")
         )
@@ -305,8 +320,8 @@ def team_settings(request, id):
 def edit_team_absence(request, id, user_id):
     """Checks to see if user is the owner and renders the Edit absences page"""
     team = Team.objects.get(id=id)
-    user_relation = Relationship.objects.get(team=id, user=request.user)
-    if user_relation.role.role == "Owner":
+        
+    if is_owner(user=request.user, team_id=id):    
         all_pending_relations = Relationship.objects.filter(
             team=id, status=State.objects.get(slug="pending")
         )
@@ -325,7 +340,10 @@ def edit_team_absence(request, id, user_id):
 
 
 def joining_team_request(request, id, response):
+    print("function: 'joining_team_request' called")
     find_rel = Relationship.objects.get(id=id)
+    
+
     if response == "accepted":
         state_response = State.objects.get(slug="active")
         # TODO: fix decline error
@@ -952,7 +970,7 @@ def get_filter_users(request, users) -> list:
 
 
 def is_member(user, team_id) -> bool:
-    """The user be a member of the team before accessing its contents"""
+    """ Determines if the user is a member of the team before accessing its contents """
 
     team = Relationship.objects.filter(team=Team.objects.get(id=team_id))
 
@@ -963,3 +981,10 @@ def is_member(user, team_id) -> bool:
 
     # Else user has changed URL & is attempting to view other teams content
     return False
+
+
+def is_owner(user, team_id) -> bool:
+    """ Determines if the user is an owner of the team """
+    
+    user_relation = Relationship.objects.get(team=team_id, user=user)
+    return (user_relation.role.role == "Owner")
