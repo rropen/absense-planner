@@ -556,6 +556,13 @@ def team_calendar(
     year=datetime.datetime.now().year,
 ):
     if is_member(request.user, id):
+
+        # Get acceptable date - (NOTHING BELOW now - 12months)
+        date = check_calendar_date(year, month)
+        if date:
+            month = date.strftime("%B")
+            year = date.year
+
         data_1 = get_date_data(month, year)
 
         users = Relationship.objects.all().filter(
