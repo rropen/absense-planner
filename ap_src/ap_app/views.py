@@ -290,7 +290,6 @@ def team_settings(request, id):
         all_pending_relations = Relationship.objects.filter(
             team=id, status=State.objects.get(slug="pending")
         )
-
         return render(
             request,
             "teams/settings.html",
@@ -299,13 +298,12 @@ def team_settings(request, id):
                 "team": team,
                 "pending_rels": all_pending_relations,
                 "Team_users": team.users,
+                "member":Role.objects.get(role="Member"),
+                "coowner":Role.objects.get(role="Co-Owner"),
+                "follower":Role.objects.get(role="Follower"),
             },
         )
-
     return redirect("dashboard")
-
-
-# TODO: issue #143
 
 
 def edit_team_member_absence(request, id, user_id) -> render:
@@ -314,7 +312,6 @@ def edit_team_member_absence(request, id, user_id) -> render:
     user_relation = Relationship.objects.get(team=id, user=request.user)
     if user_relation.role.role == "Owner":
         target_user = User.objects.get(id=user_id)
-        print(target_user.id)
         leader = Relationship.objects.get(team=id, role=Role.objects.get(role="Owner"))
         userprofile = UserProfile.objects.get(user=target_user)
         userprofile.edit_whitelist.add(leader.user)
@@ -327,31 +324,56 @@ def edit_team_member_absence(request, id, user_id) -> render:
             request,
             "teams/edit_absences.html",
             {
-                "team":team,
+                "team": team,
                 "user": target_user,
                 "absences": absences,
                 "recurring_absences": rec_absences,
+                
+
             },
         )
     return redirect("dashboard")
 
 
-# TODO: Issue #144
 @login_required
-def remove_user():
-    pass
+def promote_team_member(request, id, user_id):
+    """Checks to see if user is the owner and renders the Setting page"""
+    team = Team.objects.get(id=id)
+    user_relation = Relationship.objects.get(team=id, user=request.user)
+    if user_relation.role.role != "Owner":
+        return redirect("dashboard")
+    target_user = User.objects.get(id=user_id)
+    all_pending_relations = Relationship.objects.filter(
+        team=id, status=State.objects.get(slug="pending")
+    )
+    current_relationship = Relationship.objects.get(team=team, user=target_user)
+    print(current_relationship.role)
+    if current_relationship.role == Role.objects.get(role="Member"):
+        current_relationship.role = Role.objects.get(role="Co-Owner")
+        current_relationship.save()
 
 
-# TODO: Issue #145
+    return redirect(team_settings, team.id)
+
+
 @login_required
-def promote_user():
-    pass
+def demote_team_member(request, id, user_id):
+    """Checks to see if user is the owner and renders the Setting page"""
+    team = Team.objects.get(id=id)
+    user_relation = Relationship.objects.get(team=id, user=request.user)
+    if user_relation.role.role != "Owner":
+        return redirect("dashboard")
+    target_user = User.objects.get(id=user_id)
+    all_pending_relations = Relationship.objects.filter(
+        team=id, status=State.objects.get(slug="pending")
+    )
+    current_relationship = Relationship.objects.get(team=team, user=target_user)
+    if current_relationship.role == Role.objects.get(role="Co-Owner"):
+        current_relationship.role = Role.objects.get(role="Member")
+        current_relationship.save()
 
 
-# TODO
-@login_required
-def deomote_user():
-    pass
+    return redirect(team_settings, team.id)
 
 
 def joining_team_request(request, id, response):
@@ -829,7 +851,7 @@ def absence_delete(request, absence_id: int, team_id: int, user_id: int):
 
 
 @login_required
-def absence_recurring_delete(request, absence_id: int,team_id: int, user_id: int):
+def absence_recurring_delete(request, absence_id: int, team_id: int, user_id: int):
     absence = RecurringAbsences.objects.get(pk=absence_id)
     user = request.user
     absence.delete()
@@ -849,6 +871,7 @@ class EditAbsence(UpdateView):
         return reverse("profile")
 
 
+@login_required
 def edit_recurring_absences(request, pk):
     absence = RecurringAbsences.objects.get(ID=pk)
     if request.method == "POST":

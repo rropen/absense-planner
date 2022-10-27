@@ -35,7 +35,7 @@ class Absence(models.Model):
         "absence_date_end",
     )
 
-    def is_equivalent(self, other: "Absence") -> bool:
+    def is_equivalent(self, other: "Absence")  -> bool:
         """Returns True if the provided `other` instance of Absence
         is effectively equivalent to self.
 

@@ -35,12 +35,18 @@
             {% for User in Team_users %}
             <div class="column is-4">
                 <div class="card has-background-light p-4 has-text-centered">
-                    <span class="is-block is-size-5 has-text-weight-bold">{{User.user.username}}</span>
+                    <span class="is-block is-size-5 has-text-weight-bold">{{User.user.username}}({{User.role}})</span>
                     <br>
                     <div class="mx-auto">
+                        {% if User.role != follower %}
                         <a class="button is-success" href="{% url 'edit_team_member_absence' team.id User.user.id%}">Edit
                             Absences</a>
-                        <a class="button is-info" href="">Make Co-Owner</a>
+                        {% endif %}
+                        {% if User.role == member %}
+                        <a class="button is-info" href="{% url 'promote_team_member' team.id User.user.id%}">Promote to Co-Owner</a>
+                        {% elif User.role == coowner %}
+                        <a class="button is-info" href="{% url 'demote_team_member' team.id User.user.id%}">Demote to Member</a>
+                        {% endif %}
                         <a class="button is-danger" href="">Remove</a>
                     </div>
                 </div>

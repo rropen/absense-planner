@@ -19,5 +19,12 @@
         "fields": {
           "role": "Follower"
         }
+      },
+      {
+        "model": "ap_app.role",
+        "pk": 4,
+        "fields": {
+          "role": "Co-Owner"
+        }
       }
   ]
