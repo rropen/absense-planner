@@ -299,6 +299,21 @@ def team_settings(request, id):
 
     return redirect("dashboard")
 
+@login_required
+def remove_team_member(request, team_id, user_id):
+    """Removes the defined user ID from the team"""
+    team = Team.objects.get(id=team_id)
+    user_relation = Relationship.objects.get(team=team_id, user=request.user)
+    if user_relation.role.role != "Owner":
+        return redirect("dashboard")
+    member = User.objects.get(id=user_id)
+    if request.user == member:
+        return redirect("dashboard")
+    member_relation = Relationship.objects.get(team=team_id, user=member)
+    member_relation.status = State.objects.get(slug="nonactive")
+    member_relation.save()
+    return redirect(f"/teams/settings/{team_id}")
+
 
 # TODO: issue: 50
 @login_required

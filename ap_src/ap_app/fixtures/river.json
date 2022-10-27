@@ -28,7 +28,7 @@
   },
   {
     "model": "river.state",
-    "pk": 3,
+    "pk": 4,
     "fields": {
       "slug": "invited",
       "label": "Invited",

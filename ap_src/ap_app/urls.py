@@ -12,6 +12,7 @@ urlpatterns = [
     path('signup/', views.SignUpView.as_view(), name='signup'),
     path("calendar/", views.all_calendar, name="all_Calendar"),
     path("calendar/<str:month>/<int:year>", views.all_calendar, name="all_calendar"),
+    path("remove/<int:team_id>/<int:user_id>", views.remove_team_member, name="remove_member"),
     path("teams/", views.teams_dashboard, name="dashboard"),
     path("teams/create", views.create_team, name="create_team"),
     path("teams/invite/", views.view_invites, name="view_invites"),
