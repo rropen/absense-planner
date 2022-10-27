@@ -41,7 +41,7 @@
                         <a class="button is-success" href="{% url 'edit_team_member_absence' team.id User.user.id%}">Edit
                             Absences</a>
                         <a class="button is-info" href="">Make Co-Owner</a>
-                        <a class="button is-danger" href="">Remove</a>
+                        <a class="button is-danger" href="{% url 'remove_member' team.id user.user.id %}">Remove</a>
                     </div>
                 </div>
             </div>
