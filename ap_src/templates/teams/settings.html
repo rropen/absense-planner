@@ -32,13 +32,13 @@
     <div class="content">
         <h2>Users</h2>
         <div class="columns is-multiline">
-            {% for user in Team_users %}
+            {% for User in Team_users %}
             <div class="column is-4">
                 <div class="card has-background-light p-4 has-text-centered">
-                    <span class="is-block is-size-5 has-text-weight-bold">{{user.user.username}}</span>
+                    <span class="is-block is-size-5 has-text-weight-bold">{{User.user.username}}</span>
                     <br>
                     <div class="mx-auto">
-                        <a class="button is-success" href="{% url 'profile' %}">Edit
+                        <a class="button is-success" href="{% url 'edit_team_member_absence' team.id User.user.id%}">Edit
                             Absences</a>
                         <a class="button is-info" href="">Make Co-Owner</a>
                         <a class="button is-danger" href="">Remove</a>
