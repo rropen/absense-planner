@@ -820,9 +820,7 @@ def deleteuser(request):
 
 @login_required
 def absence_delete(request, absence_id: int, team_id: int, user_id: int):
-    print(Absence.objects.all())
     absence = Absence.objects.get(pk=absence_id)
-    
     user = request.user
     absence.delete()
     if user == absence.User_ID:
