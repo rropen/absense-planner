@@ -314,6 +314,7 @@ def edit_team_member_absence(request, id, user_id) -> render:
     user_relation = Relationship.objects.get(team=id, user=request.user)
     if user_relation.role.role == "Owner":
         target_user = User.objects.get(id=user_id)
+        print(target_user.id)
         leader = Relationship.objects.get(team=id, role=Role.objects.get(role="Owner"))
         userprofile = UserProfile.objects.get(user=target_user)
         userprofile.edit_whitelist.add(leader.user)
@@ -326,6 +327,7 @@ def edit_team_member_absence(request, id, user_id) -> render:
             request,
             "teams/edit_absences.html",
             {
+                "team":team,
                 "user": target_user,
                 "absences": absences,
                 "recurring_absences": rec_absences,
@@ -817,23 +819,25 @@ def deleteuser(request):
 
 
 @login_required
-def absence_delete(request, absence_id: int):
+def absence_delete(request, absence_id: int, team_id: int, user_id: int):
+    print(Absence.objects.all())
     absence = Absence.objects.get(pk=absence_id)
+    
     user = request.user
     absence.delete()
     if user == absence.User_ID:
-        return redirect("Profile")
-    return redirect("edit_team_member_absence")
+        return redirect("profile")
+    return redirect("edit_team_member_absence", team_id, user_id)
 
 
 @login_required
-def absence_recurring_delete(request, absence_id: int):
+def absence_recurring_delete(request, absence_id: int,team_id: int, user_id: int):
     absence = RecurringAbsences.objects.get(pk=absence_id)
     user = request.user
     absence.delete()
     if user == absence.User_ID:
-        return redirect("Profile")
-    return redirect("edit_team_member_absence")
+        return redirect("profile")
+    return redirect("edit_team_member_absence", team_id, user_id)
 
 
 class EditAbsence(UpdateView):

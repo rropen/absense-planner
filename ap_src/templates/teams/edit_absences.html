@@ -4,7 +4,6 @@
 {% block title %}Edit Absence{% endblock %}
 {% block content %}
 
-<!-- error where the navbar is not shown correctly -->
 
 <div class="main container is-3">
     <h1 class="title has-text-centered"> Edit Users Absences </h1>
@@ -17,7 +16,7 @@
                     <span class="is-block is-size-5 has-text-weight-bold">End date: {{ absence.absence_date_end }}</span>
                     <div class="mx-auto">
                         <a class="button is-info" href="/absence/edit/{{ absence.pk }}">Edit</a>
-                        <a class="button is-danger" href="/absence/delete/{{ absence.ID }}">Delete</a>
+                        <a class="button is-danger" href="/absence/delete/{{ absence.ID }}/{{ team.id }}/{{ user.id }}">Delete</a>
                     </div>
                 </div>
             </div>
@@ -37,7 +36,7 @@
                     {% endif %}
                     <div class="mx-auto">
                         <a class="button is-info" href="/absence/edit_recurring/{{ id }}">Edit</a>
-                        <a class="button is-danger" href="/absence_recurring/delete/{{ id }}">Delete</a>
+                        <a class="button is-danger" href="/absence_recurring/delete/{{ id }}/{{ team.id }}/{{ user.id }}">Delete</a>
                     </div>
                 </div>
             </div>
