@@ -21,7 +21,6 @@ from django.utils.timezone import now
 from django.views.generic import CreateView, UpdateView
 from river.models.fields.state import State
 
-from django.contrib.auth import views as django_view
 
 from .forms import (
     AbsenceForm,
@@ -30,7 +29,6 @@ from .forms import (
     DeleteUserForm,
     RecurringAbsencesForm,
     SwitchUser,
-    login as login_form
 )
 from .models import Absence, RecurringAbsences, Relationship, Role, Team, UserProfile
 
@@ -63,18 +61,6 @@ def index(request) -> render:
         user.edit_whitelist.add(request.user)
         return all_calendar(request)
     return render(request, "ap_app/index.html")
-
-
-default_login_view = django_view.LoginView.as_view()
-
-def login(request) -> render:
-    url = "accounts/login/"
-    print("login page active")
-    
-    return default_login_view
-    
-    #return render(request, "registration/login.html", content)
-
 
 
 def privacy_page(request, to_accept=False) -> render:
@@ -489,6 +475,8 @@ def get_date_data(
     return data
 
 
+
+
 def get_absence_data(users, user_type):
     data = {}
     absence_content = []
@@ -636,15 +624,22 @@ def all_calendar(
     month=datetime.datetime.now().strftime("%B"),
     year=datetime.datetime.now().year,
 ):
+  
+    # Get acceptable date - (NOTHING BELOW now - 12months)
+    date = check_calendar_date(year, month)
+    if date:
+        month = date.strftime("%B")
+        year = date.year
+
     data_1 = get_date_data(month, year)
+    
     current_month = data_1["current_month"]
     current_year = data_1["current_year"]
     current_day = datetime.datetime.now().day
     date = f"{current_day} {current_month} {current_year}"
     date = datetime.datetime.strptime(date, "%d %B %Y")
 
-    # old_records = Absence.objects.filter(absence_date_end__lt=date)
-    # old_records.delete()
+
     all_users = []
     all_users.append(request.user)
     user_relations = Relationship.objects.filter(
@@ -656,8 +651,6 @@ def all_calendar(
     )
     hiding_users = False
 
-    # TODO: Apply this filtering to team calendar, Also could implement onto page that users have been hidden as view is a follower
-    # Filter users out who have privated data - (if the user viewing is not a Memember/Owner of the team).
 
     for index, relation in enumerate(user_relations):
         rels = Relationship.objects.filter(
@@ -988,3 +981,22 @@ def is_owner(user, team_id) -> bool:
     
     user_relation = Relationship.objects.get(team=team_id, user=user)
     return (user_relation.role.role == "Owner")
+
+
+def check_calendar_date(year, month) -> datetime.datetime:
+    """ This function will determine if the requested date is acceptable - (NOT before current date - 12 months) """
+    # Current year * 12     + current month as num      = amount of months been  
+    # requested year * 12   + requested month as num    = 
+    
+    # If requested date is before "current date - 12 months" than will not accept date
+    todays_date = datetime.datetime.now()
+    requested_months_amount = (int(year) * 12) + datetime.datetime.strptime(month, "%B").month
+    current_months_amount   = (todays_date.year * 12) + todays_date.month 
+    months_difference = current_months_amount - requested_months_amount
+    print(months_difference)
+
+    if months_difference > 12:
+        # Return the most earliest date acceptable - (now - 12 months)
+        return datetime.datetime(todays_date.year - 1, todays_date.month, 1)  
+    else:
+        return None
