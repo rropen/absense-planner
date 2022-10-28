@@ -67,7 +67,7 @@
           <span class="is-block is-size-5 has-text-weight-bold">End date: {{ absence.absence_date_end }}</span>
           <div class="mx-auto">
             <a class="button is-info" href="/absence/edit/{{ absence.pk }}">Edit</a>
-            <a class="button is-danger delete-trigger-button" data-id="{{ absence.pk }}">Delete</a>
+            <a class="button is-danger" href="/absence/delete/{{ absence.pk }}/{{request.user.id}}">Delete</a>
           </div>
         </div>
       </div>
@@ -87,7 +87,7 @@
             {% endif %}
           <div class="mx-auto">
             <a class="button is-info" href="/absence/edit_recurring/{{ id }}">Edit</a>
-            <a class="button is-danger delete-trigger-button2" data-id="{{ id }}">Delete</a>
+            <a class="button is-danger" href="/absence_recurring/delete/{{id}}/{{request.user.id}}/">Delete</a>
           </div>
         </div>
       </div>
@@ -147,15 +147,7 @@
     });
 
     
-    $(".delete-trigger-button").click(function (e) {
-      $("#delete-btn").attr("href", "/absence/delete/" + $(this).attr("data-id"))
-      openModal();
-    });
-
-    $(".delete-trigger-button2").click(function (e) {
-      $("#delete-btn").attr("href", "/absence_recurring/delete/" + $(this).attr("data-id"))
-      openModal();
-    });
+    
   });
 
 

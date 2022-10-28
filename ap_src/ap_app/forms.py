@@ -80,11 +80,19 @@ class register(forms.Form):
 class RecurringAbsencesForm(forms.ModelForm):
     class Meta:
         model = RecurringAbsences
-        fields = ['ID','Recurrences']
+        fields = ['ID','Recurrences',"user"]
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user")
+        super().__init__(*args, **kwargs)
+        self.fields["user"].initial = UserProfile.objects.get(user=self.user)
     class Media:
         js = ('/admin/jsi18n', '/admin/js/core.js',)
-    def clean(self):
-        cleaned_data = super().clean()
+    
+    
+    user = forms.ModelChoiceField(
+        label="User:", required=True, queryset=User.objects.all(), initial=None, 
+    )
 
     
 class AbsenceForm(forms.ModelForm):
@@ -135,9 +143,6 @@ class SwitchUser(forms.Form):
     class Meta:
         fields = ["user"]
     
-    def clean(self):
-        cleaned_data = super().clean()
-
     user = forms.ModelChoiceField(
         label="", required = True, queryset=User.objects.all(), initial=None
     )

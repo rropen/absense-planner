@@ -152,7 +152,9 @@ def create_team(request) -> render:
 def join_team(request) -> render:
     """Renders page with all teams the user is not currently in"""
     user_teams = []
-    all_user_teams = Relationship.objects.filter(user=request.user, status=State.objects.get(slug="active"))
+    all_user_teams = Relationship.objects.filter(
+        user=request.user, status=State.objects.get(slug="active")
+    )
     for teams in all_user_teams:
         user_teams.append(teams.team)
     all_teams = Team.objects.all().exclude(relationship__user=request.user.id)
@@ -297,9 +299,9 @@ def team_settings(request, id):
                 "team": team,
                 "pending_rels": all_pending_relations,
                 "Team_users": team.users,
-                "member":Role.objects.get(role="Member"),
-                "coowner":Role.objects.get(role="Co-Owner"),
-                "follower":Role.objects.get(role="Follower"),
+                "member": Role.objects.get(role="Member"),
+                "coowner": Role.objects.get(role="Co-Owner"),
+                "follower": Role.objects.get(role="Follower"),
             },
         )
     return redirect("dashboard")
@@ -311,6 +313,7 @@ def edit_team_member_absence(request, id, user_id) -> render:
     user_relation = Relationship.objects.get(team=id, user=request.user)
     if user_relation.role.role == "Owner":
         target_user = User.objects.get(id=user_id)
+
         leader = Relationship.objects.get(team=id, role=Role.objects.get(role="Owner"))
         userprofile = UserProfile.objects.get(user=target_user)
         userprofile.edit_whitelist.add(leader.user)
@@ -327,8 +330,6 @@ def edit_team_member_absence(request, id, user_id) -> render:
                 "user": target_user,
                 "absences": absences,
                 "recurring_absences": rec_absences,
-                
-
             },
         )
     return redirect("dashboard")
@@ -346,11 +347,9 @@ def promote_team_member(request, id, user_id):
         team=id, status=State.objects.get(slug="pending")
     )
     current_relationship = Relationship.objects.get(team=team, user=target_user)
-    print(current_relationship.role)
     if current_relationship.role == Role.objects.get(role="Member"):
         current_relationship.role = Role.objects.get(role="Co-Owner")
         current_relationship.save()
-
 
     return redirect(team_settings, team.id)
 
@@ -371,7 +370,6 @@ def demote_team_member(request, id, user_id):
         current_relationship.role = Role.objects.get(role="Member")
         current_relationship.save()
 
-
     return redirect(team_settings, team.id)
 
 
@@ -384,6 +382,7 @@ def joining_team_request(request, id, response):
     elif response == "nonactive":
         return redirect("leave_team", id)
     return redirect("dashboard")
+
 
 @login_required
 def add(request) -> render:
@@ -404,7 +403,7 @@ def add(request) -> render:
             obj.absence_date_end = request.POST.get("end_date")
             obj.absence_date_start = form.cleaned_data["start_date"]
             obj.absence_date_end = form.cleaned_data["end_date"]
-            obj.request_accepted = False
+            obj.request_accepted = False  # TODO
             obj.User_ID = request.user
             obj.Target_User_ID = form.cleaned_data["user"]
 
@@ -437,18 +436,24 @@ def add(request) -> render:
 @login_required
 def add_recurring(request) -> render:
     if request.method == "POST":
-        form = RecurringAbsencesForm(request.POST)
+        form = RecurringAbsencesForm(request.POST, user=request.user)
         rule = str(form["Recurrences"].value())
 
         if not ("DAILY" in rule or "BY" in rule):
 
             content = {"form": form, "message": "Must select a day/month"}
             return render(request, "ap_app/add_recurring_absence.html", content)
-        form.instance.User_ID = request.user
-        form.save()
+
+        RecurringAbsences.objects.create(
+            Recurrences=form["Recurrences"].value(),
+            User_ID=User.objects.get(id=form["user"].value()),
+        )
         return redirect("index")
     else:
-        form = RecurringAbsencesForm()
+        form = RecurringAbsencesForm(user=request.user)
+        form.fields["user"].queryset = UserProfile.objects.filter(
+            edit_whitelist__in=[request.user]
+        )
 
     content = {"form": form}
     return render(request, "ap_app/add_recurring_absence.html", content)
@@ -837,7 +842,7 @@ def deleteuser(request):
 
 
 @login_required
-def absence_delete(request, absence_id: int, team_id: int, user_id: int):
+def absence_delete(request, absence_id: int, user_id: int, team_id: int = None):
     absence = Absence.objects.get(pk=absence_id)
     user = request.user
     absence.delete()
@@ -847,7 +852,9 @@ def absence_delete(request, absence_id: int, team_id: int, user_id: int):
 
 
 @login_required
-def absence_recurring_delete(request, absence_id: int, team_id: int, user_id: int):
+def absence_recurring_delete(
+    request, absence_id: int, user_id: int, team_id: int = None
+):
     absence = RecurringAbsences.objects.get(pk=absence_id)
     user = request.user
     absence.delete()
@@ -871,12 +878,17 @@ class EditAbsence(UpdateView):
 def edit_recurring_absences(request, pk):
     absence = RecurringAbsences.objects.get(ID=pk)
     if request.method == "POST":
-        form = RecurringAbsencesForm(request.POST, instance=absence)
-        form.instance.User_ID = request.user
+        form = RecurringAbsencesForm(
+            request.POST, user=absence.User_ID, instance=absence
+        )
+
         form.save()
         return redirect("index")
     else:
-        form = RecurringAbsencesForm(instance=absence)
+        form = RecurringAbsencesForm(user=absence.User_ID, instance=absence)
+        form.fields["user"].queryset = UserProfile.objects.filter(
+            edit_whitelist__in=[absence.User_ID]
+        )
 
     return render(request, "ap_app/edit_recurring_absence.html", {"form": form})
 

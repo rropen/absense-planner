@@ -69,7 +69,7 @@ class RecurringAbsences(models.Model):
     Recurrences = RecurrenceField()
 
     def __str__(self):
-        return f"{self.User_ID}"
+        return f"Recurring Absence No.{self.ID} for {self.User_ID}"
 
 
 class Team(models.Model):
@@ -124,7 +124,7 @@ class Relationship(models.Model):
         )
 
     def __str__(self):
-        return f"User: {self.user.username} --> {self.team.name} as {self.role} ({self.status})"
+        return f"User: {self.user.username}({self.user.id}) --> {self.team.name}({self.team.id}) as {self.role} ({self.status})"
 
     def custom_delete(self):
         to_delete = TransitionApproval.objects.filter(object_id=self.pk)
