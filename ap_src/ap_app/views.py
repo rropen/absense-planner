@@ -152,11 +152,10 @@ def create_team(request) -> render:
 def join_team(request) -> render:
     """Renders page with all teams the user is not currently in"""
     user_teams = []
-    all_user_teams = Relationship.objects.all().filter(user=request.user)
+    all_user_teams = Relationship.objects.filter(user=request.user, status=State.objects.get(slug="active"))
     for teams in all_user_teams:
         user_teams.append(teams.team)
-    all_teams = Team.objects.all().exclude(name__in=user_teams)
-
+    all_teams = Team.objects.all().exclude(relationship__user=request.user.id)
     all_teams_filtered = []
 
     # Filtering by team name
@@ -380,14 +379,11 @@ def joining_team_request(request, id, response):
     find_rel = Relationship.objects.get(id=id)
     if response == "accepted":
         state_response = State.objects.get(slug="active")
-
-    # TODO: fix decline error
+        Relationship.objects.filter(id=find_rel.id).update(status=state_response)
+        return redirect("team_settings", find_rel.team.id)
     elif response == "nonactive":
-        state_response = State.objects.get(slug="nonactive")
-    Relationship.objects.filter(id=find_rel.id).update(status=state_response)
-
+        return redirect("leave_team", id)
     return redirect("dashboard")
-
 
 @login_required
 def add(request) -> render:
