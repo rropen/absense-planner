@@ -20,15 +20,9 @@ from django.utils.timezone import now
 from django.views.generic import CreateView, UpdateView
 from river.models.fields.state import State
 
-from .forms import (
-    AbsenceForm,
-    AcceptPolicyForm,
-    CreateTeamForm,
-    DeleteUserForm,
-    RecurringAbsencesForm,
-    SwitchUser,
-)
-from .models import Absence, RecurringAbsences, Relationship, Role, Team, UserProfile
+from .forms import *
+from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
+                     UserProfile)
 
 User = get_user_model()
 
@@ -212,6 +206,8 @@ def team_invite(request, team_id, user_id, role):
     find_team = Team.objects.get(id=team_id)
     find_user = User.objects.get(id=user_id)
     find_role = Role.objects.get(role=role)
+    
+    
 
     test = Relationship.objects.filter(team=find_team)
 
@@ -229,7 +225,7 @@ def team_invite(request, team_id, user_id, role):
             role=find_role,
             status=State.objects.get(slug="invited"),
         )
-        return redirect("request.path_info")
+        return redirect(f"/teams/calendar/{find_team.id}")
     # Else user is manipulating the URL making non-allowed invites - (Therefore doesn't create a relationship)
 
     return redirect("dashboard")
@@ -436,26 +432,32 @@ def add(request) -> render:
 @login_required
 def add_recurring(request) -> render:
     if request.method == "POST":
-        form = RecurringAbsencesForm(request.POST, user=request.user)
+        form = RecurringAbsencesForm(request.POST)
+        form2 = TargetUserForm(request.POST, user = request.user)
+        form2.fields["user"].queryset = UserProfile.objects.filter(
+            edit_whitelist__in=[request.user]
+        )
         rule = str(form["Recurrences"].value())
 
         if not ("DAILY" in rule or "BY" in rule):
 
-            content = {"form": form, "message": "Must select a day/month"}
+            content = {"form": form, "form2":form2, "message": "Must select a day/month"}
             return render(request, "ap_app/add_recurring_absence.html", content)
 
         RecurringAbsences.objects.create(
             Recurrences=form["Recurrences"].value(),
-            User_ID=User.objects.get(id=form["user"].value()),
+            Target_User_ID=User.objects.get(id=form2["user"].value()),
+            User_ID=request.user
         )
         return redirect("index")
     else:
-        form = RecurringAbsencesForm(user=request.user)
-        form.fields["user"].queryset = UserProfile.objects.filter(
+        form = RecurringAbsencesForm()
+        form2 =TargetUserForm(user = request.user)
+        form2.fields["user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
         )
 
-    content = {"form": form}
+    content = {"form": form, "form2":form2}
     return render(request, "ap_app/add_recurring_absence.html", content)
 
 
@@ -877,20 +879,34 @@ class EditAbsence(UpdateView):
 @login_required
 def edit_recurring_absences(request, pk):
     absence = RecurringAbsences.objects.get(ID=pk)
+
     if request.method == "POST":
         form = RecurringAbsencesForm(
-            request.POST, user=absence.User_ID, instance=absence
+            request.POST, instance=absence
         )
+        form2 = TargetUserForm(request.POST, user = request.user)
+        form2.fields["user"].queryset = UserProfile.objects.filter(
+            edit_whitelist__in=[request.user]
+        )
+        rule = str(form["Recurrences"].value())
 
-        form.save()
+        if not ("DAILY" in rule or "BY" in rule):
+            content = {"form": form, "form2":form2, "message": "Must select a day/month"}
+            return render(request, "ap_app/edit_recurring_absence.html", content)
+
+        absence.Target_User_ID = form2.user
+        print(form.clean())
+        absence.recurrences = form
+        absence.save()
         return redirect("index")
     else:
-        form = RecurringAbsencesForm(user=absence.User_ID, instance=absence)
-        form.fields["user"].queryset = UserProfile.objects.filter(
+        form = RecurringAbsencesForm(instance=absence)
+        form2 =TargetUserForm(user = absence.User_ID)
+        form2.fields["user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[absence.User_ID]
         )
 
-    return render(request, "ap_app/edit_recurring_absence.html", {"form": form})
+    return render(request, "ap_app/edit_recurring_absence.html", {"form": form, "form2":form2})
 
 
 @login_required

@@ -63,13 +63,16 @@ class Absence(models.Model):
 
 class RecurringAbsences(models.Model):
     ID = models.AutoField(primary_key=True)
+    Target_User_ID = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="+"
+    )
+    Recurrences = RecurrenceField()
     User_ID = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="recurring_absences"
     )
-    Recurrences = RecurrenceField()
-
+   
     def __str__(self):
-        return f"Recurring Absence No.{self.ID} for {self.User_ID}"
+        return f"Recurring Absence No.{self.ID} for {self.Target_User_ID} by {self.User_ID}"
 
 
 class Team(models.Model):

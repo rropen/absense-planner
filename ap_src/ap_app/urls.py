@@ -15,7 +15,7 @@ urlpatterns = [
     path("teams/", views.teams_dashboard, name="dashboard"),
     path("teams/create", views.create_team, name="create_team"),
     path("teams/invite/", views.view_invites, name="view_invites"),
-    path("teams/invite/<int:team_id>/<int:user_id>/<str:role>", views.team_invite, name="team_invite"),
+    path("teams/invite/<int:team_id>/<int:user_id>/<int:role>", views.team_invite, name="team_invite"),
     path("teams/join", views.join_team, name="join_team"),
     path("teams/join/<int:id>/<str:role>", views.joining_team_process, name="join_team_2"),
     path("teams/join/apply/<int:id>/<str:response>", views.joining_team_request, name="joining_team_request"),
@@ -41,6 +41,6 @@ urlpatterns = [
     path("absence/edit_recurring/<int:pk>", views.edit_recurring_absences, name="recurring_absence_edit"),
     path("profile/settings", views.profile_settings, name="profile settings"),
     path("profile/settings/add-user", views.add_user, name="add-user"),
-    url(r'^jsil18n', JavaScriptCatalog.as_view(), js_info_dict),
+    url(r'^jsi18n', JavaScriptCatalog.as_view(), js_info_dict),
     # path("absence/edit/<int:id>", views.absence_edit, name="Absence Edit")
 ]

@@ -32,7 +32,8 @@
                     </h1>
                 </div>
                 <div class="level-right">
-                    <a class="button is-info is-outlined mx-1" href="{% url 'misc' team.id %}"><em class="fas fa-clipboard"></em></a>
+                    <a class="button is-info is-outlined mx-1" href="{% url 'misc' team.id %}"><em
+                            class="fas fa-clipboard"></em></a>
                     {% if current_user.role.role == "Owner" %}
                     <a class="button is-primary is-outlined modal-button js-modal-trigger" id="#modal">
                         <i class="fas fa-user-plus"></i>
@@ -41,7 +42,7 @@
                         <i class="fas fa-cog"></i>
                     </a>
                     {% endif %}
-                    
+
                     <a class="button is-danger" href="{% url 'leave_team' current_user.id %}">Leave</a>
                 </div>
             </div>
@@ -300,8 +301,7 @@
                     <div class="level mb-0">
                         <p class="level-left">{{user.username}}</p>
                         <div class="level-right">
-                            <a href="{% url 'team_invite' team.id user.id 'Member' %}"
-                                class="button is-success mx-2">Invite as Member</a>
+                            <a href="{% url 'team_invite' team.id user.id 'Member' %}" class="button is-success mx-2">Invite as Member</a>
                             <a href="{% url 'team_invite' team.id user.id 'Follower' %}" class="button is-link">Invite
                                 as Follower</a>
                         </div>
@@ -364,11 +364,11 @@
         });
     });
     function close_message() {
-    
-    var elem = document.getElementById("message");
-    elem.style.display = "none";
 
-  }
+        var elem = document.getElementById("message");
+        elem.style.display = "none";
+
+    }
 </script>
 
 {% endblock %}

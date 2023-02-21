@@ -10,8 +10,14 @@
     <h1 class="title has-text-centered"> Edit Recurring Absence </h1>
     <form method="POST" class="post-form">
         {% csrf_token %}
-            {{ form.media }}
-            {{form}}
+        {% if message %}
+            {% include "messages.html" %}
+            {% endif %}
+        {{ form }}
+        <br>
+        {{ form.media }}
+        
+        {{ form2 | bulma }}
             {% for error in form.errors %}
             <p>{{error}}</p>
             {% endfor %}
