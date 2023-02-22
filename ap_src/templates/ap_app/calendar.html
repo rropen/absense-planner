@@ -220,18 +220,18 @@
 
                     <a id="CalendarFormatAlternate-Grid">
                         <p class="buttons">
-                            <button class="button " style="border-color:green" id="GridSelect">
+                            <button class="button " style="border-width:2px; border-color:green" id="GridSelect">
                                 <span class="icon ">
-                                    <i class="fa-sharp fa-solid fa-grid"></i>
+                                    <i class="fa fa-th" aria-hidden="true"></i>
                                 </span>
                             </button>
                         </p>
                     </a>
                     <a id="CalendarFormatAlternate-Linear">
                         <p class="buttons">
-                            <button class="button " id="LinearSelect">
+                            <button class="button " style="border-width:2px; " id="LinearSelect">
                                 <span class="icon ">
-                                    <i class="fa-sharp fa-solid fa-grid"></i>
+                                    <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
                                 </span>
                             </button>
                         </p>
@@ -397,16 +397,19 @@
         $("#Grid-Calendar").show();
         $("#Linear-Calendar").hide();
 
-        $("GridSelect").css("border-color", "green");
-        $("LinearSelect").css("border-color", "black");
+        $("#GridSelect").css("border-color", "green");
+        $("#LinearSelect").css("border-color", "");
+
+        
     });
 
     $("#CalendarFormatAlternate-Linear").click(function() {
         $("#Linear-Calendar").show();
         $("#Grid-Calendar").hide();
         
-        $("LinearSelect").css("border-color", "green");
-        $("GridSelect").css("border-color", "black");
+        $("#LinearSelect").css("border-color", "green");
+        $("#GridSelect").css("border-color", "");
+
     });
 
 </script>
