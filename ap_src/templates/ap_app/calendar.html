@@ -217,9 +217,19 @@
 
                     <span class="is-size-4 mb-0 px-3 level-left">{{month}} {{year}}</span>
 
-                    <a id="CalendarFormatAlternate">
+
+                    <a id="CalendarFormatAlternate-Grid">
                         <p class="buttons">
-                            <button class="button ">
+                            <button class="button " style="border-color:green" id="GridSelect">
+                                <span class="icon ">
+                                    <i class="fa-sharp fa-solid fa-grid"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+                    <a id="CalendarFormatAlternate-Linear">
+                        <p class="buttons">
+                            <button class="button " id="LinearSelect">
                                 <span class="icon ">
                                     <i class="fa-sharp fa-solid fa-grid"></i>
                                 </span>
@@ -379,21 +389,24 @@
     //     }
     //     )
     // });
-    var gridMode = false;
 
-    $("#CalendarFormatAlternate").click(function() {
-        if (gridMode) {
-            alert("LinearMode Activated");
-            gridMode = false;
-            document.getElementById("#Linear-Calendar").style.display = "";
-            document.getElementById("#Grid-Calendar").style.visibility = "visible";
-        }
-        else {
-            alert("gridMode Activated");
-            gridMode = true;
-            document.getElementById("#Linear-Calendar").style.visibility = "visible";
-            document.getElementById("#Grid-Calendar").style.visibility = "hidden";
-        }
+    $("#Linear-Calendar").hide();
+    
+    $("#CalendarFormatAlternate-Grid").click(function() {
+          
+        $("#Grid-Calendar").show();
+        $("#Linear-Calendar").hide();
+
+        $("GridSelect").css("border-color", "green");
+        $("LinearSelect").css("border-color", "black");
+    });
+
+    $("#CalendarFormatAlternate-Linear").click(function() {
+        $("#Linear-Calendar").show();
+        $("#Grid-Calendar").hide();
+        
+        $("LinearSelect").css("border-color", "green");
+        $("GridSelect").css("border-color", "black");
     });
 
 </script>
