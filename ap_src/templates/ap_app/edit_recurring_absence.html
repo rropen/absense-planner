@@ -14,10 +14,12 @@
             {% include "messages.html" %}
             {% endif %}
         {{ form }}
-        <br>
+        
         {{ form.media }}
         
-        {{ form2 | bulma }}
+        <div class="pt-6 pb-3">
+            {{ form2 | bulma }}
+        </div>
             {% for error in form.errors %}
             <p>{{error}}</p>
             {% endfor %}

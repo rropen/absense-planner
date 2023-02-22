@@ -745,7 +745,7 @@ def all_calendar(
 
 
 def text_rules(user):
-    recurring_absences = RecurringAbsences.objects.filter(User_ID=user.id).values(
+    recurring_absences = RecurringAbsences.objects.filter(Target_User_ID=user).values(
         "Recurrences", "ID"
     )
     rec_absences = {}
@@ -792,9 +792,10 @@ def profile_page(request):
         rec_absences = text_rules(request.user)
 
         if form.is_valid():
-            absence_user = form.cleaned_data["user"]
+            
+            absence_user = form.cleaned_data["user"].user
 
-            absences = Absence.objects.filter(Target_User_ID=absence_user.user.id)
+            absences = Absence.objects.filter(Target_User_ID=absence_user)
             rec_absences = text_rules(absence_user)
             return render(
                 request,
@@ -887,8 +888,8 @@ def edit_recurring_absences(request, pk):
         form = RecurringAbsencesForm(
             request.POST, instance=absence
         )
-        form2 = TargetUserForm(request.POST, user = request.user)
-        form2.fields["user"].queryset = UserProfile.objects.filter(
+        form2 = TargetUserForm(request.POST, target_user = request.user)
+        form2.fields["target_user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
         )
         rule = str(form["Recurrences"].value())
@@ -897,14 +898,16 @@ def edit_recurring_absences(request, pk):
             content = {"form": form, "form2":form2, "message": "Must select a day/month"}
             return render(request, "ap_app/edit_recurring_absence.html", content)
 
-        absence.Target_User_ID = form2.user
-        absence.recurrences = form
-        absence.save()
-        return redirect("index")
+        
+        if form2.is_valid():
+            absence.Target_User_ID = form2.cleaned_data["target_user"].user
+            absence.recurrences = form["Recurrences"].value()
+            absence.save()
+            return redirect("index")
     else:
         form = RecurringAbsencesForm(instance=absence)
-        form2 =TargetUserForm(user = absence.User_ID)
-        form2.fields["user"].queryset = UserProfile.objects.filter(
+        form2 =TargetUserForm(target_user = absence.User_ID)
+        form2.fields["target_user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[absence.User_ID]
         )
 
