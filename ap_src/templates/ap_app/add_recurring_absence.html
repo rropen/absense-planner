@@ -14,17 +14,19 @@
     <h1 class="title has-text-centered"> Create Recurring Absence </h1>
     <form method="POST" class="post-form">
         {% csrf_token %}
-        <div class="container">
+        <div class="container has-text-weight-bold">
 
             {% csrf_token %}
             {% if message %}
             {% include "messages.html" %}
             {% endif %}
             {{ form }}
-            <br>
-            {{ form.media }}
             
-            {{ form2 | bulma }}
+            {{ form.media }}
+            <div class="pt-6 pb-3">
+                {{ form2 | bulma }}
+            </div>
+            
             <button type="submit" class="button is-fullwidth is-link">Submit</button>
         </div>
 

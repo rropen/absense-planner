@@ -81,18 +81,25 @@ class RecurringAbsencesForm(forms.ModelForm):
     class Meta:
         model = RecurringAbsences
         fields = ['ID','Recurrences']
-
+    def clean(self):
+        cleaned_data = super().clean()
     
     class Media:
         js = ('/admin/jsi18n', '/admin/js/core.js',)
     
     
-class TargetUserForm(forms.Form):
+class TargetUserForm(forms.ModelForm):
+    class Meta:
+        model = RecurringAbsences
+        fields = ['target_user']
+
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop("user")
+        self.user = kwargs.pop("target_user")
         super().__init__(*args, **kwargs)
-        self.fields["user"].initial = UserProfile.objects.get(user=self.user)
-    user = forms.ModelChoiceField(
+        self.fields["target_user"].initial = UserProfile.objects.get(user=self.user)
+
+
+    target_user = forms.ModelChoiceField(
         label="User:", required=True, queryset=User.objects.all(), initial=None, 
     )
     

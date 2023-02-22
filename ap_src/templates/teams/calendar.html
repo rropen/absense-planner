@@ -302,8 +302,9 @@
                         <p class="level-left">{{user.username}}</p>
                         <div class="level-right">
                             <a href="{% url 'team_invite' team.id user.id 'Member' %}" class="button is-success mx-2">Invite as Member</a>
-                            <a href="{% url 'team_invite' team.id user.id 'Follower' %}" class="button is-link">Invite
-                                as Follower</a>
+                            <a href="{% url 'team_invite' team.id user.id 'Follower' %}" class="button is-link">
+                                Invite as Follower
+                            </a>
                         </div>
                     </div>
                     <hr class="my-2">

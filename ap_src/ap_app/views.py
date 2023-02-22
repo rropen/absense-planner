@@ -393,7 +393,12 @@ def add(request) -> render:
                 + datetime.timedelta(days=1),
             },
         )
+        form.fields["user"].queryset = UserProfile.objects.filter(
+            edit_whitelist__in=[request.user]
+        )
+        
         if form.is_valid():
+            print(form.cleaned_data)
             obj = Absence()
             obj.absence_date_start = request.POST.get("start_date")
             obj.absence_date_end = request.POST.get("end_date")
@@ -401,7 +406,7 @@ def add(request) -> render:
             obj.absence_date_end = form.cleaned_data["end_date"]
             obj.request_accepted = False  # TODO
             obj.User_ID = request.user
-            obj.Target_User_ID = form.cleaned_data["user"]
+            obj.Target_User_ID = form.cleaned_data["user"].user
 
             for x in Absence.objects.filter(User_ID=request.user.id):
                 result = Absence.is_equivalent(obj, x)
@@ -433,27 +438,30 @@ def add(request) -> render:
 def add_recurring(request) -> render:
     if request.method == "POST":
         form = RecurringAbsencesForm(request.POST)
-        form2 = TargetUserForm(request.POST, user = request.user)
-        form2.fields["user"].queryset = UserProfile.objects.filter(
+        form2 = TargetUserForm(request.POST, target_user = request.user)
+        form2.fields["target_user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
         )
         rule = str(form["Recurrences"].value())
-
+        if form2.is_valid():
+            print(form2.cleaned_data["target_user"].user)
         if not ("DAILY" in rule or "BY" in rule):
 
             content = {"form": form, "form2":form2, "message": "Must select a day/month"}
             return render(request, "ap_app/add_recurring_absence.html", content)
-
-        RecurringAbsences.objects.create(
-            Recurrences=form["Recurrences"].value(),
-            Target_User_ID=User.objects.get(id=form2["user"].value()),
-            User_ID=request.user
-        )
-        return redirect("index")
+        
+        if form2.is_valid():
+            print(form2.cleaned_data)
+            RecurringAbsences.objects.create(
+                Recurrences=form["Recurrences"].value(),
+                Target_User_ID=form2.cleaned_data["target_user"].user,
+                User_ID=request.user
+            )
+            return redirect("index")
     else:
         form = RecurringAbsencesForm()
-        form2 =TargetUserForm(user = request.user)
-        form2.fields["user"].queryset = UserProfile.objects.filter(
+        form2 =TargetUserForm(target_user = request.user)
+        form2.fields["target_user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
         )
 
@@ -570,7 +578,7 @@ def get_absence_data(users, user_type):
             # for each user it maps the set of dates to a dictionary key labelled as the users name
             all_absences[user] = absence_content
 
-        recurring = RecurringAbsences.objects.filter(User_ID=user_id)
+        recurring = RecurringAbsences.objects.filter(Target_User_ID=user_id)
 
         if recurring:
             for recurrence_ in recurring:
@@ -684,10 +692,7 @@ def all_calendar(
     # old_records.delete()
     all_users = []
     all_users.append(request.user)
-    user_relations = Relationship.objects.filter(
-        user=request.user, status=State.objects.get(slug="active")
-    )
-
+    
     user_relations = Relationship.objects.filter(
         user=request.user, status=State.objects.get(slug="active")
     )
@@ -813,7 +818,7 @@ def profile_page(request):
         form = SwitchUser()
         form.fields["user"].queryset = users
         form.fields["user"].initial = request.user
-
+        
         return render(
             request,
             "ap_app/profile.html",
@@ -895,7 +900,6 @@ def edit_recurring_absences(request, pk):
             return render(request, "ap_app/edit_recurring_absence.html", content)
 
         absence.Target_User_ID = form2.user
-        print(form.clean())
         absence.recurrences = form
         absence.save()
         return redirect("index")
