@@ -39,6 +39,7 @@ urlpatterns = [
     path("absence_recurring/delete/<int:absence_id>/<int:user_id>/<int:team_id>/", views.absence_recurring_delete, name="Recurring Absence Delete"),
     path("absence/edit/<int:pk>", views.EditAbsence.as_view(), name="absence_edit"),
     path("absence/edit_recurring/<int:pk>", views.edit_recurring_absences, name="recurring_absence_edit"),
+    path("absence/click_add", views.click_add, name="absence_click_add"),
     path("profile/settings", views.profile_settings, name="profile settings"),
     path("profile/settings/add-user", views.add_user, name="add-user"),
     url(r'^jsi18n', JavaScriptCatalog.as_view(), js_info_dict),

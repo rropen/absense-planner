@@ -6,7 +6,8 @@ import calendar
 import datetime
 from datetime import timedelta
 
-import recurrence
+import json
+from django.http import JsonResponse
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -424,6 +425,20 @@ def add(request) -> render:
     content = {"form": form, "add_absence_active": True}
     return render(request, "ap_app/add_absence.html", content)
 
+#Add an absence when clicking on the calendar
+@login_required
+def click_add(request):
+    if request.method == "POST":
+        json_data=json.loads(request.body)
+        items = Absence()
+        items.absence_date_start = json_data['date']
+        items.absence_date_end = json_data['date']
+        items.Target_User_ID = request.user
+        items.User_ID = request.user
+        items.save()
+        return JsonResponse({'start_date': items.absence_date_start, 'end_date': items.absence_date_end, 'taget_id': items.Target_User_ID.username, 'user_id': items.User_ID.username})
+    else:
+        return HttpResponse('404')
 
 @login_required
 def add_recurring(request) -> render:
