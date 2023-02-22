@@ -398,7 +398,6 @@ def add(request) -> render:
         )
         
         if form.is_valid():
-            print(form.cleaned_data)
             obj = Absence()
             obj.absence_date_start = request.POST.get("start_date")
             obj.absence_date_end = request.POST.get("end_date")
@@ -443,15 +442,14 @@ def add_recurring(request) -> render:
             edit_whitelist__in=[request.user]
         )
         rule = str(form["Recurrences"].value())
-        if form2.is_valid():
-            print(form2.cleaned_data["target_user"].user)
+
         if not ("DAILY" in rule or "BY" in rule):
 
             content = {"form": form, "form2":form2, "message": "Must select a day/month"}
             return render(request, "ap_app/add_recurring_absence.html", content)
         
         if form2.is_valid():
-            print(form2.cleaned_data)
+
             RecurringAbsences.objects.create(
                 Recurrences=form["Recurrences"].value(),
                 Target_User_ID=form2.cleaned_data["target_user"].user,
