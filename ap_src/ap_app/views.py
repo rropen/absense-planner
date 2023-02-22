@@ -693,13 +693,27 @@ def all_calendar(
 
     data_3 = {"Sa": "Sa", "Su": "Su", "users_filter": filtered_users}
 
+  
+    grid_calendar_month_values = list(data_1["day_range"])
+    # NOTE: This will select which value to use to fill in how many blank cells where previous month overrides prevailing months days. 
+    # This is done by finding the weekday value for the 1st day of the month. Example: "Tu" will require 1 blank space/cell.
+    for i in range({"Mo":0, "Tu":1, "We":2, "Th":3, "Fr":4, "Sa":5, "Su":6}[data_1["days_name"][0]]):
+        grid_calendar_month_values.insert(0, -1)
+
+
     context = {
         **data_1,
         **data_2,
         **data_3,
         "users_hidden": hiding_users,
         "home_active": True,
+        
+        # Grid-Calendars day values  
+        "detailed_calendar_day_range":grid_calendar_month_values,
+     
+        
     }
+   
 
     return render(request, "ap_app/calendar.html", context)
 
