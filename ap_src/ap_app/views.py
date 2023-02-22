@@ -21,8 +21,7 @@ from django.views.generic import CreateView, UpdateView
 from river.models.fields.state import State
 
 from .forms import *
-from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
-                     UserProfile)
+from .models import Absence, RecurringAbsences, Relationship, Role, Team, UserProfile
 
 User = get_user_model()
 
@@ -34,9 +33,7 @@ def index(request) -> render:
 
     # If its the first time a user is logging in, will create an object of UserProfile model for that user.
     if not request.user.is_anonymous:
-
         if not obj_exists(request.user):
-
             user = find_user_obj(request.user)
             user.edit_whitelist.add(request.user)
         else:
@@ -55,7 +52,6 @@ def index(request) -> render:
 
 
 def privacy_page(request, to_accept=False) -> render:
-
     # If true, the user accepted the policy
     if request.method == "POST":
         user = find_user_obj(request.user)
@@ -64,7 +60,6 @@ def privacy_page(request, to_accept=False) -> render:
 
     # If the user has been redirected from home page to accepted policy
     elif to_accept:
-
         return render(
             request, "registration/accept_policy.html", {"form": AcceptPolicyForm()}
         )
@@ -206,8 +201,6 @@ def team_invite(request, team_id, user_id, role):
     find_team = Team.objects.get(id=team_id)
     find_user = User.objects.get(id=user_id)
     find_role = Role.objects.get(role=role)
-    
-    
 
     test = Relationship.objects.filter(team=find_team)
 
@@ -396,7 +389,7 @@ def add(request) -> render:
         form.fields["user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
         )
-        
+
         if form.is_valid():
             obj = Absence()
             obj.absence_date_start = request.POST.get("start_date")
@@ -423,7 +416,6 @@ def add(request) -> render:
             )
             # redirect to success page
     else:
-
         form = AbsenceForm(user=request.user)
         form.fields["user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
@@ -437,33 +429,35 @@ def add(request) -> render:
 def add_recurring(request) -> render:
     if request.method == "POST":
         form = RecurringAbsencesForm(request.POST)
-        form2 = TargetUserForm(request.POST, target_user = request.user)
+        form2 = TargetUserForm(request.POST, target_user=request.user)
         form2.fields["target_user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
         )
         rule = str(form["Recurrences"].value())
 
         if not ("DAILY" in rule or "BY" in rule):
-
-            content = {"form": form, "form2":form2, "message": "Must select a day/month"}
+            content = {
+                "form": form,
+                "form2": form2,
+                "message": "Must select a day/month",
+            }
             return render(request, "ap_app/add_recurring_absence.html", content)
-        
-        if form2.is_valid():
 
+        if form2.is_valid():
             RecurringAbsences.objects.create(
                 Recurrences=form["Recurrences"].value(),
                 Target_User_ID=form2.cleaned_data["target_user"].user,
-                User_ID=request.user
+                User_ID=request.user,
             )
             return redirect("index")
     else:
         form = RecurringAbsencesForm()
-        form2 =TargetUserForm(target_user = request.user)
+        form2 = TargetUserForm(target_user=request.user)
         form2.fields["target_user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
         )
 
-    content = {"form": form, "form2":form2}
+    content = {"form": form, "form2": form2}
     return render(request, "ap_app/add_recurring_absence.html", content)
 
 
@@ -690,7 +684,7 @@ def all_calendar(
     # old_records.delete()
     all_users = []
     all_users.append(request.user)
-    
+
     user_relations = Relationship.objects.filter(
         user=request.user, status=State.objects.get(slug="active")
     )
@@ -751,7 +745,6 @@ def text_rules(user):
     rec_absences = {}
 
     for x in recurring_absences:
-
         absence_ = x["Recurrences"]
         if absence_:
             rec_absences[x["ID"]] = []
@@ -779,7 +772,6 @@ def text_rules(user):
 # Profile page
 @login_required
 def profile_page(request):
-
     if request.method == "POST":
         form = SwitchUser(
             request.POST,
@@ -792,7 +784,6 @@ def profile_page(request):
         rec_absences = text_rules(request.user)
 
         if form.is_valid():
-            
             absence_user = form.cleaned_data["user"].user
 
             absences = Absence.objects.filter(Target_User_ID=absence_user)
@@ -809,7 +800,6 @@ def profile_page(request):
                 },
             )
     else:
-
         absences = Absence.objects.filter(Target_User_ID=request.user.id)
         rec_absences = text_rules(request.user)
 
@@ -817,7 +807,7 @@ def profile_page(request):
         form = SwitchUser()
         form.fields["user"].queryset = users
         form.fields["user"].initial = request.user
-        
+
         return render(
             request,
             "ap_app/profile.html",
@@ -885,20 +875,21 @@ def edit_recurring_absences(request, pk):
     absence = RecurringAbsences.objects.get(ID=pk)
 
     if request.method == "POST":
-        form = RecurringAbsencesForm(
-            request.POST, instance=absence
-        )
-        form2 = TargetUserForm(request.POST, target_user = request.user)
+        form = RecurringAbsencesForm(request.POST, instance=absence)
+        form2 = TargetUserForm(request.POST, target_user=request.user)
         form2.fields["target_user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
         )
         rule = str(form["Recurrences"].value())
 
         if not ("DAILY" in rule or "BY" in rule):
-            content = {"form": form, "form2":form2, "message": "Must select a day/month"}
+            content = {
+                "form": form,
+                "form2": form2,
+                "message": "Must select a day/month",
+            }
             return render(request, "ap_app/edit_recurring_absence.html", content)
 
-        
         if form2.is_valid():
             absence.Target_User_ID = form2.cleaned_data["target_user"].user
             absence.recurrences = form["Recurrences"].value()
@@ -906,12 +897,15 @@ def edit_recurring_absences(request, pk):
             return redirect("index")
     else:
         form = RecurringAbsencesForm(instance=absence)
-        form2 =TargetUserForm(target_user = absence.User_ID)
+        
+        form2 = TargetUserForm(target_user=absence.Target_User_ID)
         form2.fields["target_user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[absence.User_ID]
         )
 
-    return render(request, "ap_app/edit_recurring_absence.html", {"form": form, "form2":form2})
+    return render(
+        request, "ap_app/edit_recurring_absence.html", {"form": form, "form2": form2}
+    )
 
 
 @login_required
@@ -925,7 +919,6 @@ def profile_settings(request) -> render:
 
     user_profile = UserProfile.objects.get(user=request.user)
     if "userPrivacy" in request.POST:
-
         if user_profile.privacy:
             user_profile.privacy = False
         else:
