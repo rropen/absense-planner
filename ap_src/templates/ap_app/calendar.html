@@ -284,11 +284,11 @@
                             {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
                             {% check_absences recurring_absence_dates|get_key:user year month_num day as check_recurring_absence %}
                             {% if check_recurring_absence %}
-                            <td style="background-color: #ffaa00",  id={{user.id}}/{{year}}-{{month_num}}-{{day}}></td>
+                            <td style="background-color: #ffaa00",  id={{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE></td>
                             {% elif check_absence %}
-                            <td style="background-color: #ff0000", id={{user.id}}/{{year}}-{{month_num}}-{{day}}></td>
+                            <td style="background-color: #ff0000", id={{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE></td>
                             {% else %}
-                            <td id={{user.id}}/{{year}}-{{month_num}}-{{day}}></td>
+                            <td id={{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE></td>
                             {% endif %}
                             {% endfor %}
                         </tr>
@@ -320,14 +320,15 @@
     var csrftoken = '{{ csrf_token }}';
     document.addEventListener('click', function(e) {
        if ( e.target.id.includes("/")) {
-        var data = e.target.id.split("/"); var ID = data[0]; var date = data[1];
+        var data = e.target.id.split("/"); var ID = data[0]; var date = data[1]; var absent = data[2]
         //This supports half days
         if (e.shiftKey) {
-            alert("UserID: " + ID + "\nDate: " + date + "\nHalf Day: True")
+            alert("UserID: " + ID + "\nDate: " + date + "\nAbsent: " + absent + "\nHalf Day: True")
         //This selects full days
         } else {
-            var correct_data = JSON.stringify({"id": ID, "date": date})
-            fetch("http://127.0.0.1:8000/absence/click_add", {
+            if (absent == "FALSE") {
+                var correct_data = JSON.stringify({"id": ID, "date": date})
+                fetch("http://127.0.0.1:8000/absence/click_add", {
                 method: "post",
                 headers: {
                     "X-CSRFToken": csrftoken,
@@ -341,7 +342,7 @@
                 .catch(err => {
                     console.log(err)
                 });
-                
+            }
         }
        }
     }, false);
