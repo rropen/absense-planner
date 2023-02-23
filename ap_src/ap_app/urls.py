@@ -7,6 +7,7 @@ js_info_dict = {
     'packages' : ('recurrence', ),
 }
 
+
 urlpatterns = [
     path("", views.index, name="index"),
     path('signup/', views.SignUpView.as_view(), name='signup'),

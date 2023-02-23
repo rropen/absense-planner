@@ -23,6 +23,7 @@ from river.models.fields.state import State
 from .forms import *
 from .models import Absence, RecurringAbsences, Relationship, Role, Team, UserProfile
 
+
 User = get_user_model()
 
 
@@ -240,18 +241,17 @@ def leave_team(request, id):
     return redirect("dashboard")
 
 
-def team_cleaner(rel):
+def team_cleaner(rel) -> None:
     team = Team.objects.get(id=rel.team.id)
     all_team_relationships = Relationship.objects.filter(team=team)
     if all_team_relationships.count() == 0:
         team.delete()
-    return
 
 
 @login_required
 def team_misc(request, id):
     """Teams Miscellaneous/Notes page"""
-    if is_member(request.user, id):
+    if is_member(user=request.user, team_id=id):
         team = Team.objects.get(id=id)
 
         notes = CreateTeamForm(instance=team)
@@ -275,8 +275,8 @@ def team_misc(request, id):
 def team_settings(request, id):
     """Checks to see if user is the owner and renders the Setting page"""
     team = Team.objects.get(id=id)
-    user_relation = Relationship.objects.get(team=id, user=request.user)
-    if user_relation.role.role == "Owner":
+    
+    if is_owner(user=request.user, team_id=id): 
         all_pending_relations = Relationship.objects.filter(
             team=id, status=State.objects.get(slug="pending")
         )
@@ -299,18 +299,11 @@ def team_settings(request, id):
 def edit_team_member_absence(request, id, user_id) -> render:
     """Checks to see if user is the owner and renders the Edit absences page for that user"""
     team = Team.objects.get(id=id)
-    user_relation = Relationship.objects.get(team=id, user=request.user)
-    if user_relation.role.role == "Owner":
-        target_user = User.objects.get(id=user_id)
-
-        leader = Relationship.objects.get(team=id, role=Role.objects.get(role="Owner"))
-        userprofile = UserProfile.objects.get(user=target_user)
-        userprofile.edit_whitelist.add(leader.user)
-        userprofile.save()
-
-        absences = Absence.objects.filter(Target_User_ID=target_user.id)
-        rec_absences = text_rules(target_user)
-
+        
+    if is_owner(user=request.user, team_id=id):    
+        all_pending_relations = Relationship.objects.filter(
+            team=id, status=State.objects.get(slug="pending")
+        )
         return render(
             request,
             "teams/edit_absences.html",
@@ -363,7 +356,10 @@ def demote_team_member(request, id, user_id):
 
 
 def joining_team_request(request, id, response):
+
     find_rel = Relationship.objects.get(id=id)
+    
+
     if response == "accepted":
         state_response = State.objects.get(slug="active")
         Relationship.objects.filter(id=find_rel.id).update(status=state_response)
@@ -434,6 +430,7 @@ def add_recurring(request) -> render:
             edit_whitelist__in=[request.user]
         )
         rule = str(form["Recurrences"].value())
+
 
         if not ("DAILY" in rule or "BY" in rule):
             content = {
@@ -526,6 +523,8 @@ def get_date_data(
     return data
 
 
+
+
 def get_absence_data(users, user_type):
     data = {}
     absence_content = []
@@ -605,6 +604,13 @@ def team_calendar(
     year=datetime.datetime.now().year,
 ):
     if is_member(request.user, id):
+
+        # Get acceptable date - (NOTHING BELOW now - 12months)
+        date = check_calendar_date(year, month)
+        if date:
+            month = date.strftime("%B")
+            year = date.year
+
         data_1 = get_date_data(month, year)
 
         users = Relationship.objects.all().filter(
@@ -673,15 +679,22 @@ def all_calendar(
     month=datetime.datetime.now().strftime("%B"),
     year=datetime.datetime.now().year,
 ):
+  
+    # Get acceptable date - (NOTHING BELOW now - 12months)
+    date = check_calendar_date(year, month)
+    if date:
+        month = date.strftime("%B")
+        year = date.year
+
     data_1 = get_date_data(month, year)
+    
     current_month = data_1["current_month"]
     current_year = data_1["current_year"]
     current_day = datetime.datetime.now().day
     date = f"{current_day} {current_month} {current_year}"
     date = datetime.datetime.strptime(date, "%d %B %Y")
 
-    # old_records = Absence.objects.filter(absence_date_end__lt=date)
-    # old_records.delete()
+
     all_users = []
     all_users.append(request.user)
 
@@ -690,8 +703,6 @@ def all_calendar(
     )
     hiding_users = False
 
-    # TODO: Apply this filtering to team calendar, Also could implement onto page that users have been hidden as view is a follower
-    # Filter users out who have privated data - (if the user viewing is not a Memember/Owner of the team).
 
     for index, relation in enumerate(user_relations):
         rels = Relationship.objects.filter(
@@ -727,13 +738,27 @@ def all_calendar(
 
     data_3 = {"Sa": "Sa", "Su": "Su", "users_filter": filtered_users}
 
+  
+    grid_calendar_month_values = list(data_1["day_range"])
+    # NOTE: This will select which value to use to fill in how many blank cells where previous month overrides prevailing months days. 
+    # This is done by finding the weekday value for the 1st day of the month. Example: "Tu" will require 1 blank space/cell.
+    for i in range({"Mo":0, "Tu":1, "We":2, "Th":3, "Fr":4, "Sa":5, "Su":6}[data_1["days_name"][0]]):
+        grid_calendar_month_values.insert(0, -1)
+
+
     context = {
         **data_1,
         **data_2,
         **data_3,
         "users_hidden": hiding_users,
         "home_active": True,
+        
+        # Grid-Calendars day values  
+        "detailed_calendar_day_range":grid_calendar_month_values,
+     
+        
     }
+   
 
     return render(request, "ap_app/calendar.html", context)
 
@@ -1025,7 +1050,7 @@ def get_filter_users(request, users) -> list:
 
 
 def is_member(user, team_id) -> bool:
-    """The user be a member of the team before accessing its contents"""
+    """ Determines if the user is a member of the team before accessing its contents """
 
     team = Relationship.objects.filter(team=Team.objects.get(id=team_id))
 
@@ -1036,3 +1061,29 @@ def is_member(user, team_id) -> bool:
 
     # Else user has changed URL & is attempting to view other teams content
     return False
+
+
+def is_owner(user, team_id) -> bool:
+    """ Determines if the user is an owner of the team """
+    
+    user_relation = Relationship.objects.get(team=team_id, user=user)
+    return (user_relation.role.role == "Owner")
+
+
+def check_calendar_date(year, month) -> datetime.datetime:
+    """ This function will determine if the requested date is acceptable - (NOT before current date - 12 months) """
+    # Current year * 12     + current month as num      = amount of months been  
+    # requested year * 12   + requested month as num    = 
+    
+    # If requested date is before "current date - 12 months" than will not accept date
+    todays_date = datetime.datetime.now()
+    requested_months_amount = (int(year) * 12) + datetime.datetime.strptime(month, "%B").month
+    current_months_amount   = (todays_date.year * 12) + todays_date.month 
+    months_difference = current_months_amount - requested_months_amount
+
+
+    if months_difference > 12:
+        # Return the most earliest date acceptable - (now - 12 months)
+        return datetime.datetime(todays_date.year - 1, todays_date.month, 1)  
+    else:
+        return None

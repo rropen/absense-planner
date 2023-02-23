@@ -68,6 +68,8 @@
 
             <div class="level mb-0">
                 <div class="level-left">
+                    
+                    
                     <a href="/calendar/{{current_month}}/{{current_year}}" class="mr-4">
                         <p class="buttons">
                             <button class="button ">
@@ -214,6 +216,27 @@
                     {% endif %}
 
                     <span class="is-size-4 mb-0 px-3 level-left">{{month}} {{year}}</span>
+
+
+                    <a id="CalendarFormatAlternate-Grid">
+                        <p class="buttons">
+                            <button class="button " style="border-width:2px; border-color:green" id="GridSelect">
+                                <span class="icon ">
+                                    <i class="fa fa-th" aria-hidden="true"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+                    <a id="CalendarFormatAlternate-Linear">
+                        <p class="buttons">
+                            <button class="button " style="border-width:2px; " id="LinearSelect">
+                                <span class="icon ">
+                                    <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+
                 </div>
 
                     
@@ -245,56 +268,106 @@
             </div>
 
 
+            <!-- Prototype Grid-Based Calendar -->
+            <div id="Grid-Calendar">
+
+                <table class="table is-bordered is-striped" style="width:auto; display:inline-block;">
+                    <!-- Thread has constant values - (day headings) which is the very top row -->
+                    <thread style="width:100%">
+                        <th style="color:black">Mo</th>
+                        <th style="color:black">Tu</th>
+                        <th style="color:black">We</th>
+                        <th style="color:black">Th</th>
+                        <th style="color:black">Fr</th>
+                        <th class="is-primary" style="color:white">Sa</th>
+                        <th class="is-primary" style="color:white">Su</th>
+                    </thread>
+                    <tr></tr>
+                    
+    
+                    <!-- First initial cells will be blank as 1st day of month will be ambigious e.g. ('Wednesday' 1st Feb 2023) -->     
+                    
+               
+    
+                    {% for day in detailed_calendar_day_range %}
+    
+    
+                           
+                            {% if day == -1 %}
+                                <th style="background-color: rgb(113, 113, 113); color: black;"></th>
+                            {% else %}
+                          
+                                <!-- Start new line/row once Mon-Sun has been applied to calendar -->
+                                {% if forloop.counter0|divisibleby:7 %}
+                                    <tr>
+    
+                                    </tr>
+                                {% endif %}
+                                    
+                                {% if day == Sa or day == Su %}
+                                <th class="is-primary is is-bordered">{{day}}</th>
+                                {% else %}
+                                <th style="background-color: rgb(255, 255, 255); color: black; text-align:center">{{day}}</th>
+                                {% endif %}
+                            
+                            {% endif %}
+                        
+                    {% endfor %}
+                </table>
+            </div>
+
 
 
             <!-- Calendar starts here . . . -->
-            <div class="table-container" style="overflow: auto">
-                <table class="table is-bordered is-striped" style="width:100%">
-                    <thead>
-                        <th style="color: black;"></th>
-                        {% for day in days_name %}
-                        {% if day == Sa or day == Su %}
-                        <th class="is-primary is is-bordered">{{day}}</th>
-                        {% else %}
-                        <th style="background-color: rgb(255, 255, 255); color: black;">{{day}}</th>
-                        {% endif %}
-                        {% endfor %}
-                    </thead>
-                    <thead>
-                        <th style="color: black;"></th>
-                        {% for day in day_range %}
-                        {% if day == today and month == current_month and year == current_year%}
-                        <th style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255);">{{day}}</th>
-                        {% else %}
-                        <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
-                        {% endif %}
-                        {% endfor %}
-                    </thead>
-                    <tbody>
-                        {% for user in users_filter %}
-                        <tr>
-                            {% if user.id == users.0.id %}
-                            <td style="background-color: #0e00d6;color: white;">{{user.username}}</td>
+            <div id="Linear-Calendar">
+                <div class="table-container" style="overflow: auto">
+                    <table class="table is-bordered is-striped" style="width:100%">
+                        <thead>
+                            <th style="color: black;"></th>
+                            {% for day in days_name %}
+                            {% if day == Sa or day == Su %}
+                            <th class="is-primary is is-bordered">{{day}}</th>
                             {% else %}
-                            <td>{{user.username}}</td>
-                            {% endif %}
-                            <!-- for every day in current month- -->
-                            {% for day in day_range %}
-                            <!-- if absence day equals day then highlights red -->
-                            {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
-                            {% check_absences recurring_absence_dates|get_key:user year month_num day as check_recurring_absence %}
-                            {% if check_recurring_absence %}
-                            <td style="background-color: #ffaa00"></td>
-                            {% elif check_absence %}
-                            <td style="background-color: #ff0000"></td>
-                            {% else %}
-                            <td></td>
+                            <th style="background-color: rgb(255, 255, 255); color: black;">{{day}}</th>
                             {% endif %}
                             {% endfor %}
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <thead>
+                            <th style="color: black;"></th>
+                            {% for day in day_range %}
+                            {% if day == today and month == current_month and year == current_year%}
+                            <th style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255);">{{day}}</th>
+                            {% else %}
+                            <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
+                            {% endif %}
+                            {% endfor %}
+                        </thead>
+                        <tbody>
+                            {% for user in users_filter %}
+                            <tr>
+                                {% if user.id == users.0.id %}
+                                <td style="background-color: #0e00d6;color: white;">{{user.username}}</td>
+                                {% else %}
+                                <td>{{user.username}}</td>
+                                {% endif %}
+                                <!-- for every day in current month- -->
+                                {% for day in day_range %}
+                                <!-- if absence day equals day then highlights red -->
+                                {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
+                                {% check_absences recurring_absence_dates|get_key:user year month_num day as check_recurring_absence %}
+                                {% if check_recurring_absence %}
+                                <td style="background-color: #ffaa00"></td>
+                                {% elif check_absence %}
+                                <td style="background-color: #ff0000"></td>
+                                {% else %}
+                                <td></td>
+                                {% endif %}
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+            </div>
             </div>
         </div>
     </section>
@@ -316,6 +389,28 @@
     //     }
     //     )
     // });
+
+    $("#Linear-Calendar").hide();
     
+    $("#CalendarFormatAlternate-Grid").click(function() {
+          
+        $("#Grid-Calendar").show();
+        $("#Linear-Calendar").hide();
+
+        $("#GridSelect").css("border-color", "green");
+        $("#LinearSelect").css("border-color", "");
+
+        
+    });
+
+    $("#CalendarFormatAlternate-Linear").click(function() {
+        $("#Linear-Calendar").show();
+        $("#Grid-Calendar").hide();
+        
+        $("#LinearSelect").css("border-color", "green");
+        $("#GridSelect").css("border-color", "");
+
+    });
+
 </script>
 {% endblock %}
