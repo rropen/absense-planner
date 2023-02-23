@@ -326,7 +326,7 @@ def edit_team_absence(request, id, user_id):
 
 
 def joining_team_request(request, id, response):
-    print("function: 'joining_team_request' called")
+
     find_rel = Relationship.objects.get(id=id)
     
 
@@ -395,7 +395,7 @@ def add_recurring(request) -> render:
         form = RecurringAbsencesForm(request.POST)
         rule = str(form["Recurrences"].value())
 
-        print(rule)
+
         if not ("DAILY" in rule or "BY" in rule):
 
             content = {"form": form, "message": "Must select a day/month"}
@@ -1014,7 +1014,7 @@ def check_calendar_date(year, month) -> datetime.datetime:
     requested_months_amount = (int(year) * 12) + datetime.datetime.strptime(month, "%B").month
     current_months_amount   = (todays_date.year * 12) + todays_date.month 
     months_difference = current_months_amount - requested_months_amount
-    print(months_difference)
+
 
     if months_difference > 12:
         # Return the most earliest date acceptable - (now - 12 months)
