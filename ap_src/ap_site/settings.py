@@ -69,6 +69,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "ap_site.context_processors.production",
             ],
             "libraries": {
                 "get_key": "ap_app.templatetags.get_key",
@@ -150,3 +151,5 @@ LOGOUT_REDIRECT_URL = "index"
 DATE_FORMAT = "d/m/Y"
 DATE_INPUT_FORMATS = ["%d/%m/%Y"]
 SHORT_DATE_FORMAT = "dd/mm/YYYY"
+
+PRODUCTION_UI = True

@@ -1090,3 +1090,8 @@ def check_calendar_date(year, month) -> datetime.datetime:
         return datetime.datetime(todays_date.year - 1, todays_date.month, 1)  
     else:
         return None
+
+from django.shortcuts import render
+
+def my_view(request):
+    return render(request, "base.html")
