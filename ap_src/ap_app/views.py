@@ -304,6 +304,9 @@ def edit_team_member_absence(request, id, user_id) -> render:
         all_pending_relations = Relationship.objects.filter(
             team=id, status=State.objects.get(slug="pending")
         )
+        target_user = User.objects.get(id=user_id)
+        absences = Absence.objects.filter(Target_User_ID=target_user.id)
+        rec_absences = text_rules(target_user)
         return render(
             request,
             "teams/edit_absences.html",
