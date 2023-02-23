@@ -14,6 +14,11 @@
         width: 24px;
         height: 12px;
     }
+    .AbsenceBox {
+        background-color: #ff0000;
+        border: 1px solid #ff0000;
+        border-radius: 12px
+    }
 </style>
 
 
@@ -255,6 +260,8 @@
                         {% for day in days_name %}
                         {% if day == Sa or day == Su %}
                         <th class="is-primary is is-bordered">{{day}}</th>
+                        {% elif forloop.counter in bank_hol%}
+                        <th style="background-color: #01661f; color: white;">{{day}}</th>
                         {% else %}
                         <th style="background-color: rgb(255, 255, 255); color: black;">{{day}}</th>
                         {% endif %}
@@ -263,8 +270,12 @@
                     <thead>
                         <th style="color: black;"></th>
                         {% for day in day_range %}
-                        {% if day == today and month == current_month and year == current_year%}
+                        {% if day == today and month == current_month and year == current_year %}
                         <th style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255);">{{day}}</th>
+                        {% elif day in bank_hol %}
+                        <td style = "background-color: #28663a; color: rgb(255, 255, 255);" onmouseover="Test">{{day}}</td>
+                        {% elif day in weekend_list%}
+                        <td style = "background-color: #7adece; color: rgb(255, 255, 255);">{{day}}</td>
                         {% else %}
                         <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
                         {% endif %}
@@ -286,9 +297,15 @@
                             {% if check_recurring_absence %}
                             <td style="background-color: #ffaa00",  id={{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE></td>
                             {% elif check_absence %}
-                            <td style="background-color: #ff0000", id={{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE></td>
+                            <td style="background-color: #ff0000;", id={{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE></td>
+                            {% else %}
+                            {% if day in bank_hol %}
+                            <td style = "background-color: #28663a;", id={{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE></td>
+                            {% elif day in weekend_list %}
+                            <td style = "background-color: #7adece;", id={{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE></td>
                             {% else %}
                             <td id={{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE></td>
+                            {% endif %}
                             {% endif %}
                             {% endfor %}
                         </tr>

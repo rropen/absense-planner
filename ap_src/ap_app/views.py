@@ -4,6 +4,7 @@
 
 import calendar
 import datetime
+import holidays
 from datetime import timedelta
 
 import json
@@ -538,6 +539,20 @@ def get_date_data(
         date = date.strftime("%A")[0:2]
         data["days_name"].append(date)
 
+    data["weekend_list"] = []
+    for day in data["day_range"]:
+        date = f"{day} {month} {year}"
+        date = datetime.datetime.strptime(date, "%d %B %Y")
+        date = date.strftime("%A")[0:2]
+        if (date == "Sa" or date == "Su"):
+            data["weekend_list"].append(day)
+    
+
+    data["bank_hol"] = []
+    for h in holidays.GB(years=year).items():
+        if (h[0].month == data["month_num"]):
+            data["bank_hol"].append(h[0].day)
+        
     return data
 
 
