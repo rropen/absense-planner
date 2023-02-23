@@ -35,7 +35,7 @@ class Absence(models.Model):
         "absence_date_end",
     )
 
-    def is_equivalent(self, other: "Absence")  -> bool:
+    def is_equivalent(self, other: "Absence") -> bool:
         """Returns True if the provided `other` instance of Absence
         is effectively equivalent to self.
 
@@ -63,14 +63,12 @@ class Absence(models.Model):
 
 class RecurringAbsences(models.Model):
     ID = models.AutoField(primary_key=True)
-    Target_User_ID = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="+"
-    )
+    Target_User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="+")
     Recurrences = RecurrenceField()
     User_ID = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="recurring_absences"
     )
-   
+
     def __str__(self):
         return f"Recurring Absence No.{self.ID} for {self.Target_User_ID} by {self.User_ID}"
 
@@ -81,7 +79,7 @@ class Team(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=128, unique=True, null=False)
     description = models.CharField(max_length=512)
-    notes = RichTextField()  #models.CharField(max_length=512, null=False, default="")
+    notes = RichTextField()  # models.CharField(max_length=512, null=False, default="")
 
     private = models.BooleanField(default=False)
 
