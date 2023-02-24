@@ -21,8 +21,8 @@ from django.views.generic import CreateView, UpdateView
 from river.models.fields.state import State
 
 from .forms import *
-from .models import Absence, RecurringAbsences, Relationship, Role, Team, UserProfile
-
+from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
+                     UserProfile)
 
 User = get_user_model()
 
@@ -241,7 +241,8 @@ def leave_team(request, id):
     return redirect("dashboard")
 
 
-def team_cleaner(rel) -> None:
+def team_cleaner(rel):
+    """Detects if a team is empty and deletes it if it is."""
     team = Team.objects.get(id=rel.team.id)
     all_team_relationships = Relationship.objects.filter(team=team)
     if all_team_relationships.count() == 0:
@@ -291,10 +292,10 @@ def team_settings(request, id):
                 "member": Role.objects.get(role="Member"),
                 "coowner": Role.objects.get(role="Co-Owner"),
                 "follower": Role.objects.get(role="Follower"),
+
             },
         )
     return redirect("dashboard")
-
 
 def edit_team_member_absence(request, id, user_id) -> render:
     """Checks to see if user is the owner and renders the Edit absences page for that user"""
@@ -356,6 +357,19 @@ def demote_team_member(request, id, user_id):
         current_relationship.save()
 
     return redirect(team_settings, team.id)
+
+@login_required
+def remove_team_member(request, id, user_id):
+    """Removes a member from a team."""
+    team = Team.objects.get(id=id)
+    user_relation = Relationship.objects.get(team=id, user=request.user)
+    if user_relation.role.role != "Owner":
+        return redirect("dashboard") #Checks if the user is the owner and redirects to the dashboard if they aren't
+    target_user = User.objects.get(id=user_id) #Gets the user to be removed
+    target_relation = Relationship.objects.get(team=team, user=target_user) #Gets the target's relationship to the team
+    target_relation.custom_delete() #Deletes the relationship from the team, removing the user
+
+    return redirect(team_settings, team.id) #Redirects user back to the settings page
 
 
 def joining_team_request(request, id, response):
@@ -1092,6 +1106,7 @@ def check_calendar_date(year, month) -> datetime.datetime:
         return None
 
 from django.shortcuts import render
+
 
 def my_view(request):
     return render(request, "base.html")
