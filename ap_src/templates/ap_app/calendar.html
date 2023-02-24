@@ -437,6 +437,9 @@
         //This supports half days
         if (e.shiftKey) {
             alert("UserID: " + ID + "\nDate: " + date + "\nAbsent: " + absent + "\nHalf Day: True")
+            
+<!--CHANGE THIS DIO-->
+            
         //This selects full days
         } else {
             if (absent == "FALSE") {
@@ -460,4 +463,10 @@
        }
     }, false);
 </script>
+
+<!--This add a text explaining how each colour works, for example half day and full day-->
+
+<h1 style="border:red; border-width:3px; border-style:solid;"> Red Box = Full Day, Right Click to activate </h1>  
+<h1 style="border:purple; border-width:3px; border-style:solid;"> Purple Box = Half Day, Shift + Right Click to activate    </h1>  
+
 {% endblock %}
