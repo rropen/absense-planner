@@ -4,9 +4,11 @@
 
 import calendar
 import datetime
+import holidays
 from datetime import timedelta
 
-import recurrence
+import json
+from django.http import JsonResponse
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -437,6 +439,20 @@ def add(request) -> render:
     content = {"form": form, "add_absence_active": True}
     return render(request, "ap_app/add_absence.html", content)
 
+#Add an absence when clicking on the calendar
+@login_required
+def click_add(request):
+    if request.method == "POST":
+        json_data=json.loads(request.body)
+        items = Absence()
+        items.absence_date_start = json_data['date']
+        items.absence_date_end = json_data['date']
+        items.Target_User_ID = request.user
+        items.User_ID = request.user
+        items.save()
+        return JsonResponse({'start_date': items.absence_date_start, 'end_date': items.absence_date_end, 'taget_id': items.Target_User_ID.username, 'user_id': items.User_ID.username})
+    else:
+        return HttpResponse('404')
 
 @login_required
 def add_recurring(request) -> render:
@@ -537,6 +553,20 @@ def get_date_data(
         date = date.strftime("%A")[0:2]
         data["days_name"].append(date)
 
+    data["weekend_list"] = []
+    for day in data["day_range"]:
+        date = f"{day} {month} {year}"
+        date = datetime.datetime.strptime(date, "%d %B %Y")
+        date = date.strftime("%A")[0:2]
+        if (date == "Sa" or date == "Su"):
+            data["weekend_list"].append(day)
+    
+
+    data["bank_hol"] = []
+    for h in holidays.GB(years=year).items():
+        if (h[0].month == data["month_num"]):
+            data["bank_hol"].append(h[0].day)
+        
     return data
 
 
