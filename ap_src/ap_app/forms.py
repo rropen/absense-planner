@@ -28,7 +28,7 @@ class CreateTeamForm(forms.ModelForm):
     description = forms.CharField(
         max_length=512,
         required=False,
-        widget=forms.Textarea(attrs={"class": "", "placeholder": "Team Description"}),
+        widget=forms.Textarea(attrs={"class": "", "placeholder": "Team Description","rows":4, "cols":15}),
     )
     private = forms.BooleanField(
         required=False, widget=forms.CheckboxInput(attrs={"class": ""})

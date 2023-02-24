@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="{% static 'css/basic.css' %}">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <script
       src="https://code.jquery.com/jquery-3.6.0.min.js"
@@ -28,117 +30,62 @@
         </script>
   
     <title>{% block title %}{% endblock %} - RR Absence</title>
-    <style>
-        * {
-            font-family: Arial, Helvetica, sans-serif;
-        }
-        
-        html, body {
-          height: 100%;
-        }
-        
-        body {
-          position: relative;
-          margin: 0;
-          min-height: 100%;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .main {
-            padding: 10px 10px;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        .logo {
-            margin-left: 1700px;
-            padding: 20px 10px;
-        }
-
-        .text {
-            font-weight: bold;
-            size: 10rem;
-        }
-        .right {
-            float: right;
-            padding:100px;
-        }
-
-        .attending {
-            color: green;
-        }
-        
-        .not_attending {
-            color: red;
-        }
-
-        .rr-primary {
-            background-color: #10069f;
-            color: #fff;
-        }
-
-        .rr-secondary {
-            background-color: #271EA8;
-            color: #fff;
-        }
-
-        .rr-white {
-            color: #fff;
-        }
-
-        .navbar a {
-            color: white;
-        }
-        
-        .navbar .active {
-            color: #10069f;
-            background-color: white;
-        }
-
-        .noHover{
-          pointer-events: none;
-        }
-        
-        
-
-        footer {
-          margin-top: auto;
-          height: 150px;
-          width: 100%;
-        }
-        
-        
+    <style>     
     </style>
 </head>
 
 <body>
 
-<section class="hero rr-primary">
-    <div class="hero-body ">
-      <p class="title rr-primary">
-        Absence Planner
-      </p>
-      <p class="subtitle rr-white">
-        v0.02
-      </p>
+  {% if PRODUCTION_UI == False %}
+  <section class="hero rr-primary">
+      <div class="hero-body ">
+        <p class="title rr-primary">          
+          Absence Planner
+        </p>
+        <p class="subtitle rr-white">
+          v0.02
+        </p>
+      </div>
+  </section>
+
+  <nav class="navbar rr-secondary">
+    <div class="navbar-brand">
+      <div class="navbar-burger burger rr-white" data-target="navbarExampleTransparentExample">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
     </div>
-</section>
-
-
-
-
-<nav class="navbar rr-secondary">
-  <div class="navbar-brand">
-    <div class="navbar-burger burger rr-white" data-target="navbarExampleTransparentExample">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-  </div>
-
-
-  <div id="navbarExampleTransparentExample" class="navbar-menu rr-secondary" >
+  
+    <div id="navbarExampleTransparentExample" class="navbar-menu rr-secondary" >
     <div class="navbar-start" style="margin-left: 48px">
+
+  {% else %}
+  <section class="hero rr-dev-primary">
+      <div class="hero-body ">
+        <p class="title rr-dev-primary">          
+          Absence Planner
+        </p>
+        <p class="subtitle rr-white">
+          v0.02
+        </p>
+      </div>
+  </section>
+
+  <nav class="navbar rr-secondary">
+    <div class="navbar-brand">
+      <div class="navbar-burger burger rr-white" data-target="navbarExampleTransparentExample">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+
+  <div id="navbarExampleTransparentExample" class="navbar-menu rr-dev-secondary" >
+    <div class="navbar-start" style="margin-left: 48px">
+  {% endif %}
+
+
 {% if user.is_authenticated %}
   
       {% if home_active %}
