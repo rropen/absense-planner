@@ -227,7 +227,7 @@ def team_invite(request, team_id, user_id, role):
             role=find_role,
             status=State.objects.get(slug="invited"),
         )
-        return redirect("request.path_info")
+        return redirect(f"/teams/calendar/{find_team.id}")
     # Else user is manipulating the URL making non-allowed invites - (Therefore doesn't create a relationship)
 
     return redirect("dashboard")
@@ -250,6 +250,7 @@ def leave_team(request, id):
 
 
 def team_cleaner(rel):
+    """Detects if a team is empty and deletes it if it is."""
     team = Team.objects.get(id=rel.team.id)
     all_team_relationships = Relationship.objects.filter(team=team)
     if all_team_relationships.count() == 0:
@@ -300,6 +301,7 @@ def team_settings(request, id):
                 "member":Role.objects.get(role="Member"),
                 "coowner":Role.objects.get(role="Co-Owner"),
                 "follower":Role.objects.get(role="Follower"),
+                "owner":Role.objects.get(role="Owner"),
             },
         )
     return redirect("dashboard")
@@ -373,6 +375,19 @@ def demote_team_member(request, id, user_id):
 
 
     return redirect(team_settings, team.id)
+
+@login_required
+def remove_team_member(request, id, user_id):
+    """Removes a member from a team."""
+    team = Team.objects.get(id=id)
+    user_relation = Relationship.objects.get(team=id, user=request.user)
+    if user_relation.role.role != "Owner":
+        return redirect("dashboard") #Checks if the user is the owner and redirects to the dashboard if they aren't
+    target_user = User.objects.get(id=user_id) #Gets the user to be removed
+    target_relation = Relationship.objects.get(team=team, user=target_user) #Gets the target's relationship to the team
+    target_relation.custom_delete() #Deletes the relationship from the team, removing the user
+
+    return redirect(team_settings, team.id) #Redirects user back to the settings page
 
 
 def joining_team_request(request, id, response):

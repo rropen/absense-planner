@@ -26,6 +26,7 @@ urlpatterns = [
     path("teams/settings/<int:id>/<int:user_id>", views.edit_team_member_absence, name="edit_team_member_absence"),
     path("teams/settings/promote/<int:id>/<int:user_id>", views.promote_team_member, name="promote_team_member"),
     path("teams/settings/demote/<int:id>/<int:user_id>", views.demote_team_member, name="demote_team_member"),
+    path("teams/settings/remove/<int:id>/<int:user_id>", views.remove_team_member, name="remove_team_member"),
     path("teams/misc/<int:id>", views.team_misc, name="misc"),
     path("absence/add", views.add, name="add"),
     path("absence/add_recurring", views.add_recurring, name="add_recurring"),

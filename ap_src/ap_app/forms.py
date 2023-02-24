@@ -14,22 +14,29 @@ User = get_user_model()
 from recurrence.forms import RecurrenceField, RecurrenceWidget
 
 
+#The form for creating a team
 class CreateTeamForm(forms.ModelForm):
+    #details the model the form uses as well as the field names
     class Meta:
         model = Team
         fields = ["name", "description", "private"]
 
+    #The name of the team. Has to be between 3 and 64 characters, and is required.
     name = forms.CharField(
         min_length=3,
         max_length=64,
         required=True,
         widget=forms.TextInput(attrs={"class": "", "placeholder": "Team Name", "id":"nameInput"}),
     )
+
+    #The description of the team. Can be up to 512 characters long. Is optional.
     description = forms.CharField(
         max_length=512,
         required=False,
         widget=forms.Textarea(attrs={"class": "", "placeholder": "Team Description"}),
     )
+
+    #Whether or not the team is private
     private = forms.BooleanField(
         required=False, widget=forms.CheckboxInput(attrs={"class": ""})
     )
