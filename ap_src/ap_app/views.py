@@ -292,7 +292,7 @@ def team_settings(request, id):
                 "member": Role.objects.get(role="Member"),
                 "coowner": Role.objects.get(role="Co-Owner"),
                 "follower": Role.objects.get(role="Follower"),
-
+                "owner": Role.objects.get(role="Owner"),
             },
         )
     return redirect("dashboard")
