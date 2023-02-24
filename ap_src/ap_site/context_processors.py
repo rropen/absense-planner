@@ -1,5 +1,5 @@
-from django.conf import settings # import the settings file
+from django.conf import settings # This will import the settings file that django uses.
 
-def production(request):
+def production(request): # Function that will return the PRODUCTION_UI value.
     return {'PRODUCTION_UI': settings.PRODUCTION_UI}
     
