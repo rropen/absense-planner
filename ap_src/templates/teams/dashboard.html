@@ -3,10 +3,6 @@
 {% load static %}
 {% block content %}
 
-{% if message %}
-{% include "messages.html" %}
-{% endif %}
-
 <div class="container">
     <div class="columns">
         <div class="column is-half">
@@ -45,7 +41,9 @@
             </div>
         </div>
     {% endif %}
-
+    {% if message %}
+        {% include "messages.html" %}
+    {% endif %}
     {% for rel in rels %}
         <div class="container has-background-light box">
             <div class="is-size-5 mb-3">

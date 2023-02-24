@@ -172,17 +172,28 @@ def joining_team_process(request, id, role):
     find_team = Team.objects.get(id=id)
     find_role = Role.objects.get(role=role)
     rels = Relationship.objects.filter(
-        user=request.user.id,
+        user=request.user,
         role=Role.objects.get(role="Member"),
         status=State.objects.get(slug="active"),
     )
     rels2 = Relationship.objects.filter(
-        user=request.user.id,
+        user=request.user,
         role=Role.objects.get(role="Owner"),
         status=State.objects.get(slug="active"),
     )
+    existing_rels = Relationship.objects.order_by(Lower("team__name")).filter(
+        user=request.user, status=State.objects.get(slug="active")
+    )
+    invite_rel_count = Relationship.objects.filter(
+        user=request.user, status=State.objects.get(slug="invited")
+    ).count()
+    
     if (rels or rels2) and role == "Member":
-        return redirect("dashboard")
+        return render(
+        request,
+        "teams/dashboard.html",
+        {"rels": existing_rels, "invite_count": invite_rel_count, "teamspage_active": True, "message" : "You are already part of one team"},
+    )
     new_rel = Relationship.objects.create(
         user=request.user,
         team=find_team,
@@ -193,10 +204,10 @@ def joining_team_process(request, id, role):
         Relationship.objects.filter(id=new_rel.id).update(
             status=State.objects.get(slug="active")
         )
-        leader = Relationship.objects.get(team=id, role=Role.objects.get(role="Owner"))
-        userprofile = UserProfile.objects.get(user=request.user)
-        userprofile.edit_whitelist.add(leader.user)
-        userprofile.save()
+        #leader = Relationship.objects.get(team=id, role=Role.objects.get(role="Owner"))
+        #userprofile = UserProfile.objects.get(user=request.user)
+        #userprofile.edit_whitelist.add(leader.user)
+        #userprofile.save()
     return redirect("dashboard")
 
 
@@ -910,11 +921,13 @@ def deleteuser(request):
 
 
 @login_required
-def absence_delete(request, absence_id: int, user_id: int, team_id: int = None):
-    absence = Absence.objects.get(pk=absence_id)
-    user = request.user
-    absence.delete()
-    if user == absence.User_ID:
+def absence_delete(request, absence_id: int, user_id: int, team_id: int = 1):
+    try:
+        absence = Absence.objects.get(pk=absence_id)
+        absence.delete()
+    except Absence.DoesNotExist: 
+        pass
+    if request.user == User.objects.get(id = user_id):
         return redirect("profile")
     return redirect("edit_team_member_absence", team_id, user_id)
 
