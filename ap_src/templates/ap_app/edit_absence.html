@@ -5,14 +5,14 @@
 {% block content %}
 <div class="main container column is-3">
     <h1 class="title has-text-centered"> Edit Absence </h1>
-        <form method="POST">
-            {% csrf_token %}
-            {{form | bulma }}
-            {% for error in form.errors %}
-            <p>{{error}}</p>
-            {% endfor %}
-            <input type="submit" class="button is-fullwidth is-info" value="Update">
-        </form>
+    <form method="POST">
+        {% csrf_token %}
+        {{form | bulma }}
+        {% for error in form.errors %}
+        <p>{{error}}</p>
+        {% endfor %}
+        <input type="submit" class="button is-fullwidth is-info" value="Update">
+    </form>
 </div>
 
 {% endblock %}

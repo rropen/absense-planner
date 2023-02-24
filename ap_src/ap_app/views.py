@@ -4,26 +4,27 @@
 
 import calendar
 import datetime
+import holidays
+from datetime import timedelta
 
-from django.http import HttpResponse
+import json
+from django.http import JsonResponse
+from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models.functions import Lower
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
+from django.utils.timezone import now
 from django.views.generic import CreateView, UpdateView
 from river.models.fields.state import State
 
-from .forms import (
-    CreateTeamForm,
-    DeleteUserForm,
-    AbsenceForm,
-    AcceptPolicyForm,
-    SwitchUser,
-)
-from .models import Absence, Relationship, Role, Team, UserProfile
+from .forms import *
+from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
+                     UserProfile)
 
 User = get_user_model()
 
@@ -35,9 +36,7 @@ def index(request) -> render:
 
     # If its the first time a user is logging in, will create an object of UserProfile model for that user.
     if not request.user.is_anonymous:
-
         if not obj_exists(request.user):
-
             user = find_user_obj(request.user)
             user.edit_whitelist.add(request.user)
         else:
@@ -52,12 +51,10 @@ def index(request) -> render:
         user = UserProfile.objects.get(user=request.user)
         user.edit_whitelist.add(request.user)
         return all_calendar(request)
-
     return render(request, "ap_app/index.html")
 
 
 def privacy_page(request, to_accept=False) -> render:
-
     # If true, the user accepted the policy
     if request.method == "POST":
         user = find_user_obj(request.user)
@@ -66,7 +63,6 @@ def privacy_page(request, to_accept=False) -> render:
 
     # If the user has been redirected from home page to accepted policy
     elif to_accept:
-
         return render(
             request, "registration/accept_policy.html", {"form": AcceptPolicyForm()}
         )
@@ -74,6 +70,7 @@ def privacy_page(request, to_accept=False) -> render:
         # Viewing general policy page - (Without the acceptancy form)
         return render(request, "ap_app/privacy.html")
     return all_calendar(request)
+
 
 class SignUpView(CreateView):
     form_class = UserCreationForm
@@ -92,7 +89,7 @@ def teams_dashboard(request) -> render:
     return render(
         request,
         "teams/dashboard.html",
-        {"rels": rels, "invite_count": invite_rel_count},
+        {"rels": rels, "invite_count": invite_rel_count, "teamspage_active": True},
     )
 
 
@@ -128,23 +125,31 @@ def create_team(request) -> render:
     for i, team in enumerate(teams):
         existing_teams += team.name
         existing_teams_ids += str(team.id)
-        if i != len(teams)-1:
+        if i != len(teams) - 1:
             existing_teams += ","
             existing_teams_ids += ","
-    
 
-    return render(request, "teams/create_team.html", {"form": form, "existing_teams":existing_teams, "existing_teams_ids":existing_teams_ids })
+    return render(
+        request,
+        "teams/create_team.html",
+        {
+            "form": form,
+            "existing_teams": existing_teams,
+            "existing_teams_ids": existing_teams_ids,
+        },
+    )
 
 
 @login_required
 def join_team(request) -> render:
     """Renders page with all teams the user is not currently in"""
     user_teams = []
-    all_user_teams = Relationship.objects.all().filter(user=request.user)
+    all_user_teams = Relationship.objects.filter(
+        user=request.user, status=State.objects.get(slug="active")
+    )
     for teams in all_user_teams:
         user_teams.append(teams.team)
-    all_teams = Team.objects.all().exclude(name__in=user_teams)
-    
+    all_teams = Team.objects.all().exclude(relationship__user=request.user.id)
     all_teams_filtered = []
 
     # Filtering by team name
@@ -166,6 +171,18 @@ def join_team(request) -> render:
 def joining_team_process(request, id, role):
     find_team = Team.objects.get(id=id)
     find_role = Role.objects.get(role=role)
+    rels = Relationship.objects.filter(
+        user=request.user.id,
+        role=Role.objects.get(role="Member"),
+        status=State.objects.get(slug="active"),
+    )
+    rels2 = Relationship.objects.filter(
+        user=request.user.id,
+        role=Role.objects.get(role="Owner"),
+        status=State.objects.get(slug="active"),
+    )
+    if (rels or rels2) and role == "Member":
+        return redirect("dashboard")
     new_rel = Relationship.objects.create(
         user=request.user,
         team=find_team,
@@ -176,7 +193,10 @@ def joining_team_process(request, id, role):
         Relationship.objects.filter(id=new_rel.id).update(
             status=State.objects.get(slug="active")
         )
-
+        leader = Relationship.objects.get(team=id, role=Role.objects.get(role="Owner"))
+        userprofile = UserProfile.objects.get(user=request.user)
+        userprofile.edit_whitelist.add(leader.user)
+        userprofile.save()
     return redirect("dashboard")
 
 
@@ -184,12 +204,26 @@ def team_invite(request, team_id, user_id, role):
     find_team = Team.objects.get(id=team_id)
     find_user = User.objects.get(id=user_id)
     find_role = Role.objects.get(role=role)
-    Relationship.objects.create(
-        user=find_user,
-        team=find_team,
-        role=find_role,
-        status=State.objects.get(slug="invited"),
-    )
+
+    test = Relationship.objects.filter(team=find_team)
+
+    # Boolean determines if viewer is in this team trying to invite others
+    user_acceptable = False
+    for rel in test:
+        if rel.user == request.user and str(rel.role) == "Owner":
+            user_acceptable = True
+            break
+
+    if str(request.user.id) != str(user_id) and user_acceptable:
+        Relationship.objects.create(
+            user=find_user,
+            team=find_team,
+            role=find_role,
+            status=State.objects.get(slug="invited"),
+        )
+        return redirect(f"/teams/calendar/{find_team.id}")
+    # Else user is manipulating the URL making non-allowed invites - (Therefore doesn't create a relationship)
+
     return redirect("dashboard")
 
 
@@ -210,19 +244,42 @@ def leave_team(request, id):
 
 
 def team_cleaner(rel):
+    """Detects if a team is empty and deletes it if it is."""
     team = Team.objects.get(id=rel.team.id)
     all_team_relationships = Relationship.objects.filter(team=team)
     if all_team_relationships.count() == 0:
         team.delete()
-    return
+
+
+@login_required
+def team_misc(request, id):
+    """Teams Miscellaneous/Notes page"""
+    if is_member(user=request.user, team_id=id):
+        team = Team.objects.get(id=id)
+
+        notes = CreateTeamForm(instance=team)
+
+        # TODO: Add a field to each team with a notes section - (for now it's just the teams description)
+
+        if "value" in request.GET:
+            team.notes = request.GET["value"]
+            team.save()
+
+        desc = team.description
+        notes = team.notes
+
+        return render(
+            request, "teams/misc.html", {"team": team, "desc": desc, "notes": notes}
+        )
+    return redirect("dashboard")
 
 
 @login_required
 def team_settings(request, id):
     """Checks to see if user is the owner and renders the Setting page"""
     team = Team.objects.get(id=id)
-    user_relation = Relationship.objects.get(team=id, user=request.user)
-    if user_relation.role.role == "Owner":
+    
+    if is_owner(user=request.user, team_id=id): 
         all_pending_relations = Relationship.objects.filter(
             team=id, status=State.objects.get(slug="pending")
         )
@@ -234,20 +291,100 @@ def team_settings(request, id):
                 "team": team,
                 "pending_rels": all_pending_relations,
                 "Team_users": team.users,
+                "member": Role.objects.get(role="Member"),
+                "coowner": Role.objects.get(role="Co-Owner"),
+                "follower": Role.objects.get(role="Follower"),
+                "owner": Role.objects.get(role="Owner"),
             },
         )
+    return redirect("dashboard")
 
+def edit_team_member_absence(request, id, user_id) -> render:
+    """Checks to see if user is the owner and renders the Edit absences page for that user"""
+    team = Team.objects.get(id=id)
+        
+    if is_owner(user=request.user, team_id=id):    
+        all_pending_relations = Relationship.objects.filter(
+            team=id, status=State.objects.get(slug="pending")
+        )
+        target_user = User.objects.get(id=user_id)
+        absences = Absence.objects.filter(Target_User_ID=target_user.id)
+        rec_absences = text_rules(target_user)
+        return render(
+            request,
+            "teams/edit_absences.html",
+            {
+                "team": team,
+                "user": target_user,
+                "absences": absences,
+                "recurring_absences": rec_absences,
+            },
+        )
     return redirect("dashboard")
 
 
+@login_required
+def promote_team_member(request, id, user_id):
+    """Checks to see if user is the owner and renders the Setting page"""
+    team = Team.objects.get(id=id)
+    user_relation = Relationship.objects.get(team=id, user=request.user)
+    if user_relation.role.role != "Owner":
+        return redirect("dashboard")
+    target_user = User.objects.get(id=user_id)
+    all_pending_relations = Relationship.objects.filter(
+        team=id, status=State.objects.get(slug="pending")
+    )
+    current_relationship = Relationship.objects.get(team=team, user=target_user)
+    if current_relationship.role == Role.objects.get(role="Member"):
+        current_relationship.role = Role.objects.get(role="Co-Owner")
+        current_relationship.save()
+
+    return redirect(team_settings, team.id)
+
+
+@login_required
+def demote_team_member(request, id, user_id):
+    """Checks to see if user is the owner and renders the Setting page"""
+    team = Team.objects.get(id=id)
+    user_relation = Relationship.objects.get(team=id, user=request.user)
+    if user_relation.role.role != "Owner":
+        return redirect("dashboard")
+    target_user = User.objects.get(id=user_id)
+    all_pending_relations = Relationship.objects.filter(
+        team=id, status=State.objects.get(slug="pending")
+    )
+    current_relationship = Relationship.objects.get(team=team, user=target_user)
+    if current_relationship.role == Role.objects.get(role="Co-Owner"):
+        current_relationship.role = Role.objects.get(role="Member")
+        current_relationship.save()
+
+    return redirect(team_settings, team.id)
+
+@login_required
+def remove_team_member(request, id, user_id):
+    """Removes a member from a team."""
+    team = Team.objects.get(id=id)
+    user_relation = Relationship.objects.get(team=id, user=request.user)
+    if user_relation.role.role != "Owner":
+        return redirect("dashboard") #Checks if the user is the owner and redirects to the dashboard if they aren't
+    target_user = User.objects.get(id=user_id) #Gets the user to be removed
+    target_relation = Relationship.objects.get(team=team, user=target_user) #Gets the target's relationship to the team
+    target_relation.custom_delete() #Deletes the relationship from the team, removing the user
+
+    return redirect(team_settings, team.id) #Redirects user back to the settings page
+
+
 def joining_team_request(request, id, response):
+
     find_rel = Relationship.objects.get(id=id)
+    
+
     if response == "accepted":
         state_response = State.objects.get(slug="active")
+        Relationship.objects.filter(id=find_rel.id).update(status=state_response)
+        return redirect("team_settings", find_rel.team.id)
     elif response == "nonactive":
-        state_response = State.objects.get(slug="nonactive")
-    Relationship.objects.filter(id=find_rel.id).update(status=state_response)
-
+        return redirect("leave_team", id)
     return redirect("dashboard")
 
 
@@ -255,30 +392,103 @@ def joining_team_request(request, id, response):
 def add(request) -> render:
     """create new absence record"""
     if request.method == "POST":
-        form = AbsenceForm(request.POST, user=request.user)
+        form = AbsenceForm(
+            request.POST,
+            user=request.user,
+            initial={
+                "start_date": datetime.datetime.now().now(),
+                "end_date": lambda: datetime.datetime.now().date()
+                + datetime.timedelta(days=1),
+            },
+        )
+        form.fields["user"].queryset = UserProfile.objects.filter(
+            edit_whitelist__in=[request.user]
+        )
+
         if form.is_valid():
             obj = Absence()
+            obj.absence_date_start = request.POST.get("start_date")
+            obj.absence_date_end = request.POST.get("end_date")
             obj.absence_date_start = form.cleaned_data["start_date"]
             obj.absence_date_end = form.cleaned_data["end_date"]
-            obj.request_accepted = False
+            obj.request_accepted = False  # TODO
             obj.User_ID = request.user
-            obj.Target_User_ID = form.cleaned_data["user"]
+            obj.Target_User_ID = form.cleaned_data["user"].user
+
+            for x in Absence.objects.filter(User_ID=request.user.id):
+                result = Absence.is_equivalent(obj, x)
+                if result:
+                    x.delete()
             obj.save()
             return render(
                 request,
                 "ap_app/add_absence.html",
-                {"form": form, "message": "Absence successfully recorded."},
+                {
+                    "form": form,
+                    "message": "Absence successfully recorded.",
+                    "add_absence_active": True,
+                },
             )
             # redirect to success page
     else:
-
         form = AbsenceForm(user=request.user)
         form.fields["user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
         )
 
-    content = {"form": form}
+    content = {"form": form, "add_absence_active": True}
     return render(request, "ap_app/add_absence.html", content)
+
+#Add an absence when clicking on the calendar
+@login_required
+def click_add(request):
+    if request.method == "POST":
+        json_data=json.loads(request.body)
+        items = Absence()
+        items.absence_date_start = json_data['date']
+        items.absence_date_end = json_data['date']
+        items.Target_User_ID = request.user
+        items.User_ID = request.user
+        items.save()
+        return JsonResponse({'start_date': items.absence_date_start, 'end_date': items.absence_date_end, 'taget_id': items.Target_User_ID.username, 'user_id': items.User_ID.username})
+    else:
+        return HttpResponse('404')
+
+@login_required
+def add_recurring(request) -> render:
+    if request.method == "POST":
+        form = RecurringAbsencesForm(request.POST)
+        form2 = TargetUserForm(request.POST, target_user=request.user)
+        form2.fields["target_user"].queryset = UserProfile.objects.filter(
+            edit_whitelist__in=[request.user]
+        )
+        rule = str(form["Recurrences"].value())
+
+
+        if not ("DAILY" in rule or "BY" in rule):
+            content = {
+                "form": form,
+                "form2": form2,
+                "message": "Must select a day/month",
+            }
+            return render(request, "ap_app/add_recurring_absence.html", content)
+
+        if form2.is_valid():
+            RecurringAbsences.objects.create(
+                Recurrences=form["Recurrences"].value(),
+                Target_User_ID=form2.cleaned_data["target_user"].user,
+                User_ID=request.user,
+            )
+            return redirect("index")
+    else:
+        form = RecurringAbsencesForm()
+        form2 = TargetUserForm(target_user=request.user)
+        form2.fields["target_user"].queryset = UserProfile.objects.filter(
+            edit_whitelist__in=[request.user]
+        )
+
+    content = {"form": form, "form2": form2}
+    return render(request, "ap_app/add_recurring_absence.html", content)
 
 
 @login_required
@@ -312,7 +522,6 @@ def get_date_data(
     )
     data["month_num"] = datetime.datetime.strptime(month, "%B").month
 
-
     data["previous_month"] = "December"
     data["next_month"] = "January"
     data["previous_year"] = year - 1
@@ -344,13 +553,30 @@ def get_date_data(
         date = date.strftime("%A")[0:2]
         data["days_name"].append(date)
 
+    data["weekend_list"] = []
+    for day in data["day_range"]:
+        date = f"{day} {month} {year}"
+        date = datetime.datetime.strptime(date, "%d %B %Y")
+        date = date.strftime("%A")[0:2]
+        if (date == "Sa" or date == "Su"):
+            data["weekend_list"].append(day)
+    
+
+    data["bank_hol"] = []
+    for h in holidays.GB(years=year).items():
+        if (h[0].month == data["month_num"]):
+            data["bank_hol"].append(h[0].day)
+        
     return data
 
 
-def get_user_data(users, user_type):
+
+
+def get_absence_data(users, user_type):
     data = {}
     absence_content = []
     total_absence_dates = {}
+    total_recurring_dates = {}
     all_absences = {}
     delta = datetime.timedelta(days=1)
 
@@ -363,6 +589,7 @@ def get_user_data(users, user_type):
 
         absence_info = Absence.objects.filter(Target_User_ID=user_id)
         total_absence_dates[user] = []
+        total_recurring_dates[user] = []
         all_absences[user] = []
 
         # if they have any absences
@@ -387,14 +614,31 @@ def get_user_data(users, user_type):
                 )
 
             # for each user it maps the set of dates to a dictionary key labelled as the users name
-            total_absence_dates[user] = total_absence_dates[user]
             all_absences[user] = absence_content
-        else:
-            total_absence_dates[user] = []
-            all_absences[user] = []
+
+        recurring = RecurringAbsences.objects.filter(Target_User_ID=user_id)
+
+        if recurring:
+            for recurrence_ in recurring:
+                dates = recurrence_.Recurrences.occurrences(
+                    dtend=datetime.datetime.strptime(
+                        str(datetime.datetime.now().year + 2), "%Y"
+                    )
+                )
+
+                for x in list(dates)[:-1]:
+                    time_const = "23:00:00"
+                    time_var = datetime.datetime.strftime(x, "%H:%M:%S")
+                    if time_const == time_var:
+                        x += timedelta(days=1)
+                    total_recurring_dates[user].append(x)
+                # TODO: add auto deleting for recurring absences once last date of absences in before now
+                # if x < datetime.datetime.now():
+                #    pass
+
+    data["recurring_absence_dates"] = total_recurring_dates
     data["all_absences"] = all_absences
     data["absence_dates"] = total_absence_dates
-
     data["users"] = users
     return data
 
@@ -406,35 +650,74 @@ def team_calendar(
     month=datetime.datetime.now().strftime("%B"),
     year=datetime.datetime.now().year,
 ):
-    data_1 = get_date_data(month, year)
+    if is_member(request.user, id):
 
-    users = Relationship.objects.all().filter(
-        team=id, status=State.objects.get(slug="active")
-    )
+        # Get acceptable date - (NOTHING BELOW now - 12months)
+        date = check_calendar_date(year, month)
+        if date:
+            month = date.strftime("%B")
+            year = date.year
 
-    data_2 = get_user_data(users, 1)
+        data_1 = get_date_data(month, year)
 
-    team = Team.objects.get(id=id)
+        users = Relationship.objects.all().filter(
+            team=id, status=State.objects.get(slug="active")
+        )
 
-    user_in_teams = []
-    for rel in Relationship.objects.filter(team=team):
-        user_in_teams.append(rel.user.id)
+        data_2 = get_absence_data(users, 1)
 
-    data_3 = {
-        "owner": Role.objects.all()[0],
-        "Sa": "Sa",
-        "Su": "Su",
-        "current_user": Relationship.objects.get(user=request.user, team=team),
-        "team": team,
-        "all_users": User.objects.all().exclude(id__in=user_in_teams),
-        "team_count": Relationship.objects.filter(
-            team=team.id, status=State.objects.get(slug="active")
-        ).count(),
-    }
+        team = Team.objects.get(id=id)
 
-    context = {**data_1, **data_2, **data_3}
+        # Filtering users by privacy
+        filtered_users = []
+        viewer = data_2["users"].get(user=request.user)
+        if str(viewer.role) == "Follower":
+            # Than hide data of users with privacy on
+            for user in data_2["users"]:
+                user_profile = UserProfile.objects.get(user=user.user)
+                if not user_profile.privacy:
+                    filtered_users.append(user)
 
-    return render(request, "teams/calendar.html", context)
+                else:
+                    # For pop-up to inform viewer that there are hidden users
+                    data_2.update({"hiding_users": True})
+
+            data_2["users"] = filtered_users
+
+        # Gets filtered users by filtering system on page
+        filtered_users = get_filter_users(
+            request, [user.user for user in data_2["users"]]
+        )
+
+        actual_filtered_users = []
+        for user in data_2["users"]:
+            if user.user in filtered_users:
+                actual_filtered_users.append(user)
+
+        # Reconstructs users list to be in desired form for template - (QuerySet of relationships)
+        data_2["users"] = actual_filtered_users
+
+        user_in_teams = []
+        for rel in Relationship.objects.filter(team=team):
+            user_in_teams.append(rel.user.id)
+
+        data_3 = {
+            "owner": Role.objects.all()[0],
+            "Sa": "Sa",
+            "Su": "Su",
+            "current_user": Relationship.objects.get(user=request.user, team=team),
+            "team": team,
+            "all_users": User.objects.all().exclude(id__in=user_in_teams),
+            "team_count": Relationship.objects.filter(
+                team=team.id, status=State.objects.get(slug="active")
+            ).count(),
+        }
+
+        context = {**data_1, **data_2, **data_3}
+
+        return render(request, "teams/calendar.html", context)
+
+    return redirect("dashboard")
 
 
 @login_required
@@ -443,23 +726,29 @@ def all_calendar(
     month=datetime.datetime.now().strftime("%B"),
     year=datetime.datetime.now().year,
 ):
+  
+    # Get acceptable date - (NOTHING BELOW now - 12months)
+    date = check_calendar_date(year, month)
+    if date:
+        month = date.strftime("%B")
+        year = date.year
+
     data_1 = get_date_data(month, year)
+    
     current_month = data_1["current_month"]
     current_year = data_1["current_year"]
     current_day = datetime.datetime.now().day
     date = f"{current_day} {current_month} {current_year}"
     date = datetime.datetime.strptime(date, "%d %B %Y")
 
-    old_records = Absence.objects.filter(absence_date_end__lt=date)
-    old_records.delete()
+
     all_users = []
     all_users.append(request.user)
 
-    user_relations = Relationship.objects.filter(user=request.user, status=State.objects.get(slug="active"))
+    user_relations = Relationship.objects.filter(
+        user=request.user, status=State.objects.get(slug="active")
+    )
     hiding_users = False
-
-    #TODO: Apply this filtering to team calendar, Also could implement onto page that users have been hidden as view is a follower        
-    # Filter users out who have privated data - (if the user viewing is not a Memember/Owner of the team).
 
 
     for index, relation in enumerate(user_relations):
@@ -467,18 +756,15 @@ def all_calendar(
             team=relation.team, status=State.objects.get(slug="active")
         )
 
-        
         # Finds the viewers role in the team
         for user in rels:
             if user.user == request.user:
                 viewers_role = Role.objects.get(id=user.role_id)
 
-
         for rel in rels:
             if rel.user not in all_users:
                 if viewers_role.role == "Follower":
                     # Than hide users data who have privacy on
-
 
                     user_profile = UserProfile.objects.get(user=rel.user)
                     if not user_profile.privacy:
@@ -489,64 +775,75 @@ def all_calendar(
                         hiding_users = True
 
                 else:
-                    # Only followers cannot view those who have privacy set for their data. - (Members & Owners can see the data) 
+                    # Only followers cannot view those who have privacy set for their data. - (Members & Owners can see the data)
                     all_users.append(rel.user)
 
-    
-    
-
-
     # Filtering
-    filtered_users = []
-    # Filtering by both username & absence
-    if "username" in request.GET and "absent" in request.GET:
-        # Get username input & limits the length to 50
-        name_filtered_by = request.GET["username"][:50]
-        for absence in Absence.objects.all():
-            user = User.objects.get(id=absence.Target_User_ID.id)
-            if user in all_users:
-                username = user.username
-                if (
-                    absence.Target_User_ID not in filtered_users
-                    and name_filtered_by.lower() in username.lower()
-                ):
-                    filtered_users.append(absence.Target_User_ID)
+    filtered_users = get_filter_users(request, all_users)
 
-    # ONLY filtering by username
-    elif "username" in request.GET:
-        # Name limit is 50
-        name_filtered_by = request.GET["username"][:50]
-        for user in all_users:
-            # same logic as "icontains", searches through users names & finds similarities
-            if name_filtered_by.lower() in user.username.lower():
-                filtered_users.append(user)
-
-    # ONLY filtering by absences
-    elif "absent" in request.GET:
-        for absence in Absence.objects.all():
-            user = User.objects.get(id=absence.Target_User_ID.id)
-            if user in all_users:
-                username = user.username
-                if absence.Target_User_ID not in filtered_users:
-                    filtered_users.append(absence.Target_User_ID)
-
-    # Else, no filtering
-    else:
-        filtered_users = all_users
-
-    data_2 = get_user_data(all_users, 2)
+    data_2 = get_absence_data(all_users, 2)
 
     data_3 = {"Sa": "Sa", "Su": "Su", "users_filter": filtered_users}
 
-    context = {**data_1, **data_2, **data_3, "users_hidden":hiding_users}
+  
+    grid_calendar_month_values = list(data_1["day_range"])
+    # NOTE: This will select which value to use to fill in how many blank cells where previous month overrides prevailing months days. 
+    # This is done by finding the weekday value for the 1st day of the month. Example: "Tu" will require 1 blank space/cell.
+    for i in range({"Mo":0, "Tu":1, "We":2, "Th":3, "Fr":4, "Sa":5, "Su":6}[data_1["days_name"][0]]):
+        grid_calendar_month_values.insert(0, -1)
+
+
+    context = {
+        **data_1,
+        **data_2,
+        **data_3,
+        "users_hidden": hiding_users,
+        "home_active": True,
+        
+        # Grid-Calendars day values  
+        "detailed_calendar_day_range":grid_calendar_month_values,
+     
+        
+    }
+   
 
     return render(request, "ap_app/calendar.html", context)
+
+
+def text_rules(user):
+    recurring_absences = RecurringAbsences.objects.filter(Target_User_ID=user).values(
+        "Recurrences", "ID"
+    )
+    rec_absences = {}
+
+    for x in recurring_absences:
+        absence_ = x["Recurrences"]
+        if absence_:
+            rec_absences[x["ID"]] = []
+        if absence_.exdates:
+            for y in absence_.exdates:
+                rec_absences[x["ID"]].append(
+                    "Excluding Date: " + (y + timedelta(days=1)).strftime("%A,%d %B,%Y")
+                )
+        if absence_.rdates:
+            for y in absence_.rdates:
+                rec_absences[x["ID"]].append(
+                    "Date: " + (y + timedelta(days=1)).strftime("%A,%d %B,%Y")
+                )
+        if absence_.rrules:
+            for y in absence_.rrules:
+                rec_absences[x["ID"]].append("Rule: " + str(y.to_text()))
+
+        if absence_.exrules:
+            for y in absence_.exrules:
+                rec_absences[x["ID"]].append("Excluding Rule: " + str(y.to_text()))
+
+    return rec_absences
 
 
 # Profile page
 @login_required
 def profile_page(request):
-
     if request.method == "POST":
         form = SwitchUser(
             request.POST,
@@ -556,11 +853,13 @@ def profile_page(request):
             edit_whitelist=request.user
         )
         users = UserProfile.objects.filter(edit_whitelist=request.user)
-        if form.is_valid():
-            absence_user = form.cleaned_data["user"]
-            
-            absences = Absence.objects.filter(Target_User_ID=absence_user.user.id)
+        rec_absences = text_rules(request.user)
 
+        if form.is_valid():
+            absence_user = form.cleaned_data["user"].user
+
+            absences = Absence.objects.filter(Target_User_ID=absence_user)
+            rec_absences = text_rules(absence_user)
             return render(
                 request,
                 "ap_app/profile.html",
@@ -569,11 +868,12 @@ def profile_page(request):
                     "message": "Successfully switched user",
                     "absences": absences,
                     "users": users,
+                    "recurring_absences": rec_absences,
                 },
             )
     else:
-        
         absences = Absence.objects.filter(Target_User_ID=request.user.id)
+        rec_absences = text_rules(request.user)
 
         users = UserProfile.objects.filter(edit_whitelist=request.user)
         form = SwitchUser()
@@ -587,6 +887,7 @@ def profile_page(request):
                 "absences": absences,
                 "users": users,
                 "form": form,
+                "recurring_absences": rec_absences,
             },
         )
 
@@ -609,14 +910,25 @@ def deleteuser(request):
 
 
 @login_required
-def absence_delete(request, absence_id: int):
+def absence_delete(request, absence_id: int, user_id: int, team_id: int = None):
     absence = Absence.objects.get(pk=absence_id)
     user = request.user
+    absence.delete()
     if user == absence.User_ID:
-        absence.delete()
         return redirect("profile")
+    return redirect("edit_team_member_absence", team_id, user_id)
 
-    raise Exception()
+
+@login_required
+def absence_recurring_delete(
+    request, absence_id: int, user_id: int, team_id: int = None
+):
+    absence = RecurringAbsences.objects.get(pk=absence_id)
+    user = request.user
+    absence.delete()
+    if user == absence.User_ID:
+        return redirect("profile")
+    return redirect("edit_team_member_absence", team_id, user_id)
 
 
 class EditAbsence(UpdateView):
@@ -631,6 +943,44 @@ class EditAbsence(UpdateView):
 
 
 @login_required
+def edit_recurring_absences(request, pk):
+    absence = RecurringAbsences.objects.get(ID=pk)
+
+    if request.method == "POST":
+        form = RecurringAbsencesForm(request.POST, instance=absence)
+        form2 = TargetUserForm(request.POST, target_user=request.user)
+        form2.fields["target_user"].queryset = UserProfile.objects.filter(
+            edit_whitelist__in=[request.user]
+        )
+        rule = str(form["Recurrences"].value())
+
+        if not ("DAILY" in rule or "BY" in rule):
+            content = {
+                "form": form,
+                "form2": form2,
+                "message": "Must select a day/month",
+            }
+            return render(request, "ap_app/edit_recurring_absence.html", content)
+
+        if form2.is_valid():
+            absence.Target_User_ID = form2.cleaned_data["target_user"].user
+            absence.recurrences = form["Recurrences"].value()
+            absence.save()
+            return redirect("index")
+    else:
+        form = RecurringAbsencesForm(instance=absence)
+        
+        form2 = TargetUserForm(target_user=absence.Target_User_ID)
+        form2.fields["target_user"].queryset = UserProfile.objects.filter(
+            edit_whitelist__in=[absence.User_ID]
+        )
+
+    return render(
+        request, "ap_app/edit_recurring_absence.html", {"form": form, "form2": form2}
+    )
+
+
+@login_required
 def profile_settings(request) -> render:
     """returns the settings page"""
     try:
@@ -641,7 +991,6 @@ def profile_settings(request) -> render:
 
     user_profile = UserProfile.objects.get(user=request.user)
     if "userPrivacy" in request.POST:
-
         if user_profile.privacy:
             user_profile.privacy = False
         else:
@@ -649,12 +998,9 @@ def profile_settings(request) -> render:
 
         user_profile.save()
 
-        
     privacy_status = user_profile.privacy
-    context = {"userprofile": userprofile, "data_privacy_mode":privacy_status}
+    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status}
     return render(request, "ap_app/settings.html", context)
-
-
 
 
 @login_required
@@ -705,3 +1051,92 @@ def obj_exists(user):
         return False
 
     return True
+
+
+def get_filter_users(request, users) -> list:
+    """Used for calendar filtering system - (Returns list of filtered users depending on
+    search-bar and 'filter by absence' checkbox"""
+
+    filtered_users = []
+
+    # Filtering by both username & absence
+    if "username" in request.GET and "absent" in request.GET:
+        # Get username input & limits the length to 50
+        name_filtered_by = request.GET["username"][:50]
+        for absence in Absence.objects.all():
+            user = User.objects.get(id=absence.Target_User_ID.id)
+            if user in users:
+                username = user.username
+                if (
+                    absence.Target_User_ID not in filtered_users
+                    and name_filtered_by.lower() in username.lower()
+                ):
+                    filtered_users.append(absence.Target_User_ID)
+
+    # ONLY filtering by username
+    elif "username" in request.GET:
+        # Name limit is 50
+        name_filtered_by = request.GET["username"][:50]
+        for user in users:
+            # same logic as "icontains", searches through users names & finds similarities
+            if name_filtered_by.lower() in user.username.lower():
+                filtered_users.append(user)
+
+    # ONLY filtering by absences
+    elif "absent" in request.GET:
+        for absence in Absence.objects.all():
+            user = User.objects.get(id=absence.Target_User_ID.id)
+            if user in users and absence.Target_User_ID not in filtered_users:
+                filtered_users.append(absence.Target_User_ID)
+
+    # Else, no filtering
+    else:
+        filtered_users = users
+
+    return filtered_users
+
+
+def is_member(user, team_id) -> bool:
+    """ Determines if the user is a member of the team before accessing its contents """
+
+    team = Relationship.objects.filter(team=Team.objects.get(id=team_id))
+
+    # Boolean determines if viewer is in this team
+    for rel in team:
+        if rel.user == user:
+            return True
+
+    # Else user has changed URL & is attempting to view other teams content
+    return False
+
+
+def is_owner(user, team_id) -> bool:
+    """ Determines if the user is an owner of the team """
+    
+    user_relation = Relationship.objects.get(team=team_id, user=user)
+    return (user_relation.role.role == "Owner")
+
+
+def check_calendar_date(year, month) -> datetime.datetime:
+    """ This function will determine if the requested date is acceptable - (NOT before current date - 12 months) """
+    # Current year * 12     + current month as num      = amount of months been  
+    # requested year * 12   + requested month as num    = 
+    
+    # If requested date is before "current date - 12 months" than will not accept date
+    todays_date = datetime.datetime.now()
+    requested_months_amount = (int(year) * 12) + datetime.datetime.strptime(month, "%B").month
+    current_months_amount   = (todays_date.year * 12) + todays_date.month 
+    months_difference = current_months_amount - requested_months_amount
+
+
+    if months_difference > 12:
+        # Return the most earliest date acceptable - (now - 12 months)
+        return datetime.datetime(todays_date.year - 1, todays_date.month, 1)  
+    else:
+        return None
+
+from django.shortcuts import render
+
+
+def my_view(request):
+    return render(request, "base.html")

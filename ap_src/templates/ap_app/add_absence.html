@@ -5,7 +5,6 @@
 {% block content %}
 
 
-
 <div class="main container column is-4">
     <h1 class="title has-text-centered"> Create Absence </h1>
     <form method="POST">
@@ -15,14 +14,15 @@
         {% endif %}
         {{form | bulma}}
 
-        {% for error in form.errors %}
-        <p>{{error}}</p>
-        {% endfor %}
         <input type="submit" class="button is-link is-fullwidth" value="Save">
 
-    </form>
 
+
+    </form>
+    <br>
+    <a class="button is-info has-text-centered is-fullwidth" href="{% url 'add_recurring' %}">Add Recurring Absence</a>
 </div>
+
 
 
 {% endblock %}

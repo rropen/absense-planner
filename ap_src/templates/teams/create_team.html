@@ -45,7 +45,7 @@
 
     function determineValid(item, index, arr){
         // If name is similar to an already made team-name, than will set 'nameFound' to true to perform necessary actions 
-        if (item == $("#nameInput").val())
+        if (item == $("#nameInput").val() && item != "")
         {
             nameFound = true;
         }

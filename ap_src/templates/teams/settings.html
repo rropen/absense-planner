@@ -32,21 +32,29 @@
     <div class="content">
         <h2>Users</h2>
         <div class="columns is-multiline">
-            {% for user in Team_users %}
+            {% for User in Team_users %}
             <div class="column is-4">
                 <div class="card has-background-light p-4 has-text-centered">
-                    <span class="is-block is-size-5 has-text-weight-bold">{{user.user.username}}</span>
+                    <span class="is-block is-size-5 has-text-weight-bold">{{User.user.username}}({{User.role}})</span>
                     <br>
                     <div class="mx-auto">
-                        <a class="button is-success" href="{% url 'profile' %}">Edit
+                        {% if User.role != follower %}
+                        <a class="button is-success" href="{% url 'edit_team_member_absence' team.id User.user.id%}">Edit
                             Absences</a>
-                        <a class="button is-info" href="">Make Co-Owner</a>
-                        <a class="button is-danger">Remove</a>
+                        {% endif %}
+                        {% if User.role == member %}
+                        <a class="button is-info" href="{% url 'promote_team_member' team.id User.user.id%}">Promote to Co-Owner</a>
+                        {% elif User.role == coowner %}
+                        <a class="button is-info" href="{% url 'demote_team_member' team.id User.user.id%}">Demote to Member</a>
+                        {% endif %}
+                        {% if User.role != owner %}
+                        <a class="button is-danger" href="{% url 'remove_team_member' team.id User.user.id %}">Remove</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
-    </div>
+    </div> 
 </div>
 {% endblock %}

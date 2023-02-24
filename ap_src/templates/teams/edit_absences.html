@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load bulma_tags %}
+{% load static %}
+{% block title %}Edit Absence{% endblock %}
+{% block content %}
+
+
+<div class="main container is-3">
+    <h1 class="title has-text-centered"> Edit Users Absences </h1>
+    <div class="mt-2">
+        <div class="columns is-multiline">
+            {% for absence in absences %}
+            <div class="column is-one-third">
+                <div class="card has-background-light p-4 has-text-centered">
+                    <span class="is-block is-size-5 has-text-weight-bold"> Start date: {{ absence.absence_date_start }}</span>
+                    <span class="is-block is-size-5 has-text-weight-bold">End date: {{ absence.absence_date_end }}</span>
+                    <div class="mx-auto">
+                        <a class="button is-info" href="/absence/edit/{{ absence.pk }}">Edit</a>
+                        <a class="button is-danger" href="/absence/delete/{{ absence.pk }}/{{ team.id }}/{{ user.id }}">Delete</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="mt-2">
+        <div class="columns is-multiline">
+            {% for id, absence in recurring_absences.items %}
+            {% for x in absence %}
+            <div class="column is-6">
+                <div class="card has-background-light p-4 has-text-centered">
+                    {{x}}
+                    {% if not x|check_rule %}
+                    <p style="color:red"> This rule needs editing, there needs to be a day/month specified
+                    </p>
+                    {% endif %}
+                    <div class="mx-auto">
+                        <a class="button is-info" href="/absence/edit_recurring/{{ id }}">Edit</a>
+                        <a class="button is-danger" href="/absence_recurring/delete/{{ id }}/{{ team.id }}/{{ user.id }}">Delete</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+
+
+{% endblock %}
