@@ -35,8 +35,7 @@
 </head>
 
 <body>
-
-  {% if PRODUCTION_UI == False %}
+  {% if PRODUCTION_UI == True %} 
   <section class="hero rr-primary">
       <div class="hero-body ">
         <p class="title rr-primary">          
@@ -72,7 +71,7 @@
       </div>
   </section>
 
-  <nav class="navbar rr-secondary">
+  <nav class="navbar rr-dev-secondary">
     <div class="navbar-brand">
       <div class="navbar-burger burger rr-white" data-target="navbarExampleTransparentExample">
         <span></span>
