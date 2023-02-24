@@ -94,6 +94,24 @@
                     
                 </div>
             </div>
+
+            <!--Set Working Region-->
+            <button class="collapsible button is-medium is-link has-text-centered">Region</button>
+            <div class="content is-size-5">
+                <nav class="level", style="margin-top: 0.25rem!important; margin-bottom: 0.5rem!important;">
+                    <p class="level-left m-0">Select your working region:</p>
+                    <form method="POST" action="settings/set-region">
+                        {% csrf_token %}
+                        <select id="regions", name="regions" class="is-info">
+                            <option value="GB|England">England</option>
+                            <option value="GB|Wales">Wales</option>
+                            <option value="GB|Scotland">Scotland</option>
+                        </select>
+                        <input class="button is-info" type="submit">
+                    </form>
+                </nav>
+            </div>
+
         </div>
     </div>
 

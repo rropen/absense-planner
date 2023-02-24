@@ -442,6 +442,21 @@ def click_add(request):
         return HttpResponse('404')
 
 @login_required
+def set_region(request):
+    if request.method == "POST":
+        print(request.user)
+        region = request.POST.get("regions")
+        #Code to set region
+        profile = UserProfile()
+        profile.region = region
+        profile.user_id = request.user
+        #profile.save()
+        
+        return redirect("/profile/settings")
+    else:
+        return HttpResponse('404')
+
+@login_required
 def add_recurring(request) -> render:
     if request.method == "POST":
         form = RecurringAbsencesForm(request.POST)
@@ -549,7 +564,7 @@ def get_date_data(
     
 
     data["bank_hol"] = []
-    for h in holidays.GB(years=year).items():
+    for h in holidays.GB(years=year, subdiv="England").items():
         if (h[0].month == data["month_num"]):
             data["bank_hol"].append(h[0].day)
         
