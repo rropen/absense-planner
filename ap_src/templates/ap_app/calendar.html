@@ -380,40 +380,8 @@
                                 {% endif %}
                                 {% endif %}
                                 {% endfor %}
-                            </thead>
-                            <thead>
-                                <th style="color: black;"></th>
-                                {% for day in day_range %}
-                                {% if day == today and month == current_month and year == current_year%}
-                                <th style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255);">{{day}}</th>
-                                {% else %}
-                                <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
-                                {% endif %}
-                                {% endfor %}
-                            </thead>
-                            <tbody>
-                                {% for user in users_filter %}
-                                <tr>
-                                    {% if user.id == users.0.id %}
-                                    <td style="background-color: #0e00d6;color: white;">{{user.username}}</td>
-                                    {% else %}
-                                    <td>{{user.username}}</td>
-                                    {% endif %}
-                                    <!-- for every day in current month- -->
-                                    {% for day in day_range %}
-                                    <!-- if absence day equals day then highlights red -->
-                                    {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
-                                    {% check_absences recurring_absence_dates|get_key:user year month_num day as check_recurring_absence %}
-                                    {% if check_recurring_absence %}
-                                    <td style="background-color: #ffaa00"></td>
-                                    {% elif check_absence %}
-                                    <td style="background-color: #ff0000"></td>
-                                    {% else %}
-                                    <td></td>
-                                    {% endif %}
-                                    {% endfor %}
-                                </tr>
-                                {% endfor %}
+                            </tr>
+                            {% endfor %}                                
                             </tbody>
                     </table>
                 </div>
@@ -439,7 +407,7 @@
     //     )
     // });
 
-    $("#Linear-Calendar").hide();
+    $("#Grid-Calendar").hide();
     
     $("#CalendarFormatAlternate-Grid").click(function() {
           
