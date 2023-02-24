@@ -26,3 +26,4 @@ sqlparse==0.4.2
 tomli==2.0.1
 typing_extensions==4.2.0
 wrapt==1.14.1
+holidays==0.20
