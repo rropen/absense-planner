@@ -35,7 +35,7 @@ jobs:
     - name: Set up Django Environment
       run: |
         echo -n Making Migrations
-        python $programEntry
+        python3 ap_src/manage.py makemigrations
         echo "Running Migrations"
         python $programEntry migrate ap_app
         python $programEntry migrate
