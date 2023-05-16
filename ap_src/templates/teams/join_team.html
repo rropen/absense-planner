@@ -34,6 +34,9 @@
         <input type="checkbox" id="chkJoined" onclick="ShowHideDiv(this)"> Show joined teams </input>
     </label>
 
+    {% if message %}
+        {% include "messages.html" %}
+    {% endif %}
     {% for team in joined_teams %}
 
     <div style="display: none" class="container has-background-light box joined_teams">

@@ -4,9 +4,11 @@
 
 import calendar
 import datetime
+import holidays
 from datetime import timedelta
 
-import recurrence
+import json
+from django.http import JsonResponse
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -21,8 +23,8 @@ from django.views.generic import CreateView, UpdateView
 from river.models.fields.state import State
 
 from .forms import *
-from .models import Absence, RecurringAbsences, Relationship, Role, Team, UserProfile
-
+from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
+                     UserProfile)
 
 User = get_user_model()
 
@@ -170,17 +172,28 @@ def joining_team_process(request, id, role):
     find_team = Team.objects.get(id=id)
     find_role = Role.objects.get(role=role)
     rels = Relationship.objects.filter(
-        user=request.user.id,
+        user=request.user,
         role=Role.objects.get(role="Member"),
         status=State.objects.get(slug="active"),
     )
     rels2 = Relationship.objects.filter(
-        user=request.user.id,
+        user=request.user,
         role=Role.objects.get(role="Owner"),
         status=State.objects.get(slug="active"),
     )
+    existing_rels = Relationship.objects.order_by(Lower("team__name")).filter(
+        user=request.user, status=State.objects.get(slug="active")
+    )
+    invite_rel_count = Relationship.objects.filter(
+        user=request.user, status=State.objects.get(slug="invited")
+    ).count()
+    
     if (rels or rels2) and role == "Member":
-        return redirect("dashboard")
+        return render(
+        request,
+        "teams/dashboard.html",
+        {"rels": existing_rels, "invite_count": invite_rel_count, "teamspage_active": True, "message" : "You are already part of one team"},
+    )
     new_rel = Relationship.objects.create(
         user=request.user,
         team=find_team,
@@ -191,10 +204,10 @@ def joining_team_process(request, id, role):
         Relationship.objects.filter(id=new_rel.id).update(
             status=State.objects.get(slug="active")
         )
-        leader = Relationship.objects.get(team=id, role=Role.objects.get(role="Owner"))
-        userprofile = UserProfile.objects.get(user=request.user)
-        userprofile.edit_whitelist.add(leader.user)
-        userprofile.save()
+        #leader = Relationship.objects.get(team=id, role=Role.objects.get(role="Owner"))
+        #userprofile = UserProfile.objects.get(user=request.user)
+        #userprofile.edit_whitelist.add(leader.user)
+        #userprofile.save()
     return redirect("dashboard")
 
 
@@ -241,7 +254,8 @@ def leave_team(request, id):
     return redirect("dashboard")
 
 
-def team_cleaner(rel) -> None:
+def team_cleaner(rel):
+    """Detects if a team is empty and deletes it if it is."""
     team = Team.objects.get(id=rel.team.id)
     all_team_relationships = Relationship.objects.filter(team=team)
     if all_team_relationships.count() == 0:
@@ -291,10 +305,10 @@ def team_settings(request, id):
                 "member": Role.objects.get(role="Member"),
                 "coowner": Role.objects.get(role="Co-Owner"),
                 "follower": Role.objects.get(role="Follower"),
+                "owner": Role.objects.get(role="Owner"),
             },
         )
     return redirect("dashboard")
-
 
 def edit_team_member_absence(request, id, user_id) -> render:
     """Checks to see if user is the owner and renders the Edit absences page for that user"""
@@ -356,6 +370,19 @@ def demote_team_member(request, id, user_id):
         current_relationship.save()
 
     return redirect(team_settings, team.id)
+
+@login_required
+def remove_team_member(request, id, user_id):
+    """Removes a member from a team."""
+    team = Team.objects.get(id=id)
+    user_relation = Relationship.objects.get(team=id, user=request.user)
+    if user_relation.role.role != "Owner":
+        return redirect("dashboard") #Checks if the user is the owner and redirects to the dashboard if they aren't
+    target_user = User.objects.get(id=user_id) #Gets the user to be removed
+    target_relation = Relationship.objects.get(team=team, user=target_user) #Gets the target's relationship to the team
+    target_relation.custom_delete() #Deletes the relationship from the team, removing the user
+
+    return redirect(team_settings, team.id) #Redirects user back to the settings page
 
 
 def joining_team_request(request, id, response):
@@ -423,6 +450,20 @@ def add(request) -> render:
     content = {"form": form, "add_absence_active": True}
     return render(request, "ap_app/add_absence.html", content)
 
+#Add an absence when clicking on the calendar
+@login_required
+def click_add(request):
+    if request.method == "POST":
+        json_data=json.loads(request.body)
+        items = Absence()
+        items.absence_date_start = json_data['date']
+        items.absence_date_end = json_data['date']
+        items.Target_User_ID = request.user
+        items.User_ID = request.user
+        items.save()
+        return JsonResponse({'start_date': items.absence_date_start, 'end_date': items.absence_date_end, 'taget_id': items.Target_User_ID.username, 'user_id': items.User_ID.username})
+    else:
+        return HttpResponse('404')
 
 @login_required
 def add_recurring(request) -> render:
@@ -523,6 +564,20 @@ def get_date_data(
         date = date.strftime("%A")[0:2]
         data["days_name"].append(date)
 
+    data["weekend_list"] = []
+    for day in data["day_range"]:
+        date = f"{day} {month} {year}"
+        date = datetime.datetime.strptime(date, "%d %B %Y")
+        date = date.strftime("%A")[0:2]
+        if (date == "Sa" or date == "Su"):
+            data["weekend_list"].append(day)
+    
+
+    data["bank_hol"] = []
+    for h in holidays.GB(years=year).items():
+        if (h[0].month == data["month_num"]):
+            data["bank_hol"].append(h[0].day)
+        
     return data
 
 
@@ -866,11 +921,13 @@ def deleteuser(request):
 
 
 @login_required
-def absence_delete(request, absence_id: int, user_id: int, team_id: int = None):
-    absence = Absence.objects.get(pk=absence_id)
-    user = request.user
-    absence.delete()
-    if user == absence.User_ID:
+def absence_delete(request, absence_id: int, user_id: int, team_id: int = 1):
+    try:
+        absence = Absence.objects.get(pk=absence_id)
+        absence.delete()
+    except Absence.DoesNotExist: 
+        pass
+    if request.user == User.objects.get(id = user_id):
         return redirect("profile")
     return redirect("edit_team_member_absence", team_id, user_id)
 
@@ -1090,3 +1147,9 @@ def check_calendar_date(year, month) -> datetime.datetime:
         return datetime.datetime(todays_date.year - 1, todays_date.month, 1)  
     else:
         return None
+
+from django.shortcuts import render
+
+
+def my_view(request):
+    return render(request, "base.html")
