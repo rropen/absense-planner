@@ -34,8 +34,8 @@ jobs:
         pip3 install -r requirements.txt
     - name: Set up Django Environment
       run: |
-        echo "Making Migrations"
-        python $programEntry makemigrations
+        echo -n Making Migrations
+        python $programEntry
         echo "Running Migrations"
         python $programEntry migrate ap_app
         python $programEntry migrate
