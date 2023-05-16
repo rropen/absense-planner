@@ -1,0 +1,27 @@
+tests.py::BasicTest::test_basic
+--------------------------------------------------------------------
+Last Page: http://localhost:8000/
+ Duration: 7.61s
+  Browser: Chrome 110.0.5481.105
+   Driver: chromedriver 110.0.5481.77
+Timestamp: 1684237167  (Unix Timestamp)
+     Date: Tuesday, 16 May 2023
+     Time: 12:39:27 PM  (GMT Summer Time, UTC+01:00)
+--------------------------------------------------------------------
+Traceback:
+  File "C:\Users\790778\Desktop\rr-absence - FORK\absense-planner\ap_src\testing\tests.py", line 10, in test_basic
+    self.assert_title("Home")
+  File "C:\Users\790778\Desktop\rr-absence - FORK\absense-planner\venv\lib\site-packages\seleniumbase\fixtures\base_case.py", line 6901, in assert_title
+    self.assertEqual(
+  File "C:\Program Files\Python310\lib\unittest\case.py", line 845, in assertEqual
+    assertion_func(first, second, msg=msg)
+  File "C:\Program Files\Python310\lib\unittest\case.py", line 1226, in assertMultiLineEqual
+    self.fail(self._formatMessage(msg, standardMsg))
+  File "C:\Users\790778\Desktop\rr-absence - FORK\absense-planner\venv\lib\site-packages\seleniumbase\fixtures\base_case.py", line 7675, in fail
+    super().fail(msg)
+  File "C:\Program Files\Python310\lib\unittest\case.py", line 675, in fail
+    raise self.failureException(msg)
+Exception: 'Home' != 'Home - RR Absence'
+- Home
++ Home - RR Absence
+ : Expected page title [Home] does not match the actual title [Home - RR Absence]!
