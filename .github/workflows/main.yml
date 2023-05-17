@@ -39,10 +39,9 @@ jobs:
         echo "Running Migrations"
         python3 ap_src/manage.py migrate ap_app
         
-        for F in ap_src/ap_app/fixtures/*; 
-        do python3 ap_src/manage.py loaddata $F; done
+        for FILE in ap_src/ap_app/fixtures/*; 
+        do python3 ap_src/manage.py loaddata $FILE; done
         
-
     - name: Run Tests
       run: |
-        python programEntry test
+        python ap_src/manage.py test
