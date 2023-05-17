@@ -1,6 +1,7 @@
 from django.test import TestCase
 # Pip install seleniumbase - "python -m pip install selenium-base"
 from seleniumbase import BaseCase
+import pytest
 
 # Consts 
 URL = "http://LocalHost:8000/"

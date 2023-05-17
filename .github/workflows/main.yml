@@ -54,7 +54,7 @@ jobs:
     
     - name: Coverage
       run: |
-        coverage run -m pytest 
+        coverage run ap_src/manage.py test
 
     - name: Run Tests
       run: |
