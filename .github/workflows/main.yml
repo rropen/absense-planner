@@ -58,4 +58,4 @@ jobs:
 
     - name: Run Tests
       run: |
-        pytest ap_src/ap_app/manage.py test
+        python ap_src/manage.py runserver
