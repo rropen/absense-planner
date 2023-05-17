@@ -60,4 +60,4 @@ jobs:
       run: |
         echo Running Application
         python ap_src/manage.py test ap_app.tests
-        python ap_src/manage.py test
+        
