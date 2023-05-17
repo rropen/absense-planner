@@ -1,6 +1,8 @@
 from django.test import TestCase
 # Pip install seleniumbase - "python -m pip install selenium-base"
-from seleniumbase import BaseCase
+#from seleniumbase import BaseCase
+from seleniumbase import SB
+import pytest
 
 # Consts 
 URL = "http://LocalHost:8000/"
@@ -11,32 +13,39 @@ PASSWORD = "password"
 
 #NOTE: add id's instead of using xPaths
 
-class BasicTest(BaseCase):
-    def test_basic(self):
-        self.open(URL)
-        self.assert_title("Home - RR Absence")
-        self.click_xpath("/html/body/container/div/container/div/a")
 
-        # -=-= Login page =-=- 
-        self.assert_true("Login" in self.get_page_title(), msg="[TESTING CODE ERROR]: Not on Login-Page")
-        
-        self.send_keys("/html/body/container/div/div/form/div[1]/div/input", text=USERNAME)
-        self.send_keys("/html/body/container/div/div/form/div[2]/div/input", text=PASSWORD)
-        # Click "Login"
-        self.click_xpath("/html/body/container/div/div/form/button")
+with SB() as sb:
+    print("[Application]: Running SeleniumBase Commands Now")
+    sb.open(URL)
+    sb.assert_title("Home - RR Absence")
+    sb.click_xpath("/html/body/container/div/container/div/a")
+
+    # -=-= Login page =-=- 
+    sb.assert_true("Login" in sb.get_page_title(), msg="[TESTING CODE ERROR]: Not on Login-Page")
+    
+    sb.send_keys("/html/body/container/div/div/form/div[1]/div/input", text=USERNAME)
+    sb.send_keys("/html/body/container/div/div/form/div[2]/div/input", text=PASSWORD)
+    # Click "Login"
+    sb.click_xpath("/html/body/container/div/div/form/button")
 
 
-        if "Policy" in self.get_page_title():
-            # -=-= Policy Page =-=-
-            self.click_xpath("/html/body/container/div/div/form/input[2]")
-            self.click_xpath("/html/body/container/div/div/form/button")
-        
-        # -=-= Main Calendar Page =-=-
+    if "Policy" in sb.get_page_title():
+        # -=-= Policy Page =-=-
+        sb.click_xpath("/html/body/container/div/div/form/input[2]")
+        sb.click_xpath("/html/body/container/div/div/form/button")
+    
+    # -=-= Main Calendar Page =-=-
+    sb.click_xpath("/html/body/nav/div[2]/div[1]/a[3]")
 
-        self.click_xpath("/html/body/nav/div[2]/div[1]/a[3]")
-
-        # -=-= Teams Page =-=-
-        
+    # -=-= Teams Page =-=-
+    
 #change
 
-        self.wait(8)
+    sb.wait(8)
+
+
+#class BasicTest(BaseCase):
+#    def test_basic(sb):
+#        sb.open(URL)
+#        sb.assert_title("Home - RR Absence")
+        
