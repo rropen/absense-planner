@@ -34,7 +34,10 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip3 install -r requirements.txt
+        
         python -m pip install seleniumbase
+        sbase get chromedriver latest
+
         pip3 install pytest
     - name: Set up Django Environment
       run: |
