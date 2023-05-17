@@ -32,7 +32,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip3 install -r requirements.txt
-      # install dependencies not specified in requirements.txt - (specific to this virtual environment) 
+# install dependencies not specified in requirements.txt - (specific to this virtual environment) 
         pip3 install pytest
     - name: Set up Django Environment
       run: |
@@ -41,7 +41,7 @@ jobs:
         echo "Running Migrations"
 
         python3 ap_src/manage.py migrate ap_app
-        
+
         for F in ap_src/ap_app/fixtures/*; 
         do python3 ap_src/manage.py loaddata $F; done
         
