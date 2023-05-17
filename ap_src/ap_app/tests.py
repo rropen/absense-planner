@@ -29,4 +29,4 @@ class TestBasicTemplate(LiveServerTestCase):
             # PASS expected
             sb.assert_true("Home" in sb.get_page_title(), msg="[TESTING CODE ERROR]: Not on Home-Page - Title does not match")   
             # FAIL expected
-            sb.assert_true("This is not in title" in sb.get_page_title(), msg="[TESTING CODE ERROR]: Not on Home-Page - Title does not match") 
+           # sb.assert_true("This is not in title" in sb.get_page_title(), msg="[TESTING CODE ERROR]: Not on Home-Page - Title does not match") 
