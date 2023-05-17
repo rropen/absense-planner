@@ -15,7 +15,7 @@ PASSWORD = "password"
 
 
 with SB() as sb:
-    print("[Application]: Running SeleniumBase")
+    print("[Application]: Running SeleniumBase Commands Now")
     sb.open(URL)
     sb.assert_title("Home - RR Absence")
     sb.click_xpath("/html/body/container/div/container/div/a")
