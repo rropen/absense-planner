@@ -58,5 +58,5 @@ jobs:
 
     - name: Run Tests
       run: |
-        echo [TEST]: Running Application
-        python ap_src/manage.py runserver
+        echo Running Application
+        python ap_src/manage.py test ap_app.tests
