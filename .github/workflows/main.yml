@@ -43,10 +43,13 @@ jobs:
         python3 ap_src/manage.py makemigrations
         echo "Running Migrations"
         python3 ap_src/manage.py migrate ap_app
-        
+
         for FILE in ap_src/ap_app/fixtures/*; 
         do python3 ap_src/manage.py loaddata $FILE; done
         
+        echo "Collecting Static Files"
+        python3 ap_src/manage.py collectstatic --noinput
+
     - name: Install Testing Dependencies
       run: |
         pip3 install pytest
