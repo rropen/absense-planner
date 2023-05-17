@@ -43,6 +43,7 @@ jobs:
         python3 ap_src/manage.py makemigrations
         echo "Running Migrations"
         python3 ap_src/manage.py migrate ap_app
+        python3 ap_src/manage.py migrate
 
         for FILE in ap_src/ap_app/fixtures/*; 
         do python3 ap_src/manage.py loaddata $FILE; done
