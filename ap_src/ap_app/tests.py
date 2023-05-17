@@ -1,15 +1,29 @@
+import pytest
 from django.test import TestCase
 from seleniumbase import BaseCase
 
-class TestCases(BaseCase):
-    username = "testuser"
-    password = "Password!1"
-    USERNAME_ID = "#id_username"
-    PASSWORD_ID = "#id_password"
-    
-    def test_signup(self):
-        PASSWORD_ID1 = "#id_password1"
-        PASSWORD_ID2 = "#id_password2"
+# constants for correct credentials
+CORRECT_USERNAME = "testuser"
+CORRECT_PASSWORD = "Password!1"
+# password ids for forms
+USERNAME_ID = "#id_username"
+PASSWORD_ID = "#id_password"
+@pytest.mark.order1
+class TestSignup(BaseCase):
+    """Conatins all tests for the signup page"""
+    # password ids for signup page
+    PASSWORD_ID1 = "#id_password1"
+    PASSWORD_ID2 = "#id_password2"
+
+    def signup_details(self, username = CORRECT_USERNAME, password = CORRECT_PASSWORD):
+        """Used a template for typing values in the signup page when testing,
+         if not entered the username and password will default to successful values"""
+        self.type(USERNAME_ID, username)
+        self.type(self.PASSWORD_ID1, password)
+        self.type(self.PASSWORD_ID2, password)
+        self.click('button:contains("Sign Up")')
+
+    def test_nav(self):
         # opens the website to the home page
         self.open("http://127.0.0.1:8000")
         
@@ -18,16 +32,57 @@ class TestCases(BaseCase):
         
         # checks if the page is loaded
         self.assert_title("Sign Up - RR Absence")
+
+    def test_presence(self):
+        # opens the website to the signup page
+        self.open("http://127.0.0.1:8000/signup/")     
         
-        # enters incorrect login information
         # presence check
-        self.type(self.USERNAME_ID, "")
-        self.type(PASSWORD_ID1, "")
-        self.type(PASSWORD_ID2, "")
-        self.click('button:contains("Sign Up")')
-        self.assert_url("http://127.0.0.1:8000/signup")
+        self.signup_details(username="", password = "")
         
-    def test_login(self):
+        # A django error appears which cannot be checked so
+        # checking the credentials have not been allowed with the lack of a redirect
+        self.assert_url("http://127.0.0.1:8000/signup/")
+
+    def test_username(self):
+        # opens the website to the signup page
+        self.open("http://127.0.0.1:8000/signup/")  
+
+        # type checks
+
+        self.signup_details(username="!")
+        # checking the error message
+        self.assert_text("Enter a valid username") 
+
+        self.signup_details(username=":")
+        # checking for error text
+        self.assert_text("Enter a valid username") 
+
+        self.signup_details(username="%")
+        # checking for error text
+        self.assert_text("Enter a valid username")
+
+    def test_password(self):
+        # opens the website to the signup page
+        self.open("http://127.0.0.1:8000/signup/")  
+
+        # testing password validation 
+
+        self.signup_details(password="a")
+        # checking the credentials have not been allowed by making sure it has not left the page
+        self.assert_url("http://127.0.0.1:8000/signup/")
+
+    def test_correct(self):
+        # opens the website to the signup page
+        self.open("http://127.0.0.1:8000/signup/")  
+
+        # enters correct credentials
+        self.signup_details()
+
+
+class TestLogin(BaseCase):
+    """Contains all tests for login page"""
+    def test_nav(self):
 
         # opens the website to the home page
         self.open("http://127.0.0.1:8000")
@@ -38,9 +93,13 @@ class TestCases(BaseCase):
         # checks if the page is loaded
         self.assert_title("Login - RR Absence")
         
+    def test_incorrect(self):
+        # opens the website to the login page
+        self.open("http://127.0.0.1:8000/accounts/login")
+
         # enters incorrect login information
-        self.type(self.USERNAME_ID, "user")
-        self.type(self.PASSWORD_ID, "password")
+        self.type(USERNAME_ID, "user")
+        self.type(PASSWORD_ID, "password")
         
         # submits form
         self.click('button:contains("Login")')
@@ -50,12 +109,13 @@ class TestCases(BaseCase):
         # check for error message 
         self.assert_text("Please enter a correct username and password", ".message")
         
-        # scroll down
-        self.scroll_to_bottom()
-        
+    def test_correct(self):
+        # opens the website to the login page
+        self.open("http://127.0.0.1:8000/accounts/login")
+
         # enter correct details
-        self.type(self.USERNAME_ID, self.username)
-        self.type(self.PASSWORD_ID, self.password)
+        self.type(USERNAME_ID, CORRECT_USERNAME)
+        self.type(PASSWORD_ID, CORRECT_PASSWORD)
         
         # submits form
         self.click('button:contains("Login")')
