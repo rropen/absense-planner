@@ -51,13 +51,11 @@ jobs:
       run: |
         pip3 install pytest
         pip3 install coverage
-    
-    - name: Coverage
-      run: |
-        coverage run -m pytest
 
     - name: Run Tests
       run: |
         echo Running Application Tests With SeleniumBase
         python ap_src/manage.py test ap_app
+        
+
         
