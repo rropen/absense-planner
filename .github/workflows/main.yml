@@ -45,6 +45,4 @@ jobs:
 
     - name: Run Tests
       run: |
-        python programEntry test
-
-# change
+        pytest ap_src/ap_app/tests.py
