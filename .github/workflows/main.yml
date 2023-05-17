@@ -58,6 +58,6 @@ jobs:
 
     - name: Run Tests
       run: |
-        echo Running Application
-        python ap_src/manage.py test ap_app.tests
+        echo Running Application Tests With SeleniumBase
+        python ap_src/manage.py test ap_app
         
