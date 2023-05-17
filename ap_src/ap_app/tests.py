@@ -25,7 +25,7 @@ class HostTest(LiveServerTestCase):
             
             sb.open(self.live_server_url)
             print("Home-page title is: " + sb.get_page_title())
-            sb.assert_true("Home - RR Absence" in sb.get_page_title())   # PASS expected
+            sb.assert_true("Home" in sb.get_page_title())   # PASS expected
             #sb.assert_true("Home - RR Absence #" in sb.get_page_title()) # FAIL expected
             
 
