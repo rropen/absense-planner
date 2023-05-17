@@ -45,6 +45,7 @@ jobs:
         python3 ap_src/manage.py migrate ap_app
         python3 ap_src/manage.py migrate
 
+        echo "Loading Fixtures"
         for FILE in ap_src/ap_app/fixtures/*; 
         do python3 ap_src/manage.py loaddata $FILE; done
         
@@ -54,12 +55,17 @@ jobs:
     - name: Install Testing Dependencies
       run: |
         pip3 install pytest
+        pip3 install pytest-django
         pip3 install coverage
 
     - name: Run Tests
       run: |
+        pwd
+        echo "Going into 'ap_src' Directory to execute pytests"
+        cd ap_src
         echo Running Application Tests With SeleniumBase
-        python ap_src/manage.py test ap_app
+        pytest
+        
         
 
         
