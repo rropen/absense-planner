@@ -38,10 +38,10 @@ class TestBasicTemplate(LiveServerTestCase, BaseCase):
         self.assert_true("Home" in self.get_page_title(), msg="[TESTING CODE ERROR]: Not on Home-Page - Title does not match")
         
             
-    def test_example_fail(self):
-        # FAIL expected
-        self.demo_mode = DEMO
-        self.headless = (DEMO is False)
+    # def test_example_fail(self):
+    #     # FAIL expected
+    #     self.demo_mode = DEMO
+    #     self.headless = (DEMO is False)
 
-        self.open(self.live_server_url)
-        self.assert_true("This is Not In Title" in self.get_page_title(), msg="[TESTING CODE ERROR]: Not on Home-Page - Title does not match")
+    #     self.open(self.live_server_url)
+    #     self.assert_true("This is Not In Title" in self.get_page_title(), msg="[TESTING CODE ERROR]: Not on Home-Page - Title does not match")
