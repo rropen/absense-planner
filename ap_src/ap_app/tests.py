@@ -132,8 +132,6 @@ class TestLogin(BaseCase):
         # submits form
         self.click('button:contains("Login")')
         
-# Create your tests here.
-
 class rr_test_cases(BaseCase):
 
     def test_remove_member(self):
