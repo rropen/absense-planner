@@ -18,23 +18,20 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: [3.7, 3.8, 3.9]
-      
-        # Variables Used
-        variables:
-        - name: programEntry
-          value: ap_src/manage.py
+        program-entry: ap_src/manage.py
+       
     
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python 3.8
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
-        python-version: 3.8
+        python-version: ${{ matrix.python-version }}
     - name: Install Application Dependencies
       run: |
         python -m pip install --upgrade pip
         pip3 install -r requirements.txt
-        
+        echo "Collecting SeleniumBase & ChromeDriver"
         python -m pip install seleniumbase
         sbase get chromedriver latest
     - name: Set up Django Environment
@@ -54,19 +51,10 @@ jobs:
 
     - name: Install Testing Dependencies
       run: |
-        pip3 install pytest
         pip3 install pytest-django
-        pip3 install coverage
         pip3 install pytest-cov
 
     - name: Run Tests
       run: |
-        pwd
-       
-      
         echo Running Application Tests With SeleniumBase
         pytest --cov=ap_app ap_src/ap_app
-        
-        
-
-        
