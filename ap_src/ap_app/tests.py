@@ -27,6 +27,7 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         print(f"[Test] Mode = {'DEMO' if DEMO else 'Headless'}")
 
     # Basic test examples
+    @pytest.mark.order1
     def test_example_pass(self):
         self.demo_mode = DEMO
         self.headless = (DEMO is False)
@@ -36,7 +37,7 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         self.assert_true("Home" in self.get_page_title(), msg="[TESTING CODE ERROR]: Not on Home-Page - Title does not match")
         self.click("/html/body/nav/div[2]/div[2]/div/div/div/a[1]")
 
-
+    @pytest.mark.order2
     def test_example_fail(self):
         self.demo_mode = DEMO
         self.headless = (DEMO is False)
