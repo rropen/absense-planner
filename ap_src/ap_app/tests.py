@@ -15,7 +15,7 @@ class TestSignup(BaseCase):
     PASSWORD_ID1 = "#id_password1"
     PASSWORD_ID2 = "#id_password2"
 
-    def signup_details(self, username = CORRECT_USERNAME, password = CORRECT_PASSWORD):
+    def auto_signup(self, username = CORRECT_USERNAME, password = CORRECT_PASSWORD):
         """Used a template for typing values in the signup page when testing,
          if not entered the username and password will default to successful values"""
         self.type(USERNAME_ID, username)
@@ -38,7 +38,7 @@ class TestSignup(BaseCase):
         self.open("http://127.0.0.1:8000/signup/")     
         
         # presence check
-        self.signup_details(username="", password = "")
+        self.auto_signup(username="", password = "")
         
         # A django error appears which cannot be checked so
         # checking the credentials have not been allowed with the lack of a redirect
@@ -50,15 +50,15 @@ class TestSignup(BaseCase):
 
         # type checks
 
-        self.signup_details(username="!")
+        self.auto_signup(username="!")
         # checking the error message
         self.assert_text("Enter a valid username") 
 
-        self.signup_details(username=":")
+        self.auto_signup(username=":")
         # checking for error text
         self.assert_text("Enter a valid username") 
 
-        self.signup_details(username="%")
+        self.auto_signup(username="%")
         # checking for error text
         self.assert_text("Enter a valid username")
 
@@ -68,7 +68,7 @@ class TestSignup(BaseCase):
 
         # testing password validation 
 
-        self.signup_details(password="a")
+        self.auto_signup(password="a")
         # checking the credentials have not been allowed by making sure it has not left the page
         self.assert_url("http://127.0.0.1:8000/signup/")
 
@@ -77,7 +77,7 @@ class TestSignup(BaseCase):
         self.open("http://127.0.0.1:8000/signup/")  
 
         # enters correct credentials
-        self.signup_details()
+        self.auto_signup()
 
 
 class TestLogin(BaseCase):
@@ -92,6 +92,18 @@ class TestLogin(BaseCase):
         
         # checks if the page is loaded
         self.assert_title("Login - RR Absence")
+
+    def test_presence(self):
+        # opens the website to the signup page
+        self.open("http://127.0.0.1:8000/accounts/login/")     
+        
+        # presence check
+        self.type(USERNAME_ID, "")
+        self.type(PASSWORD_ID, "")
+        
+        # A django error appears which cannot be checked so
+        # checking the credentials have not been allowed with the lack of a redirect
+        self.assert_url("http://127.0.0.1:8000/accounts/login/")
         
     def test_incorrect(self):
         # opens the website to the login page
@@ -120,4 +132,3 @@ class TestLogin(BaseCase):
         # submits form
         self.click('button:contains("Login")')
         
-    

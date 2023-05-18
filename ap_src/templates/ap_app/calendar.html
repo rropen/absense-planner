@@ -74,81 +74,54 @@
             <div class="level mb-0">
                 <div class="level-left">
                     
-                    
-                    <a href="/calendar/{{current_month}}/{{current_year}}" class="mr-4">
-                        <p class="buttons">
-                            <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-sync"></i>
-                                </span>
-                            </button>
-                        </p>
+                    <!-- reset button to take user back to present -->
+                    <a href="/calendar/{{current_month}}/{{current_year}}" class="mr-4 button">
+                        <span class="icon ">
+                            <i class="fas fa-sync"></i>
+                        </span>
                     </a>
 
                     <!-- If the user is in the current year then they cannot go back a year or month and view historical data -->
                     {% if current_year == year %}
-
+                    
                     {% if current_month_num == month_num %}
-
-                    <a href="" class="noHover">
-                        <p class="buttons">
-                            <button class="button " disabled>
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-left"></i>
-                                </span>
-                            </button>
-                        </p>
+                    
+                    <a id="previous" href="" class="noHover button" aria-disabled="true" disabled>
+                        <span class="icon">
+                            <i class="fas fa-arrow-left"></i>
+                        </span>
                     </a>
-                    <a href="/calendar/{{next_month}}/{{year}}">
-                        <p class="buttons">
-                            <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-right"></i>
-                                </span>
-                            </button>
-                        </p>
+
+                    <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
                     </a>
 
                     {% elif month_num == 12 %}
 
-                    <a href="/calendar/{{previous_month}}/{{year}}">
-                        <p class="buttons">
-                            <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-left"></i>
-                                </span>
-                            </button>
-                        </p>
+                    <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-left"></i>
+                        </span>
                     </a>
-                    <a href="/calendar/January/{{next_year}}">
-                        <p class=" buttons">
-                            <button class="button">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-right"></i>
-                                </span>
-                            </button>
-                        </p>
+                    <a id="next" href="/calendar/January/{{next_year}}" class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
                     </a>
 
                     {% else %}
 
-                    <a href="/calendar/{{previous_month}}/{{year}}">
-                        <p class="buttons">
-                            <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-left"></i>
-                                </span>
-                            </button>
-                        </p>
+                    <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-left"></i>
+                        </span>
                     </a>
-                    <a href="/calendar/{{next_month}}/{{year}}">
-                        <p class="buttons">
-                            <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-right"></i>
-                                </span>
-                            </button>
-                        </p>
+                    <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
                     </a>
 
                     {% endif %}
@@ -156,66 +129,42 @@
                     {% elif current_year|add:"2" == next_year %}
                     {% if month_num == 1 %}
 
-                    <a href="/calendar/December/{{previous_year}}">
-                        <p class="buttons">
-                            <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-left"></i>
-                                </span>
-                            </button>
-                        </p>
+                    <a id="previous" href="/calendar/December/{{previous_year}}" class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-left"></i>
+                        </span>
                     </a>
-                    <a href="/calendar/{{next_month}}/{{year}}">
-                        <p class="buttons">
-                            <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-right"></i>
-                                </span>
-                            </button>
-                        </p>
+                    <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
                     </a>
 
                     {% elif month_num == 12 %}
 
-                    <a href="/calendar/{{previous_month}}/{{year}}">
-                        <p class="buttons">
-                            <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-left"></i>
-                                </span>
-                            </button>
-                        </p>
+                    <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-left"></i>
+                        </span>
                     </a>
-                    <a href="" class="noHover">
-                        <p class="buttons">
-                            <button class="button " disabled>
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-right"></i>
-                                </span>
-                            </button>
-                        </p>
+                    <a id="next" href="" class="noHover button" aria-disabled="true" disabled>
+                        <span class="icon ">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
                     </a>
 
 
                     {% else %}
 
-                    <a href="/calendar/{{previous_month}}/{{year}}">
-                        <p class="buttons">
-                            <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-left"></i>
-                                </span>
-                            </button>
-                        </p>
+                    <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-left"></i>
+                        </span>
                     </a>
-                    <a href="/calendar/{{next_month}}/{{year}}">
-                        <p class="buttons">
-                            <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-right"></i>
-                                </span>
-                            </button>
-                        </p>
+                    <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
                     </a>
                     {% endif %}
                     {% endif %}
