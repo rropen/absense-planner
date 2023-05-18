@@ -48,7 +48,7 @@
                         <a class="button is-info" href="{% url 'demote_team_member' team.id User.user.id%}">Demote to Member</a>
                         {% endif %}
                         {% if User.role != owner %}
-                        <a class="button is-danger" href="{% url 'remove_team_member' team.id User.user.id %}">Remove</a>
+                        <a class="button is-danger" id="{{User.user.username}}" href="{% url 'remove_team_member' team.id User.user.id %}">Remove</a>
                         {% endif %}
                     </div>
                 </div>
