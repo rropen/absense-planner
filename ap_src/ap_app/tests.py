@@ -18,7 +18,8 @@ DEMO = False
 
 
 class TestSuiteTemplate(LiveServerTestCase, BaseCase):
-    """ Testing Suite Class - Implement any tests inside its own method - (Methods to be tests must start with "test_*") """
+    """ Testing Suite Class - Implement any tests inside
+    its own method - (Methods to be tests must start with "test_*") """
     
     @pytest.fixture
     def setup(self):
@@ -34,7 +35,8 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
 
         # PASS expected
         self.open(self.live_server_url)
-        self.assert_true("Home" in self.get_page_title(), msg="[TESTING CODE ERROR]: Not on Home-Page - Title does not match")
+        self.assert_true("Home" in self.get_page_title(),
+            msg="[TESTING CODE ERROR]: Not on Home-Page - Title does not match")
         #self.click("/html/body/nav/div[2]/div[2]/div/div/div/a[1]")
 
     @pytest.mark.order2
@@ -44,4 +46,5 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         
         # FAIL expected
         self.open(self.live_server_url)
-        self.assert_true("This is Not In Title" in self.get_page_title(), msg="[TESTING CODE ERROR]: Not on Home-Page - Title does not match")
+        self.assert_true("This is Not In Title" in self.get_page_title(),
+            msg="[TESTING CODE ERROR]: Not on Home-Page - Title does not match")
