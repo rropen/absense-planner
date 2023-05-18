@@ -23,11 +23,12 @@
             {{ form }}
             
             {{ form.media }}
+            {% for error in form.errors %}
             <div class="pt-6 pb-3">
                 {{ form2 | bulma }}
             </div>
             
-            <button type="submit" class="button is-fullwidth is-link">Submit</button>
+            <button id="submit" type="submit" class="button is-fullwidth is-link">Submit</button>
         </div>
 
     </form>

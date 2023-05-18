@@ -144,10 +144,10 @@
                 </a>
                 <a href="{% url 'logout' %}" class="button is-light">Log out</a>
             {% else %}
-                <a href="{% url 'signup' %}" class="button is-info">
+                <a id="signup" href="{% url 'signup' %}" class="button is-info">
                   <strong>Sign up</strong>
                 </a>
-                <a href="{% url 'login' %}" class="button is-light">
+                <a id="login" href="{% url 'login' %}" class="button is-light">
                   Log in
                 </a>
             {% endif %}

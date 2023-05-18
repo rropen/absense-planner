@@ -69,134 +69,98 @@
             </div>
             <div class="level">
                 <div class="level-left">
-                    <a href="/teams/calendar/{{team.id}}/{{current_month}}/{{year}}" class="mr-4">
-                        <p class="buttons">
-                            <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-sync"></i>
-                                </span>
-                            </button>
-                        </p>
+                    <a href="/teams/calendar/{{team.id}}/{{current_month}}/{{year}}" class="mr-4 button">
+                        <span class="icon ">
+                            <i class="fas fa-sync"></i>
+                        </span>
                     </a>
 
-                    <!-- Month limiter - December the next year -->
-                    {% if month_num == 12 %}
-                    {% if current_year|add:2 == next_year %}
-                    <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}">
-                        <p class="buttons">
-                            <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-left"></i>
-                                </span>
-                            </button>
-                        </p>
+                    <!-- If the user is in the current year then they cannot go back a year or month and view historical data -->
+                    {% if current_year == year %}
+                    
+                    {% if current_month_num == month_num %}
+                    
+                    <a id="previous" href="" class="noHover button" aria-disabled="true" disabled>
+                        <span class="icon">
+                            <i class="fas fa-arrow-left"></i>
+                        </span>
                     </a>
 
-                    <a href="" class="noHover">
-                        <p class="buttons">
-                            <button class="button " disabled>
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-right"></i>
-                                </span>
-                            </button>
-                        </p>
+                    <a id="next" href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}" class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
                     </a>
 
+                    {% elif month_num == 12 %}
 
+                    <a id="previous" href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}" class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-left"></i>
+                        </span>
+                    </a>
+                    <a id="next" href="/teams/calendar/{{team.id}}/January/{{next_year}}" class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </a>
 
                     {% else %}
-                    <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}">
-                        <p class="buttons">
-                            <button class="button">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-left"></i>
-                                </span>
-                            </button>
-                        </p>
+
+                    <a id="previous" href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}" class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-left"></i>
+                        </span>
                     </a>
-
-
-                    <a href="/teams/calendar/{{team.id}}/January/{{next_year}}"">
-                        <p class=" buttons">
-                        <button class="button">
-                            <span class="icon ">
-                                <i class="fas fa-arrow-right"></i>
-                            </span>
-                        </button>
-                        </p>
+                    <a id="next" href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}" class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
                     </a>
 
                     {% endif %}
 
+                    {% elif current_year|add:"2" == next_year %}
+                    {% if month_num == 1 %}
 
-                    <!-- Start of the previous year - January -->
-                    {% elif month_num == 1 or current_month_num == month_num %}
-                    {% if current_year > previous_year %}
-                    <a href="" class="noHover">
-                        <p class="buttons">
-                            <button class="button" disabled>
-                                <span class="icon">
-                                    <i class="fas fa-arrow-left"></i>
-                                </span>
-                            </button>
-                        </p>
+                    <a id="previous" href="/teams/calendar/{{team.id}}/December/{{previous_year}}" class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-left"></i>
+                        </span>
+                    </a>
+                    <a id="next" href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}" class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
                     </a>
 
-                    <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}">
-                        <p class="buttons">
-                            <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-right"></i>
-                                </span>
-                            </button>
-                        </p>
+                    {% elif month_num == 12 %}
+
+                    <a id="previous" href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}" class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-left"></i>
+                        </span>
                     </a>
+                    <a id="next" href="" class="noHover button" aria-disabled="true" disabled>
+                        <span class="icon ">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </a>
+
 
                     {% else %}
-                    <a href="/teams/calendar/{{team.id}}/December/{{previous_year}}">
-                        <p class="buttons">
-                            <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-left"></i>
-                                </span>
-                            </button>
-                        </p>
-                    </a>
 
-                    <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}">
-                        <p class="buttons">
-                            <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-right"></i>
-                                </span>
-                            </button>
-                        </p>
+                    <a id="previous" href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}" class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-left"></i>
+                        </span>
                     </a>
-
+                    <a id="next" href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}" class="button">
+                        <span class="icon ">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </a>
                     {% endif %}
-
-                    <!-- How the page looks by default upon landing -->
-                    {% else %}
-                    <a href="/teams/calendar/{{team.id}}/{{previous_month}}/{{year}}">
-                        <p class="buttons">
-                            <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-left"></i>
-                                </span>
-                            </button>
-                        </p>
-                    </a>
-
-                    <a href="/teams/calendar/{{team.id}}/{{next_month}}/{{year}}">
-                        <p class="buttons">
-                            <button class="button ">
-                                <span class="icon ">
-                                    <i class="fas fa-arrow-right"></i>
-                                </span>
-                            </button>
-                        </p>
-                    </a>
-
                     {% endif %}
                     <span class="is-size-4 mb-0 px-3">{{month}} {{year}}</span>
                 </div>

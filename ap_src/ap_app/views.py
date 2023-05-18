@@ -4,18 +4,17 @@
 
 import calendar
 import datetime
-import holidays
+import json
 from datetime import timedelta
 
-import json
-from django.http import JsonResponse
+import holidays
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models.functions import Lower
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.timezone import now
@@ -104,7 +103,7 @@ def create_team(request) -> render:
                 "Debug: Did not create form because the name is too similar to another team name"
             )
 
-        elif form.is_valid():
+        if form.is_valid():
             form.save()
             # Gets the created team and "Owner" Role and creates a Link between
             # the user and their team
