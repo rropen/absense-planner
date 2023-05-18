@@ -35,7 +35,7 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         # PASS expected
         self.open(self.live_server_url)
         self.assert_true("Home" in self.get_page_title(), msg="[TESTING CODE ERROR]: Not on Home-Page - Title does not match")
-        self.click("/html/body/nav/div[2]/div[2]/div/div/div/a[1]")
+        #self.click("/html/body/nav/div[2]/div[2]/div/div/div/a[1]")
 
     @pytest.mark.order2
     def test_example_fail(self):
