@@ -57,6 +57,7 @@ jobs:
         pip3 install pytest
         pip3 install pytest-django
         pip3 install coverage
+        pip3 install pytest-cov
 
     - name: Run Tests
       run: |
@@ -64,7 +65,7 @@ jobs:
         echo "Going into 'ap_src' Directory to execute pytests"
         cd ap_src
         echo Running Application Tests With SeleniumBase
-        pytest
+        pytest --cov=ap_app ap_src/ap_app
         
         
 
