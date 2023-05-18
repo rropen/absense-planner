@@ -1,6 +1,6 @@
 import pytest
 from django.test import LiveServerTestCase
-from seleniumbase import SB
+from seleniumbase import BaseCase
 
 #TODO: Add id's to web-page elements being used during testing, instead of using xPaths 
 #NOTE: 
@@ -13,20 +13,35 @@ from seleniumbase import SB
 
 # Consts 
 DEMO = False
-#change
 
-class TestBasicTemplate(LiveServerTestCase):
-    def test_example(self):
-        print(
-            "[Application]: Running SeleniumBase Commands Now" \
-            f"LiveServer running on: {self.live_server_url}"
-            )
 
-        with SB(demo=DEMO, headless=(DEMO is False)) as sb:
-            sb.open(self.live_server_url)
+
+class TestBasicTemplate(LiveServerTestCase, BaseCase):
+    """ Testing Suite Class - Implement any tests inside its own method - (Methods to be tests must start with "test_*") """
+
+    # def setup(self, method=None):
+    #     print(
+    #         "[Test]: Running SeleniumBase Commands Now" \
+    #         f"LiveServer running on: {self.live_server_url}"
+    #         )
+    #     if method:
+    #         method()
+
+
+    # Basic test examples
+    def test_example_pass(self):
+        # PASS expected
+        self.demo_mode = DEMO
+        self.headless = (DEMO is False)
+
+        self.open(self.live_server_url)
+        self.assert_true("Home" in self.get_page_title(), msg="[TESTING CODE ERROR]: Not on Home-Page - Title does not match")
+        
             
-            # Basic test examples
-            # PASS expected
-            sb.assert_true("Home" in sb.get_page_title(), msg="[TESTING CODE ERROR]: Not on Home-Page - Title does not match")   
-            # FAIL expected
-           # sb.assert_true("This is not in title" in sb.get_page_title(), msg="[TESTING CODE ERROR]: Not on Home-Page - Title does not match") 
+    def test_example_fail(self):
+        # FAIL expected
+        self.demo_mode = DEMO
+        self.headless = (DEMO is False)
+
+        self.open(self.live_server_url)
+        self.assert_true("This is Not In Title" in self.get_page_title(), msg="[TESTING CODE ERROR]: Not on Home-Page - Title does not match")
