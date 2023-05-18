@@ -8,19 +8,22 @@ CORRECT_PASSWORD = "Password!1"
 # password ids for forms
 USERNAME_ID = "#id_username"
 PASSWORD_ID = "#id_password"
-@pytest.mark.order1
+# password ids for signup page
+PASSWORD_ID1 = "#id_password1"
+PASSWORD_ID2 = "#id_password2"
+
+
+
+
+@pytest.mark.order(index=1)
 class TestSignup(BaseCase):
     """Conatins all tests for the signup page"""
-    # password ids for signup page
-    PASSWORD_ID1 = "#id_password1"
-    PASSWORD_ID2 = "#id_password2"
-
     def auto_signup(self, username = CORRECT_USERNAME, password = CORRECT_PASSWORD):
         """Used a template for typing values in the signup page when testing,
-         if not entered the username and password will default to successful values"""
+            if not entered the username and password will default to successful values"""
         self.type(USERNAME_ID, username)
-        self.type(self.PASSWORD_ID1, password)
-        self.type(self.PASSWORD_ID2, password)
+        self.type(PASSWORD_ID1, password)
+        self.type(PASSWORD_ID2, password)
         self.click('button:contains("Sign Up")')
 
     def test_nav(self):
@@ -132,6 +135,30 @@ class TestLogin(BaseCase):
         # submits form
         self.click('button:contains("Login")')
         
+class test_add_absence(BaseCase):
+    def test_add_normal(self):
+        self.open("http://127.0.0.1:8000/absence/add")
+        self.type(USERNAME_ID, CORRECT_USERNAME)
+        self.type(PASSWORD_ID, CORRECT_PASSWORD)
+        self.click('button:contains("Login")')
+        self.assert_url("http://127.0.0.1:8000/absence/add")
+
+        # correct format
+        self.type("#id_start_date", "01/01/2023")
+        self.type("#id_end_date", "02/01/2023")
+        self.click("#submit")
+        self.assert_text("Absence successfully recorded")
+
+        # incorrect format
+        self.type("#id_start_date", "20/20/2022")
+        self.type("#id_end_date", "20/20/2022")
+        self.click("#submit")
+        self.assert_text("Absence successfully recorded")
+
+
+    def test_add_recurring(self):
+        pass
+
 class rr_test_cases(BaseCase):
 
     def test_remove_member(self):
