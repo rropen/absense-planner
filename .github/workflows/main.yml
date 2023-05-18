@@ -62,8 +62,8 @@ jobs:
     - name: Run Tests
       run: |
         pwd
-        echo "Going into 'ap_src' Directory to execute pytests"
-        cd ap_src
+       
+      
         echo Running Application Tests With SeleniumBase
         pytest --cov=ap_app ap_src/ap_app
         
