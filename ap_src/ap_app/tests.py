@@ -14,59 +14,66 @@ PASSWORD_ID1 = "#id_password1"
 PASSWORD_ID2 = "#id_password2"
 
 
-
 class rr_test_cases(BaseCase):
-
-    def auto_signup(self, username = CORRECT_USERNAME, password = CORRECT_PASSWORD):
+    def auto_signup(self, username=CORRECT_USERNAME, password=CORRECT_PASSWORD):
         """Used a template for typing values in the signup page when testing,
-            if not entered the username and password will default to successful values"""
+        if not entered the username and password will default to successful values"""
         self.type(USERNAME_ID, username)
         self.type(PASSWORD_ID1, password)
         self.type(PASSWORD_ID2, password)
         self.click('button:contains("Sign Up")')
-    
-    @parameterized.expand([["#signup","Sign Up - RR Absence"],["#login", "Login - RR Absence"]])
+
+    @parameterized.expand(
+        [["#signup", "Sign Up - RR Absence"], ["#login", "Login - RR Absence"]]
+    )
     def test_nav(self, id, title):
         # opens the website to the home page
         self.open("http://127.0.0.1:8000")
-        
+
         # clicks Signup button
         self.click(id)
-        
+
         # checks if the page is loaded
         self.assert_title(title)
 
-    @parameterized.expand([["accounts/login"],["signup"]])
+    @parameterized.expand([["accounts/login"], ["signup"]])
     def test_presence_check(self, page):
         # opens the website to the signup page
-        self.open(f"http://127.0.0.1:8000/{page}")     
+        self.open(f"http://127.0.0.1:8000/{page}")
         if "login" in page:
             self.type(USERNAME_ID, "")
-            self.type(PASSWORD_ID, "") 
+            self.type(PASSWORD_ID, "")
         else:
-            self.auto_signup(username="", password = "")
-        
+            self.auto_signup(username="", password="")
+
         # A django error appears which cannot be checked so
         # checking the credentials have not been allowed with the lack of a redirect
         self.assert_url("http://127.0.0.1:8000/signup/")
 
-    @parameterized.expand([["a","password is too short"],["password","password is too common"],["12345678", "password is entirely numeric"], ["testuser"," password is too similar to the username"]])
+    @parameterized.expand(
+        [
+            ["a", "password is too short"],
+            ["password", "password is too common"],
+            ["12345678", "password is entirely numeric"],
+            ["testuser", " password is too similar to the username"],
+        ]
+    )
     def test_signup_password(self, password, err_msg):
         # opens the website to the signup page
-        self.open("http://127.0.0.1:8000/signup/")  
+        self.open("http://127.0.0.1:8000/signup/")
 
-        # testing password validation 
+        # testing password validation
         self.auto_signup(password=password)
         # checking the credentials have not been allowed by making sure it has not left the page
         self.assert_text(err_msg)
 
     def test_signup_correct(self):
         # opens the website to the signup page
-        self.open("http://127.0.0.1:8000/signup/")  
+        self.open("http://127.0.0.1:8000/signup/")
 
         # enters correct credentials
         self.auto_signup()
-        
+
     def test_login_incorrect(self):
         # opens the website to the login page
         self.open("http://127.0.0.1:8000/accounts/login")
@@ -74,15 +81,15 @@ class rr_test_cases(BaseCase):
         # enters incorrect login information
         self.type(USERNAME_ID, "user")
         self.type(PASSWORD_ID, "password")
-        
+
         # submits form
         self.click('button:contains("Login")')
         # alternate way
-        #self.submit("#id_password")
-        
-        # check for error message 
+        # self.submit("#id_password")
+
+        # check for error message
         self.assert_text("Please enter a correct username and password", ".message")
-        
+
     def test_login_correct(self):
         # opens the website to the login page
         self.open("http://127.0.0.1:8000/accounts/login")
@@ -90,7 +97,7 @@ class rr_test_cases(BaseCase):
         # enter correct details
         self.type(USERNAME_ID, CORRECT_USERNAME)
         self.type(PASSWORD_ID, CORRECT_PASSWORD)
-        
+
         # submits form
         self.click('button:contains("Login")')
         self.assert_url("http://127.0.0.1:8000/")
@@ -118,57 +125,57 @@ class rr_test_cases(BaseCase):
     def test_add_recurring(self):
         pass
 
-
-
     def test_remove_member(self):
         self.open("http://127.0.0.1:8000/")
-        #Registering the "owner"
+        # Registering the "owner"
         self.click('//*[@id="navbarExampleTransparentExample"]/div[2]/div/div/div/a[1]')
-        self.type('//*[@id="id_username"]', 'testingusername')
+        self.type('//*[@id="id_username"]', "testingusername")
         self.type('//*[@id="id_password1"]', "abcABC123@")
-        self.type('//*[@id="id_password2"]', 'abcABC123@')
+        self.type('//*[@id="id_password2"]', "abcABC123@")
         self.click('//*[@id="content"]/div/form/button')
-        self.type('//*[@id="id_username"]', 'testingusername')
-        self.type('//*[@id="id_password"]', 'abcABC123@')
+        self.type('//*[@id="id_username"]', "testingusername")
+        self.type('//*[@id="id_password"]', "abcABC123@")
         self.click('//*[@id="content"]/div/form/button')
         self.click('//*[@id="terms"]')
         self.click('//*[@id="content"]/div/form/button')
 
-        #Creating the team
+        # Creating the team
         self.click('//*[@id="navbarExampleTransparentExample"]/div[1]/a[3]')
         self.click('//*[@id="content"]/div/div[1]/div[1]/a')
-        self.type('//*[@id="nameInput"]', 'Test Team')
-        self.type('//*[@id="id_description"]', 'A team to test removing members from a team.')
+        self.type('//*[@id="nameInput"]', "Test Team")
+        self.type(
+            '//*[@id="id_description"]', "A team to test removing members from a team."
+        )
         self.click('//*[@id="content"]/div/form/input[2]')
         self.click('//*[@id="navbarExampleTransparentExample"]/div[2]/div/div/div/a[2]')
 
-        #Registering a second member
+        # Registering a second member
         self.click('//*[@id="navbarExampleTransparentExample"]/div[2]/div/div/div/a[1]')
-        self.type('//*[@id="id_username"]', 'testmember')
+        self.type('//*[@id="id_username"]', "testmember")
         self.type('//*[@id="id_password1"]', "abcABC123@")
-        self.type('//*[@id="id_password2"]', 'abcABC123@')
+        self.type('//*[@id="id_password2"]', "abcABC123@")
         self.click('//*[@id="content"]/div/form/button')
-        self.type('//*[@id="id_username"]', 'testmember')
-        self.type('//*[@id="id_password"]', 'abcABC123@')
+        self.type('//*[@id="id_username"]', "testmember")
+        self.type('//*[@id="id_password"]', "abcABC123@")
         self.click('//*[@id="content"]/div/form/button')
         self.click('//*[@id="terms"]')
         self.click('//*[@id="content"]/div/form/button')
 
-        #Joining the team
+        # Joining the team
         self.click('//*[@id="navbarExampleTransparentExample"]/div[1]/a[3]')
         self.click('//*[@id="content"]/div/div[1]/div[2]/a')
         self.click('//*[@id="Test Team"]')
         self.click('//*[@id="navbarExampleTransparentExample"]/div[2]/div/div/div/a[2]')
 
-        #Logging in as the owner
+        # Logging in as the owner
         self.click('//*[@id="content"]/container/div/a')
-        self.type('//*[@id="id_username"]', 'testingusername')
-        self.type('//*[@id="id_password"]', 'abcABC123@')
+        self.type('//*[@id="id_username"]', "testingusername")
+        self.type('//*[@id="id_password"]', "abcABC123@")
         self.click('//*[@id="content"]/div/form/button')
         self.click('//*[@id="terms"]')
         self.click('//*[@id="content"]/div/form/button')
 
-        #Removing a member from the team
+        # Removing a member from the team
         self.click('//*[@id="navbarExampleTransparentExample"]/div[1]/a[3]')
         self.click('//*[@id="Test Team"]')
         self.click('//*[@id="content"]/div/section/div/div[1]/div[2]/a[3]')
