@@ -10,7 +10,7 @@ on:
 # - For consistency, using PIP in virtual unbuntu environment instead of anaconda
 # - 
     
-    
+
 jobs:
   build:
     runs-on: ubuntu-latest

@@ -4,19 +4,21 @@ from seleniumbase import BaseCase
 
 #TODO: Add id's to web-page elements being used during testing, instead of using xPaths 
 #NOTE: 
-# - If executing in terminal with pytest, must run command inside "ap_src" directory - (where "pytest.ini" is located)
-# - Example in terminal: C:\[BASE_DIR]\ap_src> pytest
-# - Although using Coverage is recommended as will produces a report of lines covered in testing suite
-# - Example in terminal using coverage: C:\[BASE_DIR]> pytest --cov=ap_app ap_src/ap_app
-# main.yml does this automatically in CI pipeline. 
+# Method of executing tests locally from command-line:
+# C:\[BASE_DIR]> pytest --cov=ap_app ap_src/ap_app
+# Before running tests make sure you have pip installed:
+# - pytest-cov
+# - pytest-django
+# You can choose to hide warnings specifying: --
+# main.yml does this all automatically in CI Testing pipeline. 
 
-# LiveServerTestCase is used to run the django application on an alternative thread, while tests are being executed
-# SB - Driver
+# LiveServerTestCase - Used to run the django application on an alternative thread, while tests are being executed
+# BaseCase - Driver
 
 # Consts 
+# Activating "DEMO" will tell selenium to simulate the UI actions during testing
 DEMO = True
-USERNAME = "RandomUsername"
-PASSWORD = "R@nD0mP@ssW0rD"
+
 
 class TestSuiteTemplate(LiveServerTestCase, BaseCase):
     """ Testing Suite Class - Implement any tests inside
@@ -30,8 +32,7 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         self.open(self.live_server_url)
         self.assert_true("Home" in self.get_page_title(),
             msg="[ERROR]: Not on Home-Page - Title does not match")
-        self.click("/html/body/nav/div[2]/div[2]/div/div/div/a[1]")
-        self.send_keys("/html/body/container/div/div/form/div[1]/div/input", text=USERNAME)
+        
     
 
     def test_example_fail(self):
