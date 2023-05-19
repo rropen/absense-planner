@@ -14,37 +14,36 @@ from seleniumbase import BaseCase
 # SB - Driver
 
 # Consts 
-DEMO = False
+DEMO = True
 
 
 class TestSuiteTemplate(LiveServerTestCase, BaseCase):
     """ Testing Suite Class - Implement any tests inside
     its own method - (Methods to be tests must start with "test_*") """
     
-    @pytest.fixture
-    def setup(self):
-        self.demo_mode = DEMO
-        self.headless = (DEMO is False)
-        print(f"[Test] Mode = {'DEMO' if DEMO else 'Headless'}")
+    # @pytest.fixture
+    # def setup(self):
+    #     self.demo_mode = DEMO
+    #     self.headless = (DEMO is False)
+    #     print(f"[Test] Mode = {'DEMO' if DEMO else 'Headless'}")
 
-    # Basic test examples
+# Basic test examples
     @pytest.mark.order1
     def test_example_pass(self):
         self.demo_mode = DEMO
-        self.headless = (DEMO is False)
 
         # PASS expected
         self.open(self.live_server_url)
         self.assert_true("Home" in self.get_page_title(),
-            msg="[TESTING CODE ERROR]: Not on Home-Page - Title does not match")
-        #self.click("/html/body/nav/div[2]/div[2]/div/div/div/a[1]")
+            msg="[ERROR]: Not on Home-Page - Title does not match")
+        self.click("/html/body/nav/div[2]/div[2]/div/div/div/a[1]")
 
     @pytest.mark.order2
     def test_example_fail(self):
         self.demo_mode = DEMO
-        self.headless = (DEMO is False)
-        
+
         # FAIL expected
         self.open(self.live_server_url)
         self.assert_true("This is Not In Title" in self.get_page_title(),
-            msg="[TESTING CODE ERROR]: Not on Home-Page - Title does not match")
+            msg="[ERROR]: Not on Home-Page - Title does not match")
+        

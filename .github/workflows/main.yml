@@ -55,4 +55,4 @@ jobs:
     - name: Run Tests
       run: |
         echo Running Application Tests With SeleniumBase
-        pytest --cov=ap_app ap_src/ap_app
+        pytest --cov=ap_app ap_src/ap_app --headless --disable-warnings
