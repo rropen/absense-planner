@@ -1,10 +1,12 @@
 name: Django CI
 
 on:
-  push:
-    branches: [ "dev" ]
+  # push:
+  #   branches: [ "dev" ]
   pull_request:
-    branches: [ "dev" ]
+    branches: [ "Test" ]
+
+
 
 #NOTES: 
 # - For consistency, using PIP in virtual unbuntu environment instead of anaconda
@@ -21,7 +23,7 @@ jobs:
     
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python ${{ matrix.python-version }} 
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
@@ -46,6 +48,7 @@ jobs:
         
         echo "Collecting Static Files"
         python3 ap_src/manage.py collectstatic --noinput
+  
 
     - name: Install Testing Dependencies
       run: |
