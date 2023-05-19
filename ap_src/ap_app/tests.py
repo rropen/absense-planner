@@ -14,8 +14,9 @@ from seleniumbase import BaseCase
 # SB - Driver
 
 # Consts 
-DEMO = True
-
+DEMO = False
+USERNAME = "RandomUsername"
+PASSWORD = "R@nD0mP@ssW0rD"
 
 class TestSuiteTemplate(LiveServerTestCase, BaseCase):
     """ Testing Suite Class - Implement any tests inside
@@ -37,9 +38,21 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         self.assert_true("Home" in self.get_page_title(),
             msg="[ERROR]: Not on Home-Page - Title does not match")
         self.click("/html/body/nav/div[2]/div[2]/div/div/div/a[1]")
+        self.send_keys("/html/body/container/div/div/form/div[1]/div/input", text=USERNAME)
+        self.send_keys("/html/body/container/div/div/form/div[2]/div/input", text=PASSWORD)
+        self.send_keys("/html/body/container/div/div/form/div[3]/div/input", text=PASSWORD)
+        self.click("/html/body/container/div/div/form/button")
 
     @pytest.mark.order2
-    def test_example_fail(self):
+    def test_example2_pass(self):
+        self.demo_mode = DEMO
+
+        # PASS expected
+        self.open(self.live_server_url)
+        self.assert_element_present("/html/body/nav/div[2]/div[2]/div/div/div/a[1]")
+
+    @pytest.mark.order3
+    def test_example3_fail(self):
         self.demo_mode = DEMO
 
         # FAIL expected
