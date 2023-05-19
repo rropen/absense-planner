@@ -14,7 +14,7 @@ from seleniumbase import BaseCase
 # SB - Driver
 
 # Consts 
-DEMO = False
+DEMO = True
 USERNAME = "RandomUsername"
 PASSWORD = "R@nD0mP@ssW0rD"
 
@@ -22,12 +22,6 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
     """ Testing Suite Class - Implement any tests inside
     its own method - (Methods to be tests must start with "test_*") """
     
-    # @pytest.fixture
-    # def setup(self):
-    #     self.demo_mode = DEMO
-    #     self.headless = (DEMO is False)
-    #     print(f"[Test] Mode = {'DEMO' if DEMO else 'Headless'}")
-
 # Basic test examples
     def test_example_pass(self):
         self.demo_mode = DEMO
