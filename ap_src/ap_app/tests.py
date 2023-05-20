@@ -1,32 +1,47 @@
 import pytest
 from django.test import LiveServerTestCase
-from seleniumbase import SB
+from seleniumbase import BaseCase
 
 #TODO: Add id's to web-page elements being used during testing, instead of using xPaths 
 #NOTE: 
-# - If executing in terminal with pytest, must run command inside "ap_src" directory - (where "pytest.ini" is located)
-# - Example in terminal: C:\[BASE_DIR]\ap_src> pytest
-# main.yml does this automatically in CI pipeline. 
+# Method of executing tests locally from command-line:
+# C:\[BASE_DIR]> pytest --cov=ap_app ap_src/ap_app
+# Before running tests make sure you have pip installed:
+# - pytest-cov
+# - pytest-django
+# Useful Pytest arguments:
+# - specifying "--headless" SB will NOT open a browser during tests 
+# - specifying "--disable-warnings" pytest will hide all warnings
+# main.yml does this all automatically in CI Testing pipeline. 
 
-# LiveServerTestCase is used to run the django application on an alternative thread, while tests are being executed
-# SB - Driver
+# LiveServerTestCase - Used to run the django application on an alternative thread, while tests are being executed
+# BaseCase - Driver
 
 # Consts 
-DEMO = False
+# Activating "DEMO" will tell selenium to simulate the UI actions during testing
+DEMO = True
 
 
-class TestBasicTemplate(LiveServerTestCase):
-    def test_example(self):
-        print(
-            "[Application]: Running SeleniumBase Commands Now" \
-            f"LiveServer running on: {self.live_server_url}"
-            )
+class TestSuiteTemplate(LiveServerTestCase, BaseCase):
+    """ Testing Suite Class - Implement any tests inside
+    its own method - (Methods to be tests must start with "test_*") """
+    
+# Basic test examples
+    def test_example_pass(self):
+        self.demo_mode = DEMO
 
-        with SB(demo=DEMO, headless=(DEMO is False)) as sb:
-            sb.open(self.live_server_url)
-            
-            # Basic test examples
-            # PASS expected
-            sb.assert_true("Home" in sb.get_page_title(), msg="[TESTING CODE ERROR]: Not on Home-Page - Title does not match")   
-            # FAIL expected
-           # sb.assert_true("This is not in title" in sb.get_page_title(), msg="[TESTING CODE ERROR]: Not on Home-Page - Title does not match") 
+        # PASS expected
+        self.open(self.live_server_url)
+        self.assert_true("Home" in self.get_page_title(),
+            msg="[ERROR]: Not on Home-Page - Title does not match")
+        
+    
+
+    def test_example_fail(self):
+        self.demo_mode = DEMO
+
+        # FAIL expected
+        self.open(self.live_server_url)
+        self.assert_true("This is Not In Title" in self.get_page_title(),
+            msg="[ERROR]: Not on Home-Page - Title does not match")
+        
