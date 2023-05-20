@@ -65,7 +65,3 @@ jobs:
         cd ap_src
         echo Running Application Tests With SeleniumBase
         pytest
-        
-        
-
-        
