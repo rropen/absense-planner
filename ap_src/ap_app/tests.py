@@ -37,11 +37,11 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         
     
 
-    def test_example_fail(self):
-        self.demo_mode = DEMO
+    # def test_example_fail(self):
+    #     self.demo_mode = DEMO
 
-        # FAIL expected
-        self.open(self.live_server_url)
-        self.assert_true("This is Not In Title" in self.get_page_title(),
-            msg="[ERROR]: Not on Home-Page - Title does not match")
+    #     # FAIL expected
+    #     self.open(self.live_server_url)
+    #     self.assert_true("This is Not In Title" in self.get_page_title(),
+    #         msg="[ERROR]: Not on Home-Page - Title does not match")
         
