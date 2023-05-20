@@ -26,7 +26,19 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
     """ Testing Suite Class - Implement any tests inside
     its own method - (Methods to be tests must start with "test_*") """
     
-# Basic test examples
+
+    def test_element_presence(self):
+        """ This test will determine """
+        self.demo_mode = DEMO
+        TITLE_XPATH = "/html/body/section/div/p[1]"
+
+        self.open(self.live_server_url)
+        self.assert_element_present(TITLE_XPATH)
+
+
+
+# Demo test examples - (These are skipped)
+    @pytest.mark.skip
     def test_example_pass(self):
         self.demo_mode = DEMO
 
@@ -36,12 +48,12 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
             msg="[ERROR]: Not on Home-Page - Title does not match")
         
     
+    @pytest.mark.skip
+    def test_example_fail(self):
+        self.demo_mode = DEMO
 
-    # def test_example_fail(self):
-    #     self.demo_mode = DEMO
-
-    #     # FAIL expected
-    #     self.open(self.live_server_url)
-    #     self.assert_true("This is Not In Title" in self.get_page_title(),
-    #         msg="[ERROR]: Not on Home-Page - Title does not match")
+        # FAIL expected
+        self.open(self.live_server_url)
+        self.assert_true("This is Not In Title" in self.get_page_title(),
+            msg="[ERROR]: Not on Home-Page - Title does not match")
         
