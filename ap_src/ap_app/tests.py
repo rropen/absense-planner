@@ -77,7 +77,11 @@ class rr_test_cases(BaseCase):
 
         # enters correct credentials
         self.auto_signup()
-    @pytest.mark.order(2)
+
+        self.test_login_correct()
+        self.click("#terms")
+        self.click("#submit")
+        
     def test_login_incorrect(self):
         # opens the website to the login page
         self.open("http://127.0.0.1:8000/accounts/login")
@@ -125,8 +129,13 @@ class rr_test_cases(BaseCase):
         self.click("#submit")
         self.assert_text("Absence successfully recorded")
 
+    @pytest.mark.order(2)
     @pytest.mark.xfail
     def test_add_recurring(self):
+        self.test_login_correct()
+        self.click("#absence")
+        self.click("#recurring")
+        self.click("span:conatins('Add rule')")
         pass
 
     def test_remove_member(self):

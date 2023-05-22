@@ -132,3 +132,6 @@ static_root
 *.sqlite3
 *.pyc
 ap_src/db.sqlite3
+
+archived_logs
+latest_logs
