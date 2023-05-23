@@ -71,7 +71,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: BuiltAppArtifact
-        path: "home"
+        path: "requirements.txt"
 
   test:
     name: Test Application
