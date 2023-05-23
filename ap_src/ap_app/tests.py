@@ -17,7 +17,7 @@ PASSWORD_ID1 = "#id_password1"
 PASSWORD_ID2 = "#id_password2"
 
 
-class rr_test_cases(BaseCase):
+class RRTestCases(BaseCase):
 
     def auto_signup(self, username = USER, password = CORRECT_PASSWORD):
         """Used a template for typing values in the signup page when testing,
@@ -30,12 +30,12 @@ class rr_test_cases(BaseCase):
     @parameterized.expand(
         [["#signup", "Sign Up - RR Absence"], ["#login", "Login - RR Absence"]]
     )
-    def test_nav(self, id, title):
+    def test_nav(self, nav_id, title):
         # opens the website to the home page
         self.open("http://127.0.0.1:8000")
 
         # clicks Signup button
-        self.click(id)
+        self.click(nav_id)
 
         # checks if the page is loaded
         self.assert_title(title)
@@ -83,7 +83,7 @@ class rr_test_cases(BaseCase):
         self.click("#submit")
         
     def test_login_incorrect(self):
-        # opens the website to the login page
+        # opens the website to the login page 
         self.open("http://127.0.0.1:8000/accounts/login")
 
         # enters incorrect login information
@@ -130,15 +130,43 @@ class rr_test_cases(BaseCase):
         self.assert_text("Absence successfully recorded")
 
     @pytest.mark.order(2)
-    @pytest.mark.xfail
+    @pytest.mark.skip
     def test_add_recurring(self):
         self.test_login_correct()
         self.click("#absence")
         self.click("#recurring")
         self.click("span:conatins('Add rule')")
-        pass
 
-    def test_remove_member(self):
+    def test_teams_join(self):
+        self.open("http://127.0.0.1:8000/signup")
+        self.auto_signup(username = USER1)
+        # opens the website to the login page
+        self.open("http://127.0.0.1:8000/accounts/login")
+
+        # enter correct details
+        self.type(USERNAME_ID, USER1)
+        self.type(PASSWORD_ID, CORRECT_PASSWORD)
+
+        # submits form
+        self.click('button:contains("Login")')
+        self.click("#terms")
+        self.click("#submit")
+        # User 2
+        self.open("http://127.0.0.1:8000/signup")
+        self.auto_signup(username = USER2)
+                        # opens the website to the login page
+        self.open("http://127.0.0.1:8000/accounts/login")
+
+        # enter correct details
+        self.type(USERNAME_ID, USER2)
+        self.type(PASSWORD_ID, CORRECT_PASSWORD)
+
+        # submits form
+        self.click('button:contains("Login")')
+        self.click("#terms")
+        self.click("#submit")
+        self.click("#teams")
+    def test_teams_remove_member(self):
         self.open("http://127.0.0.1:8000/")
         # Registering the "owner"
         self.click('//*[@id="navbarExampleTransparentExample"]/div[2]/div/div/div/a[1]')
