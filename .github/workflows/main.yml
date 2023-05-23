@@ -81,7 +81,7 @@ jobs:
     - name: Download Built Artifact
       uses: actions/download-artifact@v3
       with:
-        name: BuiltArtifact
+        name: BuiltAppArtifact
     - name: Test Downloaded Artifact
       run: ls -R
       
