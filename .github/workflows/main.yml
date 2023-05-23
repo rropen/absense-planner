@@ -63,14 +63,13 @@ jobs:
         pip3 install pytest-django
         pip3 install pytest-cov
                 
-        cd ..
         ls
 
     - name: Upload Artifact 
       uses: actions/upload-artifact@v3
       with:
         name: BuiltArtifact
-        path: absense-planner/
+        path: absense-planner/**
 
   test:
     name: Test Application
