@@ -64,12 +64,13 @@ jobs:
         pip3 install pytest-cov
                 
         cd ..
+        ls
 
     - name: Upload Artifact 
       uses: actions/upload-artifact@v3
       with:
         name: BuiltArtifact
-        path: absence-planner/
+        path: .absence-planner/
 
   test:
     name: Test Application
@@ -79,7 +80,7 @@ jobs:
     - name: Download Built Artifact
       uses: actions/download-artifact@v3
       with:
-        name: static-site
+        name: BuiltArtifact
     - name: Test Downloaded Artifact
       run: ls -R
       
