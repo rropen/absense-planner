@@ -62,6 +62,8 @@ jobs:
       run: |
         pip3 install pytest-django
         pip3 install pytest-cov
+
+        ls 
     - name: Upload Artifact 
       uses: actions/upload-artifact@v3
       with:
@@ -85,8 +87,11 @@ jobs:
     
     - name: Activate Python Environment
       run: |
-        ls
-        source v/bin/activate
+        ls -a
+        echo "printing py virtual env:"
+        cd .v/bin
+        ls -a
+        source activate
         pip list
 
     - name: Test Downloaded Artifact
