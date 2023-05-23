@@ -69,7 +69,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: BuiltArtifact
-        path: absense-planner/**
+        path: "absense-planner/**"
 
   test:
     name: Test Application
