@@ -1,4 +1,4 @@
-name: Django CI
+name: Absence-Planner - CI Pipeline
 
 
 # This yaml file will execute when creating a pull request to the "Test" Branch.
@@ -62,11 +62,6 @@ jobs:
       run: |
         pip3 install pytest-django
         pip3 install pytest-cov
-               
-        cd ..
-        echo "Items in current directory:"
-        ls
-
     - name: Upload Artifact 
       uses: actions/upload-artifact@v3
       with:
@@ -82,123 +77,11 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: BuiltAppArtifact
+    - name: Activate Python Environment
+      run: source v/bin/activate
+
     - name: Test Downloaded Artifact
-      run: ls -R
+      run: |
+        echo Running Application Tests With SeleniumBase
+        pytest --cov=ap_app ap_src/ap_app --headless --disable-warnings
       
-
-
-
-# jobs:
-#   build:       
-#     runs-on: ubuntu-latest
-#     strategy:
-#       max-parallel: 2   # Extend if using more python-versions
-#       matrix:
-#         python-version: [3.8, 3.9]   
-    
-#     #runs-on: ubuntu-latest  # Any scripts used should be UNIX compatable - (Bash/Shell Scripts)
-    
-#     steps:
-#     - uses: actions/checkout@v3
-#     - name: Set up Python ${{ matrix.python-version }} 
-#       uses: actions/setup-python@v3
-#       with:
-#         python-version: ${{ matrix.python-version }}
-#     - name: Install Application Dependencies
-#       run: |
-#         python -m pip install --upgrade pip
-#         pip3 install -r requirements.txt
-#         echo "Collecting SeleniumBase & ChromeDriver"
-#         python -m pip install seleniumbase
-#         sbase get chromedriver latest
-#     - name: Set up Django Environment
-#       run: |
-#         echo "Making Migrations"
-#         python3 ap_src/manage.py makemigrations
-#         echo "Running Migrations"
-#         python3 ap_src/manage.py migrate ap_app
-#         python3 ap_src/manage.py migrate
-
-#         echo "Loading Fixtures"
-#         for FILE in ap_src/ap_app/fixtures/*; 
-#         do python3 ap_src/manage.py loaddata $FILE; done
-        
-#         echo "Collecting Static Files"
-#         python3 ap_src/manage.py collectstatic --noinput
-  
-
-#     - name: Install Testing Dependencies
-#       run: |
-#         pip3 install pytest-django
-#         pip3 install pytest-cov
-
-#     - publish: $(System.DefaultWorkingDirectory)/bin/
-#       artifact:
-        
-#   execute-automated-tests:
-#     steps:
-#     - name: Front-end Tests with SeleniumBase
-#       run: |
-#         echo Running Application Tests With SeleniumBase
-#         pytest --cov=ap_app ap_src/ap_app --headless --disable-warnings
-
-
-
-#change
-
-# stages:
-#   - stage: build
-#     jobs:
-#     - job: build
-#       pool:
-#         vmImage: ubuntu-latest
-
-#       steps:
-#       - uses: actions/checkout@v3
-#       - name: Set up Python ${{ matrix.python-version }} 
-#         uses: actions/setup-python@v3
-#         with:
-#           python-version: ${{ matrix.python-version }}
-#       - name: Install Application Dependencies
-#         run: |
-#           python -m pip install --upgrade pip
-#           pip3 install -r requirements.txt
-#           echo "Collecting SeleniumBase & ChromeDriver"
-#           python -m pip install seleniumbase
-#           sbase get chromedriver latest
-#       - name: Set up Django Environment
-#         run: |
-#           echo "Making Migrations"
-#           python3 ap_src/manage.py makemigrations
-#           echo "Running Migrations"
-#           python3 ap_src/manage.py migrate ap_app
-#           python3 ap_src/manage.py migrate
-
-#           echo "Loading Fixtures"
-#           for FILE in ap_src/ap_app/fixtures/*; 
-#           dop3 install pytest-django
-#           pip3 install pytest-cov
-  
-#   - stage: test
-#     jobs:
-#     - job:
-#       steps:
-#       - task: download built pipeline artifact
-#         inputs:
-#           buildType: "current"
-#           artifactName: "drop"
-#           targetPath: "$(Pipeline.Workspace)"
-
-#       - task: Front-end Tests with SeleniumBase
-#         run: |
-#           echo Running Application Tests With SeleniumBase
-#           pytest --cov=ap_app ap_src/ap_app --headless --disable-warnings
-#  python3 ap_src/manage.py loaddata $FILE; done
-          
-#           echo "Collecting Static Files"
-#           python3 ap_src/manage.py collectstatic --noinput
-    
-
-#       - name: Install Testing Dependencies
-#         run: |
-#           pi
