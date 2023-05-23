@@ -87,10 +87,17 @@ jobs:
     
     - name: Activate Python Environment
       run: |
+        echo "Current Dir Path"
+        pwd
+        echo "items:"
         ls -a
-        echo "\n Directory Tree"
+        echo "Going Back a dir"
+        cd ..
+        pwd
+
         tree | less
-        echo "\n printing py virtual env:"
+
+        echo "printing py virtual env:"
         cd .v/bin
         ls -a
         source activate
