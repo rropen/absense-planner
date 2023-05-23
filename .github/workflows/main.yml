@@ -35,11 +35,7 @@ jobs:
     - name: Setup & Activate Python Environment
       run: |
         python -m venv v
-        cd v
-        ls
-        cd Scripts
-        ls
-        ./v/Scripts/activate
+        source bin/activate
 
     - name: Install Application Dependencies
       run: |
