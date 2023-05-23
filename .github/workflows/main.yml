@@ -39,8 +39,6 @@ jobs:
         
     - name: Install Application Dependencies
       run: |
-        echo "current dir"
-        pwd
         python -m pip install --upgrade pip
         pip3 install -r requirements.txt
         echo "Collecting SeleniumBase & ChromeDriver"
@@ -66,6 +64,7 @@ jobs:
         pip3 install pytest-cov
 
         cd ..
+        tree | less
 
     - name: Upload Artifact 
       uses: actions/upload-artifact@v3
