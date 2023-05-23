@@ -25,21 +25,22 @@ jobs:
         python-version: [3.8]   
           
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: HomeDir
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }} 
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
+    
+    - name: Setup Artifact Environment
+      run: |
+        mkdir MainEnv
+        cd MainEnv
+        
     - name: Install Application Dependencies
       run: |
         echo "current dir"
         pwd
-        py -m venv v
-        venv/bin/activate.bat
         python -m pip install --upgrade pip
         pip3 install -r requirements.txt
         echo "Collecting SeleniumBase & ChromeDriver"
@@ -63,11 +64,14 @@ jobs:
       run: |
         pip3 install pytest-django
         pip3 install pytest-cov
+
+        cd ..
+
     - name: Upload Artifact 
       uses: actions/upload-artifact@v3
       with:
-        name: static-site
-        path: /home/
+        name: BuiltArtifact
+        path: MainEnv
 
   test:
     name: Test Application
