@@ -67,10 +67,10 @@ jobs:
         ls
 
     - name: Upload Artifact 
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v2.2
       with:
         name: BuiltArtifact
-        path: "../absense-planner/"
+        path: "absense-planner/*"
 
   test:
     name: Test Application
