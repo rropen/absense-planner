@@ -62,7 +62,8 @@ jobs:
       run: |
         pip3 install pytest-django
         pip3 install pytest-cov
-
+        
+        pwd
         cd ..
         tree | less
 
