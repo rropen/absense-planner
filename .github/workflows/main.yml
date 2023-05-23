@@ -67,7 +67,7 @@ jobs:
         ls
 
     - name: Upload Artifact 
-      uses: actions/upload-artifact@v2.2
+      uses: actions/upload-artifact@v2
       with:
         name: BuiltArtifact
         path: "absense-planner/*"
