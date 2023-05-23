@@ -64,14 +64,14 @@ jobs:
         pip3 install pytest-cov
                
         cd ..
+        echo "Items in current directory:"
         ls
 
     - name: Upload Artifact 
       uses: actions/upload-artifact@v3
       with:
-        name: BuiltArtifact
-        path: "absense-planner/requirements.txt"
-        run: ls
+        name: BuiltAppArtifact
+        path: "absense-planner/"
 
   test:
     name: Test Application
