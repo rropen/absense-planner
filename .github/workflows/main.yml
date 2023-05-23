@@ -71,7 +71,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: BuiltAppArtifact
-        path: "absense-planner/"
+        path: "home"
 
   test:
     name: Test Application
