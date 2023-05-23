@@ -85,9 +85,10 @@ jobs:
     
     - name: Activate Python Environment
       run: |
+        ls
         source v/bin/activate
         pip list
-        
+
     - name: Test Downloaded Artifact
       run: |
         echo Running Application Tests With SeleniumBase
