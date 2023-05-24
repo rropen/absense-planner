@@ -42,7 +42,7 @@ jobs:
         v/bin/python -m pip install --upgrade pip
         v/bin/pip3 install -r requirements.txt
         echo "Collecting SeleniumBase & ChromeDriver"
-        v/bin/pip install seleniumbase
+        python -m pip install seleniumbase
         sbase get chromedriver latest
 
         v/bin/pip list
