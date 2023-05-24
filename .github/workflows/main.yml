@@ -35,10 +35,12 @@ jobs:
     - name: Setup & Activate Python Environment
       run: |
         python -m venv v
-        source v/bin/activate
-
+        
+          
+        
     - name: Install Application Dependencies
       run: |
+        source v/bin/activate
         v/bin/python -m pip install --upgrade pip
         v/bin/pip3 install -r requirements.txt
         echo "Collecting SeleniumBase & ChromeDriver"
@@ -46,6 +48,10 @@ jobs:
         sbase get chromedriver latest
 
         v/bin/pip list
+
+        echo "Main python Libs - (not venv)"
+        pip list
+
     - name: Set up Django Environment
       run: |
         echo "Making Migrations"
