@@ -63,7 +63,15 @@ jobs:
         pip3 install pytest-django
         pip3 install pytest-cov
 
+        touch test_file.txt
         ls 
+
+    # - name: Tar Files
+    #   run: |
+    #     cd ..
+    #     tar -czf absence-planner-workspace.tar.gz
+    #     ls
+
     - name: Upload Artifact 
       uses: actions/upload-artifact@v3
       with:
@@ -94,6 +102,8 @@ jobs:
         echo "Going Back a dir"
         cd ..
         pwd
+        cd ..
+        
 
         tree -a 
 
