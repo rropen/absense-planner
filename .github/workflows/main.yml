@@ -18,9 +18,9 @@ jobs:
   build:
     name: Build Application
     strategy:
-      max-parallel: 1   # Extend if using more python-versions
+      max-parallel: 2   # Extend if using more python-versions
       matrix:
-        python-version: [3.8]   
+        python-version: [3.8, 3.9]   
           
     runs-on: ubuntu-latest
     steps:
@@ -48,7 +48,7 @@ jobs:
     - name: Set up Django Environment
       run: |
         echo "Activating Virtual Environment"
-        source activate
+        source v/bin/activate
         echo "Making Migrations"
         python3 ap_src/manage.py makemigrations
         echo "Running Migrations"
@@ -68,6 +68,8 @@ jobs:
         pip3 install pytest-django
         pip3 install pytest-cov
 
+        
+
     - name: Archive Workspace
       run: |
         zip environment ./* -r
@@ -77,7 +79,6 @@ jobs:
       with:
         name: BuiltAppArtifact
         path: environment.zip
-
 
   test:
     name: Test Application
@@ -101,6 +102,7 @@ jobs:
       run: |
         echo "Activating Python venv"
         source v/bin/activate
+        
         pip list
         
 
