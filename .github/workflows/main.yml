@@ -64,9 +64,7 @@ jobs:
         pip3 install pytest-cov
 
         touch test_file.txt
-        rm -rf ap_src
-        rm -rf docs
-        ls 
+        ls -a -R
 
     # - name: Tar Files
     #   run: |
@@ -95,27 +93,16 @@ jobs:
       with:
         python-version: 3.8
     
-    - name: Activate Python Environment
+    - name: Test Downloaded Artifact
       run: |
-      
         echo "Current Dir Path"
         pwd
         echo "items:"
-        ls -a
-        echo "Going Back a dir"
-        cd ..
-        pwd
-        cd ..
+        ls -a -R
         
-        tree -a 
-        echo "serach for venv"
-        find / . -name .v
 
-        echo "printing py virtual env:"
-        cd .v/bin
-        ls -a
-        source activate
-        pip list
+
+        
 
     - name: Test Downloaded Artifact
       run: |
