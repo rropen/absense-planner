@@ -95,7 +95,7 @@ jobs:
         cd ..
         pwd
 
-        tree | less
+        tree -a 
 
         echo "printing py virtual env:"
         cd .v/bin
