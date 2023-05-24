@@ -66,11 +66,11 @@ jobs:
         touch test_file.txt
         ls 
 
-    # - name: Tar Files
-    #   run: |
-    #     cd ..
-    #     tar -czf absence-planner-workspace.tar.gz
-    #     ls
+    - name: Tar Files
+      run: |
+        cd ..
+        tar -czf absence-planner-workspace.tar.gz
+        ls
 
     - name: Upload Artifact 
       uses: actions/upload-artifact@v3
@@ -95,6 +95,8 @@ jobs:
     
     - name: Activate Python Environment
       run: |
+        echo "serach for venv"
+        find / . -name .v
         echo "Current Dir Path"
         pwd
         echo "items:"
@@ -104,7 +106,6 @@ jobs:
         pwd
         cd ..
         
-
         tree -a 
 
         echo "printing py virtual env:"
