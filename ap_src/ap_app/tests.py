@@ -38,7 +38,7 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
 
     def test_click_signup(self):
         self.demo_mode = DEMO
-        SIGN_UP_XPATH = "/html/body/nav/div[2]/div[2]/div/div/div/a[1]"
+        SIGN_UP_XPATH = "/html/body/container/div/container/div/a"
         
         self.open(self.live_server_url)
         self.click(SIGN_UP_XPATH)
