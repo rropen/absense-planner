@@ -66,9 +66,9 @@ jobs:
         v/bin/pip3 install pytest-cov
 
         touch test_file.txt
+        v/bin/pip list
         cd ..
 
-        v/bin/pip list
 
     # - name: Tar Files
     #   run: |
