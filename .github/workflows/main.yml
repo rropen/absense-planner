@@ -14,15 +14,13 @@ on:
 # - 
 
 
-
-
 jobs: 
   build:
     name: Build Application
     strategy:
       max-parallel: 2   # Extend if using more python-versions
       matrix:
-        python-version: [3.8]   
+        python-version: [3.8, 3.9]   
           
     runs-on: ubuntu-latest
     steps:
@@ -34,15 +32,15 @@ jobs:
     
     - name: Setup Python Virtual Environment
       run: |
+        echo "Creating Python Virtual Environment"
         python -m venv v
           
-        
     - name: Install Application Dependencies
       run: |
         echo "Activating Virtual Environment"
         source v/bin/activate
-        v/bin/python -m pip install --upgrade pip
-        v/bin/pip3 install -r requirements.txt
+        python -m pip install --upgrade pip
+        pip3 install -r requirements.txt
         echo "Collecting SeleniumBase & ChromeDriver"
         python -m pip install seleniumbase
         sbase get chromedriver latest
@@ -50,45 +48,36 @@ jobs:
     - name: Set up Django Environment
       run: |
         echo "Activating Virtual Environment"
-        source v/bin/activate
+        source activate
         echo "Making Migrations"
-        v/bin/python3 ap_src/manage.py makemigrations
+        python3 ap_src/manage.py makemigrations
         echo "Running Migrations"
-        v/bin/python3 ap_src/manage.py migrate ap_app
-        v/bin/python3 ap_src/manage.py migrate
+        python3 ap_src/manage.py migrate ap_app
+        python3 ap_src/manage.py migrate
 
         echo "Loading Fixtures"
         for FILE in ap_src/ap_app/fixtures/*; 
-        do v/bin/python3 ap_src/manage.py loaddata $FILE; done
+        do python3 ap_src/manage.py loaddata $FILE; done
         
         echo "Collecting Static Files"
-        v/bin/python3 ap_src/manage.py collectstatic --noinput
+        python3 ap_src/manage.py collectstatic --noinput
     - name: Install Testing Dependencies
       run: |
         echo "Activating Virtual Environment"
         source v/bin/activate
-        v/bin/pip3 install pytest-django
-        v/bin/pip3 install pytest-cov
+        pip3 install pytest-django
+        pip3 install pytest-cov
 
-        v/bin/pip list
-        cd ..
-
-    - name: Zip Workspace
+    - name: Archive Workspace
       run: |
         zip environment ./* -r
  
-
-    # - name: Tar Files
-    #   run: |
-    #     cd ..
-    #     tar -czf absence-planner-workspace.tar.gz
-    #     ls
-
     - name: Upload Artifact 
       uses: actions/upload-artifact@v3
       with:
         name: BuiltAppArtifact
         path: environment.zip
+
 
   test:
     name: Test Application
@@ -112,8 +101,7 @@ jobs:
       run: |
         echo "Activating Python venv"
         source v/bin/activate
-        
-        v/bin/pip list
+        pip list
         
 
     - name: Test Downloaded Artifact
