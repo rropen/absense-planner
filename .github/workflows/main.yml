@@ -42,8 +42,10 @@ jobs:
         v/bin/python -m pip install --upgrade pip
         v/bin/pip3 install -r requirements.txt
         echo "Collecting SeleniumBase & ChromeDriver"
-        v/bin/python -m v/bin/pip install seleniumbase
+        v/bin/python pip install seleniumbase
         sbase get chromedriver latest
+
+        v/bin/pip list
     - name: Set up Django Environment
       run: |
         echo "Making Migrations"
