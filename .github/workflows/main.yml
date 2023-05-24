@@ -96,10 +96,13 @@ jobs:
     
     - name: Test Downloaded Artifact
       run: |
-        tree -a 
         echo "Attempting to enter 'v'"
         cd v
-        ls -R
+        ls -a
+        echo "Attempting to enter 'Scripts'"
+        cd Scripts
+        ls -a
+        
 
 
 
