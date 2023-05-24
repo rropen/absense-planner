@@ -39,33 +39,34 @@ jobs:
 
     - name: Install Application Dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip3 install -r requirements.txt
+        v/bin/python -m v/bin/pip install --upgrade pip
+        v/bin/pip3 install -r requirements.txt
         echo "Collecting SeleniumBase & ChromeDriver"
-        python -m pip install seleniumbase
+        v/bin/python -m v/bin/pip install seleniumbase
         sbase get chromedriver latest
     - name: Set up Django Environment
       run: |
         echo "Making Migrations"
-        python3 ap_src/manage.py makemigrations
+        v/bin/python3 ap_src/manage.py makemigrations
         echo "Running Migrations"
-        python3 ap_src/manage.py migrate ap_app
-        python3 ap_src/manage.py migrate
+        v/bin/python3 ap_src/manage.py migrate ap_app
+        v/bin/python3 ap_src/manage.py migrate
 
         echo "Loading Fixtures"
         for FILE in ap_src/ap_app/fixtures/*; 
-        do python3 ap_src/manage.py loaddata $FILE; done
+        do v/bin/python3 ap_src/manage.py loaddata $FILE; done
         
         echo "Collecting Static Files"
-        python3 ap_src/manage.py collectstatic --noinput
+        v/bin/python3 ap_src/manage.py collectstatic --noinput
     - name: Install Testing Dependencies
       run: |
-        pip3 install pytest-django
-        pip3 install pytest-cov
+        v/bin/pip3 install pytest-django
+        v/bin/pip3 install pytest-cov
 
         touch test_file.txt
         cd ..
 
+        v/bin/pip list
 
     # - name: Tar Files
     #   run: |
@@ -99,8 +100,7 @@ jobs:
         echo "Activating Python venv"
         source v/bin/activate
         
-        pip list
-        pip3 list
+        v/bin/pip list
         
 
     - name: Test Downloaded Artifact
