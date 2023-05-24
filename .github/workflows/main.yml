@@ -32,14 +32,14 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     
-    - name: Setup & Activate Python Environment
+    - name: Setup Python Virtual Environment
       run: |
         python -m venv v
-        
           
         
     - name: Install Application Dependencies
       run: |
+        echo "Activating Virtual Environment"
         source v/bin/activate
         v/bin/python -m pip install --upgrade pip
         v/bin/pip3 install -r requirements.txt
@@ -47,13 +47,10 @@ jobs:
         python -m pip install seleniumbase
         sbase get chromedriver latest
 
-        v/bin/pip list
-
-        echo "Main python Libs - (not venv)"
-        pip list
-
     - name: Set up Django Environment
       run: |
+        echo "Activating Virtual Environment"
+        source v/bin/activate
         echo "Making Migrations"
         v/bin/python3 ap_src/manage.py makemigrations
         echo "Running Migrations"
@@ -68,10 +65,11 @@ jobs:
         v/bin/python3 ap_src/manage.py collectstatic --noinput
     - name: Install Testing Dependencies
       run: |
+        echo "Activating Virtual Environment"
+        source v/bin/activate
         v/bin/pip3 install pytest-django
         v/bin/pip3 install pytest-cov
 
-        touch test_file.txt
         v/bin/pip list
         cd ..
 
