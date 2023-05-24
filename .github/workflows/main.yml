@@ -96,15 +96,17 @@ jobs:
     
     - name: Test Downloaded Artifact
       run: |
+        echo "Activating Python venv"
+        source v/bin/activate
         echo "Attempting to enter 'v'"
         cd v
         ls -a
         echo "Attempting to enter 'bin'"
         cd bin
         ls -a
+        pip list
+        pip3 list
         
-
-
 
     - name: Test Downloaded Artifact
       run: |
