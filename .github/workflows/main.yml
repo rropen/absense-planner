@@ -99,8 +99,8 @@ jobs:
         echo "Attempting to enter 'v'"
         cd v
         ls -a
-        echo "Attempting to enter 'Scripts'"
-        cd Scripts
+        echo "Attempting to enter 'bin'"
+        cd bin
         ls -a
         
 
