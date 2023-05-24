@@ -63,8 +63,10 @@ jobs:
         pip3 install pytest-django
         pip3 install pytest-cov
 
+        deactivate
         touch test_file.txt
-        ls -a -R
+        cd ..
+
 
     # - name: Tar Files
     #   run: |
@@ -95,14 +97,9 @@ jobs:
     
     - name: Test Downloaded Artifact
       run: |
-        echo "Current Dir Path"
-        pwd
-        echo "items:"
-        ls -a -R
+        ls -R
         
 
-
-        
 
     - name: Test Downloaded Artifact
       run: |
