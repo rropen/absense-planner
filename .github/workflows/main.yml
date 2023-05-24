@@ -73,6 +73,10 @@ jobs:
         v/bin/pip list
         cd ..
 
+    - name: Zip Workspace
+      run: |
+        zip environment ./* -r
+ 
 
     # - name: Tar Files
     #   run: |
@@ -84,7 +88,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: BuiltAppArtifact
-        path: "*"
+        path: environment.zip
 
   test:
     name: Test Application
@@ -101,6 +105,9 @@ jobs:
       with:
         python-version: 3.8
     
+    - name: Unzip Workspace
+      run: |
+        unzip environment.zip
     - name: Test Downloaded Artifact
       run: |
         echo "Activating Python venv"
@@ -111,6 +118,8 @@ jobs:
 
     - name: Test Downloaded Artifact
       run: |
+        echo "Activating Virtual Environment"
+        source v/bin/activate
         echo Running Application Tests With SeleniumBase
         pytest --cov=ap_app ap_src/ap_app --headless --disable-warnings
       
