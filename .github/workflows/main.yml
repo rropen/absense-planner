@@ -107,7 +107,7 @@ jobs:
         pip list
         
 
-    - name: Test Downloaded Artifact
+    - name: Execute UI Tests
       run: |
         echo "Activating Virtual Environment"
         source v/bin/activate
