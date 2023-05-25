@@ -36,15 +36,23 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
     #     self.assert_element_present(TITLE_XPATH)
 
 
-    def test_click_signup(self):
-        self.demo_mode = DEMO
-
+    def test_click_signup_from_home(self):
         SIGNUP_ID = "#LINK-signup"
-        
+        self.demo_mode = DEMO
         self.open(self.live_server_url)
+
+        
         #self.click(SIGNUP_ID)
-        self.save_page_source("HTML-source")
-        self.save_screenshot("HTML-source-img")
+        self.save_page_source("home-HTML-source")
+        self.save_screenshot(" home-HTML-source-img")
+
+    def test_screen_shot_signup(self):
+        self.demo_mode = DEMO
+        self.open(self.live_server_url + "/signup")
+        
+
+        self.save_page_source("signup-HTML-source")
+        self.save_screenshot(" signup-HTML-source-img")
 
 
 # Demo test examples - (These are skipped)

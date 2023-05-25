@@ -121,6 +121,7 @@ jobs:
       with:
         name: ScreenShots
         path: |
-          HTML-source-img.png
-          HTML-source.html
-
+          home-HTML-source-img.png
+          home-HTML-source.html
+          signup-HTML-source-img.png
+          signup-HTML-source.html
