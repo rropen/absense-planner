@@ -84,3 +84,8 @@ And then create a new terminal and run this command:
 This should run through your test, and if everything worked fine, then you've ran your first successful test.
 The `--demo` argument means that SeleniumBase will run through each step of the test individually.
 
+    pytest ap_app/tests.py -v 
+The `-v` arguement makes the output in the command line more detailed, and includes which tests passed and which failed aswell as where each one went wrong.
+
+    pytest ap_app/tests.py -k absence
+The `-k` arguement lets you run only tests which contain the next arguement typed in, for example here it would only run tests with absence in the name. 
