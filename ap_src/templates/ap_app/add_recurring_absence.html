@@ -6,7 +6,7 @@
 <head>
     <script type="text/javascript" src="/admin/jsi18n"></script>
     <script type="text/javascript" src="/static/admin/js/core.js"></script>
-
+    {{form.media}}
 </head>
 
 
@@ -24,6 +24,7 @@
             
             {{ form.media }}
             {% for error in form.errors %}
+            {% endfor %}
             <div class="pt-6 pb-3">
                 {{ form2 | bulma }}
             </div>

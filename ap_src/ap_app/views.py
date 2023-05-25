@@ -457,6 +457,7 @@ def click_add(request):
         items = Absence()
         items.absence_date_start = json_data['date']
         items.absence_date_end = json_data['date']
+        # issue #173
         items.Target_User_ID = request.user
         items.User_ID = request.user
         items.save()
