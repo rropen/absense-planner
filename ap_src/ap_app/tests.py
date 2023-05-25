@@ -44,7 +44,7 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         
         #self.click(SIGNUP_ID)
         self.save_page_source("home-HTML-source")
-        self.save_screenshot(" home-HTML-source-img")
+        self.save_screenshot("home-HTML-source-img")
 
     def test_screen_shot_signup(self):
         self.demo_mode = DEMO
@@ -52,7 +52,7 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         
 
         self.save_page_source("signup-HTML-source")
-        self.save_screenshot(" signup-HTML-source-img")
+        self.save_screenshot("signup-HTML-source-img")
 
 
 # Demo test examples - (These are skipped)
