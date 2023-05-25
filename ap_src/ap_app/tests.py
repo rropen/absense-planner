@@ -43,7 +43,7 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         
         self.open(self.live_server_url)
         #self.click(SIGNUP_ID)
-        self.save_page_source("home-pages HTML source")
+        self.save_page_source("HTML-source")
 
 
 # Demo test examples - (These are skipped)
