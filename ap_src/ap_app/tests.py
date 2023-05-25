@@ -38,19 +38,21 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
 
     def test_click_signup(self):
         self.demo_mode = DEMO
-        SIGN_UP_XPATH = "/html/body/container/div/container/div/a"
+
+        SIGN_UP_ID = "#LINK-signup"
         
         self.open(self.live_server_url)
-        self.click(SIGN_UP_XPATH)
+        self.click(SIGN_UP_ID)
         
+
     
 # Demo test examples - (These are skipped)
-    def test_example_pass(self):
-        self.demo_mode = DEMO
+    # def test_example_pass(self):
+    #     self.demo_mode = DEMO
 
-        # PASS expected
-        self.open(self.live_server_url)
-        self.assert_true("Home" in self.get_page_title(),
-            msg="[ERROR]: Not on Home-Page - Title does not match")
+    #     # PASS expected
+    #     self.open(self.live_server_url)
+    #     self.assert_true("Home" in self.get_page_title(),
+    #         msg="[ERROR]: Not on Home-Page - Title does not match")
         
     
