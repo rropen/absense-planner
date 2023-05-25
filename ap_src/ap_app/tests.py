@@ -44,6 +44,7 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         self.open(self.live_server_url)
         #self.click(SIGNUP_ID)
         self.save_page_source("HTML-source")
+        self.save_screenshot("HTML-source-img")
 
 
 # Demo test examples - (These are skipped)
