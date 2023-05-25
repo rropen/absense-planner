@@ -9,7 +9,7 @@ js_info_dict = {
 
 
 urlpatterns = [
-    path("index", views.index, name="index"),
+    path("", views.index, name="index"),
     path('signup/', views.SignUpView.as_view(), name='signup'),
     path("calendar/", views.all_calendar, name="all_Calendar"),
     path("calendar/<str:month>/<int:year>", views.all_calendar, name="all_calendar"),
