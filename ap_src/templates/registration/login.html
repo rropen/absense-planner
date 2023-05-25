@@ -8,7 +8,7 @@
     <form method="post">
         {% csrf_token %}
         {{ form | bulma }}
-        <button class="button is-link" type="submit">Login</button>
+        <button id="submit" class="button is-link" type="submit">Login</button>
     </form>
 </div>
 {% endblock %}

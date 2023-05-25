@@ -71,11 +71,11 @@
         <span class="is-block is-size-6">{{teams.description}}</span>
         <div class="is-block mt-3">
             {% if teams.private %}
-            <a class="button is-success" id="{{teams.name}}" href="{% url 'join_team_2' teams.id 'Member' %}">Apply as Member</a>
-            <a class="button is-link" id="{{teams.name}}" href="{% url 'join_team_2' teams.id 'Follower' %}">Apply as Follower</a>
+            <a  class="button is-success" id="apply member {{teams.name}}" href="{% url 'join_team_2' teams.id 'Member' %}">Apply as Member</a>
+            <a class="button is-link" id="apply follower {{teams.name}}" href="{% url 'join_team_2' teams.id 'Follower' %}">Apply as Follower</a>
             {% else %}
-            <a class="button is-success" id="{{teams.name}}" href="{% url 'join_team_2' teams.id 'Member' %}">Join as Member</a>
-            <a class="button is-link" id="{{teams.name}}" href="{% url 'join_team_2' teams.id 'Follower' %}">Join as Follower</a>
+            <a class="button is-success" id="join_member_{{teams.name}}" href="{% url 'join_team_2' teams.id 'Member' %}">Join as Member</a>
+            <a class="button is-link" id="join follower {{teams.name}}" href="{% url 'join_team_2' teams.id 'Follower' %}">Join as Follower</a>
             {% endif %}
         </div>
     </div>
