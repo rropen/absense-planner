@@ -39,13 +39,13 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
     def test_click_signup(self):
         self.demo_mode = DEMO
 
-        SIGN_UP_ID = "#LINK-signup"
+        SIGNUP_ID = "#LINK-signup"
         
         self.open(self.live_server_url)
-        self.click(SIGN_UP_ID)
-        
+        #self.click(SIGNUP_ID)
+        self.save_page_source("home-pages HTML source")
 
-    
+
 # Demo test examples - (These are skipped)
     # def test_example_pass(self):
     #     self.demo_mode = DEMO

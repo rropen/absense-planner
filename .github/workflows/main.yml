@@ -113,4 +113,6 @@ jobs:
         source v/bin/activate
         echo Running Application Tests With SeleniumBase
         pytest --cov=ap_app ap_src/ap_app --headless --disable-warnings
-      
+        
+        ls
+        less -FX 'home-pages HTML source'
