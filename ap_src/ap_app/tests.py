@@ -36,23 +36,36 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
     #     self.assert_element_present(TITLE_XPATH)
 
 
-    def test_click_signup_from_home(self):
-        SIGNUP_ID = "#LINK-signup"
+    def test_presence_check_home_page(self):
         self.demo_mode = DEMO
         self.open(self.live_server_url)
+        TITLE_XPATH = "/html/body/section/div/p[1]"
+        SIGNUP_BUTTON_XPATH = "/html/body/container/div/container/div/a" 
 
-        
-        #self.click(SIGNUP_ID)
-        self.save_page_source("home-HTML-source")
-        self.save_screenshot("home-HTML-source-img")
+        self.assert_element_present(TITLE_XPATH)
+        self.click(SIGNUP_BUTTON_XPATH)
 
-    def test_screen_shot_signup(self):
+
+    def test_click_signup_from_home(self):
         self.demo_mode = DEMO
         self.open(self.live_server_url + "/signup")
+
+
+        USERNAME_ENTRY = "/html/body/container/div/div/form/div[1]/div/input"
+        PASSWORD_ENTRY = "/html/body/container/div/div/form/div[2]/div/input"
+        PASSCONFIRM_ENTRY = "/html/body/container/div/div/form/div[3]/div/input"
+        self.send_keys(USERNAME_ENTRY, text="user")
+        self.send_keys(PASSWORD_ENTRY, text="pass")     
         
 
-        self.save_page_source("signup-HTML-source")
-        self.save_screenshot("signup-HTML-source-img")
+
+    # def test_screen_shot_signup(self):
+    #     self.demo_mode = DEMO
+    #     self.open(self.live_server_url + "/signup")
+        
+
+    #     self.save_page_source("signup-HTML-source")
+    #     self.save_screenshot("signup-HTML-source-img")
 
 
 # Demo test examples - (These are skipped)
