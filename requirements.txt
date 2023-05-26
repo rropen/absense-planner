@@ -12,9 +12,12 @@ django-mptt==0.9.1
 django-ckeditor==6.5.0
 django-recurrence==1.11.1
 django-river==3.3.0
+holidays==0.20
 isort==5.10.1
 lazy-object-proxy==1.7.1
 mccabe==0.7.0
+names==0.3.0
+order==2.1.1
 platformdirs==2.5.2
 pylint==2.13.9
 pylint-django==2.5.3
