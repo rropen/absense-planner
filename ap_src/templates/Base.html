@@ -88,9 +88,9 @@
 {% if user.is_authenticated %}
   
       {% if home_active %}
-      <a class="navbar-item icon-text active" href="/">
+      <a id="home" class="navbar-item icon-text active" href="/">
       {% else %}
-      <a class="navbar-item icon-text" href="/">
+      <a id="home" class="navbar-item icon-text" href="/">
       {% endif %}
           
         <span class="icon is-size-5">
@@ -100,9 +100,9 @@
       </a>
 
       {% if add_absence_active %}
-      <a class="navbar-item icon-text active" href="/absence/add">
+      <a id="absence" class="navbar-item icon-text active" href="/absence/add">
       {% else %}
-      <a class="navbar-item icon-text" href="/absence/add">
+      <a id="absence" class="navbar-item icon-text" href="/absence/add">
       {% endif %}
 
         <span class="icon is-size-5">
@@ -112,9 +112,9 @@
       </a>
       
       {% if teamspage_active %}
-      <a class="navbar-item icon-text active" href="/teams">
+      <a id="teams" class="navbar-item icon-text active" href="/teams">
       {% else %}
-      <a class="navbar-item icon-text" href="/teams">
+      <a id="teams" class="navbar-item icon-text" href="/teams">
       {% endif %} 
 
         <span class="icon is-size-5">
@@ -139,10 +139,10 @@
       <div class="field is-grouped">
           <div class="buttons">
             {% if user.is_authenticated %}
-                <a href="/profile/" class="button is-info">{{request.user.username}}
+                <a id="profile" href="/profile/" class="button is-info">{{request.user.username}}
                   <i class="fas fa-user-circle ml-2 is-size-5"></i>
                 </a>
-                <a href="{% url 'logout' %}" class="button is-light">Log out</a>
+                <a id="logout" href="{% url 'logout' %}" class="button is-light">Log out</a>
             {% else %}
                 <a id="signup" href="{% url 'signup' %}" class="button is-info">
                   <strong>Sign up</strong>

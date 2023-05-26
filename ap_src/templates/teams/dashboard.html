@@ -6,13 +6,13 @@
 <div class="container">
     <div class="columns">
         <div class="column is-half">
-            <a class="column button is-medium is-success icon-text" href="{% url 'create_team' %}">
+            <a id="create" class="column button is-medium is-success icon-text" href="{% url 'create_team' %}">
                 </i>Create A Team<i class="fas fa-plus ml-3"></i>
             </a>
         </div>
 
         <div class="column is-half">
-            <a class="column button is-medium is-info icon-text" href="{% url 'join_team' %}">
+            <a id="join" class="column button is-medium is-info icon-text" href="{% url 'join_team' %}">
                 </i>Join A Team<i class="fas fa-user-friends ml-3"></i>
             </a>
         </div>
@@ -37,7 +37,7 @@
                 <span class="is-block is-size-5">There are no teams yet.</span>
             </div>
             <div class="is-block is-size-6">
-                <a class="button is-link" href="{% url 'create_team' %}">Create a team</a>
+                <a id="create" class="button is-link" href="{% url 'create_team' %}">Create a team</a>
             </div>
         </div>
     {% endif %}
@@ -59,7 +59,7 @@
             <span class="is-block is-size-6">{{rel.team.description}}</span>
             <div class="is-block mt-3">
                 <a id="{{rel.team.name}}" class="button is-link" href="{% url 'Calendar' rel.team.id %}">View</a>
-                <a class="button is-danger" href="{% url 'leave_team' rel.id %}">Leave</a>                
+                <a id="leave {{rel.team.name}}" class="button is-danger" href="{% url 'leave_team' rel.id %}">Leave</a>                
             </div>
         </div>
     {% endfor %}
