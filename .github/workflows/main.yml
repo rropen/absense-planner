@@ -5,20 +5,21 @@ name: Absence-Planner - CI Pipeline
 # Feature branches should be merged to the test before entering the 
 on:
   pull_request:
-    branches: [ "Test" ]
-  push:
-    branches: [ "dev", "Feature_1"]
+    branches: [ "dev" ]
 
 #NOTES: 
 # - For consistency, using PIP in virtual unbuntu environment instead of anaconda
-# - 
+
+#ISSUE Resolved:
+# File names usage should be consistent throughout source-code.
+# e.g. when extending 'Base.html' must include the capital 'B' 
 
 
 jobs: 
-  build:
+  build:                        # Build application & save as artifact 'BuiltAppArtifact'
     name: Build Application
     strategy:
-      max-parallel: 1  # Extend if using more python-versions
+      max-parallel: 1           # Extend if using more python-versions
       matrix:
         python-version: [3.8]   
           
@@ -63,18 +64,15 @@ jobs:
         python3 ap_src/manage.py collectstatic --noinput
     - name: Install Testing Dependencies
       run: |
-        echo "Activating Virtual Environment"
+        echo "Activating Virtual Environment"     
         source v/bin/activate
         pip3 install pytest-django
         pip3 install pytest-cov
-        
-        
 
-    - name: Archive Workspace
+    - name: Archive Workspace               # Compressing Files for transfer
       run: |
-        zip environment ./* -r
- 
-    - name: Upload Artifact 
+        zip environment ./* -r -q
+    - name: Upload Artifact                 # Uploading Artifact for use in next jobs
       uses: actions/upload-artifact@v3
       with:
         name: BuiltAppArtifact
@@ -89,39 +87,23 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: BuiltAppArtifact
-   
     - name: Set up Python 3.8
       uses: actions/setup-python@v3
       with:
         python-version: 3.8
-    
     - name: Unzip Workspace
       run: |
         unzip environment.zip
-    - name: Test Downloaded Artifact
+    - name: Test Artifact Downloaded Successfully
       run: |
         echo "Activating Python venv"
         source v/bin/activate
-        
-        echo "Printing Built Artifacts Python VENV:"
+        echo "Printing Built Artifacts Python VENV Dependencies:"
         pip list
         
-
-    - name: Execute UI Tests
+    - name: Execute UI Tests            
       run: |
         echo "Activating Virtual Environment"
         source v/bin/activate
         echo Running Application Tests With SeleniumBase
         pytest --cov=ap_app ap_src/ap_app --headless --disable-warnings
-        
-        ls
-
-    - name: Save screenshots
-      uses: actions/upload-artifact@v3
-      with:
-        name: ScreenShots
-        path: |
-          home-HTML-source-img.png
-          home-HTML-source.html
-          signup-HTML-source-img.png
-          signup-HTML-source.html
