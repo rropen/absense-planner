@@ -1,6 +1,6 @@
 # Pip install seleniumbase on college laptops by doing - "python -m pip install selenium-base"
-from seleniumbase import BaseCase
-import pytest, names
+import names
+import pytest
 from django.test import TestCase
 from parameterized import parameterized
 from seleniumbase import BaseCase

@@ -32,7 +32,6 @@ urlpatterns = [
     path("absence/add", views.add, name="add"),
     path("absence/add_recurring", views.add_recurring, name="add_recurring"),
     path("profile/", views.profile_page, name="profile"),
-    path("details/", views.details_page, name="details"),
     path("privacy/", views.privacy_page, name="privacy"),
     path("ap_accounts/delete_user", views.deleteuser, name="delete_user"),
     path("absence/delete/<int:absence_id>/<int:user_id>/", views.absence_delete, name="Absence Delete"),
