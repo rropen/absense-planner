@@ -88,9 +88,9 @@
 {% if user.is_authenticated %}
   
       {% if home_active %}
-      <a class="navbar-item icon-text active" href="/">
+      <a id="home" class="navbar-item icon-text active" href="/">
       {% else %}
-      <a class="navbar-item icon-text" href="/">
+      <a id="home" class="navbar-item icon-text" href="/">
       {% endif %}
           
         <span class="icon is-size-5">

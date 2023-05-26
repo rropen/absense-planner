@@ -24,14 +24,12 @@ URL = "http://LocalHost:8000/"
 USERNAME = "patrick"
 PASSWORD = "password"
 
-# NOTE: add id's instead of using xPaths
-
 
 class BasicTest(BaseCase):
     def test_basic(self):
         self.open(URL)
         self.assert_title("Home - RR Absence")
-        self.click_xpath("/html/body/container/div/container/div/a")
+        self.click("#login")
 
         # -=-= Login page =-=-
         self.assert_true(
@@ -39,27 +37,23 @@ class BasicTest(BaseCase):
             msg="[TESTING CODE ERROR]: Not on Login-Page",
         )
 
-        self.send_keys(
-            "/html/body/container/div/div/form/div[1]/div/input", text=USERNAME
-        )
-        self.send_keys(
-            "/html/body/container/div/div/form/div[2]/div/input", text=PASSWORD
-        )
+        self.send_keys(USERNAME_ID, text=USERNAME)
+        self.send_keys(PASSWORD_ID, text=PASSWORD)
         # Click "Login"
-        self.click_xpath("/html/body/container/div/div/form/button")
+        self.click("#submit")
 
         if "Policy" in self.get_page_title():
             # -=-= Policy Page =-=-
-            self.click_xpath("/html/body/container/div/div/form/input[2]")
-            self.click_xpath("/html/body/container/div/div/form/button")
+            self.click("#terms")
+            self.click("#submit")
 
         # -=-= Main Calendar Page =-=-
 
-        self.click_xpath("/html/body/nav/div[2]/div[1]/a[3]")
+        self.click("#home")
 
         # -=-= Teams Page =-=-
 
-        self.wait(8)
+        self.wait(3)
 
 
 class RRTestCases(BaseCase):
