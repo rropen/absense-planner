@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "Base.html" %}
 {% block title %}Home{% endblock %}
 {% load static %}
 {% block content %}
@@ -8,10 +8,10 @@
     {% if user.is_authenticated %}
 
         <p>Logged in as <span class="tag is-info">{{user.username}}</span></p>
-        <a href="{% url 'logout' %}">Log Out</a>
+        <a href="{% url 'logout' %}" id="LINK-logout">Log Out</a>
     {% else %}
         <p>You are not logged in.</p>
-        <a href="{% url 'login' %}">Click here to log in.</a>
+        <a href="{% url 'login' %}" id="LINK-login">Click here to log in.</a>
     {% endif %}
 </div>
 </container>
