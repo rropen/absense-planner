@@ -1,4 +1,4 @@
-﻿asgiref==3.4.1
+asgiref==3.4.1
 astroid==2.11.5
 colorama==0.4.4
 dill==0.3.4
@@ -12,6 +12,7 @@ django-mptt==0.9.1
 django-ckeditor==6.5.0
 django-recurrence==1.11.1
 django-river==3.3.0
+holidays==0.20
 isort==5.10.1
 lazy-object-proxy==1.7.1
 mccabe==0.7.0
@@ -21,8 +22,9 @@ pylint-django==2.5.3
 pylint-plugin-utils==0.7
 python-dateutil==2.8.2
 pytz==2021.3
+pyYAML==6.0
 six==1.16.0
 sqlparse==0.4.2
 tomli==2.0.1
-typing_extensions==4.2.0
+typing_extensions==4.5.0
 wrapt==1.14.1
