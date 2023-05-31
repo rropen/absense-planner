@@ -115,7 +115,7 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
 
         # A django error appears which cannot be checked so
         # checking the credentials have not been allowed with the lack of a redirect
-        self.assert_self.live_server_url(f"{self.live_server_url}/{page}/")
+        self.assert_url(f"{self.live_server_url}/{page}/")
 
     @parameterized.expand(
         [
@@ -172,14 +172,14 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
 
         # submits form
         self.click('button:contains("Login")')
-        self.assert_self.live_server_url(f"{self.live_server_url}/")
+        self.assert_url(f"{self.live_server_url}/")
 
     def test_add_absence(self):
         self.open(f"{self.live_server_url}/absence/add")
         self.type(USERNAME_ID, USER)
         self.type(PASSWORD_ID, CORRECT_PASSWORD)
         self.click('button:contains("Login")')
-        self.assert_self.live_server_url(f"{self.live_server_url}/absence/add")
+        self.assert_url(f"{self.live_server_url}/absence/add")
 
         # correct format
         self.type("#id_start_date", "01/01/2023")
