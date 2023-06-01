@@ -1,6 +1,7 @@
 import names
 import pytest
 from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from parameterized import parameterized
 from seleniumbase import BaseCase
 
@@ -24,7 +25,7 @@ from seleniumbase import BaseCase
 DEMO = True
 
 # constants for username credentials
-USER = names.get_first_name()
+USER = "user"
 USER1 = names.get_first_name()
 USER2 = names.get_first_name()
 TEAM = names.get_full_name().replace(" ", "")
@@ -39,13 +40,12 @@ PASSWORD_ID2 = "#id_password2"
 
 
 # Hard-Coded temp values
-USERNAME = "patrick"
+USERNAME = "jai"
 PASSWORD = "password"
 
 class TestSuiteTemplate(LiveServerTestCase, BaseCase):
     """ Testing Suite Class - Implement any tests inside
     its own method - (Methods to be tested must start with "test_*") """
-
 # Demo test example
     def test_example(self):
         self.demo_mode = DEMO
@@ -59,7 +59,8 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
     def test_basic(self):
         self.open(self.live_server_url)
         self.assert_title("Home - RR Absence")
-        self.click("#login")
+        self.click("#signup")
+        self.auto_signup()
 
         # -=-= Login page =-=-
         self.assert_true(
@@ -67,8 +68,8 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
             msg="[TESTING CODE ERROR]: Not on Login-Page",
         )
 
-        self.send_keys(USERNAME_ID, text=USERNAME)
-        self.send_keys(PASSWORD_ID, text=PASSWORD)
+        self.send_keys(USERNAME_ID, text=USER)
+        self.send_keys(PASSWORD_ID, text=CORRECT_PASSWORD)
         # Click "Login"
         self.click("#submit")
 
@@ -85,11 +86,22 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
     def auto_signup(self, username=USER, password=CORRECT_PASSWORD):
         """Used a template for typing values in the signup page when testing,
         if not entered the username and password will default to successful values"""
+        self.open(f"{self.live_server_url}/signup")
         self.type(USERNAME_ID, username)
         self.type(PASSWORD_ID1, password)
         self.type(PASSWORD_ID2, password)
         self.click('button:contains("Sign Up")')
-
+            
+    def auto_login(self, username=USER, password=CORRECT_PASSWORD):
+        #enters data
+        self.type(USERNAME_ID, username)
+        self.type(PASSWORD_ID, password)
+        self.click('button:contains("Login")')
+        if "Policy" in self.get_page_title():
+            self.click("#terms")
+            #submits form
+            self.click("#submit")
+        
     @parameterized.expand(
         [["#signup", "Sign Up - RR Absence"], ["#login", "Login - RR Absence"]]
     )
@@ -108,10 +120,9 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         # opens the website to the signup page
         self.open(f"{self.live_server_url}/{page}")
         if "login" in page:
-            self.type(USERNAME_ID, "")
-            self.type(PASSWORD_ID, "")
+            self.auto_login("", "")
         else:
-            self.auto_signup(username="", password="")
+            self.auto_signup("", "")
 
         # A django error appears which cannot be checked so
         # checking the credentials have not been allowed with the lack of a redirect
@@ -122,63 +133,51 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
             ["a", "password is too short"],
             ["password", "password is too common"],
             ["12345678", "password is entirely numeric"],
-            [USER1, " password is too similar to the username"],
+            [USER, " password is too similar to the username"],
         ]
     )
     def test_signup_password(self, password, err_msg):
         # opens the website to the signup page
-        self.open(f"{self.live_server_url}/signup/")
-
         # testing password validation
-        self.auto_signup(username=USER1, password=password)
+        self.auto_signup(password=password)
         # checking the credentials have not been allowed by making sure it has not left the page
         self.assert_text(err_msg)
 
-    @pytest.mark.order(1)
+
     def test_signup_correct(self):
         # opens the website to the signup page
-        self.open(f"{self.live_server_url}/signup/")
-
         # enters correct credentials
         self.auto_signup()
-
-        self.test_login_correct()
-        self.click("#terms")
-        self.click("#submit")
+        self.auto_login()
 
     def test_login_incorrect(self):
+
+        self.auto_signup()
         # opens the website to the login page
-        self.open(f"{self.live_server_url}/accounts/login")
 
         # enters incorrect login information
-        self.type(USERNAME_ID, "user")
-        self.type(PASSWORD_ID, "password")
-
-        # submits form
-        self.click('button:contains("Login")')
+        self.auto_login("user1", "password")
         # alternate way
         # self.submit("#id_password")
 
         # check for error message
-        self.assert_text("Please enter a correct username and password", ".message")
+        self.assert_text("Please enter a correct username and password")
 
     def test_login_correct(self):
+        
+        self.auto_signup()
         # opens the website to the login page
-        self.open(f"{self.live_server_url}/accounts/login")
-
         # enter correct details
-        self.type(USERNAME_ID, USER)
-        self.type(PASSWORD_ID, CORRECT_PASSWORD)
+        self.auto_login()
 
-        # submits form
-        self.click('button:contains("Login")')
         self.assert_url(f"{self.live_server_url}/")
 
     def test_add_absence(self):
+        
+        self.auto_signup()
+        self.auto_login()
+        
         self.open(f"{self.live_server_url}/absence/add")
-        self.type(USERNAME_ID, USER)
-        self.type(PASSWORD_ID, CORRECT_PASSWORD)
-        self.click('button:contains("Login")')
         self.assert_url(f"{self.live_server_url}/absence/add")
 
         # correct format
@@ -193,52 +192,48 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         self.click("#submit")
         self.assert_text("Absence successfully recorded")
 
-    @pytest.mark.order(2)
+
     @pytest.mark.skip()
     def test_add_recurring(self):
-        self.test_login_correct()
+        
+        self.auto_signup()
+        self.auto_login()
+        
         self.click("#absence")
         self.click("#recurring")
         self.click("span:conatins('Add rule')")
 
-    @pytest.mark.order(3)
+
     def test_teams_join(self):
-        self.open(f"{self.live_server_url}/signup")
-        self.auto_signup(username=USER1)
-        # opens the website to the login page
-        self.open(f"{self.live_server_url}/accounts/login")
+        # signs uop user 1
+        self.auto_signup(USER1)
 
         # enter correct details
-        self.type(USERNAME_ID, USER1)
-        self.type(PASSWORD_ID, CORRECT_PASSWORD)
+        self.auto_login(USER1)
 
-        # submits form
-        self.click('button:contains("Login")')
-        self.click("#terms")
-        self.click("#submit")
+
         # User 2
-        self.open(f"{self.live_server_url}/signup")
-        self.auto_signup(username=USER2)
-        # opens the website to the login page
-        self.open(f"{self.live_server_url}/accounts/login")
+        self.auto_signup(USER1)
 
         # enter correct details
-        self.type(USERNAME_ID, USER2)
-        self.type(PASSWORD_ID, CORRECT_PASSWORD)
-
-        # submits form
-        self.click('button:contains("Login")')
-        self.click("#terms")
-        self.click("#submit")
+        self.auto_login(USER1)
+        
         self.click("#teams")
 
     def test_teams_remove_member(self):
-        self.open(f"{self.live_server_url}/accounts/login")
-        # Logging in the "owner"
+        
+        # signs uop user 1
+        self.auto_signup(USER1)
 
-        self.type(USERNAME_ID, USER1)
-        self.type(PASSWORD_ID, CORRECT_PASSWORD)
-        self.click("#submit")
+        # enter correct details
+        self.auto_login(USER1)
+
+
+        # User 2
+        self.auto_signup(USER2)
+
+        # enter correct details
+        self.auto_login(USER2)
 
         # Creating the team
         self.click("#teams")
@@ -251,9 +246,7 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         # logs in member
         self.open(f"{self.live_server_url}/accounts/login")
         # enter correct details
-        self.type(USERNAME_ID, USER2)
-        self.type(PASSWORD_ID, CORRECT_PASSWORD)
-        self.click("#submit")
+        self.auto_login(USER1)
 
         # Joining the team
         self.click("#teams")
@@ -263,15 +256,12 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
 
         # Logging in as the owner
         self.click("#login")
-        self.type(USERNAME_ID, USER1)
-        self.type(PASSWORD_ID, CORRECT_PASSWORD)
-        self.click("#submit")
+        self.auto_login(USER2)
 
         # Removing a member from the team
         self.click("#teams")
         self.click(f"#{TEAM}")
         self.click("#settings")
 
-        self.click(f"#remove_{USER2}")
-        self.assert_text_not_visible(USER2)
-
+        self.click(f"#remove_{USER1}")
+        self.assert_text_not_visible(USER1)

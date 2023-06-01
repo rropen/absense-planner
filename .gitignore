@@ -135,3 +135,5 @@ ap_src/db.sqlite3
 
 archived_logs
 latest_logs
+archived-files
+downloaded-files

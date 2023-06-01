@@ -1,3 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
 <form method="POST">
     {% csrf_token %}
     <fieldset class="form-group">
@@ -12,3 +14,4 @@
                href="{% url 'profile' %}">Cancel</a>
     </div>
 </form>
+{% endblock %}
