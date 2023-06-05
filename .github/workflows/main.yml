@@ -12,7 +12,7 @@ on:
 
 #ISSUE Resolved:
 # File names usage should be consistent throughout source-code.
-# e.g. when extending 'Base.html' must include the capital 'B' 
+# e.g. when extending 'base.html' in templates, ensure cases match exactly: 'base.html' 
 
 
 jobs: 
@@ -93,7 +93,7 @@ jobs:
         python-version: 3.8
     - name: Unzip Workspace
       run: |
-        unzip environment.zip
+        unzip -q environment.zip
     - name: Test Artifact Downloaded Successfully
       run: |
         echo "Activating Python venv"
