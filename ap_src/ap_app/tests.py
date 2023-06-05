@@ -4,7 +4,6 @@ from django.test import LiveServerTestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from parameterized import parameterized
 from seleniumbase import BaseCase
-
 #TODO: Add id's to web-page elements being used during testing, instead of using xPaths 
 #NOTE: 
 # Method of executing tests locally from command-line:
@@ -46,6 +45,7 @@ PASSWORD = "password"
 class TestSuiteTemplate(LiveServerTestCase, BaseCase):
     """ Testing Suite Class - Implement any tests inside
     its own method - (Methods to be tested must start with "test_*") """
+    fixtures = ["ap_src/ap_app/fixtures/river.json","ap_src/ap_app/fixtures/roles.json" ]
 # Demo test example
     def test_example(self):
         self.demo_mode = DEMO
@@ -202,25 +202,10 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         self.click("#absence")
         self.click("#recurring")
         self.click("span:conatins('Add rule')")
+        #TODO: add more when issue #154 is fixed
 
 
-    def test_teams_join(self):
-        # signs uop user 1
-        self.auto_signup(USER1)
-
-        # enter correct details
-        self.auto_login(USER1)
-
-
-        # User 2
-        self.auto_signup(USER1)
-
-        # enter correct details
-        self.auto_login(USER1)
-        
-        self.click("#teams")
-
-    def test_teams_remove_member(self):
+    def test_teams(self):
         
         # signs uop user 1
         self.auto_signup(USER1)
@@ -265,3 +250,10 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
 
         self.click(f"#remove_{USER1}")
         self.assert_text_not_visible(USER1)
+        
+        # add other team tests here
+        
+        # goes back a page
+        self.execute_script("window.history.go(-1)")
+        self.execute_script("window.history.go(-1)")
+        self.click("#leave")
