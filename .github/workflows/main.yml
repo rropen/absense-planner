@@ -93,7 +93,7 @@ jobs:
         python-version: 3.8
     - name: Unzip Workspace
       run: |
-        unzip environment.zip
+        unzip -q environment.zip
     - name: Test Artifact Downloaded Successfully
       run: |
         echo "Activating Python venv"
