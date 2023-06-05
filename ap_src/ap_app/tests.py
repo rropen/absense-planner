@@ -4,7 +4,6 @@ from django.test import LiveServerTestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from parameterized import parameterized
 from seleniumbase import BaseCase
-
 #TODO: Add id's to web-page elements being used during testing, instead of using xPaths 
 #NOTE: 
 # Method of executing tests locally from command-line:
@@ -46,6 +45,7 @@ PASSWORD = "password"
 class TestSuiteTemplate(LiveServerTestCase, BaseCase):
     """ Testing Suite Class - Implement any tests inside
     its own method - (Methods to be tested must start with "test_*") """
+    fixtures = ["ap_src/ap_app/fixtures/river.json","ap_src/ap_app/fixtures/roles.json" ]
 # Demo test example
     def test_example(self):
         self.demo_mode = DEMO
@@ -253,6 +253,7 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         
         # add other team tests here
         
-        # leave team
+        # goes back a page
+        self.execute_script("window.history.go(-1)")
         self.execute_script("window.history.go(-1)")
         self.click("#leave")
