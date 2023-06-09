@@ -26,8 +26,8 @@
         <span class="tag is-info">{{invite.role.role}}</span>
     </div>
     <span class="is-block is-size-6">{{invite.team.description}}</span>
-    <a id="{{invite.team.name}} accept" class="button is-success" href="{% url 'joining_team_request' invite.id 'accepted' %}">Accept</a>
-    <a id="{{invite.team.name}} decline" class="button is-danger" href="{% url 'joining_team_request' invite.id 'nonactive' %}">Decline</a>
+    <a id="{{invite.team.name}}_accept" class="button is-success" href="{% url 'joining_team_request' invite.id 'accepted' %}">Accept</a>
+    <a id="{{invite.team.name}_decline" class="button is-danger" href="{% url 'joining_team_request' invite.id 'nonactive' %}">Decline</a>
 </div>
 {% endfor %}
 

@@ -29,6 +29,7 @@ USER = "user"
 USER1 = names.get_first_name()
 USER2 = names.get_first_name()
 TEAM = names.get_full_name().replace(" ", "")
+TEAM2 = names.get_full_name().replace(" ", "")
 CORRECT_PASSWORD = "Password!1"
 # username and password ids for login
 USERNAME_ID = "#id_username"
@@ -218,7 +219,7 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         self.click("#teams")
         self.click("#create")
         self.type("#nameInput", TEAM)
-        self.type("#id_description", "A team to test removing members from a team.")
+        self.type("#id_description", "A public team to test.")
         self.click("#submit")
         self.click("#logout")
 
@@ -249,7 +250,7 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         self.click(f"#{TEAM}")
 
         self.click("#invites")
-        self.click("a:contains('Member')")
+        self.click(f"#{USER1}_member")
 
         self.click("#logout")
         # logs in member
@@ -258,10 +259,60 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         self.auto_login(USER1)
         self.click("#teams")
         self.click("#invites")
-        self.assert_element_visible(f"#{TEAM} accept", "a")
-        self.click(f"#{TEAM} accept", ".button")
+        self.click(f"#{TEAM}_accept")
         self.assert_text(TEAM)
         # leaves team
-        self.click("#leave")
+        self.click(f"#leave_{TEAM}")
 
         #test private team
+        # Creating the team
+        self.click("#teams")
+        self.click("#create")
+        self.type("#nameInput", TEAM2)
+        self.type("#id_description", "A private team to test.")
+        self.click("#id_private")
+        self.click("#submit")
+        self.click("#logout")
+
+        # logs in member
+        self.open(f"{self.live_server_url}/accounts/login")
+        # enter correct details
+        self.auto_login(USER1)
+
+        # Joining the team
+        self.click("#teams")
+        self.click("#join")
+        self.click(f"#apply_member_{TEAM2}")
+        self.click("#logout")
+
+        # Logging in as the owner
+        self.click("#login")
+        self.auto_login(USER2)
+        self.click("#teams")
+        self.click(f"#{TEAM}")
+        self.click("#settings")
+        self.click("#accept_{TEAM2}")
+
+        # Removing a member from the team
+        self.click("#teams")
+        self.click(f"#{TEAM}")
+        self.click("#settings")
+        self.click(f"#remove_{USER1}")
+        self.assert_text_not_visible(USER1)
+
+        # goes back a page
+        self.click("#teams")
+        self.click(f"#{TEAM2}")
+
+        self.click("#invites")
+        self.click(f"#{USER1}_member")
+
+        self.click("#logout")
+        # logs in member
+        self.open(f"{self.live_server_url}/accounts/login")
+        # enter correct details
+        self.auto_login(USER1)
+        self.click("#teams")
+        self.click("#invites")
+        self.click(f"#{TEAM2}_accept")
+        self.assert_text(TEAM2)
