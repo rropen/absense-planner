@@ -23,7 +23,7 @@
             <h3 class="has-text-weight-bold is-size-5 my-3">My Teams ({{rels.count}})</h3>
         </div>
         <div class="level-right">
-            <a class="level-item p-1 has-text-link" href="{% url 'view_invites' %}">
+            <a id="invites" class="level-item p-1 has-text-link" href="{% url 'view_invites' %}">
                 <i class="fas fa-envelope is-size-3 m-0"></i>
                 <span class="tag is-danger is-rounded is-size-7 m-0" style="transform: translate(-12px, -12px)">
                 {{invite_count}}</span>
@@ -59,7 +59,7 @@
             <span class="is-block is-size-6">{{rel.team.description}}</span>
             <div class="is-block mt-3">
                 <a id="{{rel.team.name}}" class="button is-link" href="{% url 'Calendar' rel.team.id %}">View</a>
-                <a id="leave {{rel.team.name}}" class="button is-danger" href="{% url 'leave_team' rel.id %}">Leave</a>                
+                <a id="leave_{{rel.team.name}}" class="button is-danger" href="{% url 'leave_team' rel.id %}">Leave</a>                
             </div>
         </div>
     {% endfor %}

@@ -191,7 +191,7 @@ def joining_team_process(request, id, role):
         return render(
         request,
         "teams/dashboard.html",
-        {"rels": existing_rels, "invite_count": invite_rel_count, "teamspage_active": True, "message" : "You are already part of one team"},
+        {"rels": existing_rels, "invite_count": invite_rel_count, "teamspage_active": True, "message" : "You are already part of one team", "message_type":"is-danger"},
     )
     new_rel = Relationship.objects.create(
         user=request.user,
@@ -406,7 +406,7 @@ def add(request) -> render:
             request.POST,
             user=request.user,
             initial={
-                "start_date": datetime.datetime.now().now(),
+                "start_date": datetime.datetime.now(),
                 "end_date": lambda: datetime.datetime.now().date()
                 + datetime.timedelta(days=1),
             },
@@ -424,18 +424,22 @@ def add(request) -> render:
             obj.request_accepted = False  # TODO
             obj.User_ID = request.user
             obj.Target_User_ID = form.cleaned_data["user"].user
-
+            message = "Absence successfully created"
+            msg_type = "is-success"
             for x in Absence.objects.filter(User_ID=request.user.id):
                 result = Absence.is_equivalent(obj, x)
                 if result:
                     x.delete()
+                    message = "Absence already created"
+                    msg_type = "is-danger"
             obj.save()
             return render(
                 request,
                 "ap_app/add_absence.html",
                 {
                     "form": form,
-                    "message": "Absence successfully recorded.",
+                    "message": message,
+                    "message_type":msg_type,
                     "add_absence_active": True,
                 },
             )
@@ -939,7 +943,7 @@ def absence_recurring_delete(
     absence = RecurringAbsences.objects.get(pk=absence_id)
     user = request.user
     absence.delete()
-    if user == absence.User_ID:
+    if user == absence.Target_User_ID:
         return redirect("profile")
     return redirect("edit_team_member_absence", team_id, user_id)
 

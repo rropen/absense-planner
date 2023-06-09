@@ -19,9 +19,9 @@
                         <span class="is-size-6 has-text-weight-bold">Applied for: {{pending_rel.role.role}}</span>
                     </div>
                     <div class="column has-text-right">
-                        <a href="{% url 'joining_team_request' pending_rel.id 'accepted' %}"
+                        <a id="accept_{{pending_rel.user.username}}" href="{% url 'joining_team_request' pending_rel.id 'accepted' %}"
                             class="button is-success is-size-9 mx-2">Accept</a>
-                        <a href="{% url 'joining_team_request' pending_rel.id 'nonactive' %}"
+                        <a id="decline_{{pending_rel.user.username}}" href="{% url 'joining_team_request' pending_rel.id 'nonactive' %}"
                             class="button is-danger is-size-9">Decline</a>
                     </div>
                 </td>
