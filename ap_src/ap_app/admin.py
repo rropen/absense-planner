@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import Absence, Relationship, Role, Team, UserProfile, RecurringAbsences
+from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
+                     UserProfile)
 
 admin.site.register(Absence)
 admin.site.register(Team)
