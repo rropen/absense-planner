@@ -214,6 +214,7 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
 
         # enter correct details
         self.auto_login(USER2)
+        
         # test public team
         # Creating the team
         self.click("#teams")
@@ -264,7 +265,13 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         # leaves team
         self.click(f"#leave_{TEAM}")
 
+
         #test private team
+        self.click("#logout")
+        # logs in 
+        self.open(f"{self.live_server_url}/accounts/login")
+        # enter correct details
+        self.auto_login(USER2)
         # Creating the team
         self.click("#teams")
         self.click("#create")
@@ -289,13 +296,13 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         self.click("#login")
         self.auto_login(USER2)
         self.click("#teams")
-        self.click(f"#{TEAM}")
+        self.click(f"#{TEAM2}")
         self.click("#settings")
-        self.click("#accept_{TEAM2}")
+        self.click(f"#accept_{USER1}")
 
         # Removing a member from the team
         self.click("#teams")
-        self.click(f"#{TEAM}")
+        self.click(f"#{TEAM2}")
         self.click("#settings")
         self.click(f"#remove_{USER1}")
         self.assert_text_not_visible(USER1)
