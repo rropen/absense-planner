@@ -44,5 +44,5 @@ urlpatterns = [
     path("profile/settings", views.profile_settings, name="profile settings"),
     path("profile/settings/add-user", views.add_user, name="add-user"),
     url(r'^jsi18n', JavaScriptCatalog.as_view(), js_info_dict),
-    # path("absence/edit/<int:id>", views.absence_edit, name="Absence Edit")
+    # path("a bsence/edit/<int:id>", views.absence_edit, name="Absence Edit")
 ]
