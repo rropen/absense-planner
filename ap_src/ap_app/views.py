@@ -5,9 +5,11 @@
 import calendar
 import datetime
 import json
+import os
+import holidays
+import pycountry
 from datetime import timedelta
 
-import holidays
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -515,6 +517,7 @@ def details_page(request) -> render:
 
 
 def get_date_data(
+    region,
     month=datetime.datetime.now().strftime("%B"),
     year=datetime.datetime.now().year,
 ):
@@ -575,10 +578,9 @@ def get_date_data(
         date = date.strftime("%A")[0:2]
         if (date == "Sa" or date == "Su"):
             data["weekend_list"].append(day)
-    
 
     data["bank_hol"] = []
-    for h in holidays.GB(years=year).items():
+    for h in holidays.country_holidays(region, years=year).items():
         if (h[0].month == data["month_num"]):
             data["bank_hol"].append(h[0].day)
         
@@ -673,7 +675,12 @@ def team_calendar(
             month = date.strftime("%B")
             year = date.year
 
-        data_1 = get_date_data(month, year)
+        try:
+            userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
+        except IndexError:
+            return redirect("/")
+
+        data_1 = get_date_data(userprofile.region, month, year)
 
         users = Relationship.objects.all().filter(
             team=id, status=State.objects.get(slug="active")
@@ -747,8 +754,13 @@ def all_calendar(
     if date:
         month = date.strftime("%B")
         year = date.year
+    
+    try:
+        userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
+    except IndexError:
+        return redirect("/")
 
-    data_1 = get_date_data(month, year)
+    data_1 = get_date_data(userprofile.region, month, year)
     
     current_month = data_1["current_month"]
     current_year = data_1["current_year"]
@@ -1014,9 +1026,11 @@ def profile_settings(request) -> render:
             user_profile.privacy = True
 
         user_profile.save()
+    
+    country_data = get_region_data()
 
     privacy_status = user_profile.privacy
-    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status}
+    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status, **country_data}
     return render(request, "ap_app/settings.html", context)
 
 
@@ -1042,6 +1056,37 @@ def add_user(request) -> render:
 
     return redirect("/profile/settings")
 
+def get_region_data():
+    data = {}
+    data["countries"] = []
+    for country in list(pycountry.countries):
+        try:
+            holidays.country_holidays(country.alpha_2)
+            data["countries"].append(country.name)
+        except:
+            pass
+    
+    data["countries"] = sorted(data["countries"])
+
+    return data
+
+@login_required
+def set_region(request):
+
+    try:
+        userporfile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
+    except IndexError:
+        # TODO Create error page
+        return redirect("/")
+
+    if request.method == "POST":
+        region = request.POST.get("regions")
+        region_code = pycountry.countries.get(name=region).alpha_2
+        if (region_code != userporfile.region):
+            userporfile.region = region_code
+            userporfile.save()
+
+    return redirect("/profile/settings")
 
 def find_user_obj(user_to_find):
     """Finds & Returns object of 'UserProfile' for a user

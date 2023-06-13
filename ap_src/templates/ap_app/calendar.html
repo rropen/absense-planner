@@ -280,7 +280,7 @@
                             <th style="color: black;"></th>
                             {% for day in days_name %}
                             {% if day == Sa or day == Su %}
-                            <th class="is-primary is is-bordered">{{day}}</th>
+                            <th style="background-color: #055496; color: white;">{{day}}</th>
                             {% elif forloop.counter in bank_hol%}
                             <th style="background-color: #01661f; color: white;">{{day}}</th>
                             {% else %}
@@ -296,7 +296,7 @@
                             {% elif day in bank_hol %}
                             <td style = "background-color: #28663a; color: rgb(255, 255, 255);" onmouseover="Test">{{day}}</td>
                             {% elif day in weekend_list%}
-                            <td style = "background-color: #7adece; color: rgb(255, 255, 255);">{{day}}</td>
+                            <td style = "background-color: #206cab; color: rgb(255, 255, 255);">{{day}}</td>
                             {% else %}
                             <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
                             {% endif %}
@@ -323,7 +323,7 @@
                                 {% if day in bank_hol %}
                                 <td style = "background-color: #28663a;", id={{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE></td>
                                 {% elif day in weekend_list %}
-                                <td style = "background-color: #7adece;", id={{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE></td>
+                                <td style = "background-color: #206cab;", id={{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE></td>
                                 {% else %}
                                 <td id={{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE></td>
                                 {% endif %}

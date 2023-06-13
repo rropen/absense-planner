@@ -43,6 +43,7 @@ urlpatterns = [
     path("absence/click_add", views.click_add, name="absence_click_add"),
     path("profile/settings", views.profile_settings, name="profile settings"),
     path("profile/settings/add-user", views.add_user, name="add-user"),
+    path("profile/settings/set-region", views.set_region, name="set-region"),
     url(r'^jsi18n', JavaScriptCatalog.as_view(), js_info_dict),
     # path("absence/edit/<int:id>", views.absence_edit, name="Absence Edit")
 ]
