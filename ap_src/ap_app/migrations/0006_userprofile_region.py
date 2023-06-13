@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='userprofile',
             name='region',
-            field=models.CharField(default='GB|England', max_length=200),
+            field=models.CharField(default='GB', max_length=200),
         ),
     ]

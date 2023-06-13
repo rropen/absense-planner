@@ -472,6 +472,21 @@ def click_add(request):
         return HttpResponse('404')
 
 @login_required
+def set_region(request):
+    if request.method == "POST":
+        print(request.user)
+        region = request.POST.get("regions")
+        #Code to set region
+        profile = UserProfile()
+        profile.region = region
+        profile.user_id = request.user
+        #profile.save()
+        
+        return redirect("/profile/settings")
+    else:
+        return HttpResponse('404')
+
+@login_required
 def add_recurring(request) -> render:
     if request.method == "POST":
         form = RecurringAbsencesForm(request.POST)
