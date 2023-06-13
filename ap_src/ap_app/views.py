@@ -5,12 +5,10 @@
 import calendar
 import datetime
 import json
-import os
 import holidays
 import pycountry
 from datetime import timedelta
 
-from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -19,7 +17,6 @@ from django.db.models.functions import Lower
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
-from django.utils.timezone import now
 from django.views.generic import CreateView, UpdateView
 from river.models.fields.state import State
 
@@ -468,21 +465,6 @@ def click_add(request):
         items.User_ID = request.user
         items.save()
         return JsonResponse({'start_date': items.absence_date_start, 'end_date': items.absence_date_end, 'taget_id': items.Target_User_ID.username, 'user_id': items.User_ID.username})
-    else:
-        return HttpResponse('404')
-
-@login_required
-def set_region(request):
-    if request.method == "POST":
-        print(request.user)
-        region = request.POST.get("regions")
-        #Code to set region
-        profile = UserProfile()
-        profile.region = region
-        profile.user_id = request.user
-        #profile.save()
-        
-        return redirect("/profile/settings")
     else:
         return HttpResponse('404')
 
