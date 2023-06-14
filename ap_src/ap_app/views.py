@@ -457,14 +457,50 @@ def add(request) -> render:
 def click_add(request):
     if request.method == "POST":
         json_data=json.loads(request.body)
-        items = Absence()
-        items.absence_date_start = json_data['date']
-        items.absence_date_end = json_data['date']
-        # issue #173
-        items.Target_User_ID = request.user
-        items.User_ID = request.user
-        items.save()
-        return JsonResponse({'start_date': items.absence_date_start, 'end_date': items.absence_date_end, 'taget_id': items.Target_User_ID.username, 'user_id': items.User_ID.username})
+        absence = None
+        date = datetime.datetime.strptime(json_data["date"], "%Y-%m-%d").date()
+        if date - timedelta(days=1) in Absence.objects.filter(Target_User_ID_id=json_data["id"]).values_list("absence_date_end", flat=True) \
+            and date + timedelta(days=1) in Absence.objects.filter(Target_User_ID_id=json_data["id"]).values_list("absence_date_start", flat=True):
+            ab_1 = Absence.objects.filter(Target_User_ID_id=json_data["id"], absence_date_start=date+timedelta(days=1))[0]
+            ab_2 = Absence.objects.filter(Target_User_ID_id=json_data["id"], absence_date_end=date-timedelta(days=1))[0]
+            absence = Absence()
+            absence.absence_date_start = ab_2.absence_date_start
+            absence.absence_date_end = ab_1.absence_date_end
+            absence.Target_User_ID_id = json_data["id"]
+            absence.User_ID = request.user
+            ab_1.delete()
+            ab_2.delete()
+            absence.save()
+            
+        elif date - timedelta(days=1) in Absence.objects.filter(Target_User_ID_id=json_data["id"]).values_list("absence_date_start", flat=True):
+            for a in Absence.objects.filter(Target_User_ID_id=json_data["id"], absence_date_start=date-timedelta(days=1)):
+                a.absence_date_end = date
+                a.save()
+                absence = a
+        elif date + timedelta(days=1) in Absence.objects.filter(Target_User_ID_id=json_data["id"]).values_list("absence_date_end", flat=True):
+            for a in Absence.objects.filter(Target_User_ID_id=json_data["id"], absence_date_end=date+timedelta(days=1)):
+                a.absence_date_start = date
+                a.save()
+                absence = a
+        elif date - timedelta(days=1) in Absence.objects.filter(Target_User_ID_id=json_data["id"]).values_list("absence_date_end", flat=True):
+            for a in Absence.objects.filter(Target_User_ID_id=json_data["id"], absence_date_end=date-timedelta(days=1)):
+                a.absence_date_end = date
+                a.save()
+                absence = a
+        elif date + timedelta(days=1) in Absence.objects.filter(Target_User_ID_id=json_data["id"]).values_list("absence_date_start", flat=True):
+            for a in Absence.objects.filter(Target_User_ID_id=json_data["id"], absence_date_start=date+timedelta(days=1)):
+                a.absence_date_start = date
+                a.save()
+                absence = a
+        else:
+            absence = Absence()
+            absence.absence_date_start = json_data['date']
+            absence.absence_date_end = json_data['date']
+            absence.Target_User_ID_id = json_data["id"]
+            absence.User_ID = request.user
+            absence.save()
+
+        return JsonResponse({'start_date': absence.absence_date_start, 'end_date': absence.absence_date_end, 'taget_id': absence.Target_User_ID.username, 'user_id': absence.User_ID.username})
     else:
         return HttpResponse('404')
 
