@@ -211,6 +211,15 @@
                             </button>
                         </p>
                     </a>
+                    <a id="CalendarClick-Toggle">
+                        <p class="buttons">
+                            <button class="button " style="border-width:2px; border-color:green" id="ClickToggle">
+                                <span class="icon ">
+                                    <i class="fas fa-mouse-pointer"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
 
                 </div>
 
@@ -405,46 +414,26 @@
         $("#GridSelect").css("border-color", "");
 
     });
-
+    var calendarCickToggle = true;
     //This is a script to detect what id has been clicked on then add that day to be absence
     var csrftoken = '{{ csrf_token }}';
     document.addEventListener('click', function(e) {
-       if ( e.target.id.includes("/")) {
-        var data = e.target.id.split("/"); var ID = data[0]; var date = data[1]; var absent = data[2]
-        //This supports half days
-        if (e.shiftKey) {
-            alert("UserID: " + ID + "\nDate: " + date + "\nAbsent: " + absent + "\nHalf Day: True")
-        //This selects full days
-        } else {
-            if (absent == "FALSE") {
-                var correct_data = JSON.stringify({"id": ID, "date": date})
-                fetch("http://127.0.0.1:8000/absence/click_add", {
-                method: "post",
-                headers: {
-                    "X-CSRFToken": csrftoken,
-                },
-                body: correct_data
-            })
-                .then((res) => {
-                    console.log(res.json())
-                    location.reload();
-                })
-                .catch(err => {
-                    console.log(err)
-                });
-            }
-            if (absent == "TRUE") {
-                var confirmationPage = document.getElementById("confirmationPage");
-                confirmationPage.style.display = "block";
-                var removeAbsenceButton = document.getElementById("removeAbsence");
-                removeAbsenceButton.onclick = function() {
-                    var jsonData = JSON.stringify({"id" : ID, "date": date})
-                    fetch("http://127.0.0.1:8000/absence/click_remove", {
+        if (calendarCickToggle == true) {
+            if ( e.target.id.includes("/")) {
+                var data = e.target.id.split("/"); var ID = data[0]; var date = data[1]; var absent = data[2]
+                //This supports half days
+                if (e.shiftKey) {
+                    alert("UserID: " + ID + "\nDate: " + date + "\nAbsent: " + absent + "\nHalf Day: True")
+                //This selects full days
+                } else {
+                    if (absent == "FALSE") {
+                        var correct_data = JSON.stringify({"id": ID, "date": date})
+                        fetch("http://127.0.0.1:8000/absence/click_add", {
                         method: "post",
                         headers: {
                             "X-CSRFToken": csrftoken,
                         },
-                        body: jsonData
+                        body: correct_data
                     })
                         .then((res) => {
                             console.log(res.json())
@@ -453,15 +442,49 @@
                         .catch(err => {
                             console.log(err)
                         });
-                    confirmationPage.style.display = "none";
+                    }
+                    if (absent == "TRUE") {
+                        var confirmationPage = document.getElementById("confirmationPage");
+                        confirmationPage.style.display = "block";
+                        var removeAbsenceButton = document.getElementById("removeAbsence");
+                        removeAbsenceButton.onclick = function() {
+                            var jsonData = JSON.stringify({"id" : ID, "date": date})
+                            fetch("http://127.0.0.1:8000/absence/click_remove", {
+                                method: "post",
+                                headers: {
+                                    "X-CSRFToken": csrftoken,
+                                },
+                                body: jsonData
+                            })
+                                .then((res) => {
+                                    console.log(res.json())
+                                    location.reload();
+                                })
+                                .catch(err => {
+                                    console.log(err)
+                                });
+                            confirmationPage.style.display = "none";
+                        }
+                        var cancelButton = document.getElementById("cancelAbsece");
+                        cancelButton.onclick = function() {
+                            confirmationPage.style.display = "none";
+                        }
+                    }
                 }
-                var cancelButton = document.getElementById("cancelAbsece");
-                cancelButton.onclick = function() {
-                    confirmationPage.style.display = "none";
                 }
-            }
         }
-       }
     }, false);
+    var calendarClickButton = document.getElementById("ClickToggle")
+    calendarClickButton.onclick = function() {
+        if (calendarCickToggle == false) {
+            calendarClickButton.style.borderColor = "green";
+            calendarCickToggle = true
+        } else {
+            calendarClickButton.style.borderColor = "red";
+            calendarCickToggle = false
+        }
+        
+        console.log(calendarCickToggle)
+    }
 </script>
 {% endblock %}
