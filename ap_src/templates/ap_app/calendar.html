@@ -39,6 +39,7 @@
         border: 1px solid #545351;
         border-radius: 10px;
         width: 20%;
+        display: none;
     }
 </style>
 
@@ -91,7 +92,11 @@
                 
                 
             </div>
-
+            <div class="confirmationBox", id="confirmationBox">
+                <p>Are you sure you want to remove this absence?<p>
+                <button class="button is-info", id="removeAbsence">Remove Absence</button>
+                <button class="button is-info", id="cancelAbsece">Cancel</button>
+            </div>
             <div class="level mb-0">
                 <div class="level-left">
                     
@@ -195,7 +200,7 @@
 
                     <a id="CalendarFormatAlternate-Grid">
                         <p class="buttons">
-                            <button class="button " style="border-width:2px; border-color:green" id="GridSelect">
+                            <button class="button " style="border-width:2px;" id="GridSelect">
                                 <span class="icon ">
                                     <i class="fa fa-th" aria-hidden="true"></i>
                                 </span>
@@ -204,7 +209,7 @@
                     </a>
                     <a id="CalendarFormatAlternate-Linear">
                         <p class="buttons">
-                            <button class="button " style="border-width:2px; " id="LinearSelect">
+                            <button class="button " style="border-width:2px; border-color:green;" id="LinearSelect">
                                 <span class="icon ">
                                     <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
                                 </span>
@@ -367,13 +372,6 @@
             </div>
         </div>
     </section>
-    <div id="confirmationPage", class="confirmationPage">
-        <div class="confirmationBox">
-            <p>Are you sure you want to remove this absence?<p>
-            <button class="button is-info", id="removeAbsence">Remove Absence</button>
-            <button class="button is-info", id="cancelAbsece">Cancel</button>
-        </div>
-    </div>
 </div>
 
 
@@ -444,7 +442,7 @@
                         });
                     }
                     if (absent == "TRUE") {
-                        var confirmationPage = document.getElementById("confirmationPage");
+                        var confirmationPage = document.getElementById("confirmationBox");
                         confirmationPage.style.display = "block";
                         var removeAbsenceButton = document.getElementById("removeAbsence");
                         removeAbsenceButton.onclick = function() {
@@ -483,8 +481,6 @@
             calendarClickButton.style.borderColor = "red";
             calendarCickToggle = false
         }
-        
-        console.log(calendarCickToggle)
     }
 </script>
 {% endblock %}
