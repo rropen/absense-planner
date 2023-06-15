@@ -19,6 +19,27 @@
         border: 1px solid #ff0000;
         border-radius: 12px
     }
+    .confirmationPage {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        padding-top: 90px;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+    }
+    .confirmationBox {
+        background-color: #055496;
+        color: white;
+        text-align: center;
+        margin: auto;
+        padding: 10px;
+        border: 1px solid #545351;
+        border-radius: 10px;
+        width: 20%;
+    }
 </style>
 
 
@@ -316,16 +337,16 @@
                                 {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
                                 {% check_absences recurring_absence_dates|get_key:user year month_num day as check_recurring_absence %}
                                 {% if check_recurring_absence %}
-                                <td style="background-color: #ffaa00",  id={{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE></td>
+                                <td style="background-color: #ffaa00",  id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
                                 {% elif check_absence %}
-                                <td style="background-color: #ff0000;", id={{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE></td>
+                                <td style="background-color: #ff0000;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
                                 {% else %}
                                 {% if day in bank_hol %}
-                                <td style = "background-color: #28663a;", id={{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE></td>
+                                <td style = "background-color: #28663a;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                 {% elif day in weekend_list %}
-                                <td style = "background-color: #206cab;", id={{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE></td>
+                                <td style = "background-color: #206cab;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                 {% else %}
-                                <td id={{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE></td>
+                                <td id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                 {% endif %}
                                 {% endif %}
                                 {% endfor %}
@@ -337,6 +358,13 @@
             </div>
         </div>
     </section>
+    <div id="confirmationPage", class="confirmationPage">
+        <div class="confirmationBox">
+            <p>Are you sure you want to remove this absence?<p>
+            <button class="button is-info", id="removeAbsence">Remove Absence</button>
+            <button class="button is-info", id="cancelAbsece">Cancel</button>
+        </div>
+    </div>
 </div>
 
 
@@ -405,7 +433,33 @@
                     console.log(err)
                 });
             }
-            
+            if (absent == "TRUE") {
+                var confirmationPage = document.getElementById("confirmationPage");
+                confirmationPage.style.display = "block";
+                var removeAbsenceButton = document.getElementById("removeAbsence");
+                removeAbsenceButton.onclick = function() {
+                    var jsonData = JSON.stringify({"id" : ID, "date": date})
+                    fetch("http://127.0.0.1:8000/absence/click_remove", {
+                        method: "post",
+                        headers: {
+                            "X-CSRFToken": csrftoken,
+                        },
+                        body: jsonData
+                    })
+                        .then((res) => {
+                            console.log(res.json())
+                            location.reload();
+                        })
+                        .catch(err => {
+                            console.log(err)
+                        });
+                    confirmationPage.style.display = "none";
+                }
+                var cancelButton = document.getElementById("cancelAbsece");
+                cancelButton.onclick = function() {
+                    confirmationPage.style.display = "none";
+                }
+            }
         }
        }
     }, false);

@@ -41,6 +41,7 @@ urlpatterns = [
     path("absence/edit/<int:pk>", views.EditAbsence.as_view(), name="absence_edit"),
     path("absence/edit_recurring/<int:pk>", views.edit_recurring_absences, name="recurring_absence_edit"),
     path("absence/click_add", views.click_add, name="absence_click_add"),
+    path("absence/click_remove", views.click_remove, name="absence_click_remove"),
     path("profile/settings", views.profile_settings, name="profile settings"),
     path("profile/settings/add-user", views.add_user, name="add-user"),
     path("profile/settings/set-region", views.set_region, name="set-region"),
