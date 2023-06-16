@@ -460,8 +460,11 @@ def click_add(request):
     if request.method == "POST":
         json_data=json.loads(request.body)
         #This will add a half
+        print(json_data["half_day"])
         if json_data["half_day"] == True:
-            print("Test")
+            if json_data["half_day_time"] == "M":
+                print("Morning")
+            return JsonResponse({})
         else:
             absence = None
             date = datetime.datetime.strptime(json_data["date"], "%Y-%m-%d").date()
@@ -506,7 +509,7 @@ def click_add(request):
                 absence.User_ID = request.user
                 absence.save()
 
-        return JsonResponse({'start_date': absence.absence_date_start, 'end_date': absence.absence_date_end, 'taget_id': absence.Target_User_ID.username, 'user_id': absence.User_ID.username})
+            return JsonResponse({'start_date': absence.absence_date_start, 'end_date': absence.absence_date_end, 'taget_id': absence.Target_User_ID.username, 'user_id': absence.User_ID.username})
     else:
         return HttpResponse('404')
 @login_required

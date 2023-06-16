@@ -437,7 +437,31 @@
                     if (e.shiftKey) {
                         half_day = true
                         document.getElementById("halfDayConfirmation").style.display = "block";
-                        alert("Half Day")
+                        var halfDayMorning = document.getElementById("halfDayMorning")
+                        halfDayMorning.onclick = function() {
+                            alert("Morning")
+                            var correct_data = JSON.stringify({"id": ID, "date": date, "half_day": true, "half_day_time": "M"})
+                            fetch("http://127.0.0.1:8000/absence/click_add", {
+                                method: "post",
+                                headers: {
+                                    "X-CSRFToken": csrftoken,
+                                },
+                                body: correct_data
+                                })
+                                .then((res) => {
+                                    console.log(res.json())
+                                    location.reload();
+                                })
+                                .catch(err => {
+                                    console.log(err)
+                                });
+                            halfDayConfirmation.style.display = "none";
+                        }
+                        var halfDayMorning = document.getElementById("halfDayAfternoon")
+                        halfDayMorning.onclick = function() {
+                            halfDayConfirmation.style.display = "none";
+                            alert("Afternoon")
+                        }
                     } else {
                         var correct_data = JSON.stringify({"id": ID, "date": date, "half_day": half_day})
                         fetch("http://127.0.0.1:8000/absence/click_add", {
@@ -499,16 +523,6 @@
     var halfDayClose = document.getElementById("halfDayClose")
     halfDayClose.onclick = function() {
         halfDayConfirmation.style.display = "none";
-    }
-    var halfDayMorning = document.getElementById("halfDayMorning")
-    halfDayMorning.onclick = function() {
-        halfDayConfirmation.style.display = "none";
-        alert("Morning")
-    }
-    var halfDayMorning = document.getElementById("halfDayAfternoon")
-    halfDayMorning.onclick = function() {
-        halfDayConfirmation.style.display = "none";
-        alert("Afternoon")
     }
 </script>
 
