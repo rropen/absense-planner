@@ -19,6 +19,28 @@
         border: 1px solid #ff0000;
         border-radius: 12px
     }
+    .confirmationPage {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        padding-top: 90px;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+    }
+    .confirmationBox {
+        background-color: #055496;
+        color: white;
+        text-align: center;
+        margin: auto;
+        padding: 10px;
+        border: 1px solid #545351;
+        border-radius: 10px;
+        width: 20%;
+        display: none;
+    }
 </style>
 
 
@@ -70,7 +92,11 @@
                 
                 
             </div>
-
+            <div class="confirmationBox", id="confirmationBox">
+                <p>Are you sure you want to remove this absence?<p>
+                <button class="button is-info", id="removeAbsence">Remove Absence</button>
+                <button class="button is-info", id="cancelAbsece">Cancel</button>
+            </div>
             <div class="level mb-0">
                 <div class="level-left">
                     
@@ -174,7 +200,7 @@
 
                     <a id="CalendarFormatAlternate-Grid">
                         <p class="buttons">
-                            <button class="button " style="border-width:2px; border-color:green" id="GridSelect">
+                            <button class="button " style="border-width:2px;" id="GridSelect">
                                 <span class="icon ">
                                     <i class="fa fa-th" aria-hidden="true"></i>
                                 </span>
@@ -183,9 +209,18 @@
                     </a>
                     <a id="CalendarFormatAlternate-Linear">
                         <p class="buttons">
-                            <button class="button " style="border-width:2px; " id="LinearSelect">
+                            <button class="button " style="border-width:2px; border-color:green;" id="LinearSelect">
                                 <span class="icon ">
                                     <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+                    <a id="CalendarClick-Toggle">
+                        <p class="buttons">
+                            <button class="button " style="border-width:2px; border-color:green" id="ClickToggle">
+                                <span class="icon ">
+                                    <i class="fas fa-mouse-pointer"></i>
                                 </span>
                             </button>
                         </p>
@@ -280,7 +315,7 @@
                             <th style="color: black;"></th>
                             {% for day in days_name %}
                             {% if day == Sa or day == Su %}
-                            <th class="is-primary is is-bordered">{{day}}</th>
+                            <th style="background-color: #055496; color: white;">{{day}}</th>
                             {% elif forloop.counter in bank_hol%}
                             <th style="background-color: #01661f; color: white;">{{day}}</th>
                             {% else %}
@@ -296,7 +331,7 @@
                             {% elif day in bank_hol %}
                             <td style = "background-color: #28663a; color: rgb(255, 255, 255);" onmouseover="Test">{{day}}</td>
                             {% elif day in weekend_list%}
-                            <td style = "background-color: #7adece; color: rgb(255, 255, 255);">{{day}}</td>
+                            <td style = "background-color: #206cab; color: rgb(255, 255, 255);">{{day}}</td>
                             {% else %}
                             <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
                             {% endif %}
@@ -316,16 +351,16 @@
                                 {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
                                 {% check_absences recurring_absence_dates|get_key:user year month_num day as check_recurring_absence %}
                                 {% if check_recurring_absence %}
-                                <td style="background-color: #ffaa00",  id={{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE></td>
+                                <td style="background-color: #ffaa00",  id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
                                 {% elif check_absence %}
-                                <td style="background-color: #ff0000;", id={{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE></td>
+                                <td style="background-color: #ff0000;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
                                 {% else %}
                                 {% if day in bank_hol %}
-                                <td style = "background-color: #28663a;", id={{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE></td>
+                                <td style = "background-color: #28663a;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                 {% elif day in weekend_list %}
-                                <td style = "background-color: #7adece;", id={{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE></td>
+                                <td style = "background-color: #206cab;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                 {% else %}
-                                <td id={{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE></td>
+                                <td id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                 {% endif %}
                                 {% endif %}
                                 {% endfor %}
@@ -377,37 +412,75 @@
         $("#GridSelect").css("border-color", "");
 
     });
-
+    var calendarCickToggle = true;
     //This is a script to detect what id has been clicked on then add that day to be absence
     var csrftoken = '{{ csrf_token }}';
     document.addEventListener('click', function(e) {
-       if ( e.target.id.includes("/")) {
-        var data = e.target.id.split("/"); var ID = data[0]; var date = data[1]; var absent = data[2]
-        //This supports half days
-        if (e.shiftKey) {
-            alert("UserID: " + ID + "\nDate: " + date + "\nAbsent: " + absent + "\nHalf Day: True")
-        //This selects full days
-        } else {
-            if (absent == "FALSE") {
-                var correct_data = JSON.stringify({"id": ID, "date": date})
-                fetch("http://127.0.0.1:8000/absence/click_add", {
-                method: "post",
-                headers: {
-                    "X-CSRFToken": csrftoken,
-                },
-                body: correct_data
-            })
-                .then((res) => {
-                    console.log(res.json())
-                    location.reload();
-                })
-                .catch(err => {
-                    console.log(err)
-                });
-            }
-            
+        if (calendarCickToggle == true) {
+            if ( e.target.id.includes("/")) {
+                var data = e.target.id.split("/"); var ID = data[0]; var date = data[1]; var absent = data[2]
+                //This supports half days
+                if (e.shiftKey) {
+                    alert("UserID: " + ID + "\nDate: " + date + "\nAbsent: " + absent + "\nHalf Day: True")
+                //This selects full days
+                } else {
+                    if (absent == "FALSE") {
+                        var correct_data = JSON.stringify({"id": ID, "date": date})
+                        fetch("http://127.0.0.1:8000/absence/click_add", {
+                        method: "post",
+                        headers: {
+                            "X-CSRFToken": csrftoken,
+                        },
+                        body: correct_data
+                    })
+                        .then((res) => {
+                            console.log(res.json())
+                            location.reload();
+                        })
+                        .catch(err => {
+                            console.log(err)
+                        });
+                    }
+                    if (absent == "TRUE") {
+                        var confirmationPage = document.getElementById("confirmationBox");
+                        confirmationPage.style.display = "block";
+                        var removeAbsenceButton = document.getElementById("removeAbsence");
+                        removeAbsenceButton.onclick = function() {
+                            var jsonData = JSON.stringify({"id" : ID, "date": date})
+                            fetch("http://127.0.0.1:8000/absence/click_remove", {
+                                method: "post",
+                                headers: {
+                                    "X-CSRFToken": csrftoken,
+                                },
+                                body: jsonData
+                            })
+                                .then((res) => {
+                                    console.log(res.json())
+                                    location.reload();
+                                })
+                                .catch(err => {
+                                    console.log(err)
+                                });
+                            confirmationPage.style.display = "none";
+                        }
+                        var cancelButton = document.getElementById("cancelAbsece");
+                        cancelButton.onclick = function() {
+                            confirmationPage.style.display = "none";
+                        }
+                    }
+                }
+                }
         }
-       }
     }, false);
+    var calendarClickButton = document.getElementById("ClickToggle")
+    calendarClickButton.onclick = function() {
+        if (calendarCickToggle == false) {
+            calendarClickButton.style.borderColor = "green";
+            calendarCickToggle = true
+        } else {
+            calendarClickButton.style.borderColor = "red";
+            calendarCickToggle = false
+        }
+    }
 </script>
 {% endblock %}

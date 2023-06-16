@@ -28,3 +28,4 @@ sqlparse==0.4.2
 tomli==2.0.1
 typing_extensions==4.5.0
 wrapt==1.14.1
+pycountry==22.3.5
