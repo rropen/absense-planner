@@ -453,7 +453,6 @@ def click_add(request):
         return JsonResponse({'start_date': items.absence_date_start, 'end_date': items.absence_date_end, 'taget_id': items.Target_User_ID.username, 'user_id': items.User_ID.username})
     else:
         return HttpResponse('404')
-
 @login_required
 def add_recurring(request) -> render:
     if request.method == "POST":
