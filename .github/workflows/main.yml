@@ -1,0 +1,109 @@
+name: Absence-Planner - CI Pipeline
+
+
+# This yaml file will execute when creating a pull request to the "Test" Branch.
+# Feature branches should be merged to the test before entering the 
+on:
+  pull_request:
+    branches: [ "dev" ]
+
+#NOTES: 
+# - For consistency, using PIP in virtual unbuntu environment instead of anaconda
+
+#ISSUE Resolved:
+# File names usage should be consistent throughout source-code.
+# e.g. when extending 'base.html' in templates, ensure cases match exactly: 'base.html' 
+
+
+jobs: 
+  build:                        # Build application & save as artifact 'BuiltAppArtifact'
+    name: Build Application
+    strategy:
+      max-parallel: 1           # Extend if using more python-versions
+      matrix:
+        python-version: [3.8]   
+          
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }} 
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Setup Python Virtual Environment
+      run: |
+        echo "Creating Python Virtual Environment"
+        python -m venv v
+          
+    - name: Install Application Dependencies
+      run: |
+        echo "Activating Virtual Environment"
+        source v/bin/activate
+        python -m pip install --upgrade pip
+        pip3 install -r testing_requirements.txt
+        echo "Collecting SeleniumBase & ChromeDriver"
+        python -m pip install seleniumbase
+        sbase get chromedriver latest
+
+    - name: Set up Django Environment
+      run: |
+        echo "Activating Virtual Environment"
+        source v/bin/activate
+        echo "Making Migrations"
+        python3 ap_src/manage.py makemigrations
+        echo "Running Migrations"
+        python3 ap_src/manage.py migrate ap_app
+        python3 ap_src/manage.py migrate
+
+        echo "Loading Fixtures"
+        for FILE in ap_src/ap_app/fixtures/*; 
+        do python3 ap_src/manage.py loaddata $FILE; done
+        
+        echo "Collecting Static Files"
+        python3 ap_src/manage.py collectstatic --noinput
+    - name: Install Testing Dependencies
+      run: |
+        echo "Activating Virtual Environment"     
+        source v/bin/activate
+        pip3 install pytest-django
+        pip3 install pytest-cov
+
+    - name: Archive Workspace               # Compressing Files for transfer
+      run: |
+        zip environment ./* -r -q
+    - name: Upload Artifact                 # Uploading Artifact for use in next jobs
+      uses: actions/upload-artifact@v3
+      with:
+        name: BuiltAppArtifact
+        path: environment.zip
+
+  test:
+    name: Test Application
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: Download Built Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: BuiltAppArtifact
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.8
+    - name: Unzip Workspace
+      run: |
+        unzip -q environment.zip
+    - name: Test Artifact Downloaded Successfully
+      run: |
+        echo "Activating Python venv"
+        source v/bin/activate
+        echo "Printing Built Artifacts Python VENV Dependencies:"
+        pip list
+        
+    - name: Execute UI Tests            
+      run: |
+        echo "Activating Virtual Environment"
+        source v/bin/activate
+        echo Running Application Tests With SeleniumBase
+        pytest --cov=ap_app ap_src/ap_app --headless --disable-warnings

@@ -1,4 +1,4 @@
-{% extends 'Base.html' %}
+{% extends 'base.html' %}
 {% load bulma_tags %}
 {% block title %}Create Recurring Absence{% endblock %}
 {% load static %}
@@ -6,7 +6,8 @@
 <head>
     <script type="text/javascript" src="/admin/jsi18n"></script>
     <script type="text/javascript" src="/static/admin/js/core.js"></script>
-
+    {{form.media}}
+    <title>Recurring Absence</title>
 </head>
 
 
@@ -23,11 +24,13 @@
             {{ form }}
             
             {{ form.media }}
+            {% for error in form.errors %}
+            {% endfor %}
             <div class="pt-6 pb-3">
                 {{ form2 | bulma }}
             </div>
             
-            <button type="submit" class="button is-fullwidth is-link">Submit</button>
+            <button id="submit" type="submit" class="button is-fullwidth is-link">Submit</button>
         </div>
 
     </form>

@@ -10,6 +10,7 @@ lerna-debug.log*
 #python
 __pycache__
 pycache
+*.pytest_cache
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
@@ -131,3 +132,8 @@ static_root
 *.sqlite3
 *.pyc
 ap_src/db.sqlite3
+
+archived_logs
+latest_logs
+archived-files
+downloaded-files

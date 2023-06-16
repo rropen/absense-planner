@@ -1,22 +1,18 @@
-{% extends 'Base.html' %}
+{% extends 'base.html' %}
 {% block title %}Teams Dashboard{% endblock %}
 {% load static %}
 {% block content %}
 
-{% if message %}
-{% include "messages.html" %}
-{% endif %}
-
 <div class="container">
     <div class="columns">
         <div class="column is-half">
-            <a class="column button is-medium is-success icon-text" href="{% url 'create_team' %}">
+            <a id="create" class="column button is-medium is-success icon-text" href="{% url 'create_team' %}">
                 </i>Create A Team<i class="fas fa-plus ml-3"></i>
             </a>
         </div>
 
         <div class="column is-half">
-            <a class="column button is-medium is-info icon-text" href="{% url 'join_team' %}">
+            <a id="join" class="column button is-medium is-info icon-text" href="{% url 'join_team' %}">
                 </i>Join A Team<i class="fas fa-user-friends ml-3"></i>
             </a>
         </div>
@@ -27,7 +23,7 @@
             <h3 class="has-text-weight-bold is-size-5 my-3">My Teams ({{rels.count}})</h3>
         </div>
         <div class="level-right">
-            <a class="level-item p-1 has-text-link" href="{% url 'view_invites' %}">
+            <a id="invites" class="level-item p-1 has-text-link" href="{% url 'view_invites' %}">
                 <i class="fas fa-envelope is-size-3 m-0"></i>
                 <span class="tag is-danger is-rounded is-size-7 m-0" style="transform: translate(-12px, -12px)">
                 {{invite_count}}</span>
@@ -41,11 +37,13 @@
                 <span class="is-block is-size-5">There are no teams yet.</span>
             </div>
             <div class="is-block is-size-6">
-                <a class="button is-link" href="{% url 'create_team' %}">Create a team</a>
+                <a id="create" class="button is-link" href="{% url 'create_team' %}">Create a team</a>
             </div>
         </div>
     {% endif %}
-
+    {% if message %}
+        {% include "messages.html" %}
+    {% endif %}
     {% for rel in rels %}
         <div class="container has-background-light box">
             <div class="is-size-5 mb-3">
@@ -60,8 +58,8 @@
             </div>
             <span class="is-block is-size-6">{{rel.team.description}}</span>
             <div class="is-block mt-3">
-                <a class="button is-link" href="{% url 'Calendar' rel.team.id %}">View</a>
-                <a class="button is-danger" href="{% url 'leave_team' rel.id %}">Leave</a>                
+                <a id="{{rel.team.name}}" class="button is-link" href="{% url 'Calendar' rel.team.id %}">View</a>
+                <a id="leave_{{rel.team.name}}" class="button is-danger" href="{% url 'leave_team' rel.id %}">Leave</a>                
             </div>
         </div>
     {% endfor %}

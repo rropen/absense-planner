@@ -59,9 +59,7 @@ class Absence(models.Model):
                 if getattr(self, field) != getattr(other, field):
                     return False
             except AttributeError:
-                raise AttributeError(
-                    f"All fields should be present on both instances. `{field}` is missing."
-                )
+                raise AttributeError(f"All fields should be present on both instances. `{field}` is missing.")
         return True
 
     def save(self, *args, **kwargs):
@@ -159,6 +157,8 @@ class UserProfile(models.Model):
     accepted_policy = models.BooleanField()
 
     privacy = models.BooleanField(default=False)
+
+    region = models.CharField(max_length=200, default="GB")
 
     def __str__(self):
         return f"{self.user.username}"
