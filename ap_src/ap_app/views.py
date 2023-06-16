@@ -503,7 +503,6 @@ def click_add(request):
         return JsonResponse({'start_date': absence.absence_date_start, 'end_date': absence.absence_date_end, 'taget_id': absence.Target_User_ID.username, 'user_id': absence.User_ID.username})
     else:
         return HttpResponse('404')
-
 @login_required
 def click_remove(request):
     if request.method == "POST":
