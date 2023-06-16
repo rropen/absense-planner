@@ -97,6 +97,17 @@
                 <button class="button is-info", id="removeAbsence">Remove Absence</button>
                 <button class="button is-info", id="cancelAbsece">Cancel</button>
             </div>
+            <article class="message is-info" style="display: none; margin-left: 35%; margin-right: 35%;", id="halfDayConfirmation">
+                <div class="message-header">
+                    <p>Select Time</p>
+                    <button class="delete" aria-label="delete" id="halfDayClose"></button>
+                </div>
+                <div class="message-body" style="text-align:center;">
+                    <p>Morning or Afternoon?</p>
+                    <button class="button is-info" id="halfDayMorning">Morning</button>
+                    <button class="button is-info" id="halfDayAfternoon">Afternoon</button>
+                </div>
+            </article>
             <div class="level mb-0">
                 <div class="level-left">
                     
@@ -420,20 +431,22 @@
         if (calendarCickToggle == true) {
             if ( e.target.id.includes("/")) {
                 var data = e.target.id.split("/"); var ID = data[0]; var date = data[1]; var absent = data[2]
-                //This supports half days
-                if (e.shiftKey) {
-                    alert("UserID: " + ID + "\nDate: " + date + "\nAbsent: " + absent + "\nHalf Day: True")
-                //This selects full days
-                } else {
-                    if (absent == "FALSE") {
-                        var correct_data = JSON.stringify({"id": ID, "date": date})
+                if (absent == "FALSE") {
+                    //This is for full days
+                    half_day = false
+                    if (e.shiftKey) {
+                        half_day = true
+                        document.getElementById("halfDayConfirmation").style.display = "block";
+                        alert("Half Day")
+                    } else {
+                        var correct_data = JSON.stringify({"id": ID, "date": date, "half_day": half_day})
                         fetch("http://127.0.0.1:8000/absence/click_add", {
                         method: "post",
                         headers: {
                             "X-CSRFToken": csrftoken,
                         },
                         body: correct_data
-                    })
+                        })
                         .then((res) => {
                             console.log(res.json())
                             location.reload();
@@ -442,32 +455,32 @@
                             console.log(err)
                         });
                     }
-                    if (absent == "TRUE") {
-                        var confirmationPage = document.getElementById("confirmationBox");
-                        confirmationPage.style.display = "block";
-                        var removeAbsenceButton = document.getElementById("removeAbsence");
-                        removeAbsenceButton.onclick = function() {
-                            var jsonData = JSON.stringify({"id" : ID, "date": date})
-                            fetch("http://127.0.0.1:8000/absence/click_remove", {
-                                method: "post",
-                                headers: {
-                                    "X-CSRFToken": csrftoken,
-                                },
-                                body: jsonData
+                }
+                if (absent == "TRUE") {
+                    var confirmationPage = document.getElementById("confirmationBox");
+                    confirmationPage.style.display = "block";
+                    var removeAbsenceButton = document.getElementById("removeAbsence");
+                    removeAbsenceButton.onclick = function() {
+                        var jsonData = JSON.stringify({"id" : ID, "date": date})
+                        fetch("http://127.0.0.1:8000/absence/click_remove", {
+                            method: "post",
+                            headers: {
+                                "X-CSRFToken": csrftoken,
+                            },
+                            body: jsonData
+                        })
+                            .then((res) => {
+                                console.log(res.json())
+                                location.reload();
                             })
-                                .then((res) => {
-                                    console.log(res.json())
-                                    location.reload();
-                                })
-                                .catch(err => {
-                                    console.log(err)
-                                });
-                            confirmationPage.style.display = "none";
-                        }
-                        var cancelButton = document.getElementById("cancelAbsece");
-                        cancelButton.onclick = function() {
-                            confirmationPage.style.display = "none";
-                        }
+                            .catch(err => {
+                                console.log(err)
+                            });
+                        confirmationPage.style.display = "none";
+                    }
+                    var cancelButton = document.getElementById("cancelAbsece");
+                    cancelButton.onclick = function() {
+                        confirmationPage.style.display = "none";
                     }
                 }
                 }
@@ -482,6 +495,20 @@
             calendarClickButton.style.borderColor = "red";
             calendarCickToggle = false
         }
+    }
+    var halfDayClose = document.getElementById("halfDayClose")
+    halfDayClose.onclick = function() {
+        halfDayConfirmation.style.display = "none";
+    }
+    var halfDayMorning = document.getElementById("halfDayMorning")
+    halfDayMorning.onclick = function() {
+        halfDayConfirmation.style.display = "none";
+        alert("Morning")
+    }
+    var halfDayMorning = document.getElementById("halfDayAfternoon")
+    halfDayMorning.onclick = function() {
+        halfDayConfirmation.style.display = "none";
+        alert("Afternoon")
     }
 </script>
 
