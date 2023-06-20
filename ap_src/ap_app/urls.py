@@ -24,6 +24,7 @@ urlpatterns = [
     path("teams/settings/<int:id>/", views.team_settings, name="team_settings"),
     path("teams/calendar/<int:id>", views.team_calendar, name="Calendar"),
     path("teams/calendar/<int:id>/<str:month>/<int:year>", views.team_calendar, name="calendar"),
+    path("calendar/set_month",views.set_calendar_month, name="set_month"),
     path("teams/settings/<int:id>/<int:user_id>", views.edit_team_member_absence, name="edit_team_member_absence"),
     path("teams/settings/promote/<int:id>/<int:user_id>", views.promote_team_member, name="promote_team_member"),
     path("teams/settings/demote/<int:id>/<int:user_id>", views.demote_team_member, name="demote_team_member"),
@@ -41,10 +42,8 @@ urlpatterns = [
     path("absence/edit/<int:pk>", views.EditAbsence.as_view(), name="absence_edit"),
     path("absence/edit_recurring/<int:pk>", views.edit_recurring_absences, name="recurring_absence_edit"),
     path("absence/click_add", views.click_add, name="absence_click_add"),
-    path("absence/click_remove", views.click_remove, name="absence_click_remove"),
     path("profile/settings", views.profile_settings, name="profile settings"),
     path("profile/settings/add-user", views.add_user, name="add-user"),
-    path("profile/settings/set-region", views.set_region, name="set-region"),
     url(r'^jsi18n', JavaScriptCatalog.as_view(), js_info_dict),
     # path("absence/edit/<int:id>", views.absence_edit, name="Absence Edit")
 ]

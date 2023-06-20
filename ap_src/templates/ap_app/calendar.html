@@ -19,34 +19,12 @@
         border: 1px solid #ff0000;
         border-radius: 12px
     }
-    .confirmationPage {
-        display: none;
-        position: fixed;
-        z-index: 1;
-        padding-top: 90px;
-        left: 0;
-        right: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-    }
-    .confirmationBox {
-        background-color: #055496;
-        color: white;
-        text-align: center;
-        margin: auto;
-        padding: 10px;
-        border: 1px solid #545351;
-        border-radius: 10px;
-        width: 20%;
-        display: none;
-    }
 </style>
 
 
 <div class="main">
     <section class="section">
-        <div class="container">
+        <div style="padding-left: 100px; padding-right: 100px"> 
             <div class="level mb-1">
                 <div class="level-left">
                     <h1 class="title is-3 level-item">
@@ -92,13 +70,33 @@
                 
                 
             </div>
-            <div class="confirmationBox", id="confirmationBox">
-                <p>Are you sure you want to remove this absence?<p>
-                <button class="button is-info", id="removeAbsence">Remove Absence</button>
-                <button class="button is-info", id="cancelAbsece">Cancel</button>
-            </div>
+
             <div class="level mb-0">
                 <div class="level-left">
+
+                    <form method="POST" action="/calendar/set_month">
+                        {% csrf_token %}
+                        <select name="month_names" id="month_names">
+                            <option value="January">January</option> 
+                            <option value="February">February</option> 
+                            <option value="March">March</option> 
+                            <option value="April">April</option> 
+                            <option value="May">May</option> 
+                            <option value="June">June</option> 
+                            <option value="July">July</option> 
+                            <option value="August">August</option> 
+                            <option value="September">September</option> 
+                            <option value="October">October</option> 
+                            <option value="November">November</option> 
+                            <option value="December">December</option> 
+                        </select>
+                        <select name="year_names" id="year_names">
+                            <option value="{{current_year}}">{{current_year}}</option> 
+                            <option value="{{next_current_year}}">{{next_current_year}}</option> 
+                            <option value="{{next_second_year}}">{{next_second_year}}</option> 
+                        </select>
+                        <input class="button is-info" type="submit">
+                    </form>  
                     
                     <!-- reset button to take user back to present -->
                     <a href="/calendar/{{current_month}}/{{current_year}}" class="mr-4 button">
@@ -200,7 +198,7 @@
 
                     <a id="CalendarFormatAlternate-Grid">
                         <p class="buttons">
-                            <button class="button " style="border-width:2px;" id="GridSelect">
+                            <button class="button " style="border-width:2px; border-color:green" id="GridSelect">
                                 <span class="icon ">
                                     <i class="fa fa-th" aria-hidden="true"></i>
                                 </span>
@@ -209,18 +207,9 @@
                     </a>
                     <a id="CalendarFormatAlternate-Linear">
                         <p class="buttons">
-                            <button class="button " style="border-width:2px; border-color:green;" id="LinearSelect">
+                            <button class="button " style="border-width:2px; " id="LinearSelect">
                                 <span class="icon ">
                                     <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
-                                </span>
-                            </button>
-                        </p>
-                    </a>
-                    <a id="CalendarClick-Toggle">
-                        <p class="buttons">
-                            <button class="button " style="border-width:2px; border-color:green" id="ClickToggle">
-                                <span class="icon ">
-                                    <i class="fas fa-mouse-pointer"></i>
                                 </span>
                             </button>
                         </p>
@@ -255,9 +244,8 @@
 
                 </div>
             </div>
-            <!--DIO CHANGES--> <!--This add a text explaining how each colour works, for example half day and full day-->
-        <p style="color:red">Use Left Click to select a full day</p>
-        <p style="color:purple">Use Shift Left Click to select a half-day</p>
+
+
             <!-- Prototype Grid-Based Calendar -->
             <div id="Grid-Calendar">
 
@@ -316,7 +304,7 @@
                             <th style="color: black;"></th>
                             {% for day in days_name %}
                             {% if day == Sa or day == Su %}
-                            <th style="background-color: #055496; color: white;">{{day}}</th>
+                            <th class="is-primary is is-bordered">{{day}}</th>
                             {% elif forloop.counter in bank_hol%}
                             <th style="background-color: #01661f; color: white;">{{day}}</th>
                             {% else %}
@@ -332,7 +320,7 @@
                             {% elif day in bank_hol %}
                             <td style = "background-color: #28663a; color: rgb(255, 255, 255);" onmouseover="Test">{{day}}</td>
                             {% elif day in weekend_list%}
-                            <td style = "background-color: #206cab; color: rgb(255, 255, 255);">{{day}}</td>
+                            <td style = "background-color: #7adece; color: rgb(255, 255, 255);">{{day}}</td>
                             {% else %}
                             <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
                             {% endif %}
@@ -352,16 +340,16 @@
                                 {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
                                 {% check_absences recurring_absence_dates|get_key:user year month_num day as check_recurring_absence %}
                                 {% if check_recurring_absence %}
-                                <td style="background-color: #ffaa00",  id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                <td style="background-color: #ffaa00",  id={{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE></td>
                                 {% elif check_absence %}
-                                <td style="background-color: #ff0000;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                <td style="background-color: #ff0000;", id={{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE></td>
                                 {% else %}
                                 {% if day in bank_hol %}
-                                <td style = "background-color: #28663a;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                <td style = "background-color: #28663a;", id={{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE></td>
                                 {% elif day in weekend_list %}
-                                <td style = "background-color: #206cab;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                <td style = "background-color: #7adece;", id={{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE></td>
                                 {% else %}
-                                <td id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                <td id={{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE></td>
                                 {% endif %}
                                 {% endif %}
                                 {% endfor %}
@@ -413,81 +401,37 @@
         $("#GridSelect").css("border-color", "");
 
     });
-    var calendarCickToggle = true;
+
     //This is a script to detect what id has been clicked on then add that day to be absence
     var csrftoken = '{{ csrf_token }}';
     document.addEventListener('click', function(e) {
-        if (calendarCickToggle == true) {
-            if ( e.target.id.includes("/")) {
-                var data = e.target.id.split("/"); var ID = data[0]; var date = data[1]; var absent = data[2]
-                //This supports half days
-                if (e.shiftKey) {
-                    alert("UserID: " + ID + "\nDate: " + date + "\nAbsent: " + absent + "\nHalf Day: True")
-                //This selects full days
-                } else {
-                    if (absent == "FALSE") {
-                        var correct_data = JSON.stringify({"id": ID, "date": date})
-                        fetch("http://127.0.0.1:8000/absence/click_add", {
-                        method: "post",
-                        headers: {
-                            "X-CSRFToken": csrftoken,
-                        },
-                        body: correct_data
-                    })
-                        .then((res) => {
-                            console.log(res.json())
-                            location.reload();
-                        })
-                        .catch(err => {
-                            console.log(err)
-                        });
-                    }
-                    if (absent == "TRUE") {
-                        var confirmationPage = document.getElementById("confirmationBox");
-                        confirmationPage.style.display = "block";
-                        var removeAbsenceButton = document.getElementById("removeAbsence");
-                        removeAbsenceButton.onclick = function() {
-                            var jsonData = JSON.stringify({"id" : ID, "date": date})
-                            fetch("http://127.0.0.1:8000/absence/click_remove", {
-                                method: "post",
-                                headers: {
-                                    "X-CSRFToken": csrftoken,
-                                },
-                                body: jsonData
-                            })
-                                .then((res) => {
-                                    console.log(res.json())
-                                    location.reload();
-                                })
-                                .catch(err => {
-                                    console.log(err)
-                                });
-                            confirmationPage.style.display = "none";
-                        }
-                        var cancelButton = document.getElementById("cancelAbsece");
-                        cancelButton.onclick = function() {
-                            confirmationPage.style.display = "none";
-                        }
-                    }
-                }
-                }
-        }
-    }, false);
-    var calendarClickButton = document.getElementById("ClickToggle")
-    calendarClickButton.onclick = function() {
-        if (calendarCickToggle == false) {
-            calendarClickButton.style.borderColor = "green";
-            calendarCickToggle = true
+       if ( e.target.id.includes("/")) {
+        var data = e.target.id.split("/"); var ID = data[0]; var date = data[1]; var absent = data[2]
+        //This supports half days
+        if (e.shiftKey) {
+            alert("UserID: " + ID + "\nDate: " + date + "\nAbsent: " + absent + "\nHalf Day: True")
+        //This selects full days
         } else {
-            calendarClickButton.style.borderColor = "red";
-            calendarCickToggle = false
+            if (absent == "FALSE") {
+                var correct_data = JSON.stringify({"id": ID, "date": date})
+                fetch("http://127.0.0.1:8000/absence/click_add", {
+                method: "post",
+                headers: {
+                    "X-CSRFToken": csrftoken,
+                },
+                body: correct_data
+            })
+                .then((res) => {
+                    console.log(res.json())
+                    location.reload();
+                })
+                .catch(err => {
+                    console.log(err)
+                });
+            }
+            
         }
-    }
+       }
+    }, false);
 </script>
-
-<!--This add a text explaining how each colour works, for example half day and full day-->
-
-<!--<h1 style="border:red; border-width:3px; border-style:solid;"> Red Box = Full Day, Right Click to activate </h1>-->
-<!--<h1 style="border:purple; border-width:3px; border-style:solid;"> Purple Box = Half Day, Shift + Right Click to activate</h1>-->
-
 {% endblock %}

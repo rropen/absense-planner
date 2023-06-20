@@ -5,10 +5,10 @@
 import calendar
 import datetime
 import json
-import holidays
-import pycountry
 from datetime import timedelta
 
+import holidays
+from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -17,6 +17,7 @@ from django.db.models.functions import Lower
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
+from django.utils.timezone import now
 from django.views.generic import CreateView, UpdateView
 from river.models.fields.state import State
 
@@ -457,96 +458,16 @@ def add(request) -> render:
 def click_add(request):
     if request.method == "POST":
         json_data=json.loads(request.body)
-        absence = None
-        date = datetime.datetime.strptime(json_data["date"], "%Y-%m-%d").date()
-        if date - timedelta(days=1) in Absence.objects.filter(Target_User_ID_id=json_data["id"]).values_list("absence_date_end", flat=True) \
-            and date + timedelta(days=1) in Absence.objects.filter(Target_User_ID_id=json_data["id"]).values_list("absence_date_start", flat=True):
-            ab_1 = Absence.objects.filter(Target_User_ID_id=json_data["id"], absence_date_start=date+timedelta(days=1))[0]
-            ab_2 = Absence.objects.filter(Target_User_ID_id=json_data["id"], absence_date_end=date-timedelta(days=1))[0]
-            absence = Absence()
-            absence.absence_date_start = ab_2.absence_date_start
-            absence.absence_date_end = ab_1.absence_date_end
-            absence.Target_User_ID_id = json_data["id"]
-            absence.User_ID = request.user
-            ab_1.delete()
-            ab_2.delete()
-            absence.save()
-            
-        elif date - timedelta(days=1) in Absence.objects.filter(Target_User_ID_id=json_data["id"]).values_list("absence_date_start", flat=True):
-            for a in Absence.objects.filter(Target_User_ID_id=json_data["id"], absence_date_start=date-timedelta(days=1)):
-                a.absence_date_end = date
-                a.save()
-                absence = a
-        elif date + timedelta(days=1) in Absence.objects.filter(Target_User_ID_id=json_data["id"]).values_list("absence_date_end", flat=True):
-            for a in Absence.objects.filter(Target_User_ID_id=json_data["id"], absence_date_end=date+timedelta(days=1)):
-                a.absence_date_start = date
-                a.save()
-                absence = a
-        elif date - timedelta(days=1) in Absence.objects.filter(Target_User_ID_id=json_data["id"]).values_list("absence_date_end", flat=True):
-            for a in Absence.objects.filter(Target_User_ID_id=json_data["id"], absence_date_end=date-timedelta(days=1)):
-                a.absence_date_end = date
-                a.save()
-                absence = a
-        elif date + timedelta(days=1) in Absence.objects.filter(Target_User_ID_id=json_data["id"]).values_list("absence_date_start", flat=True):
-            for a in Absence.objects.filter(Target_User_ID_id=json_data["id"], absence_date_start=date+timedelta(days=1)):
-                a.absence_date_start = date
-                a.save()
-                absence = a
-        else:
-            absence = Absence()
-            absence.absence_date_start = json_data['date']
-            absence.absence_date_end = json_data['date']
-            absence.Target_User_ID_id = json_data["id"]
-            absence.User_ID = request.user
-            absence.save()
-
-        return JsonResponse({'start_date': absence.absence_date_start, 'end_date': absence.absence_date_end, 'taget_id': absence.Target_User_ID.username, 'user_id': absence.User_ID.username})
+        items = Absence()
+        items.absence_date_start = json_data['date']
+        items.absence_date_end = json_data['date']
+        # issue #173
+        items.Target_User_ID = request.user
+        items.User_ID = request.user
+        items.save()
+        return JsonResponse({'start_date': items.absence_date_start, 'end_date': items.absence_date_end, 'taget_id': items.Target_User_ID.username, 'user_id': items.User_ID.username})
     else:
         return HttpResponse('404')
-@login_required
-def click_remove(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        date = datetime.datetime.strptime(data["date"], "%Y-%m-%d").date()
-        #Remove absence if start date and end date is the same
-        if date in Absence.objects.filter(Target_User_ID_id=data["id"]).values_list("absence_date_start", flat=True) \
-            and date in Absence.objects.filter(Target_User_ID_id=data["id"]).values_list("absence_date_end", flat=True):
-            absence = Absence.objects.filter(Target_User_ID_id=data["id"], absence_date_start=date, absence_date_end=date)[0]
-            absence.delete()
-        #Change absence start date if current start date removed
-        elif date in Absence.objects.filter(Target_User_ID_id=data["id"]).values_list("absence_date_start", flat=True):
-            absence = Absence.objects.filter(Target_User_ID_id=data["id"], absence_date_start=date)[0]
-            absence.absence_date_start = date + timedelta(days=1)
-            absence.save()
-        #Change absence end date if current end date removed
-        elif date in Absence.objects.filter(Target_User_ID_id=data["id"]).values_list("absence_date_end", flat=True):
-            absence = Absence.objects.filter(Target_User_ID_id=data["id"], absence_date_end=date)[0]
-            absence.absence_date_end = date - timedelta(days=1)
-            absence.save()
-        else:
-            for absence in Absence.objects.filter(Target_User_ID_id=data["id"]):
-                start_date = absence.absence_date_start
-                end_date = absence.absence_date_end
-                if date > start_date and date < end_date:
-                    ab_1 = Absence()
-                    ab_1.absence_date_start = start_date
-                    ab_1.absence_date_end = date - timedelta(days=1)
-                    ab_1.Target_User_ID_id = data["id"]
-                    ab_1.User_ID = request.user
-
-                    ab_2 = Absence()
-                    ab_2.absence_date_start = date + timedelta(days=1)
-                    ab_2.absence_date_end = end_date
-                    ab_2.Target_User_ID_id = data["id"]
-                    ab_2.User_ID = request.user
-
-                    absence.delete()
-                    ab_1.save()
-                    ab_2.save()
-
-        return JsonResponse({"start_date": data["date"]})
-    else:
-        return HttpResponse("404")
 
 @login_required
 def add_recurring(request) -> render:
@@ -594,7 +515,6 @@ def details_page(request) -> render:
 
 
 def get_date_data(
-    region,
     month=datetime.datetime.now().strftime("%B"),
     year=datetime.datetime.now().year,
 ):
@@ -621,6 +541,8 @@ def get_date_data(
     data["next_month"] = "January"
     data["previous_year"] = year - 1
     data["next_year"] = year + 1
+    data["next_current_year"] = datetime.datetime.now().year + 1
+    data["next_second_year"] = datetime.datetime.now().year + 2
 
     # as the month number resets every year try and except statements
     # have to be used as at the end and start of a year
@@ -655,9 +577,10 @@ def get_date_data(
         date = date.strftime("%A")[0:2]
         if (date == "Sa" or date == "Su"):
             data["weekend_list"].append(day)
+    
 
     data["bank_hol"] = []
-    for h in holidays.country_holidays(region, years=year).items():
+    for h in holidays.GB(years=year).items():
         if (h[0].month == data["month_num"]):
             data["bank_hol"].append(h[0].day)
         
@@ -752,19 +675,14 @@ def team_calendar(
             month = date.strftime("%B")
             year = date.year
 
-        try:
-            userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
-        except IndexError:
-            return redirect("/")
-
-        data_1 = get_date_data(userprofile.region, month, year)
+        data_1 = get_date_data(month, year)
 
         users = Relationship.objects.all().filter(
             team=id, status=State.objects.get(slug="active")
         )
 
         data_2 = get_absence_data(users, 1)
-
+        
         team = Team.objects.get(id=id)
 
         # Filtering users by privacy
@@ -818,6 +736,14 @@ def team_calendar(
 
     return redirect("dashboard")
 
+@login_required
+def set_calendar_month(request):
+    if request.method == "POST":
+        month = request.POST.get('month_names')
+        year = request.POST.get('year_names')
+
+    return redirect('all_calendar', month=month, year=year)
+
 
 @login_required
 def all_calendar(
@@ -831,13 +757,8 @@ def all_calendar(
     if date:
         month = date.strftime("%B")
         year = date.year
-    
-    try:
-        userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
-    except IndexError:
-        return redirect("/")
 
-    data_1 = get_date_data(userprofile.region, month, year)
+    data_1 = get_date_data(month, year)
     
     current_month = data_1["current_month"]
     current_year = data_1["current_year"]
@@ -1103,11 +1024,9 @@ def profile_settings(request) -> render:
             user_profile.privacy = True
 
         user_profile.save()
-    
-    country_data = get_region_data()
 
     privacy_status = user_profile.privacy
-    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status, **country_data}
+    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status}
     return render(request, "ap_app/settings.html", context)
 
 
@@ -1133,37 +1052,6 @@ def add_user(request) -> render:
 
     return redirect("/profile/settings")
 
-def get_region_data():
-    data = {}
-    data["countries"] = []
-    for country in list(pycountry.countries):
-        try:
-            holidays.country_holidays(country.alpha_2)
-            data["countries"].append(country.name)
-        except:
-            pass
-    
-    data["countries"] = sorted(data["countries"])
-
-    return data
-
-@login_required
-def set_region(request):
-
-    try:
-        userporfile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
-    except IndexError:
-        # TODO Create error page
-        return redirect("/")
-
-    if request.method == "POST":
-        region = request.POST.get("regions")
-        region_code = pycountry.countries.get(name=region).alpha_2
-        if (region_code != userporfile.region):
-            userporfile.region = region_code
-            userporfile.save()
-
-    return redirect("/profile/settings")
 
 def find_user_obj(user_to_find):
     """Finds & Returns object of 'UserProfile' for a user
