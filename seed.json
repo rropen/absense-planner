@@ -1,0 +1,29 @@
+[
+    {
+      "model": "ap_app.team",
+      "pk": 1,
+      "fields": {
+        "id": "1",
+        "name": "test",
+        "description": "This is the first test team."
+      }
+    },
+    {
+      "model": "ap_app.team",
+      "pk": 2,
+      "fields": {
+        "id": "2",
+        "name": "test two",
+        "description": "This is the second test team."
+      }
+    },
+    {
+        "model": "ap_app.team",
+        "pk": 3,
+        "fields": {
+          "id": "3",
+          "name": "test three",
+          "description": "This is the third test team."
+        }
+      }
+]
