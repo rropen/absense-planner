@@ -31,13 +31,9 @@ This project is just starting, will be a django web app with Javascript/jQuery o
 To contribute changes to the original respository, the following commands can be used:
 
 - git remote add upstream ORIGINAL_REPOSITORY_URL
-This will set your upstream to the repository you forked from.
 
 - git merge upstream/master git fetch upstream
-This will fetch all the branches including master from the original repository.
 
 - git merge upstream/master
-Pushes the changes to your forked repository i.e. to origin
 
 - git push origin master
-Voila! You are done with the syncing the original repository.
