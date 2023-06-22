@@ -26,7 +26,7 @@ This project aims to overcome these deficiencies
 
 This project is just starting, will be a django web app with Javascript/jQuery on the front end, and Bulma.io CSS
 
-## Contributing
+## Contribution
 
 To contribute changes to the original respository, the following commands can be used:
 
@@ -45,3 +45,8 @@ Pushes the changes to your forked repository i.e. to origin
 - git push origin master 
 
 Voila! You are done with the syncing the original repository.
+- git merge upstream/master git fetch upstream
+
+- git merge upstream/master
+
+- git push origin master
