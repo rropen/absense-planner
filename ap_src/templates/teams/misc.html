@@ -15,6 +15,14 @@
         width: 24px;
         height: 12px;
     }
+
+        .form-container {
+        text-align: left;
+    }
+
+    .form-container .button {
+        margin-top: 10px;
+    }
 </style>
 
 
@@ -38,15 +46,14 @@
 
 
 <script>
-    const form_content = '<form method="get" id="form"> <input class="textarea" name="value" value="{{ team.notes }}"> </input> <button class="button is-info is-outlined mx-1" type="submit"><bold>Submit</bold></button></form>'
-    $(document).ready(function(){
-        $("#EditNotes").click(function()
-        {
-            $("#edit-notes").html(form_content)
+    $(document).ready(function() {
+        $("#EditNotes").click(function(event) {
+            event.preventDefault();
 
-        })
+            const formContent = '<div class="form-container"><form method="get" id="form"> <input class="textarea" name="value" value="{{ team.notes }}"> </input> <button class="button is-info is-outlined mx-1" type="submit"><bold>Submit</bold></button></form></div>';
+            $("#edit-notes").html(formContent);
+        });
     });
-    
 </script>
 {% endblock %}
 

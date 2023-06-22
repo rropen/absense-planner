@@ -28,18 +28,6 @@ class Absence(models.Model):
     absence_date_end = models.DateField(
         gettext_lazy("Date"), max_length=200, default=now
     )
-#Destiny, this is what adds the columns to the database, you use py manage.py makemigrations then after that you use py manage.py migrate
-    DAYS_CHOICES = (
-    ("NORMAL", "Normal"),
-    ("AFTERNOON", "Afternoon"),
-    ("MORNING", "Morning"),
-
-)
-
-    half_day = models.CharField(max_length=200,
-                  choices= DAYS_CHOICES,
-                  default="NORMAL")
-
 
     _equivalent_if_fields_equal = (
         "Target_User_ID",
@@ -59,7 +47,9 @@ class Absence(models.Model):
                 if getattr(self, field) != getattr(other, field):
                     return False
             except AttributeError:
-                raise AttributeError(f"All fields should be present on both instances. `{field}` is missing.")
+                raise AttributeError(
+                    f"All fields should be present on both instances. `{field}` is missing."
+                )
         return True
 
     def save(self, *args, **kwargs):
@@ -157,8 +147,6 @@ class UserProfile(models.Model):
     accepted_policy = models.BooleanField()
 
     privacy = models.BooleanField(default=False)
-
-    region = models.CharField(max_length=200, default="GB")
 
     def __str__(self):
         return f"{self.user.username}"

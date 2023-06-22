@@ -1,4 +1,4 @@
-﻿asgiref==3.4.1
+asgiref==3.4.1
 astroid==2.11.5
 async-generator==1.10
 attrs==23.1.0
