@@ -4,8 +4,8 @@
       "pk": 1,
       "fields": {
         "id": "1",
-        "name": "test",
-        "description": "This is the first test team."
+        "name": "Web Development Team",
+        "description": "This team is in charge of developing the website."
       }
     },
     {
@@ -13,8 +13,8 @@
       "pk": 2,
       "fields": {
         "id": "2",
-        "name": "test two",
-        "description": "This is the second test team."
+        "name": "App Development Team",
+        "description": "This team is in charge of developing the web application."
       }
     },
     {
@@ -22,8 +22,8 @@
         "pk": 3,
         "fields": {
           "id": "3",
-          "name": "test three",
-          "description": "This is the third test team."
+          "name": "Testing Team",
+          "description": "This team is responsible for testing the app for defects."
         }
       }
 ]

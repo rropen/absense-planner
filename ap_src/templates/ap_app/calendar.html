@@ -99,99 +99,157 @@
                     </form>  
                     
                     <!-- reset button to take user back to present -->
-                    <a href="/calendar/{{current_month}}/{{current_year}}" class="mr-4 button">
-                        <span class="icon ">
-                            <i class="fas fa-sync"></i>
-                        </span>
-                    </a>
-
-                    <!-- If the user is in the current year then they cannot go back a year or month and view historical data -->
-                    {% if current_year == year %}
+                   <!-- If the user is in the current year then they cannot go back a year or month and view historical data -->
+                   {% if current_year == year%}
+                     
                     
-                    {% if current_month_num == month_num %}
-                    
-                    <a id="previous" href="" class="noHover button" aria-disabled="true" disabled>
-                        <span class="icon">
-                            <i class="fas fa-arrow-left"></i>
-                        </span>
-                    </a>
+                   {% if current_month_num == month_num %}
+                   
+                       <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                           <span class="icon">
+                               <i class="fas fa-arrow-left"></i>
+                           </span>
+                       </a>
 
-                    <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                    </a>
+                       <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-right"></i>
+                           </span>
+                       </a>
 
-                    {% elif month_num == 12 %}
+                       {% elif month_num == 1 %}
 
-                    <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-left"></i>
-                        </span>
-                    </a>
-                    <a id="next" href="/calendar/January/{{next_year}}" class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                    </a>
+                       <a id="previous" href="/calendar/{{previous_month}}/{{previous_year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-left"></i>
+                           </span>
+                       </a>
+                       <a id="next" href="/calendar/February/{{year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-right"></i>
+                           </span>
+                       </a>
 
-                    {% else %}
+                       {% elif month_num == 12 %}
 
-                    <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-left"></i>
-                        </span>
-                    </a>
-                    <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                    </a>
+                           <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                               <span class="icon ">
+                                   <i class="fas fa-arrow-left"></i>
+                               </span>
+                           </a>
+                           <a id="next" href="/calendar/January/{{next_year}}" class="button">
+                               <span class="icon ">
+                                   <i class="fas fa-arrow-right"></i>
+                               </span>
+                           </a>
 
-                    {% endif %}
+                           {% else %}
 
-                    {% elif current_year|add:"2" == next_year %}
-                    {% if month_num == 1 %}
+                           <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                               <span class="icon ">
+                                   <i class="fas fa-arrow-left"></i>
+                               </span>
+                           </a>
+                           <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                               <span class="icon ">
+                                   <i class="fas fa-arrow-right"></i>
+                               </span>
+                           </a>
 
-                    <a id="previous" href="/calendar/December/{{previous_year}}" class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-left"></i>
-                        </span>
-                    </a>
-                    <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                    </a>
+                           {% endif %}
 
-                    {% elif month_num == 12 %}
+                   {% elif current_year|add:"2" == next_year %}
+                       {% if month_num == 1 %}
 
-                    <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-left"></i>
-                        </span>
-                    </a>
-                    <a id="next" href="" class="noHover button" aria-disabled="true" disabled>
-                        <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                    </a>
+                           <a id="previous" href="/calendar/December/{{previous_year}}" class="button">
+                               <span class="icon ">
+                                   <i class="fas fa-arrow-left"></i>
+                               </span>
+                           </a>
+                           <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                               <span class="icon ">
+                                   <i class="fas fa-arrow-right"></i>
+                               </span>
+                           </a>
+
+                           {% elif month_num == 12 %}
+
+                               <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                                   <span class="icon ">
+                                       <i class="fas fa-arrow-left"></i>
+                                   </span>
+                               </a>
+                               <a id="next" href="" class="noHover button" aria-disabled="true" disabled>
+                                   <span class="icon ">
+                                       <i class="fas fa-arrow-right"></i>
+                                   </span>
+                               </a>
 
 
-                    {% else %}
+                           {% else %}
 
-                    <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-left"></i>
-                        </span>
-                    </a>
-                    <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                    </a>
-                    {% endif %}
-                    {% endif %}
+                               <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                                   <span class="icon ">
+                                       <i class="fas fa-arrow-left"></i>
+                                   </span>
+                               </a>
+                               <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                                   <span class="icon ">
+                                       <i class="fas fa-arrow-right"></i>
+                                   </span>
+                               </a>
+                               
+                           {% endif %}
+
+                   {% elif current_year|add:"-2" == previous_year %}
+                   
+                       {% if month_num == 12 %}
+
+
+                       <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-left"></i>
+                           </span>
+                       </a>
+                       <a id="next" href="/calendar/January/{{next_year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-right"></i>
+                           </span>
+                       </a>
+
+                       {% elif current_month_num == month_num %}
+
+                       <a id="previous" href="" class="noHover button" aria-disabled="true" disabled>
+                           <span class="icon">
+                               <i class="fas fa-arrow-left"></i>
+                           </span>
+                       </a>
+
+                       <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-right"></i>
+                           </span>
+                       </a>
+
+
+                       {% else %}
+
+                       <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-left"></i>
+                           </span>
+                       </a>
+                       <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-right"></i>
+                           </span>
+                       </a>
+
+
+
+
+                   {% endif %}
+                   {% endif %}
 
                     <span class="is-size-4 mb-0 px-3 level-left">{{month}} {{year}}</span>
 
