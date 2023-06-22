@@ -2,6 +2,7 @@
 {% load get_key %}
 {% load check_absences %}
 {% load check_half_day %}
+{% load check_permissions %}
 {% block title %}Calendar{% endblock %}
 {% load static %}
 {% block content %}
@@ -19,19 +20,6 @@
         background-color: #ff0000;
         border: 1px solid #ff0000;
         border-radius: 12px
-    }
-    .confirmationBox {
-        background-color: #055496;
-        color: white;
-        text-align: center;
-        margin: auto;
-        padding: 10px;
-        border: 1px solid #545351;
-        border-radius: 10px;
-        min-width: 20%;
-        max-width: 35%;
-        width: auto;
-        display: none;
     }
 </style>
 
@@ -358,7 +346,11 @@
                                 {% if user.id == users.0.id %}
                                 <td style="background-color: #0e00d6;color: white;">{{user.username}}</td>
                                 {% else %}
-                                <td>{{user.username}}</td>
+                                    {% if user|check_permissions:users.0 %}
+                                        <td>{{user.username}}*</td>
+                                    {% else %}
+                                        <td>{{user.username}}</td>
+                                    {% endif %}
                                 {% endif %}
                                 <!-- for every day in current month- -->
                                 {% for day in day_range %}
