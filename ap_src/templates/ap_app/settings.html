@@ -45,58 +45,101 @@
 
 <body>
 
-    <div class="columns is-centered">
-        <div class="column is-two-thirds">
-            <button class="collapsible button is-medium is-link has-text-centered">Privacy Settings</button>
-            <div class="content pt-3">
-                <p>Private data - (Hide data from external users/followers) - <a href=""></i>See more here</a></p>
-                <form method="POST">
-                    {% csrf_token %}
-                    <!-- Text box -->
-                        
-                    
-                    {% if data_privacy_mode %}
-                    <p>You're currently hiding your data from non team members</p>
-                    <button type="checkbox" checked="checked" class="switch" style="color:red" name="userPrivacy">
-                        Turn OFF    
-                    </button>
-                    {% else %}
-                    <p>You're NOT hiding your data from non team members</p>
-                    <button class="switch" style="color:green" name="userPrivacy">
-                        Turn ON    
-                    </button>
-                    {% endif %}
-                </form>
-                <br>
-            </div>
-
-            <button class="collapsible button is-medium is-link has-text-centered">Permissions Settings</button>
-            <div class="content is-size-5 pt-3">
-                <nav class="level my-1">
-                    <p class="level-left m-0">Users who can edit your absences</p>
-                    <form method="POST" action="settings/add-user" class="level-right field has-addons">
-                        {% csrf_token %}
-                        <!-- Text box -->
-                        <div class="control">
-                            <input class="input is-info" name="username" placeholder="Add a user" type="text">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="columns is-centered">
+            <div class="column is-one-third">
+                <div class="field">
+                    <label class="label">First Name</label>
+                    <div class ="control">
+                        {% if user.first_name %}
+                        <input class="input is-rounded is-success" type="text" placeholder="First Name" value="{{ user.first_name }}" name="firstName">
+                        {% else %}
+                        <input class="input is-rounded is-warning" type="text" placeholder="First Name" name="firstName">
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Last Name</label>
+                    <div class ="control">
+                        {% if user.last_name %}
+                        <input class="input is-rounded is-success" type="text" placeholder="Last Name" value="{{ user.last_name }}" name="lastName">
+                        {% else %}
+                        <input class="input is-rounded is-warning" type="text" placeholder="Last Name" name="lastName">
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Email</label>
+                    <div class="control has-icons-right">
+                        {% if user.email %}
+                        <input class="input is-rounded is-success" type="email" placeholder="Email Address" name="email" id="email-input" value="{{ user.email }}">
+                        <span class="icon is-small is-right">
+                            <button class="delete" aria-label="delete" onclick="deleteInputtedValue('email-input')"></button>
+                        </span>
+                        {% else %}
+                        <input class="input is-rounded is-warning" type="email" placeholder="Email Address" name="email">
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Region</label>
+                    <div class="control">
+                        <div class="select is-rounded">
+                            <select name="region">
+                                {% for country in countries %}
+                                    {% if country == current_country %}
+                                        <option value="{{country}}" selected="selected">{{country}}</option>
+                                    {% else %}
+                                        <option value="{{country}}">{{country}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
                         </div>
-                        <!-- Submit icon  -->
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Permission Settings</label>
+                    <nav class="navbar">
                         <div class="control">
-                            <input class="button is-info" type="submit"></input>
+                            <input class="input is-rounded" placeholder="Add a user" type="text" size="50" id="user_permission_input">
                         </div>
-                    </form>
-                </nav>
-                <div class="tags">
-                    {% for user in userprofile.edit_whitelist.all %}
-                    <span class="tag is-dark">{{user}}</span>
-                    <br>
-                    {% endfor %}
-                    
+                        <div class="control">
+                            {% csrf_token %}
+                            <button class="button is-rounded" onclick="addUserPermission( '{{ csrf_token }}' )">Submit</button>
+                        </div>
+                    </nav>
+                    <p>Users with permission to edit your absences:</p>
+                    <div class="tags">
+                        {% for user in userprofile.edit_whitelist.all %}
+                            <span class="tag is-dark">{{user}}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Privacy Settings</label>
+                    <div class="control">
+                        <label>
+                            {% if data_privacy_mode %}
+                            <input type="checkbox" checked="checked" name="privacy"></input>
+                            {% else %}
+                            <input type="checkbox" name="privacy"></input>
+                            {% endif %}
+                            Keep data private (Hide data from non team members)
+                        </label>
+                    </div>
+                </div>
+                <div class="field is-grouped my-4">
+                    <div class="control">
+                        <button class="button is-link">Submit</button>
+                    </div>
+                    <div class="control">
+                        <button class="button is-link">Cancel</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-
+    </form>
 
     <script>
         var coll = document.getElementsByClassName("collapsible");
@@ -113,6 +156,9 @@
                 }
             });
         }
+    </script>
+    <script src="{% static "js/profile_update.js" %}">
+
     </script>
 
 </body>
