@@ -514,9 +514,12 @@ def details_page(request) -> render:
     return render(request, "ap_app/Details.html", context)
 
 
+
 def get_date_data(
     month=datetime.datetime.now().strftime("%B"),
     year=datetime.datetime.now().year,
+    date=datetime.date
+    
 ):
     #  uses a dictionary to get all the data needed for the context
     #  and concatenates it to form the full context with other dictionaries
@@ -527,6 +530,7 @@ def get_date_data(
     data["today"] = datetime.datetime.now().day
     data["year"] = year
     data["month"] = month
+    
 
     data["day_range"] = range(
         1,
