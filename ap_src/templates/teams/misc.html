@@ -22,18 +22,21 @@
 
     .form-container .button {
         margin-top: 10px;
+        width: 100%;
+        
     }
 </style>
 
 
 <div class="main">
     <h1 class="title is-3">{{ team.name }} notes</h1>
-    <p style="font-weight:bold"> Team Description: </p>
+    <u style="font-weight:bold"> Team Description </u>
     <p> {{ team.description }}  </p>
-    <p style="font-weight:bold"> Notes: </p>
+    <br>
+    <u style="font-weight:bold"> Notes </u>
     <div id="edit-notes">
         <p> {{ team.notes }} </p> 
-        <button id="EditNotes"> Edit Notes Here</button>
+        <button class="button is-info" id="EditNotes"> Edit Notes Here</button>
     </div> 
     
     <!-- <form method="get" id="form">
@@ -44,13 +47,13 @@
     <!-- <p> Notes section/board for viewing teams miscs & notes </p> -->
 </div>
 
-
-<script>
+<!-- Below, javascript is used with a Bulma style button to create a more polished looking button rather than the standard HTML one.-->
+<script> 
     $(document).ready(function() {
         $("#EditNotes").click(function(event) {
             event.preventDefault();
 
-            const formContent = '<div class="form-container"><form method="get" id="form"> <input class="textarea" name="value" value="{{ team.notes }}"> </input> <button class="button is-info is-outlined mx-1" type="submit"><bold>Submit</bold></button></form></div>';
+            const formContent = '<div class="form-container"><form method="get" id="form"> <input class="textarea" name="value" value="{{ team.notes }}"> </input> <button class="button is-info" type="submit"><bold>Submit</bold></button></form></div>';
             $("#edit-notes").html(formContent);
         });
     });
