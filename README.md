@@ -26,3 +26,14 @@ This project aims to overcome these deficiencies
 
 This project is just starting, will be a django web app with Javascript/jQuery on the front end, and Bulma.io CSS
 
+## Contribution
+
+To contribute changes to the original respository, the following commands can be used:
+
+- git remote add upstream ORIGINAL_REPOSITORY_URL
+
+- git merge upstream/master git fetch upstream
+
+- git merge upstream/master
+
+- git push origin master

@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load get_key %}
 {% load check_absences %}
+{% load check_half_day %}
+{% load check_permissions %}
 {% block title %}Calendar{% endblock %}
 {% load static %}
 {% block content %}
@@ -19,34 +21,40 @@
         border: 1px solid #ff0000;
         border-radius: 12px
     }
-    .confirmationPage {
-        display: none;
-        position: fixed;
-        z-index: 1;
-        padding-top: 90px;
-        left: 0;
-        right: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-    }
-    .confirmationBox {
-        background-color: #055496;
-        color: white;
-        text-align: center;
-        margin: auto;
-        padding: 10px;
-        border: 1px solid #545351;
-        border-radius: 10px;
-        width: 20%;
-        display: none;
-    }
 </style>
 
 
 <div class="main">
+    <div class="container">
+        <div class="columns is-centered">
+            <div class="column is-one-quarter">
+                <article class="message is-info" style="display: none; position: fixed; z-index: 5;", id="halfDayConfirmation">
+                    <div class="message-header">
+                        <p>Select Time</p>
+                        <button class="delete" aria-label="delete" id="halfDayClose"></button>
+                    </div>
+                    <div class="message-body" style="text-align:center;">
+                        <p>Morning or Afternoon?</p>
+                        <button class="button is-info" id="halfDayMorning">Morning</button>
+                        <button class="button is-info" id="halfDayAfternoon">Afternoon</button>
+                    </div>
+                </article>
+                <article class="message is-info" style="display: none; position: fixed; z-index: 5;" id="confirmationBox">
+                    <div class="message-header">
+                        <p>Absence Removal</p>
+                        <button class="delete" aria-label="delete" id="confirmationBoxClose"></button>
+                    </div>
+                    <div class="message-body" style="text-align: center;">
+                        <p>Remove the absence?</p>
+                        <button class="button is-info", id="removeAbsence">Remove Absence</button>
+                        <button class="button is-info", id="cancelAbsece">Cancel</button>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
     <section class="section">
-        <div class="container">
+        <div style="padding-left: 5%; padding-right: 5%;">
             <div class="level mb-1">
                 <div class="level-left">
                     <h1 class="title is-3 level-item">
@@ -92,27 +100,11 @@
                 
                 
             </div>
-            <div class="confirmationBox", id="confirmationBox">
-                <p>Are you sure you want to remove this absence?<p>
-                <button class="button is-info", id="removeAbsence">Remove Absence</button>
-                <button class="button is-info", id="cancelAbsece">Cancel</button>
-            </div>
-            <article class="message is-info" style="display: none; margin-left: 35%; margin-right: 35%;", id="halfDayConfirmation">
-                <div class="message-header">
-                    <p>Select Time</p>
-                    <button class="delete" aria-label="delete" id="halfDayClose"></button>
-                </div>
-                <div class="message-body" style="text-align:center;">
-                    <p>Morning or Afternoon?</p>
-                    <button class="button is-info" id="halfDayMorning">Morning</button>
-                    <button class="button is-info" id="halfDayAfternoon">Afternoon</button>
-                </div>
-            </article>
             <div class="level mb-0">
                 <div class="level-left">
                     
                     <!-- reset button to take user back to present -->
-                    <a href="/calendar/{{current_month}}/{{current_year}}" class="mr-4 button">
+                    <a href="/calendar/{{current_month}}/{{current_year}}" class="mr-4 button" title="Refresh The Calendar">
                         <span class="icon ">
                             <i class="fas fa-sync"></i>
                         </span>
@@ -122,94 +114,157 @@
                     {% if current_year == year %}
                     
                     {% if current_month_num == month_num %}
-                    
-                    <a id="previous" href="" class="noHover button" aria-disabled="true" disabled>
-                        <span class="icon">
-                            <i class="fas fa-arrow-left"></i>
-                        </span>
-                    </a>
 
-                    <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                    </a>
+                       <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                           <span class="icon">
+                               <i class="fas fa-arrow-left"></i>
+                           </span>
+                       </a>
 
-                    {% elif month_num == 12 %}
+                       <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-right"></i>
+                           </span>
+                       </a>
 
-                    <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-left"></i>
-                        </span>
-                    </a>
-                    <a id="next" href="/calendar/January/{{next_year}}" class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                    </a>
+                       {% elif month_num == 1 %}
 
-                    {% else %}
+                       <a id="previous" href="/calendar/{{previous_month}}/{{previous_year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-left"></i>
+                           </span>
+                       </a>
+                       <a id="next" href="/calendar/February/{{year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-right"></i>
+                           </span>
+                       </a>
 
-                    <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-left"></i>
-                        </span>
-                    </a>
-                    <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                    </a>
+                       {% elif month_num == 12 %}
 
-                    {% endif %}
+                           <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                               <span class="icon ">
+                                   <i class="fas fa-arrow-left"></i>
+                               </span>
+                           </a>
+                           <a id="next" href="/calendar/January/{{next_year}}" class="button">
+                               <span class="icon ">
+                                   <i class="fas fa-arrow-right"></i>
+                               </span>
+                           </a>
 
-                    {% elif current_year|add:"2" == next_year %}
-                    {% if month_num == 1 %}
+                           {% else %}
 
-                    <a id="previous" href="/calendar/December/{{previous_year}}" class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-left"></i>
-                        </span>
-                    </a>
-                    <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                    </a>
+                           <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                               <span class="icon ">
+                                   <i class="fas fa-arrow-left"></i>
+                               </span>
+                           </a>
+                           <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                               <span class="icon ">
+                                   <i class="fas fa-arrow-right"></i>
+                               </span>
+                           </a>
 
-                    {% elif month_num == 12 %}
+                           {% endif %}
 
-                    <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-left"></i>
-                        </span>
-                    </a>
-                    <a id="next" href="" class="noHover button" aria-disabled="true" disabled>
-                        <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                    </a>
+                   {% elif current_year|add:"2" == next_year %}
+                       {% if month_num == 1 %}
+
+                           <a id="previous" href="/calendar/December/{{previous_year}}" class="button">
+                               <span class="icon ">
+                                   <i class="fas fa-arrow-left"></i>
+                               </span>
+                           </a>
+                           <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                               <span class="icon ">
+                                   <i class="fas fa-arrow-right"></i>
+                               </span>
+                           </a>
+
+                           {% elif month_num == 12 %}
+
+                               <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                                   <span class="icon ">
+                                       <i class="fas fa-arrow-left"></i>
+                                   </span>
+                               </a>
+                               <a id="next" href="" class="noHover button" aria-disabled="true" disabled>
+                                   <span class="icon ">
+                                       <i class="fas fa-arrow-right"></i>
+                                   </span>
+                               </a>
 
 
-                    {% else %}
+                           {% else %}
 
-                    <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-left"></i>
-                        </span>
-                    </a>
-                    <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
-                        <span class="icon ">
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                    </a>
-                    {% endif %}
-                    {% endif %}
+                               <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                                   <span class="icon ">
+                                       <i class="fas fa-arrow-left"></i>
+                                   </span>
+                               </a>
+                               <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                                   <span class="icon ">
+                                       <i class="fas fa-arrow-right"></i>
+                                   </span>
+                               </a>
+
+                           {% endif %}
+
+                   {% elif current_year|add:"-2" == previous_year %}
+
+                       {% if month_num == 12 %}
+
+
+                       <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-left"></i>
+                           </span>
+                       </a>
+                       <a id="next" href="/calendar/January/{{next_year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-right"></i>
+                           </span>
+                       </a>
+
+                       {% elif current_month_num == month_num %}
+
+                       <a id="previous" href="" class="noHover button" aria-disabled="true" disabled>
+                           <span class="icon">
+                               <i class="fas fa-arrow-left"></i>
+                           </span>
+                       </a>
+
+                       <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-right"></i>
+                           </span>
+                       </a>
+
+
+                       {% else %}
+
+                       <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-left"></i>
+                           </span>
+                       </a>
+                       <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-right"></i>
+                           </span>
+                       </a>
+
+
+
+
+                   {% endif %}
+                   {% endif %}
 
                     <span class="is-size-4 mb-0 px-3 level-left">{{month}} {{year}}</span>
 
 
-                    <a id="CalendarFormatAlternate-Grid">
+                    <a id="CalendarFormatAlternate-Grid" title="Alternate Calendar View">
                         <p class="buttons">
                             <button class="button " style="border-width:2px;" id="GridSelect">
                                 <span class="icon ">
@@ -218,7 +273,7 @@
                             </button>
                         </p>
                     </a>
-                    <a id="CalendarFormatAlternate-Linear">
+                    <a id="CalendarFormatAlternate-Linear" title="Main Calendar View">
                         <p class="buttons">
                             <button class="button " style="border-width:2px; border-color:green;" id="LinearSelect">
                                 <span class="icon ">
@@ -227,7 +282,7 @@
                             </button>
                         </p>
                     </a>
-                    <a id="CalendarClick-Toggle">
+                    <a id="CalendarClick-Toggle" title="Toggle Clickable Calendar">
                         <p class="buttons">
                             <button class="button " style="border-width:2px; border-color:green" id="ClickToggle">
                                 <span class="icon ">
@@ -250,7 +305,6 @@
 
                     <div class="level-right">
                         <form method="get" class="field has-addons">
-    
                             <!-- Key for table colours -->
                             <div class="control has-icons-left">
                                 <input class="input" type="text" name="username" placeholder="Search">
@@ -268,7 +322,8 @@
             </div>
             <!--DIO CHANGES--> <!--This add a text explaining how each colour works, for example half day and full day-->
         <p style="color:red">Use Left Click to select a full day</p>
-        <p style="color:purple">Use Shift Left Click to select a half-day</p>
+        <p style="color:red">Use Shift Left Click to select a half-day</p>
+        <p style="color:black">If half-day booked, top half of the box means Afternoon has been marked as absence, bottom half means Morning has been marked as absence</p>
             <!-- Prototype Grid-Based Calendar -->
             <div id="Grid-Calendar">
 
@@ -355,26 +410,35 @@
                                 {% if user.id == users.0.id %}
                                 <td style="background-color: #0e00d6;color: white;">{{user.username}}</td>
                                 {% else %}
-                                <td>{{user.username}}</td>
+                                    {% if user|check_permissions:users.0 %}
+                                        <td>{{user.username}}*</td>
+                                    {% else %}
+                                        <td>{{user.username}}</td>
+                                    {% endif %}
                                 {% endif %}
                                 <!-- for every day in current month- -->
                                 {% for day in day_range %}
-                                <!-- if absence day equals day then highlights red -->
-                                {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
-                                {% check_absences recurring_absence_dates|get_key:user year month_num day as check_recurring_absence %}
-                                {% if check_recurring_absence %}
-                                <td style="background-color: #ffaa00",  id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
-                                {% elif check_absence %}
-                                <td style="background-color: #ff0000;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
-                                {% else %}
-                                {% if day in bank_hol %}
-                                <td style = "background-color: #28663a;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
-                                {% elif day in weekend_list %}
-                                <td style = "background-color: #206cab;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
-                                {% else %}
-                                <td id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
-                                {% endif %}
-                                {% endif %}
+                                    <!-- if absence day equals day then highlights red -->
+                                    {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
+                                    {% check_absences recurring_absence_dates|get_key:user year month_num day as check_recurring_absence %}
+                                    {% check_half_day half_days_data|get_key:user year month_num day as check_half_day %}
+                                    {% if check_recurring_absence %}
+                                        <td style="background-color: #ffaa00",  id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                    {% elif check_absence %}
+                                        <td style="background-color: #ff0000;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                    {% elif check_half_day == "A" %}
+                                        <td style="background: linear-gradient(to bottom, #ff0000 50%, #ffffff 50%);", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                    {% elif check_half_day == "M" %}
+                                        <td style="background: linear-gradient(to bottom, #ffffff 50%, #ff0000 50%);", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                    {% else %}
+                                        {% if day in bank_hol %}
+                                            <td style = "background-color: #28663a;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                        {% elif day in weekend_list %}
+                                            <td style = "background-color: #206cab;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                        {% else %}
+                                            <td id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                        {% endif %}
+                                    {% endif %}
                                 {% endfor %}
                             </tr>
                             {% endfor %}                                
@@ -433,13 +497,11 @@
                 var data = e.target.id.split("/"); var ID = data[0]; var date = data[1]; var absent = data[2]
                 if (absent == "FALSE") {
                     //This is for full days
-                    half_day = false
                     if (e.shiftKey) {
-                        half_day = true
                         document.getElementById("halfDayConfirmation").style.display = "block";
                         var halfDayMorning = document.getElementById("halfDayMorning")
                         halfDayMorning.onclick = function() {
-                            alert("Morning")
+                            halfDayConfirmation.style.display = "none";
                             var correct_data = JSON.stringify({"id": ID, "date": date, "half_day": true, "half_day_time": "M"})
                             fetch("http://127.0.0.1:8000/absence/click_add", {
                                 method: "post",
@@ -455,15 +517,28 @@
                                 .catch(err => {
                                     console.log(err)
                                 });
-                            halfDayConfirmation.style.display = "none";
                         }
-                        var halfDayMorning = document.getElementById("halfDayAfternoon")
-                        halfDayMorning.onclick = function() {
+                        var halfDayAfternoon = document.getElementById("halfDayAfternoon")
+                        halfDayAfternoon.onclick = function() {
                             halfDayConfirmation.style.display = "none";
-                            alert("Afternoon")
+                            var correct_data = JSON.stringify({"id": ID, "date": date, "half_day": true, "half_day_time": "A"})
+                            fetch("http://127.0.0.1:8000/absence/click_add", {
+                                method: "post",
+                                headers: {
+                                    "X-CSRFToken": csrftoken,
+                                },
+                                body: correct_data
+                                })
+                                .then((res) => {
+                                    console.log(res.json())
+                                    location.reload();
+                                })
+                                .catch(err => {
+                                    console.log(err)
+                                });
                         }
                     } else {
-                        var correct_data = JSON.stringify({"id": ID, "date": date, "half_day": half_day})
+                        var correct_data = JSON.stringify({"id": ID, "date": date, "half_day": false})
                         fetch("http://127.0.0.1:8000/absence/click_add", {
                         method: "post",
                         headers: {
