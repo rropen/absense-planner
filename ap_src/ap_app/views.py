@@ -459,8 +459,8 @@ def add(request) -> render:
 def click_add(request):
     if request.method == "POST":
         json_data=json.loads(request.body)
-        userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
-        if len(userprofile.edit_whitelist.values_list().filter(id=json_data["id"])) == 1:
+        perm_list = UserProfile.objects.filter(id=json_data["id"])[0].edit_whitelist.all()
+        if request.user in perm_list:
             date = datetime.datetime.strptime(json_data["date"], "%Y-%m-%d").date()
             #This will add a half
             if json_data["half_day"] == True:
@@ -1158,7 +1158,6 @@ def profile_settings(request) -> render:
         return redirect("/")
     
     if len(request.POST) > 0:
-        print(request.POST)
         region = request.POST.get("region")
         region_code = pycountry.countries.get(name=region).alpha_2
         if region_code != userprofile.region:
