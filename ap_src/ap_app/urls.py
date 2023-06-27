@@ -7,6 +7,7 @@ js_info_dict = {
     'packages' : ('recurrence', ),
 }
 
+from django.conf.urls import handler404, handler500
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -48,3 +49,6 @@ urlpatterns = [
     url(r'^jsi18n', JavaScriptCatalog.as_view(), js_info_dict),
     # path("absence/edit/<int:id>", views.absence_edit, name="Absence Edit")
 ]
+
+handler404 = 'ap_app.views.handler404'
+handler500 = 'ap_app.views.handler500'
