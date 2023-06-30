@@ -52,3 +52,4 @@ urlpatterns = [
 
 handler404 = 'ap_app.views.handler404'
 handler500 = 'ap_app.views.handler500'
+handler400 = 'ap_app.views.handler400'
