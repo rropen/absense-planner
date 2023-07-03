@@ -646,6 +646,8 @@ def get_date_data(
     data["today"] = datetime.datetime.now().day
     data["year"] = year
     data["month"] = month
+    data["next_current_year"] = datetime.datetime.now().year + 1
+    data["next_second_year"] = datetime.datetime.now().year + 2
 
     data["day_range"] = range(
         1,
@@ -962,6 +964,14 @@ def all_calendar(
    
 
     return render(request, "ap_app/calendar.html", context)
+
+@login_required
+def set_calendar_month(request):
+    if request.method == "POST":
+        month = request.POST.get('month_names')
+        year = request.POST.get('year_names')
+
+    return redirect('all_calendar', month=month, year=year)
 
 
 def text_rules(user):
