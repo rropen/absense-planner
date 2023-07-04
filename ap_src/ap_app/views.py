@@ -7,6 +7,7 @@ import datetime
 import json
 import holidays
 import pycountry
+import pandas as pd
 from datetime import timedelta
 
 from django.contrib import messages
@@ -648,6 +649,13 @@ def get_date_data(
     data["month"] = month
     data["next_current_year"] = datetime.datetime.now().year + 1
     data["next_second_year"] = datetime.datetime.now().year + 2
+    
+    start_date, end_date = "2022-07-03", "2024-07-03"
+ 
+    data["month_list"] = pd.period_range(start=start_date, end=end_date, freq='M')
+    data["month_list"] = [month.strftime("%B %Y") for month in data["month_list"]]
+
+    data["selected_date"] = datetime.date(int(data["year"]), datetime.datetime.strptime(month, "%B").month, 1).strftime("%B %Y")
 
     data["day_range"] = range(
         1,
@@ -969,7 +977,14 @@ def all_calendar(
 def set_calendar_month(request):
     if request.method == "POST":
         month = request.POST.get('month_names')
-        year = request.POST.get('year_names')
+        
+        split = month.split()
+
+        month = split[0]
+
+        year = split[1]
+
+        print(month)
 
     return redirect('all_calendar', month=month, year=year)
 

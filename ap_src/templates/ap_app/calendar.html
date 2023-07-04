@@ -264,23 +264,19 @@
                    <form method="POST" action="/calendar/set_month">
                     {% csrf_token %}
                     <select name="month_names" id="month_names">
-                        <option value="January">January</option> 
-                        <option value="February">February</option> 
-                        <option value="March">March</option> 
-                        <option value="April">April</option> 
-                        <option value="May">May</option> 
-                        <option value="June">June</option> 
-                        <option value="July">July</option> 
-                        <option value="August">August</option> 
-                        <option value="September">September</option> 
-                        <option value="October">October</option> 
-                        <option value="November">November</option> 
-                        <option value="December">December</option> 
-                    </select>
-                    <select name="year_names" id="year_names">
-                        <option value="{{current_year}}">{{current_year}}</option> 
-                        <option value="{{next_current_year}}">{{next_current_year}}</option> 
-                        <option value="{{next_second_year}}">{{next_second_year}}</option> 
+                        {% for month in month_list %}
+
+                            {% if month == selected_date %}
+
+                                <option value="{{ month }}" selected>{{ month }}</option>
+
+                            {% else %}
+
+                                <option value="{{ month }}">{{ month }}</option>
+
+                            {% endif %}
+                            
+                        {% endfor %}
                     </select>
                     <input class="button is-info" type="submit">
                 </form>
