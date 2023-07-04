@@ -1,0 +1,347 @@
+{% extends 'base.html' %}
+{% load get_key %}
+{% load check_absences %}
+{% load check_half_day %}
+{% load check_permissions %}
+{% block title %}Calendar{% endblock %}
+{% load static %}
+{% block content %}
+<style>
+    .RefreshBox {
+        pointer-events: none;
+        text-align: right;
+        background-color: ghostwhite;
+        border: 0px;
+        font-size: 11pt;
+        width: 24px;
+        height: 12px;
+    }
+    .AbsenceBox {
+        background-color: #ff0000;
+        border: 1px solid #ff0000;
+        border-radius: 12px
+    }
+</style>
+
+
+<div class="main">
+    <div class="container">
+        <div class="columns is-centered">
+            <div class="column is-one-quarter">
+                <article class="message is-info" style="display: none; position: fixed; z-index: 5;", id="halfDayConfirmation">
+                    <div class="message-header">
+                        <p>Select Time</p>
+                        <button class="delete" aria-label="delete" id="halfDayClose"></button>
+                    </div>
+                    <div class="message-body" style="text-align:center;">
+                        <p>Morning or Afternoon?</p>
+                        <button class="button is-info" id="halfDayMorning">Morning</button>
+                        <button class="button is-info" id="halfDayAfternoon">Afternoon</button>
+                    </div>
+                </article>
+                <article class="message is-info" style="display: none; position: fixed; z-index: 5;" id="confirmationBox">
+                    <div class="message-header">
+                        <p>Absence Removal</p>
+                        <button class="delete" aria-label="delete" id="confirmationBoxClose"></button>
+                    </div>
+                    <div class="message-body" style="text-align: center;">
+                        <p>Remove the absence?</p>
+                        <button class="button is-info", id="removeAbsence">Remove Absence</button>
+                        <button class="button is-info", id="cancelAbsece">Cancel</button>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+    <section class="section">
+        <div style="padding-left: 5%; padding-right: 5%;">
+            <div class="level mb-1">
+                <div class="level-left">
+                    <h1 class="title is-3 level-item">
+                        Absence Calendar
+                    </h1>
+                </div>
+            </div>
+            <br>
+            <div class="level mb-6">
+                <span class="tag">
+                    <form class="level-right" name="LastRefreshFrm">
+                        Last refreshed
+                        <input style="font-size: small; padding-bottom:4px ;" type="text" name="refreshSecBox" size="1" class="RefreshBox" />
+                        <script language="javascript">
+                            SecondsSinceLastRefresh();
+                            </script>
+                        minute(s) ago.
+                    </form>
+                    
+                </span>
+                
+                {% if users_hidden %}
+                <span class="tag">
+                    <p>Some Users are hidden due to privacy</p>
+                </span>
+                {% endif %} 
+            </div>
+            <div class="level mb-0">
+                <div class="level-left">
+                    
+                    <!-- reset button to take user back to present -->
+                    <a href="/calendar/{{current_month}}/{{current_year}}" class="mr-4 button" title="Refresh The Calendar">
+                        <span class="icon ">
+                            <i class="fas fa-sync"></i>
+                        </span>
+                    </a>
+
+                    <!-- If the user is in the current year then they cannot go back a year or month and view historical data -->
+                    {% if current_year == year %}
+                    
+                    {% if current_month_num == month_num %}
+
+                       <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                           <span class="icon">
+                               <i class="fas fa-arrow-left"></i>
+                           </span>
+                       </a>
+
+                       <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-right"></i>
+                           </span>
+                       </a>
+
+                       {% elif month_num == 1 %}
+
+                       <a id="previous" href="/calendar/{{previous_month}}/{{previous_year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-left"></i>
+                           </span>
+                       </a>
+                       <a id="next" href="/calendar/February/{{year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-right"></i>
+                           </span>
+                       </a>
+
+                       {% elif month_num == 12 %}
+
+                           <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                               <span class="icon ">
+                                   <i class="fas fa-arrow-left"></i>
+                               </span>
+                           </a>
+                           <a id="next" href="/calendar/January/{{next_year}}" class="button">
+                               <span class="icon ">
+                                   <i class="fas fa-arrow-right"></i>
+                               </span>
+                           </a>
+
+                           {% else %}
+
+                           <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                               <span class="icon ">
+                                   <i class="fas fa-arrow-left"></i>
+                               </span>
+                           </a>
+                           <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                               <span class="icon ">
+                                   <i class="fas fa-arrow-right"></i>
+                               </span>
+                           </a>
+
+                           {% endif %}
+
+                   {% elif current_year|add:"2" == next_year %}
+                       {% if month_num == 1 %}
+
+                           <a id="previous" href="/calendar/December/{{previous_year}}" class="button">
+                               <span class="icon ">
+                                   <i class="fas fa-arrow-left"></i>
+                               </span>
+                           </a>
+                           <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                               <span class="icon ">
+                                   <i class="fas fa-arrow-right"></i>
+                               </span>
+                           </a>
+
+                           {% elif month_num == 12 %}
+
+                               <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                                   <span class="icon ">
+                                       <i class="fas fa-arrow-left"></i>
+                                   </span>
+                               </a>
+                               <a id="next" href="" class="noHover button" aria-disabled="true" disabled>
+                                   <span class="icon ">
+                                       <i class="fas fa-arrow-right"></i>
+                                   </span>
+                               </a>
+
+
+                           {% else %}
+
+                               <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                                   <span class="icon ">
+                                       <i class="fas fa-arrow-left"></i>
+                                   </span>
+                               </a>
+                               <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                                   <span class="icon ">
+                                       <i class="fas fa-arrow-right"></i>
+                                   </span>
+                               </a>
+
+                           {% endif %}
+
+                   {% elif current_year|add:"-2" == previous_year %}
+
+                       {% if month_num == 12 %}
+
+
+                       <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-left"></i>
+                           </span>
+                       </a>
+                       <a id="next" href="/calendar/January/{{next_year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-right"></i>
+                           </span>
+                       </a>
+
+                       {% elif current_month_num == month_num %}
+
+                       <a id="previous" href="" class="noHover button" aria-disabled="true" disabled>
+                           <span class="icon">
+                               <i class="fas fa-arrow-left"></i>
+                           </span>
+                       </a>
+
+                       <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-right"></i>
+                           </span>
+                       </a>
+
+
+                       {% else %}
+
+                       <a id="previous" href="/calendar/{{previous_month}}/{{year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-left"></i>
+                           </span>
+                       </a>
+                       <a id="next" href="/calendar/{{next_month}}/{{year}}" class="button">
+                           <span class="icon ">
+                               <i class="fas fa-arrow-right"></i>
+                           </span>
+                       </a>
+
+                   {% endif %}
+                   {% endif %}
+                    <a id="CalendarFormatAlternate-Linear" title="Main Calendar View">
+                        <p class="buttons">
+                            <button class="button " style="border-width:2px; border-color:green;" id="LinearSelect">
+                                <span class="icon ">
+                                    <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+                    <a id="CalendarClick-Toggle" title="Toggle Clickable Calendar">
+                        <p class="buttons">
+                            <button class="button " style="border-width:2px; border-color:green" id="ClickToggle">
+                                <span class="icon ">
+                                    <i class="fas fa-mouse-pointer"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+
+                </div>
+                <div class="level-right">
+                    <div class="level-right">
+                        <form method="get" class="field has-addons">
+                            <!-- Key for table colours -->
+                            <div class="control has-icons-left">
+                                <input class="input" type="text" name="username" placeholder="Search">
+                                    <span class="icon is-left">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                            
+                                    <input class="checkbox" type="checkbox" name="absent"> Filter By Absence
+                                </div>
+                                <button class="button is-info is-outlined mx-1" type="submit"><i class="fas fa-filter"></i></button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+            <!--API Linear Calendar (Start)-->
+            <div id="Linear-Calendars">
+                <div class="table-container" style="overflow: auto">
+                    {% if api_data %}
+                        {% for item in api_data %}
+                        <span class="is-block is-size-5 has-text-weight-bold">{{ item.team.name }}</span>
+                        <table class="table is-bordered is-striped" style="width: 100%" id="{{ item.team.name }}">
+                            <thead>
+                                <th style="color: black;"></th>
+                                {% for day in days_name %}
+                                {% if day == Sa or day == Su %}
+                                <th style="background-color: #055496; color: white;">{{day}}</th>
+                                {% elif forloop.counter in bank_hol%}
+                                <th style="background-color: #01661f; color: white;">{{day}}</th>
+                                {% else %}
+                                <th style="background-color: rgb(255, 255, 255); color: black;">{{day}}</th>
+                                {% endif %}
+                                {% endfor %}
+                            </thead>
+                            <thead>
+                                <th style="color: black;"></th>
+                                {% for day in day_range %}
+                                {% if day == today and month == current_month and year == current_year %}
+                                <th style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255);">{{day}}</th>
+                                {% elif day in bank_hol %}
+                                <td style = "background-color: #28663a; color: rgb(255, 255, 255);">{{day}}</td>
+                                {% elif day in weekend_list%}
+                                <td style = "background-color: #206cab; color: rgb(255, 255, 255);">{{day}}</td>
+                                {% else %}
+                                <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
+                                {% endif %}
+                                {% endfor %}
+                            </thead>
+                            <tbody>
+                                {% for member in item.team.members %}
+                                <tr>
+                                    {% if member.user.username == user.username %}
+                                    <td style="width: 80x; background-color: #0e00d6; color: white;">{{user.username}}</td>
+                                    {% else %}
+                                    <td style="width: 80px;">{{ member.user.username }}</td>
+                                    {% endif %}
+
+                                    {% for day in day_range %}
+
+                                        {% if day in bank_hol %}
+                                            <td style = "background-color: #28663a;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                        {% elif day in weekend_list %}
+                                            <td style = "background-color: #206cab;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                        {% else %}
+                                            <td id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                        {% endif %}
+
+                                    {% endfor %}
+
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <!--API Linear Calendar (END)-->
+
+        </div>
+    </section>
+</div>
+{% endblock %}

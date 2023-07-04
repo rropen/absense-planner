@@ -8,6 +8,7 @@ import json
 import holidays
 import pycountry
 import pandas as pd
+import requests
 from datetime import timedelta
 
 from django.contrib import messages
@@ -664,6 +665,7 @@ def get_date_data(
         )[1]
         + 1,
     )
+    data["day_range_num"] = len(list(data["day_range"])) + 1
     data["month_num"] = datetime.datetime.strptime(month, "%B").month
 
     data["previous_month"] = "December"
@@ -885,7 +887,6 @@ def all_calendar(
     month=datetime.datetime.now().strftime("%B"),
     year=datetime.datetime.now().year,
 ):
-  
     # Get acceptable date - (NOTHING BELOW now - 12months)
     date = check_calendar_date(year, month)
     if date:
@@ -1388,3 +1389,118 @@ def handler400(request, exception):
     response = render(request, "400.html", context=context)
     response.status_code = 400
     return response
+
+
+#JC - Calendar view using the API
+@login_required
+def api_calendar_view(
+    request,
+    #JC - These are the default values for the calendar.
+    month=datetime.datetime.now().strftime("%B"),
+    year=datetime.datetime.now().year
+):
+    
+    #JC - Get API data
+    api_data = None
+    if request.method == "GET":
+        try:
+            r = requests.get("http://127.0.0.1:8000/api/teams/?username={}".format(request.user.username))
+        except:
+            print("API failed to connect")
+            return redirect("/")
+        if r.status_code == 200:
+            api_data = r.json()
+        else:
+            result = r.json()
+            if result and result["code"]:
+                if result["code"] == "I":
+                    print("Username not found in Team App database.")
+                elif result["code"] == "N":
+                    print("A username was not provided with the request.")
+            else:
+                print("Fatal Error")
+
+    date = check_calendar_date(year, month)
+    if date:
+        month = date.strftime("%B")
+        year = date.year
+    
+    try:
+        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
+    except IndexError:
+        return redirect("/")
+
+    data_1 = get_date_data(userprofile.region, month, year)
+    
+    current_month = data_1["current_month"]
+    current_year = data_1["current_year"]
+    current_day = datetime.datetime.now().day
+    date = f"{current_day} {current_month} {current_year}"
+    date = datetime.datetime.strptime(date, "%d %B %Y")
+
+
+    all_users = []
+    all_users.append(request.user)
+
+    user_relations = Relationship.objects.filter(
+        user=request.user, status=State.objects.get(slug="active")
+    )
+    hiding_users = False
+
+
+    for index, relation in enumerate(user_relations):
+        rels = Relationship.objects.filter(
+            team=relation.team, status=State.objects.get(slug="active")
+        )
+
+        # Finds the viewers role in the team
+        for user in rels:
+            if user.user == request.user:
+                viewers_role = Role.objects.get(id=user.role_id)
+
+        for rel in rels:
+            if rel.user not in all_users:
+                if viewers_role.role == "Follower":
+                    # Than hide users data who have privacy on
+
+                    user_profile = UserProfile.objects.get(user=rel.user)
+                    if not user_profile.privacy:
+                        # If user hasn't got their data privacy on
+                        all_users.append(rel.user)
+                    else:
+                        # Used to inform user on calendar page if there are hiden users
+                        hiding_users = True
+
+                else:
+                    # Only followers cannot view those who have privacy set for their data. - (Members & Owners can see the data)
+                    all_users.append(rel.user)
+
+    # Filtering
+    filtered_users = get_filter_users(request, all_users)
+
+    data_2 = get_absence_data(all_users, 2)
+
+    data_3 = {"Sa": "Sa", "Su": "Su", "users_filter": filtered_users}
+
+    grid_calendar_month_values = list(data_1["day_range"])
+    # NOTE: This will select which value to use to fill in how many blank cells where previous month overrides prevailing months days. 
+    # This is done by finding the weekday value for the 1st day of the month. Example: "Tu" will require 1 blank space/cell.
+    for i in range({"Mo":0, "Tu":1, "We":2, "Th":3, "Fr":4, "Sa":5, "Su":6}[data_1["days_name"][0]]):
+        grid_calendar_month_values.insert(0, -1)
+
+
+    context = {
+        **data_1,
+        **data_2,
+        **data_3,
+        "users_hidden": hiding_users,
+        "home_active": True,
+        "api_data": api_data,
+        
+        # Grid-Calendars day values  
+        "detailed_calendar_day_range":grid_calendar_month_values,
+     
+        
+    }
+
+    return render(request, "api_pages/calendar.html", context)

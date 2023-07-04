@@ -48,7 +48,7 @@ urlpatterns = [
     path("profile/settings/set-region", views.set_region, name="set-region"),
     url(r'^jsi18n', JavaScriptCatalog.as_view(), js_info_dict),
     path("calendar/set_month",views.set_calendar_month, name="set_month"),
-    # path("absence/edit/<int:id>", views.absence_edit, name="Absence Edit")
+    path("api_calendar", views.api_calendar_view, name="api_calendar")
 ]
 
 handler404 = 'ap_app.views.handler404'
