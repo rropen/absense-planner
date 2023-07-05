@@ -23,7 +23,6 @@
     }
 </style>
 
-
 <div class="main">
     <div class="container">
         <div class="columns is-centered">
@@ -234,7 +233,7 @@
                    {% endif %}
                     <a id="CalendarClick-Toggle" title="Toggle Clickable Calendar">
                         <p class="buttons">
-                            <button class="button " style="border-width:2px; border-color:green" id="ClickToggle">
+                            <button class="button " style="border-width:2px; border-color:red" id="ClickToggle">
                                 <span class="icon ">
                                     <i class="fas fa-mouse-pointer"></i>
                                 </span>
@@ -308,20 +307,20 @@
                                         {% check_absences recurring_absence_dates|get_key:member.user.username year month_num day as check_recurring_absence %}
                                         {% check_half_day half_days_data|get_key:member.user.username year month_num day as check_half_day %}
                                         {% if check_recurring_absence %}
-                                        <td style="background-color: #ffaa00",  id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                        <td style="background-color: #ffaa00",  id="{{member.user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
                                         {% elif check_absence %}
                                         <td style="background-color: #ff0000;", id="{{member.user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
                                         {% elif check_half_day == "A" %}
-                                        <td style="background: linear-gradient(to bottom, #ff0000 50%, #ffffff 50%);", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                        <td style="background: linear-gradient(to bottom, #ff0000 50%, #ffffff 50%);", id="{{member.user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
                                         {% elif check_half_day == "M" %}
-                                        <td style="background: linear-gradient(to bottom, #ffffff 50%, #ff0000 50%);", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                        <td style="background: linear-gradient(to bottom, #ffffff 50%, #ff0000 50%);", id="{{member.user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
                                         {% else %}
                                             {% if day in bank_hol %}
-                                                <td style = "background-color: #28663a;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                                <td style = "background-color: #28663a;", id="{{member.user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                             {% elif day in weekend_list %}
-                                                <td style = "background-color: #206cab;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                                <td style = "background-color: #206cab;", id="{{member.user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                             {% else %}
-                                                <td id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                                <td id="{{member.user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                             {% endif %}
                                         {% endif %}
 
@@ -347,4 +346,5 @@
         </div>
     </section>
 </div>
+<script src="{% static "js/api_calendar.js" %}" token="{{ csrf_token }}">
 {% endblock %}
