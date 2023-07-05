@@ -734,10 +734,10 @@ def get_absence_data(users, user_type):
             user_id = user.id
 
         absence_info = Absence.objects.filter(Target_User_ID=user_id)
-        total_absence_dates[user] = []
-        total_recurring_dates[user] = []
-        total_half_dates[user] = []
-        all_absences[user] = []
+        total_absence_dates[user.username] = []
+        total_recurring_dates[user.username] = []
+        total_half_dates[user.username] = []
+        all_absences[user.username] = []
 
         # if they have any absences
         if absence_info:
@@ -749,10 +749,10 @@ def get_absence_data(users, user_type):
                 dates = absence_date_start
                 if x.half_day == "NORMAL":
                     while dates <= absence_date_end:
-                        total_absence_dates[user].append(dates)
+                        total_absence_dates[user.username].append(dates)
                         dates += delta
                 else:
-                    total_half_dates[user].append(
+                    total_half_dates[user.username].append(
                         {
                             "date": absence_date_start,
                             "type": x.half_day
@@ -764,12 +764,12 @@ def get_absence_data(users, user_type):
                         "ID": absence_id,
                         "absence_date_start": absence_date_start,
                         "absence_date_end": absence_date_end,
-                        "dates": total_absence_dates[user],
+                        "dates": total_absence_dates[user.username],
                     }
                 )
 
             # for each user it maps the set of dates to a dictionary key labelled as the users name
-            all_absences[user] = absence_content
+            all_absences[user.username] = absence_content
 
         recurring = RecurringAbsences.objects.filter(Target_User_ID=user_id)
 
@@ -786,7 +786,7 @@ def get_absence_data(users, user_type):
                     time_var = datetime.datetime.strftime(x, "%H:%M:%S")
                     if time_const == time_var:
                         x += timedelta(days=1)
-                    total_recurring_dates[user].append(x)
+                    total_recurring_dates[user.username].append(x)
                 # TODO: add auto deleting for recurring absences once last date of absences in before now
                 # if x < datetime.datetime.now():
                 #    pass
@@ -1442,45 +1442,16 @@ def api_calendar_view(
     all_users = []
     all_users.append(request.user)
 
-    user_relations = Relationship.objects.filter(
-        user=request.user, status=State.objects.get(slug="active")
-    )
-    hiding_users = False
-
-
-    for index, relation in enumerate(user_relations):
-        rels = Relationship.objects.filter(
-            team=relation.team, status=State.objects.get(slug="active")
-        )
-
-        # Finds the viewers role in the team
-        for user in rels:
-            if user.user == request.user:
-                viewers_role = Role.objects.get(id=user.role_id)
-
-        for rel in rels:
-            if rel.user not in all_users:
-                if viewers_role.role == "Follower":
-                    # Than hide users data who have privacy on
-
-                    user_profile = UserProfile.objects.get(user=rel.user)
-                    if not user_profile.privacy:
-                        # If user hasn't got their data privacy on
-                        all_users.append(rel.user)
-                    else:
-                        # Used to inform user on calendar page if there are hiden users
-                        hiding_users = True
-
-                else:
-                    # Only followers cannot view those who have privacy set for their data. - (Members & Owners can see the data)
-                    all_users.append(rel.user)
-
-    # Filtering
-    filtered_users = get_filter_users(request, all_users)
+    if api_data:
+        for team in api_data:
+            for member in team["team"]["members"]:
+                retrieved_user = User.objects.filter(username=member["user"]["username"])
+                if retrieved_user.exists() and retrieved_user not in all_users:
+                    all_users.append(retrieved_user[0])
 
     data_2 = get_absence_data(all_users, 2)
 
-    data_3 = {"Sa": "Sa", "Su": "Su", "users_filter": filtered_users}
+    data_3 = {"Sa": "Sa", "Su": "Su"}
 
     grid_calendar_month_values = list(data_1["day_range"])
     # NOTE: This will select which value to use to fill in how many blank cells where previous month overrides prevailing months days. 
@@ -1493,14 +1464,8 @@ def api_calendar_view(
         **data_1,
         **data_2,
         **data_3,
-        "users_hidden": hiding_users,
         "home_active": True,
         "api_data": api_data,
-        
-        # Grid-Calendars day values  
-        "detailed_calendar_day_range":grid_calendar_month_values,
-     
-        
     }
 
     return render(request, "api_pages/calendar.html", context)

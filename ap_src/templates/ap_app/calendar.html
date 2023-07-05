@@ -437,9 +437,9 @@
                                 <!-- for every day in current month- -->
                                 {% for day in day_range %}
                                     <!-- if absence day equals day then highlights red -->
-                                    {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
-                                    {% check_absences recurring_absence_dates|get_key:user year month_num day as check_recurring_absence %}
-                                    {% check_half_day half_days_data|get_key:user year month_num day as check_half_day %}
+                                    {% check_absences absence_dates|get_key:user.username year month_num day as check_absence %}
+                                    {% check_absences recurring_absence_dates|get_key:user.username year month_num day as check_recurring_absence %}
+                                    {% check_half_day half_days_data|get_key:user.username year month_num day as check_half_day %}
                                     {% if check_recurring_absence %}
                                         <td style="background-color: #ffaa00",  id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
                                     {% elif check_absence %}
