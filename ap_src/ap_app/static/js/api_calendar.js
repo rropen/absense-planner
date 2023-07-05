@@ -44,6 +44,9 @@ document.addEventListener('click', function(e) {
                         sendData(username, date, true, "A", "add")
                         document.getElementById("halfDayConfirmation").style.display = "none";
                     }
+                    document.getElementById("halfDayClose").onclick = function() {
+                        document.getElementById("halfDayConfirmation").style.display = "none";
+                    }
                 }
                 //Full day absence
                 else {
@@ -54,11 +57,14 @@ document.addEventListener('click', function(e) {
             else {
                 var confirmationPage = document.getElementById("confirmationBox")
                 confirmationPage.style.display = "block";
+                document.getElementById("cancelAbsece").onclick = function() {
+                    document.getElementById("confirmationBox").style.display = "none";
+                }
+                document.getElementById("absenceClose").onclick = function() {
+                    document.getElementById("confirmationBox").style.display = "none";
+                }
                 document.getElementById("removeAbsence").onclick = function() {
                     sendData(username, date, false, "N", "remove")
-                    confirmationPage.style.display = "none";
-                }
-                document.getElementById("cancelAbsence").onclick = function() {
                     confirmationPage.style.display = "none";
                 }
             }
@@ -76,4 +82,8 @@ calendarClickButton.onclick = function() {
         calendarClickButton.style.borderColor = "red";
         calendarClickToggle = false
     }
+}
+
+function closeElement(e) {
+    e.style.display = "none";
 }
