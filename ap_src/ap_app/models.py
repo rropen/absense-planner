@@ -16,11 +16,11 @@ User = get_user_model()
 
 class Absence(models.Model):
     ID = models.AutoField(primary_key=True)
-    User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="absences")
+    User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
     Target_User_ID = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="+",
+        related_name="target_user",
     )
     absence_date_start = models.DateField(
         gettext_lazy("Date"), max_length=200, default=now
