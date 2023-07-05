@@ -87,3 +87,18 @@ calendarClickButton.onclick = function() {
 function closeElement(e) {
     e.style.display = "none";
 }
+
+//Team filter
+function filterTeams(input) {
+    var calendars = Array.from(document.getElementById("calendar-group").children)
+    for (cal in calendars) {
+        var calendarID = calendars[cal].id.toString()
+        calendarID = calendarID.replace("title-", "")
+        console.log(calendarID)
+        if (!calendarID.toUpperCase().includes(input.value.toString().toUpperCase())) {
+            calendars[cal].style.display = "none";
+        } else {
+            calendars[cal].style.display = "";
+        }
+    }
+}

@@ -245,26 +245,21 @@
                 </div>
                 <div class="level-right">
                     <div class="level-right">
-                        <form method="get" class="field has-addons">
-                            <!-- Key for table colours -->
-                            <div class="control has-icons-left">
-                                <input class="input" type="text" name="username" placeholder="Search">
-                                    <span class="icon is-left">
-                                        <i class="fas fa-search"></i>
-                                    </span>
-                                </div>
-                                <button class="button is-info is-outlined mx-1" type="submit"><i class="fas fa-filter"></i></button>
-                        </form>
+                        <div class="control has-icons-left">
+                            <input class="input" type="text" name="username" placeholder="Search" onkeyup="filterTeams(this)">
+                            <span class="icon is-left">
+                                <i class="fas fa-search"></i>
+                            </span>
+                        </div>
                     </div>
-
                 </div>
             </div>
             <!--API Linear Calendar (Start)-->
             <div id="Linear-Calendars">
-                <div class="table-container" style="overflow: auto">
+                <div class="table-container" style="overflow: auto" id="calendar-group">
                     {% if api_data %}
                         {% for item in api_data %}
-                        <span class="is-block is-size-5 has-text-weight-bold" id="title-{{ item.team.name }}">{{ item.team.name }}</span>
+                        <h1 class="is-size-5 has-text-weight-bold" id="title-{{ item.team.name }}">{{ item.team.name }}</h1>
                         <table class="table is-bordered is-striped" style="width: 100%" id="{{ item.team.name }}">
                             <thead>
                                 <th style="color: black;"></th>
