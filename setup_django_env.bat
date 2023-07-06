@@ -42,6 +42,7 @@ IF NOT EXIST venv\Scripts\activate.bat (
 
 IF NOT EXIST venv\req_installed  (
     ECHO Installing requirements
+	"venv\Scripts\python" -m pip install --upgrade pip
 	"venv\Scripts\pip" install -r requirements.txt
     COPY NUL venv\req_installed
 ) ELSE (
