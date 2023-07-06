@@ -729,15 +729,15 @@ def get_absence_data(users, user_type):
     for user in users:
         # all the absences for the user
         if user_type == 1:
-            user_id = user.user.id
+            user_username = user.user.username
         else:
-            user_id = user.id
+            user_username = user.username
 
-        absence_info = Absence.objects.filter(Target_User_ID=user_id)
-        total_absence_dates[user.username] = []
-        total_recurring_dates[user.username] = []
-        total_half_dates[user.username] = []
-        all_absences[user.username] = []
+        absence_info = Absence.objects.filter(Target_User_ID__username=user_username)
+        total_absence_dates[user_username] = []
+        total_recurring_dates[user_username] = []
+        total_half_dates[user_username] = []
+        all_absences[user_username] = []
 
         # if they have any absences
         if absence_info:
@@ -749,10 +749,10 @@ def get_absence_data(users, user_type):
                 dates = absence_date_start
                 if x.half_day == "NORMAL":
                     while dates <= absence_date_end:
-                        total_absence_dates[user.username].append(dates)
+                        total_absence_dates[user_username].append(dates)
                         dates += delta
                 else:
-                    total_half_dates[user.username].append(
+                    total_half_dates[user_username].append(
                         {
                             "date": absence_date_start,
                             "type": x.half_day
@@ -764,14 +764,14 @@ def get_absence_data(users, user_type):
                         "ID": absence_id,
                         "absence_date_start": absence_date_start,
                         "absence_date_end": absence_date_end,
-                        "dates": total_absence_dates[user.username],
+                        "dates": total_absence_dates[user_username],
                     }
                 )
 
             # for each user it maps the set of dates to a dictionary key labelled as the users name
-            all_absences[user.username] = absence_content
+            all_absences[user_username] = absence_content
 
-        recurring = RecurringAbsences.objects.filter(Target_User_ID=user_id)
+        recurring = RecurringAbsences.objects.filter(Target_User_ID__username=user_username)
 
         if recurring:
             for recurrence_ in recurring:
@@ -786,7 +786,7 @@ def get_absence_data(users, user_type):
                     time_var = datetime.datetime.strftime(x, "%H:%M:%S")
                     if time_const == time_var:
                         x += timedelta(days=1)
-                    total_recurring_dates[user.username].append(x)
+                    total_recurring_dates[user_username].append(x)
                 # TODO: add auto deleting for recurring absences once last date of absences in before now
                 # if x < datetime.datetime.now():
                 #    pass
