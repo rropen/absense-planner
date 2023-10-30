@@ -1410,7 +1410,7 @@ def api_calendar_view(
     api_data = None
     if request.method == "GET":
         try:
-            r = requests.get("http://127.0.0.1:8000/api/teams/?username={}".format(request.user.username))
+            r = requests.get("http://localhost:8000/api/teams/?username={}".format(request.user.username))
         except:
             print("API failed to connect")
             return redirect("/")
