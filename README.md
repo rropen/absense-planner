@@ -21,6 +21,19 @@ Although R-R has existing systems to manage and view absence, they fail to meet 
 
 This project aims to overcome these deficiencies
 
+## Prerequisites guide
+
+- Install Python 3.11.6 from the official website, checking the box labelled "Add To PATH"
+
+- Install Python 3.11 from the Microsoft Store
+
+- Clone the "dependancy-upgrades" branch from the GitHub repository
+
+- Run the .bat file inside of the cloned repository and let it complete
+
+- Open Visual Studio Code and activate the virtual Environment with "venv\scripts\activate"
+
+- Use the "cd" command to navigate into ap_src and run the app by using "py manage.py runserver"
 
 ## Usage
 
