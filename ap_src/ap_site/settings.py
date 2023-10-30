@@ -32,7 +32,6 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
-    "river",
     "ap_app.apps.ap_appConfig",
     "django.contrib.admin",
     "django.contrib.auth",

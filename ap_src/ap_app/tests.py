@@ -49,7 +49,6 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
     its own method - (Methods to be tested must start with "test_*")"""
 
     fixtures = [
-        "ap_src/ap_app/fixtures/river.json",
         "ap_src/ap_app/fixtures/roles.json",
     ]
 

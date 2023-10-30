@@ -20,11 +20,10 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, UpdateView
-from river.models.fields.state import State
 
 from .forms import *
 from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
-                     UserProfile)
+                     UserProfile, Status)
 
 User = get_user_model()
 
@@ -81,10 +80,10 @@ class SignUpView(CreateView):
 @login_required
 def teams_dashboard(request) -> render:
     rels = Relationship.objects.order_by(Lower("team__name")).filter(
-        user=request.user, status=State.objects.get(slug="active")
+        user=request.user, status=Status.objects.get(status="Active")
     )
     invite_rel_count = Relationship.objects.filter(
-        user=request.user, status=State.objects.get(slug="invited")
+        user=request.user, status=Status.objects.get(status="Invited")
     ).count()
     return render(
         request,
@@ -114,7 +113,7 @@ def create_team(request) -> render:
                 user=request.user,
                 team=created_team,
                 role=assign_role,
-                status=State.objects.get(slug="active"),
+                status=Status.objects.get(status="Active"),
             )
             return redirect("/teams/", {"message": "Team successfully created."})
     else:
@@ -145,7 +144,7 @@ def join_team(request) -> render:
     """Renders page with all teams the user is not currently in"""
     user_teams = []
     all_user_teams = Relationship.objects.filter(
-        user=request.user, status=State.objects.get(slug="active")
+        user=request.user, status=Status.objects.get(status="Active")
     )
     for teams in all_user_teams:
         user_teams.append(teams.team)
@@ -174,18 +173,18 @@ def joining_team_process(request, id, role):
     rels = Relationship.objects.filter(
         user=request.user,
         role=Role.objects.get(role="Member"),
-        status=State.objects.get(slug="active"),
+        status=Status.objects.get(status="Active"),
     )
     rels2 = Relationship.objects.filter(
         user=request.user,
         role=Role.objects.get(role="Owner"),
-        status=State.objects.get(slug="active"),
+        status=Status.objects.get(status="Active"),
     )
     existing_rels = Relationship.objects.order_by(Lower("team__name")).filter(
-        user=request.user, status=State.objects.get(slug="active")
+        user=request.user, status=Status.objects.get(status="Active")
     )
     invite_rel_count = Relationship.objects.filter(
-        user=request.user, status=State.objects.get(slug="invited")
+        user=request.user, status=Status.objects.get(status="Invited")
     ).count()
     
     if (rels or rels2) and role == "Member":
@@ -198,11 +197,11 @@ def joining_team_process(request, id, role):
         user=request.user,
         team=find_team,
         role=find_role,
-        status=State.objects.get(slug="pending"),
+        status=Status.objects.get(status="Pending"),
     )
     if not find_team.private:
         Relationship.objects.filter(id=new_rel.id).update(
-            status=State.objects.get(slug="active")
+            status=Status.objects.get(status="Active")
         )
         #leader = Relationship.objects.get(team=id, role=Role.objects.get(role="Owner"))
         #userprofile = UserProfile.objects.get(user=request.user)
@@ -230,7 +229,7 @@ def team_invite(request, team_id, user_id, role):
             user=find_user,
             team=find_team,
             role=find_role,
-            status=State.objects.get(slug="invited"),
+            status=Status.objects.get(status="Invited"),
         )
         return redirect(f"/teams/calendar/{find_team.id}")
     # Else user is manipulating the URL making non-allowed invites - (Therefore doesn't create a relationship)
@@ -241,7 +240,7 @@ def team_invite(request, team_id, user_id, role):
 @login_required
 def view_invites(request):
     all_invites = Relationship.objects.filter(
-        user=request.user, status=State.objects.get(slug="invited")
+        user=request.user, status=Status.objects.get(status="Invited")
     )
     return render(request, "teams/invites.html", {"invites": all_invites})
 
@@ -292,7 +291,7 @@ def team_settings(request, id):
     
     if is_owner(user=request.user, team_id=id): 
         all_pending_relations = Relationship.objects.filter(
-            team=id, status=State.objects.get(slug="pending")
+            team=id, status=Status.objects.get(status="Pending")
         )
         return render(
             request,
@@ -316,7 +315,7 @@ def edit_team_member_absence(request, id, user_id) -> render:
         
     if is_owner(user=request.user, team_id=id):    
         all_pending_relations = Relationship.objects.filter(
-            team=id, status=State.objects.get(slug="pending")
+            team=id, status=Status.objects.get(status="Pending")
         )
         target_user = User.objects.get(id=user_id)
         absences = Absence.objects.filter(Target_User_ID=target_user.id)
@@ -343,7 +342,7 @@ def promote_team_member(request, id, user_id):
         return redirect("dashboard")
     target_user = User.objects.get(id=user_id)
     all_pending_relations = Relationship.objects.filter(
-        team=id, status=State.objects.get(slug="pending")
+        team=id, status=Status.objects.get(status="Pending")
     )
     current_relationship = Relationship.objects.get(team=team, user=target_user)
     if current_relationship.role == Role.objects.get(role="Member"):
@@ -362,7 +361,7 @@ def demote_team_member(request, id, user_id):
         return redirect("dashboard")
     target_user = User.objects.get(id=user_id)
     all_pending_relations = Relationship.objects.filter(
-        team=id, status=State.objects.get(slug="pending")
+        team=id, status=Status.objects.get(status="Pending")
     )
     current_relationship = Relationship.objects.get(team=team, user=target_user)
     if current_relationship.role == Role.objects.get(role="Co-Owner"):
@@ -391,7 +390,7 @@ def joining_team_request(request, id, response):
     
 
     if response == "accepted":
-        state_response = State.objects.get(slug="active")
+        state_response = Status.objects.get(status="Active")
         Relationship.objects.filter(id=find_rel.id).update(status=state_response)
         return redirect("team_settings", find_rel.team.id)
     elif response == "nonactive":
@@ -822,7 +821,7 @@ def team_calendar(
         data_1 = get_date_data(userprofile.region, month, year)
 
         users = Relationship.objects.all().filter(
-            team=id, status=State.objects.get(slug="active")
+            team=id, status=Status.objects.get(status="Active")
         )
 
         data_2 = get_absence_data(users, 1)
@@ -870,7 +869,7 @@ def team_calendar(
             "team": team,
             "all_users": User.objects.all().exclude(id__in=user_in_teams),
             "team_count": Relationship.objects.filter(
-                team=team.id, status=State.objects.get(slug="active")
+                team=team.id, status=Status.objects.get(status="Active")
             ).count(),
         }
 
@@ -911,14 +910,14 @@ def all_calendar(
     all_users.append(request.user)
 
     user_relations = Relationship.objects.filter(
-        user=request.user, status=State.objects.get(slug="active")
+        user=request.user, status=Status.objects.get(status="Active")
     )
     hiding_users = False
 
 
     for index, relation in enumerate(user_relations):
         rels = Relationship.objects.filter(
-            team=relation.team, status=State.objects.get(slug="active")
+            team=relation.team, status=Status.objects.get(status="Active")
         )
 
         # Finds the viewers role in the team
