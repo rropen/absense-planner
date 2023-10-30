@@ -42,7 +42,7 @@
                 <article class="message is-info" style="display: none; position: fixed; z-index: 5;" id="confirmationBox">
                     <div class="message-header">
                         <p>Absence Removal</p>
-                        <button class="delete" aria-label="delete" id="confirmationBoxClose"></button>
+                        <button class="delete" aria-label="delete" id="absenceClose"></button>
                     </div>
                     <div class="message-body" style="text-align: center;">
                         <p>Remove the absence?</p>
@@ -441,20 +441,20 @@
                                     {% check_absences recurring_absence_dates|get_key:user.username year month_num day as check_recurring_absence %}
                                     {% check_half_day half_days_data|get_key:user.username year month_num day as check_half_day %}
                                     {% if check_recurring_absence %}
-                                        <td style="background-color: #ffaa00",  id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                        <td style="background-color: #ffaa00",  id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
                                     {% elif check_absence %}
-                                        <td style="background-color: #ff0000;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                        <td style="background-color: #ff0000;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
                                     {% elif check_half_day == "A" %}
-                                        <td style="background: linear-gradient(to bottom, #ff0000 50%, #ffffff 50%);", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                        <td style="background: linear-gradient(to bottom, #ff0000 50%, #ffffff 50%);", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
                                     {% elif check_half_day == "M" %}
-                                        <td style="background: linear-gradient(to bottom, #ffffff 50%, #ff0000 50%);", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                        <td style="background: linear-gradient(to bottom, #ffffff 50%, #ff0000 50%);", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
                                     {% else %}
                                         {% if day in bank_hol %}
-                                            <td style = "background-color: #28663a;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                            <td style = "background-color: #28663a;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                         {% elif day in weekend_list %}
-                                            <td style = "background-color: #206cab;", id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                            <td style = "background-color: #206cab;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                         {% else %}
-                                            <td id="{{user.id}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                            <td id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                         {% endif %}
                                     {% endif %}
                                 {% endfor %}
@@ -468,8 +468,7 @@
     </section>
 </div>
 
-
-
+<script src="{% static "js/api_calendar.js" %}" token="{{ csrf_token }}"></script>
 <script>
     // Colour Key Prototype 
     // $(document).ready(function()
@@ -506,7 +505,7 @@
         $("#GridSelect").css("border-color", "");
 
     });
-    var calendarCickToggle = true;
+    {% comment %} var calendarCickToggle = true;
     //This is a script to detect what id has been clicked on then add that day to be absence
     var csrftoken = '{{ csrf_token }}';
     document.addEventListener('click', function(e) {
@@ -616,7 +615,7 @@
     var halfDayClose = document.getElementById("halfDayClose")
     halfDayClose.onclick = function() {
         halfDayConfirmation.style.display = "none";
-    }
+    } {% endcomment %}
 
 </script>
 
