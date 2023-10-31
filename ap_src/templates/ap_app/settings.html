@@ -117,7 +117,7 @@
                     </div>
                 </div>
                 <div class="field">
-                    <label class="label">Privacy Settings</label>
+                    <label class="label">Data Settings</label>
                     <div class="control">
                         <label>
                             {% if data_privacy_mode %}
@@ -126,6 +126,16 @@
                             <input type="checkbox" name="privacy"></input>
                             {% endif %}
                             Keep data private (Hide data from non team members)
+                        </label>
+                    </div>
+                    <div class="control">
+                        <label>
+                            {% if external_teams %}
+                            <input type="checkbox" checked="checked" name="teams"></input>
+                            {% else %}
+                            <input type="checkbox" name="teams"></input>
+                            {% endif %}
+                            Use the team app data instead of local data
                         </label>
                     </div>
                 </div>

@@ -903,6 +903,9 @@ def all_calendar(
         userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
     except IndexError:
         return redirect("/")
+    
+    if userprofile.external_teams:
+        return redirect("/calendar/1")
 
     data_1 = get_date_data(userprofile.region, month, year)
     
@@ -1198,13 +1201,18 @@ def profile_settings(request) -> render:
             userprofile.privacy = False
         elif request.POST.get("privacy") == "on":
             userprofile.privacy = True
+        if request.POST.get("teams") == None:
+            userprofile.external_teams = False
+        elif request.POST.get("teams") == "on":
+            userprofile.external_teams = True
         userprofile.save()
     
     country_data = get_region_data()
     country_name = pycountry.countries.get(alpha_2=userprofile.region).name
 
     privacy_status = userprofile.privacy
-    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status, "current_country": country_name, **country_data}
+    teams_status = userprofile.external_teams
+    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status, "external_teams": teams_status,"current_country": country_name, **country_data}
     return render(request, "ap_app/settings.html", context)
 
 
@@ -1406,6 +1414,14 @@ def api_calendar_view(
     year=datetime.datetime.now().year
 ):
     
+    try:
+        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
+    except IndexError:
+        return redirect("/")
+    
+    if not userprofile.external_teams:
+        return redirect("/calendar/0")
+    
     #JC - Get API data
     api_data = None
     if request.method == "GET":
@@ -1430,11 +1446,6 @@ def api_calendar_view(
     if date:
         month = date.strftime("%B")
         year = date.year
-    
-    try:
-        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
-    except IndexError:
-        return redirect("/")
 
     data_1 = get_date_data(userprofile.region, month, year)
     
