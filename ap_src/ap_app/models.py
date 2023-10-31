@@ -1,10 +1,7 @@
-from datetime import timedelta
 from django.db import models
 from django.contrib.auth import get_user_model
-from river.models.fields.state import StateField, State
-from river.models import TransitionApproval
 from django.utils.timezone import now
-from django.utils.translation import gettext_lazy
+from django.utils.translation import gettext_lazy as _
 
 from recurrence.fields import RecurrenceField
 from ckeditor.fields import RichTextField
@@ -13,6 +10,12 @@ User = get_user_model()
 
 # TODO: is the ID, id field needed. Django has this built in as part of the Model class
 
+class Status(models.Model):
+    id = models.AutoField(primary_key=True)
+    status = models.CharField(max_length=65, null=False, unique=True)
+
+    def __str__(self):
+        return f"{self.status}"
 
 class Absence(models.Model):
     ID = models.AutoField(primary_key=True)
@@ -23,10 +26,10 @@ class Absence(models.Model):
         related_name="target_user",
     )
     absence_date_start = models.DateField(
-        gettext_lazy("Date"), max_length=200, default=now
+        _("Date"), max_length=200, default=now
     )
     absence_date_end = models.DateField(
-        gettext_lazy("Date"), max_length=200, default=now
+        _("Date"), max_length=200, default=now
     )
 #Destiny, this is what adds the columns to the database, you use py manage.py makemigrations then after that you use py manage.py migrate
     DAYS_CHOICES = (
@@ -99,13 +102,13 @@ class Team(models.Model):
     @property
     def count(self):
         return Relationship.objects.filter(
-            team=self, status=State.objects.get(slug="active")
+            team=self, status=Status.objects.get(status="Active")
         ).count()
 
     @property
     def users(self):
         return Relationship.objects.filter(
-            team=self, status=State.objects.get(slug="active")
+            team=self, status=Status.objects.get(status="Active")
         )
 
 
@@ -126,7 +129,7 @@ class Relationship(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
-    status = StateField(on_delete=models.CASCADE)
+    status = models.ForeignKey(Status, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (
@@ -138,9 +141,9 @@ class Relationship(models.Model):
         return f"User: {self.user.username}({self.user.id}) --> {self.team.name}({self.team.id}) as {self.role} ({self.status})"
 
     def custom_delete(self):
-        to_delete = TransitionApproval.objects.filter(object_id=self.pk)
-        for obj in to_delete:
-            obj.delete()
+        # to_delete = TransitionApproval.objects.filter(object_id=self.pk)
+        # for obj in to_delete:
+        #     obj.delete()
         self.delete()
 
 
@@ -160,5 +163,8 @@ class UserProfile(models.Model):
 
     region = models.CharField(max_length=200, default="GB")
 
+    external_teams = models.BooleanField(default=False)
+
     def __str__(self):
         return f"{self.user.username}"
+

@@ -1,6 +1,4 @@
 from django.urls import path
-from django.conf.urls import url
-from django.views.i18n import JavaScriptCatalog
 from . import views
 
 js_info_dict = {
@@ -12,8 +10,8 @@ from django.conf.urls import handler404, handler500
 urlpatterns = [
     path("", views.index, name="index"),
     path('signup/', views.SignUpView.as_view(), name='signup'),
-    path("calendar/", views.all_calendar, name="all_Calendar"),
-    path("calendar/<str:month>/<int:year>", views.all_calendar, name="all_calendar"),
+    path("calendar/0/", views.all_calendar, name="all_Calendar"),
+    path("calendar/0/<str:month>/<int:year>", views.all_calendar, name="all_calendar"),
     path("teams/", views.teams_dashboard, name="dashboard"),
     path("teams/create", views.create_team, name="create_team"),
     path("teams/invite/", views.view_invites, name="view_invites"),
@@ -46,10 +44,9 @@ urlpatterns = [
     path("profile/settings", views.profile_settings, name="profile settings"),
     path("profile/settings/add-user", views.add_user, name="add-user"),
     path("profile/settings/set-region", views.set_region, name="set-region"),
-    url(r'^jsi18n', JavaScriptCatalog.as_view(), js_info_dict),
     path("calendar/set_month",views.set_calendar_month, name="set_month"),
-    path("api_calendar", views.api_calendar_view, name="api_calendar"),
-    path("api_calendar/<str:month>/<int:year>", views.api_calendar_view, name="api_calendar")
+    path("calendar/1/", views.api_calendar_view, name="api_calendar"),
+    path("calendar/1/<str:month>/<int:year>", views.api_calendar_view, name="api_calendar")
 ]
 
 handler404 = 'ap_app.views.handler404'
