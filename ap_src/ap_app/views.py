@@ -83,10 +83,19 @@ def teams_dashboard(request) -> render:
     invite_rel_count = Relationship.objects.filter(
         user=request.user, status=Status.objects.get(status="Invited")
     ).count()
+
+    r = requests.get("http://localhost:8000/api/teams/?username={}".format(request.user.username))
+    if r.status_code == 200:
+        if len(r.json()) == 0 :
+            external_teams_data = False
+        else:
+            external_teams_data = r.json()
+    else:
+        external_teams_data = False
     return render(
         request,
         "teams/dashboard.html",
-        {"rels": rels, "invite_count": invite_rel_count, "teamspage_active": True},
+        {"rels": rels, "invite_count": invite_rel_count, "external_teams": external_teams_data, "teamspage_active": True},
     )
 
 

@@ -20,7 +20,7 @@
 
     <div class="level">
         <div class="level-left">
-            <h3 class="has-text-weight-bold is-size-5 my-3">My Teams ({{rels.count}})</h3>
+            <h3 class="has-text-weight-bold is-size-5 my-3">Local Teams ({{rels.count}})</h3>
         </div>
         <div class="level-right">
             <a id="invites" class="level-item p-1 has-text-link" href="{% url 'view_invites' %}">
@@ -63,6 +63,35 @@
             </div>
         </div>
     {% endfor %}
+
+    <div class="level">
+        <div class="level-left">
+            <h3 class="has-text-weight-bold is-size-5 my-3">External Teams ({{external_teams|length}})</h3>
+        </div>
+    </div>
+
+    {% if not external_teams %}
+    <div class="container has-background-light box">
+        <div class="is-size-5 mb-3">
+            <span class="is-block is-size-5">No external teams found.</span>
+        </div>
+    </div>
+    {% else %}
+    {% for team in external_teams %}
+    <div class="container has-background-light box">
+        <div class="is-size-5 mb-3">
+            <span class="is-block is-size-5	has-text-weight-bold">{{ team.team.name }} <i class="fas fa-user-alt mx-1"></i>{{rel.team.count}}</span>
+            {% if team.team.private %}
+                <span class="tag is-dark">Private</span>
+            {% else %}
+                <span class="tag is-dark">Public</span>
+            {% endif %}
+            <span class="tag is-info">{{ team.team.members|length }}</span>
+        </div>
+        <span class="is-block is-size-6">{{team.team.description}}</span>
+    </div>
+    {% endfor %}
+    {% endif %}
     
 </div>
 {% endblock %}
