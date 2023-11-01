@@ -1,5 +1,6 @@
 [
     {
+      "comment_":"PASSWORD IS 123 FOR ALL USERS",
       "model": "auth.user",
       "pk": 1,
       "fields": {
@@ -10,7 +11,7 @@
     },
     {
       "model": "auth.user",
-      "pk": 1,
+      "pk": 2,
       "fields": {
         "id": "2",
         "username": "Sarah",
@@ -19,7 +20,7 @@
     },
     {
       "model": "auth.user",
-      "pk": 1,
+      "pk": 3,
       "fields": {
         "id": "3",
         "username": "John",
