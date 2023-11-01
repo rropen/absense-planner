@@ -1,0 +1,18 @@
+[
+    {
+      "model": "ap_app.absence",
+      "pk": 1,
+      "fields": {
+        "absence_date_start": "2023-10-16",
+        "absence_date_end": "2023-10-19"
+      }
+    },
+    {
+      "model": "ap_app.absence",
+      "pk": 2,
+      "fields": {
+        "absence_date_start": "2023-12-16",
+        "absence_date_end": "2023-12-19"
+      }
+    }
+]
