@@ -11,7 +11,12 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 import os
+import environ
 from pathlib import Path
+
+# Retrieve Environment Variables
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,7 +29,7 @@ FIXTURE_DIRS = (os.path.join("fixtures"),)
 SECRET_KEY = "django-insecure-duam^e#bui)v&(*6!z5j1_9!mm55v#o(b_ni77ttxm#55bzs=1"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = ["*"]
 
@@ -69,6 +74,8 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "ap_site.context_processors.production", #This is the context processor that will communicate with the context processors .py file.
+                "ap_site.context_processors.info",
+                "ap_site.context_processors.team_api_data"
             ],
             "libraries": {
                 "get_key": "ap_app.templatetags.get_key",
@@ -151,4 +158,5 @@ DATE_FORMAT = "d/m/Y"
 DATE_INPUT_FORMATS = ["%d/%m/%Y"]
 SHORT_DATE_FORMAT = "dd/mm/YYYY"
 
-PRODUCTION_UI = False
+# Info retrieved from environment variables
+PRODUCTION_UI = env('PRODUCTION')

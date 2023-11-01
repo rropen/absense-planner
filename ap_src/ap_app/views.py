@@ -9,6 +9,7 @@ import holidays
 import pycountry
 import pandas as pd
 import requests
+import environ
 from datetime import timedelta
 
 from django.contrib import messages
@@ -25,6 +26,9 @@ from django.contrib.auth.models import User
 from .forms import *
 from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
                      UserProfile, Status)
+
+env = environ.Env()
+environ.Env.read_env()
 
 def index(request) -> render:
     """Branched view.                       \n
@@ -914,7 +918,12 @@ def all_calendar(
         return redirect("/")
     
     if userprofile.external_teams:
-        return redirect("/calendar/1")
+        try:
+            if requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username)).status_code == 200:
+                return redirect("/calendar/1")
+        except:
+            print("Failed to load api")
+
 
     data_1 = get_date_data(userprofile.region, month, year)
     
@@ -1435,7 +1444,7 @@ def api_calendar_view(
     api_data = None
     if request.method == "GET":
         try:
-            r = requests.get("http://localhost:8000/api/teams/?username={}".format(request.user.username))
+            r = requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username))
         except:
             print("API failed to connect")
             return redirect("/")
