@@ -29,7 +29,7 @@ FIXTURE_DIRS = (os.path.join("fixtures"),)
 SECRET_KEY = "django-insecure-duam^e#bui)v&(*6!z5j1_9!mm55v#o(b_ni77ttxm#55bzs=1"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -159,4 +159,5 @@ DATE_INPUT_FORMATS = ["%d/%m/%Y"]
 SHORT_DATE_FORMAT = "dd/mm/YYYY"
 
 # Info retrieved from environment variables
-PRODUCTION_UI = env('PRODUCTION')
+PRODUCTION_UI = False
+VERSION = "1.3.0"
