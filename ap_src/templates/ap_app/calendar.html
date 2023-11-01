@@ -21,33 +21,38 @@
         border: 1px solid #ff0000;
         border-radius: 12px
     }
+    .button1 {background-color: #f44336;} /* Red */ 
+    .button2 {background-color: #32cd32;} /* Green */
+    .button3 {background-color: #black;} /* Black */ 
 </style>
 
-
+  
 <div class="main">
     <div class="container">
         <div class="columns is-centered">
             <div class="column is-one-quarter">
-                <article class="message is-info" style="display: none; position: fixed; z-index: 5;", id="halfDayConfirmation">
+                <article class="message is-" style="display: none; position: fixed; z-index: 5;", id="halfDayConfirmation">
                     <div class="message-header">
-                        <p>Select Time</p>
+                        <h1><b>You are creating a half-day booking</b></h1>                   
                         <button class="delete" aria-label="delete" id="halfDayClose"></button>
                     </div>
                     <div class="message-body" style="text-align:center;">
+                        <p><b>Select Time</b></p>
                         <p>Morning or Afternoon?</p>
-                        <button class="button is-info" id="halfDayMorning">Morning</button>
-                        <button class="button is-info" id="halfDayAfternoon">Afternoon</button>
+                        <button class="button button3" id="halfDayMorning"><b>Morning</b></button>
+                        <button class="button button3" id="halfDayAfternoon"><b>Afternoon</b></button>
                     </div>
                 </article>
-                <article class="message is-info" style="display: none; position: fixed; z-index: 5;" id="confirmationBox">
+                <article class="message is-" style="display: none; position: fixed; z-index: 5;" id="confirmationBox">
                     <div class="message-header">
                         <p>Absence Removal</p>
                         <button class="delete" aria-label="delete" id="absenceClose"></button>
                     </div>
                     <div class="message-body" style="text-align: center;">
-                        <p>Remove the absence?</p>
-                        <button class="button is-info", id="removeAbsence">Remove Absence</button>
-                        <button class="button is-info", id="cancelAbsece">Cancel</button>
+                        <h1><b>This will make you Remove an Absence</b></h1>
+                        <p>Are you sure you want to remove this Absence?</p>
+                        <button class="button button2", id="removeAbsence"><b>Remove Absence</b></button>
+                        <button class="button button1", id="cancelAbsece"><b>Cancel</b></button>
                     </div>
                 </article>
             </div>
