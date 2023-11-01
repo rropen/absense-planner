@@ -83,10 +83,19 @@ def teams_dashboard(request) -> render:
     invite_rel_count = Relationship.objects.filter(
         user=request.user, status=Status.objects.get(status="Invited")
     ).count()
+
+    r = requests.get("http://localhost:8000/api/teams/?username={}".format(request.user.username))
+    if r.status_code == 200:
+        if len(r.json()) == 0 :
+            external_teams_data = False
+        else:
+            external_teams_data = r.json()
+    else:
+        external_teams_data = False
     return render(
         request,
         "teams/dashboard.html",
-        {"rels": rels, "invite_count": invite_rel_count, "teamspage_active": True},
+        {"rels": rels, "invite_count": invite_rel_count, "external_teams": external_teams_data, "teamspage_active": True},
     )
 
 
@@ -903,6 +912,9 @@ def all_calendar(
         userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
     except IndexError:
         return redirect("/")
+    
+    if userprofile.external_teams:
+        return redirect("/calendar/1")
 
     data_1 = get_date_data(userprofile.region, month, year)
     
@@ -1198,13 +1210,18 @@ def profile_settings(request) -> render:
             userprofile.privacy = False
         elif request.POST.get("privacy") == "on":
             userprofile.privacy = True
+        if request.POST.get("teams") == None:
+            userprofile.external_teams = False
+        elif request.POST.get("teams") == "on":
+            userprofile.external_teams = True
         userprofile.save()
     
     country_data = get_region_data()
     country_name = pycountry.countries.get(alpha_2=userprofile.region).name
 
     privacy_status = userprofile.privacy
-    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status, "current_country": country_name, **country_data}
+    teams_status = userprofile.external_teams
+    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status, "external_teams": teams_status,"current_country": country_name, **country_data}
     return render(request, "ap_app/settings.html", context)
 
 
@@ -1406,6 +1423,14 @@ def api_calendar_view(
     year=datetime.datetime.now().year
 ):
     
+    try:
+        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
+    except IndexError:
+        return redirect("/")
+    
+    if not userprofile.external_teams:
+        return redirect("/calendar/0")
+    
     #JC - Get API data
     api_data = None
     if request.method == "GET":
@@ -1430,11 +1455,6 @@ def api_calendar_view(
     if date:
         month = date.strftime("%B")
         year = date.year
-    
-    try:
-        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
-    except IndexError:
-        return redirect("/")
 
     data_1 = get_date_data(userprofile.region, month, year)
     
