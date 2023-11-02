@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from . import views, views2
 
 js_info_dict = {
     'packages' : ('recurrence', ),
@@ -8,11 +8,11 @@ js_info_dict = {
 from django.conf.urls import handler404, handler500
 
 urlpatterns = [
-    path("", views.index, name="index"),
-    path('signup/', views.SignUpView.as_view(), name='signup'),
-    path("calendar/0/", views.all_calendar, name="all_Calendar"),
-    path("calendar/0/<str:month>/<int:year>", views.all_calendar, name="all_calendar"),
-    path("teams/", views.teams_dashboard, name="dashboard"),
+    path("", views2.index, name="index"),
+    path('signup/', views2.SignUpView.as_view(), name='signup'),
+    path("calendar/0/", views2.all_calendar, name="all_Calendar"),
+    path("calendar/0/<str:month>/<int:year>", views2.all_calendar, name="all_calendar"),
+    path("teams/", views2.teams_dashboard, name="dashboard"),
     path("teams/create", views.create_team, name="create_team"),
     path("teams/invite/", views.view_invites, name="view_invites"),
     path("teams/invite/<int:team_id>/<int:user_id>/<str:role>", views.team_invite, name="team_invite"),
@@ -21,8 +21,8 @@ urlpatterns = [
     path("teams/join/apply/<int:id>/<str:response>", views.joining_team_request, name="joining_team_request"),
     path("teams/leave/<int:id>", views.leave_team, name="leave_team"),
     path("teams/settings/<int:id>/", views.team_settings, name="team_settings"),
-    path("teams/calendar/<int:id>", views.team_calendar, name="Calendar"),
-    path("teams/calendar/<int:id>/<str:month>/<int:year>", views.team_calendar, name="calendar"),
+    path("teams/calendar/<int:id>", views2.team_calendar, name="Calendar"),
+    path("teams/calendar/<int:id>/<str:month>/<int:year>", views2.team_calendar, name="calendar"),
     path("teams/settings/<int:id>/<int:user_id>", views.edit_team_member_absence, name="edit_team_member_absence"),
     path("teams/settings/promote/<int:id>/<int:user_id>", views.promote_team_member, name="promote_team_member"),
     path("teams/settings/demote/<int:id>/<int:user_id>", views.demote_team_member, name="demote_team_member"),
@@ -31,7 +31,7 @@ urlpatterns = [
     path("absence/add", views.add, name="add"),
     path("absence/add_recurring", views.add_recurring, name="add_recurring"),
     path("profile/", views.profile_page, name="profile"),
-    path("privacy/", views.privacy_page, name="privacy"),
+    path("privacy/", views2.privacy_page, name="privacy"),
     path("ap_accounts/delete_user", views.deleteuser, name="delete_user"),
     path("absence/delete/<int:absence_id>/<int:user_id>/", views.absence_delete, name="Absence Delete"),
     path("absence/delete/<int:absence_id>/<int:user_id>/<int:team_id>/", views.absence_delete, name="Absence Delete"),
