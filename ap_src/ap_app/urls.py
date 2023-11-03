@@ -5,7 +5,7 @@ js_info_dict = {
     'packages' : ('recurrence', ),
 }
 
-from django.conf.urls import handler404, handler500
+from django.conf.urls import handler404, handler500, handler400
 
 urlpatterns = [
     path("", views2.index, name="index"),

@@ -1,3 +1,18 @@
+"""
+index
+privacy_page
+teams_dashboard
+obj_exists
+find_user_obj
+team_calendar
+all_calendar
+get_date_data
+get_filter_users
+get_absence_data
+check_calendar_date
+is_member
+"""
+
 import calendar
 import datetime
 import json
