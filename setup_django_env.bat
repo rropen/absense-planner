@@ -37,6 +37,11 @@ IF NOT EXIST venv\Scripts\activate.bat (
     %PYTHON_EXECUTABLE% -m venv venv
 )
 
+@REM Create the .env file
+
+COPY "example_env.txt" "ap_src/ap_site"
+RENAME "ap_src\ap_site\example_env.txt" ".env"
+
 @REM Install requirements if they are not already installed
 @REM If they are, skip this step
 
