@@ -1,138 +1,48 @@
-"""
-index
-privacy_page
-teams_dashboard
-obj_exists
-find_user_obj
-team_calendar
-all_calendar
-get_date_data
-get_filter_users
-get_absence_data
-check_calendar_date
-is_member
-"""
-
-import calendar
 import datetime
-import json
-import holidays
-import pycountry
-import pandas as pd
 import requests
-from datetime import timedelta
 
-from django.contrib import messages
-from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
-from django.db.models.functions import Lower
-from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
-from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, UpdateView
-from django.contrib.auth.models import User
 
 from .forms import *
-from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
+from .models import ( Relationship, Role, Team,
                      UserProfile, Status)
 
-def index(request) -> render:
-    """Branched view.                       \n
-    IF NOT Logged in: returns the home page \n
-    ELSE: returns the calendar page"""
+from .absences import *
 
-    # If its the first time a user is logging in, will create an object of UserProfile model for that user.
-    if not request.user.is_anonymous:
-        if not obj_exists(request.user):
-            user = find_user_obj(request.user)
-            user.edit_whitelist.add(request.user)
-        else:
-            user = UserProfile.objects.filter(user=request.user)[0]
-            user.edit_whitelist.add(request.user)
-        # Until the accepted_policy field is checked, the user will keep being redirected to the policy page to accept
-        if not user.accepted_policy:
-            return privacy_page(request, to_accept=True)
-
-    # Change: If user is logged in, will be redirected to the calendar
-    if request.user.is_authenticated:
-        user = UserProfile.objects.get(user=request.user)
-        user.edit_whitelist.add(request.user)
-        return all_calendar(request)
-    return render(request, "ap_app/index.html")
+def check_calendar_date(year, month) -> datetime.datetime:
+    """ This function will determine if the requested date is acceptable - (NOT before current date - 12 months) """
+    # Current year * 12     + current month as num      = amount of months been  
+    # requested year * 12   + requested month as num    = 
+    
+    # If requested date is before "current date - 12 months" than will not accept date
+    todays_date = datetime.datetime.now()
+    requested_months_amount = (int(year) * 12) + datetime.datetime.strptime(month, "%B").month
+    current_months_amount   = (todays_date.year * 12) + todays_date.month 
+    months_difference = current_months_amount - requested_months_amount
 
 
-def privacy_page(request, to_accept=False) -> render:
-    # If true, the user accepted the policy
-    if request.method == "POST":
-        user = find_user_obj(request.user)
-        user.accepted_policy = True
-        user.save()
-
-    # If the user has been redirected from home page to accepted policy
-    elif to_accept:
-        return render(
-            request, "registration/accept_policy.html", {"form": AcceptPolicyForm()}
-        )
+    if months_difference > 12:
+        # Return the most earliest date acceptable - (now - 12 months)
+        return datetime.datetime(todays_date.year - 1, todays_date.month, 1)  
     else:
-        # Viewing general policy page - (Without the acceptancy form)
-        return render(request, "ap_app/privacy.html")
-    return all_calendar(request)
-
-
-class SignUpView(CreateView):
-    form_class = UserCreationForm
-    success_url = reverse_lazy("login")
-    template_name = "registration/signup.html"
-
+        return None
+    
 
 @login_required
-def teams_dashboard(request) -> render:
-    rels = Relationship.objects.order_by(Lower("team__name")).filter(
-        user=request.user, status=Status.objects.get(status="Active")
-    )
-    invite_rel_count = Relationship.objects.filter(
-        user=request.user, status=Status.objects.get(status="Invited")
-    ).count()
+def set_calendar_month(request):
+    if request.method == "POST":
+        month = request.POST.get('month_names')
+        
+        split = month.split()
 
-    r = requests.get("http://localhost:8000/api/teams/?username={}".format(request.user.username))
-    if r.status_code == 200:
-        if len(r.json()) == 0 :
-            external_teams_data = False
-        else:
-            external_teams_data = r.json()
-    else:
-        external_teams_data = False
-    return render(
-        request,
-        "teams/dashboard.html",
-        {"rels": rels, "invite_count": invite_rel_count, "external_teams": external_teams_data, "teamspage_active": True},
-    )
+        month = split[0]
 
-def obj_exists(user):
-    """Determines if a user has a 'UserProfile' Object"""
-    objs = UserProfile.objects.filter(user=user)
-    if objs.count() == 0:
-        return False
+        year = split[1]
 
-    return True
+        print(month)
 
-def find_user_obj(user_to_find):
-    """Finds & Returns object of 'UserProfile' for a user
-    \n-param (type)User user_to_find
-    """
-    users = UserProfile.objects.filter(user=user_to_find)
-    # If cannot find object for a user, than creates on
-
-    if users.count() <= 0:
-        UserProfile.objects.create(user=user_to_find, accepted_policy=False)
-        user_found = UserProfile.objects.filter(user=user_to_find)[0]
-        user_found.edit_whitelist.add(user_to_find)
-
-    # Users object
-    user_found = UserProfile.objects.filter(user=user_to_find)[0]
-
-    return user_found
+    return redirect('all_calendar', month=month, year=year)
 
 @login_required
 def all_calendar(
@@ -150,9 +60,6 @@ def all_calendar(
         userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
     except IndexError:
         return redirect("/")
-    
-    if userprofile.external_teams:
-        return redirect("/calendar/1")
 
     data_1 = get_date_data(userprofile.region, month, year)
     
@@ -311,6 +218,84 @@ def team_calendar(
 
     return redirect("dashboard")
 
+@login_required
+def api_calendar_view(
+    request,
+    #JC - These are the default values for the calendar.
+    month=datetime.datetime.now().strftime("%B"),
+    year=datetime.datetime.now().year
+):
+    
+    #JC - Get API data
+    api_data = None
+    if request.method == "GET":
+        try:
+            r = requests.get("http://127.0.0.1:8000/api/teams/?username={}".format(request.user.username))
+        except:
+            print("API failed to connect")
+            return redirect("/")
+        if r.status_code == 200:
+            api_data = r.json()
+        else:
+            result = r.json()
+            if result and result["code"]:
+                if result["code"] == "I":
+                    print("Username not found in Team App database.")
+                elif result["code"] == "N":
+                    print("A username was not provided with the request.")
+            else:
+                print("Fatal Error")
+
+    date = check_calendar_date(year, month)
+    if date:
+        month = date.strftime("%B")
+        year = date.year
+    
+    try:
+        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
+    except IndexError:
+        return redirect("/")
+
+    data_1 = get_date_data(userprofile.region, month, year)
+    
+    current_month = data_1["current_month"]
+    current_year = data_1["current_year"]
+    current_day = datetime.datetime.now().day
+    date = f"{current_day} {current_month} {current_year}"
+    date = datetime.datetime.strptime(date, "%d %B %Y")
+
+
+    all_users = []
+    all_users.append(request.user)
+
+    if api_data:
+        for team in api_data:
+            for member in team["team"]["members"]:
+                retrieved_user = User.objects.filter(username=member["user"]["username"])
+                if retrieved_user.exists() and retrieved_user not in all_users:
+                    all_users.append(retrieved_user[0])
+
+    data_2 = get_absence_data(all_users, 2)
+
+    data_3 = {"Sa": "Sa", "Su": "Su"}
+
+    grid_calendar_month_values = list(data_1["day_range"])
+    # NOTE: This will select which value to use to fill in how many blank cells where previous month overrides prevailing months days. 
+    # This is done by finding the weekday value for the 1st day of the month. Example: "Tu" will require 1 blank space/cell.
+    for i in range({"Mo":0, "Tu":1, "We":2, "Th":3, "Fr":4, "Sa":5, "Su":6}[data_1["days_name"][0]]):
+        grid_calendar_month_values.insert(0, -1)
+
+
+    context = {
+        **data_1,
+        **data_2,
+        **data_3,
+        "home_active": True,
+        "api_data": api_data,
+    }
+
+    return render(request, "api_pages/calendar.html", context)
+
 def get_date_data(
     region,
     month=datetime.datetime.now().strftime("%B"),
@@ -350,7 +335,7 @@ def get_date_data(
     data["previous_year"] = year - 1
     data["next_year"] = year + 1
 
-    # as the month number resets every year try and except statements
+    # as the month number resets every year try and except Statusments
     # have to be used as at the end and start of a year
     # the month cannot be calculated by adding or subtracting 1
     # as 13 and 0 are not datetime month numbers
@@ -432,115 +417,3 @@ def get_filter_users(request, users) -> list:
         filtered_users = users
 
     return filtered_users
-
-def get_absence_data(users, user_type):
-    data = {}
-    absence_content = []
-    total_absence_dates = {}
-    total_half_dates = {}
-    total_recurring_dates = {}
-    all_absences = {}
-    delta = datetime.timedelta(days=1)
-
-    for user in users:
-        # all the absences for the user
-        if user_type == 1:
-            user_username = user.user.username
-        else:
-            user_username = user.username
-
-        absence_info = Absence.objects.filter(Target_User_ID__username=user_username)
-        total_absence_dates[user_username] = []
-        total_recurring_dates[user_username] = []
-        total_half_dates[user_username] = []
-        all_absences[user_username] = []
-
-        # if they have any absences
-        if absence_info:
-            # mapping the absence content to keys in dictionary
-            for x in absence_info:
-                absence_id = x.ID
-                absence_date_start = x.absence_date_start
-                absence_date_end = x.absence_date_end
-                dates = absence_date_start
-                if x.half_day == "NORMAL":
-                    while dates <= absence_date_end:
-                        total_absence_dates[user_username].append(dates)
-                        dates += delta
-                else:
-                    total_half_dates[user_username].append(
-                        {
-                            "date": absence_date_start,
-                            "type": x.half_day
-                        }
-                    )
-
-                absence_content.append(
-                    {
-                        "ID": absence_id,
-                        "absence_date_start": absence_date_start,
-                        "absence_date_end": absence_date_end,
-                        "dates": total_absence_dates[user_username],
-                    }
-                )
-
-            # for each user it maps the set of dates to a dictionary key labelled as the users name
-            all_absences[user_username] = absence_content
-
-        recurring = RecurringAbsences.objects.filter(Target_User_ID__username=user_username)
-
-        if recurring:
-            for recurrence_ in recurring:
-                dates = recurrence_.Recurrences.occurrences(
-                    dtend=datetime.datetime.strptime(
-                        str(datetime.datetime.now().year + 2), "%Y"
-                    )
-                )
-
-                for x in list(dates)[:-1]:
-                    time_const = "23:00:00"
-                    time_var = datetime.datetime.strftime(x, "%H:%M:%S")
-                    if time_const == time_var:
-                        x += timedelta(days=1)
-                    total_recurring_dates[user_username].append(x)
-                # TODO: add auto deleting for recurring absences once last date of absences in before now
-                # if x < datetime.datetime.now():
-                #    pass
-
-    data["recurring_absence_dates"] = total_recurring_dates
-    data["all_absences"] = all_absences
-    data["absence_dates"] = total_absence_dates
-    data["half_days_data"] = total_half_dates
-    data["users"] = users
-    return data
-
-def check_calendar_date(year, month) -> datetime.datetime:
-    """ This function will determine if the requested date is acceptable - (NOT before current date - 12 months) """
-    # Current year * 12     + current month as num      = amount of months been  
-    # requested year * 12   + requested month as num    = 
-    
-    # If requested date is before "current date - 12 months" than will not accept date
-    todays_date = datetime.datetime.now()
-    requested_months_amount = (int(year) * 12) + datetime.datetime.strptime(month, "%B").month
-    current_months_amount   = (todays_date.year * 12) + todays_date.month 
-    months_difference = current_months_amount - requested_months_amount
-
-
-    if months_difference > 12:
-        # Return the most earliest date acceptable - (now - 12 months)
-        return datetime.datetime(todays_date.year - 1, todays_date.month, 1)  
-    else:
-        return None
-    
-def is_member(user, team_id) -> bool:
-    """ Determines if the user is a member of the team before accessing its contents """
-
-    team = Relationship.objects.filter(team=Team.objects.get(id=team_id))
-
-    # Boolean determines if viewer is in this team
-    for rel in team:
-        if rel.user == user:
-            return True
-
-    # Else user has changed URL & is attempting to view other teams content
-    return False
