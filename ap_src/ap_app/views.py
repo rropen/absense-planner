@@ -9,6 +9,7 @@ import holidays
 import pycountry
 import pandas as pd
 import requests
+import environ
 from datetime import timedelta
 
 from django.contrib import messages
@@ -16,18 +17,20 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models.functions import Lower
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, UpdateView
-from river.models.fields.state import State
+from django.contrib.auth.models import User
+
+from collections import namedtuple
 
 from .forms import *
 from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
-                     UserProfile)
+                     UserProfile, Status)
 
-User = get_user_model()
-
+env = environ.Env()
+environ.Env.read_env()
 
 def index(request) -> render:
     """Branched view.                       \n
@@ -81,15 +84,24 @@ class SignUpView(CreateView):
 @login_required
 def teams_dashboard(request) -> render:
     rels = Relationship.objects.order_by(Lower("team__name")).filter(
-        user=request.user, status=State.objects.get(slug="active")
+        user=request.user, status=Status.objects.get(status="Active")
     )
     invite_rel_count = Relationship.objects.filter(
-        user=request.user, status=State.objects.get(slug="invited")
+        user=request.user, status=Status.objects.get(status="Invited")
     ).count()
+
+    r = requests.get("http://localhost:8000/api/teams/?username={}".format(request.user.username))
+    if r.status_code == 200:
+        if len(r.json()) == 0 :
+            external_teams_data = False
+        else:
+            external_teams_data = r.json()
+    else:
+        external_teams_data = False
     return render(
         request,
         "teams/dashboard.html",
-        {"rels": rels, "invite_count": invite_rel_count, "teamspage_active": True},
+        {"rels": rels, "invite_count": invite_rel_count, "external_teams": external_teams_data, "teamspage_active": True},
     )
 
 
@@ -114,7 +126,7 @@ def create_team(request) -> render:
                 user=request.user,
                 team=created_team,
                 role=assign_role,
-                status=State.objects.get(slug="active"),
+                status=Status.objects.get(status="Active"),
             )
             return redirect("/teams/", {"message": "Team successfully created."})
     else:
@@ -145,7 +157,7 @@ def join_team(request) -> render:
     """Renders page with all teams the user is not currently in"""
     user_teams = []
     all_user_teams = Relationship.objects.filter(
-        user=request.user, status=State.objects.get(slug="active")
+        user=request.user, status=Status.objects.get(status="Active")
     )
     for teams in all_user_teams:
         user_teams.append(teams.team)
@@ -174,18 +186,18 @@ def joining_team_process(request, id, role):
     rels = Relationship.objects.filter(
         user=request.user,
         role=Role.objects.get(role="Member"),
-        status=State.objects.get(slug="active"),
+        status=Status.objects.get(status="Active"),
     )
     rels2 = Relationship.objects.filter(
         user=request.user,
         role=Role.objects.get(role="Owner"),
-        status=State.objects.get(slug="active"),
+        status=Status.objects.get(status="Active"),
     )
     existing_rels = Relationship.objects.order_by(Lower("team__name")).filter(
-        user=request.user, status=State.objects.get(slug="active")
+        user=request.user, status=Status.objects.get(status="Active")
     )
     invite_rel_count = Relationship.objects.filter(
-        user=request.user, status=State.objects.get(slug="invited")
+        user=request.user, status=Status.objects.get(status="Invited")
     ).count()
     
     if (rels or rels2) and role == "Member":
@@ -198,11 +210,11 @@ def joining_team_process(request, id, role):
         user=request.user,
         team=find_team,
         role=find_role,
-        status=State.objects.get(slug="pending"),
+        status=Status.objects.get(status="Pending"),
     )
     if not find_team.private:
         Relationship.objects.filter(id=new_rel.id).update(
-            status=State.objects.get(slug="active")
+            status=Status.objects.get(status="Active")
         )
         #leader = Relationship.objects.get(team=id, role=Role.objects.get(role="Owner"))
         #userprofile = UserProfile.objects.get(user=request.user)
@@ -230,7 +242,7 @@ def team_invite(request, team_id, user_id, role):
             user=find_user,
             team=find_team,
             role=find_role,
-            status=State.objects.get(slug="invited"),
+            status=Status.objects.get(status="Invited"),
         )
         return redirect(f"/teams/calendar/{find_team.id}")
     # Else user is manipulating the URL making non-allowed invites - (Therefore doesn't create a relationship)
@@ -241,7 +253,7 @@ def team_invite(request, team_id, user_id, role):
 @login_required
 def view_invites(request):
     all_invites = Relationship.objects.filter(
-        user=request.user, status=State.objects.get(slug="invited")
+        user=request.user, status=Status.objects.get(status="Invited")
     )
     return render(request, "teams/invites.html", {"invites": all_invites})
 
@@ -292,7 +304,7 @@ def team_settings(request, id):
     
     if is_owner(user=request.user, team_id=id): 
         all_pending_relations = Relationship.objects.filter(
-            team=id, status=State.objects.get(slug="pending")
+            team=id, status=Status.objects.get(status="Pending")
         )
         return render(
             request,
@@ -316,7 +328,7 @@ def edit_team_member_absence(request, id, user_id) -> render:
         
     if is_owner(user=request.user, team_id=id):    
         all_pending_relations = Relationship.objects.filter(
-            team=id, status=State.objects.get(slug="pending")
+            team=id, status=Status.objects.get(status="Pending")
         )
         target_user = User.objects.get(id=user_id)
         absences = Absence.objects.filter(Target_User_ID=target_user.id)
@@ -343,7 +355,7 @@ def promote_team_member(request, id, user_id):
         return redirect("dashboard")
     target_user = User.objects.get(id=user_id)
     all_pending_relations = Relationship.objects.filter(
-        team=id, status=State.objects.get(slug="pending")
+        team=id, status=Status.objects.get(status="Pending")
     )
     current_relationship = Relationship.objects.get(team=team, user=target_user)
     if current_relationship.role == Role.objects.get(role="Member"):
@@ -362,7 +374,7 @@ def demote_team_member(request, id, user_id):
         return redirect("dashboard")
     target_user = User.objects.get(id=user_id)
     all_pending_relations = Relationship.objects.filter(
-        team=id, status=State.objects.get(slug="pending")
+        team=id, status=Status.objects.get(status="Pending")
     )
     current_relationship = Relationship.objects.get(team=team, user=target_user)
     if current_relationship.role == Role.objects.get(role="Co-Owner"):
@@ -391,69 +403,68 @@ def joining_team_request(request, id, response):
     
 
     if response == "accepted":
-        state_response = State.objects.get(slug="active")
+        state_response = Status.objects.get(status="Active")
         Relationship.objects.filter(id=find_rel.id).update(status=state_response)
         return redirect("team_settings", find_rel.team.id)
     elif response == "nonactive":
         return redirect("leave_team", id)
     return redirect("dashboard")
 
-
+#JC - Add an absence via the form
 @login_required
-def add(request) -> render:
-    """create new absence record"""
+def manual_add(request:HttpRequest) -> render:
+    #JC - POST request
     if request.method == "POST":
         form = AbsenceForm(
-            request.POST,
+            request.POST, 
             user=request.user,
             initial={
                 "start_date": datetime.datetime.now(),
-                "end_date": lambda: datetime.datetime.now().date()
-                + datetime.timedelta(days=1),
-            },
+                "end_date": lambda: datetime.datetime.now().date() + datetime.timedelta(days=1)
+            }
         )
         form.fields["user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
         )
 
+        #JC - Create absence
         if form.is_valid():
-            obj = Absence()
-            obj.absence_date_start = request.POST.get("start_date")
-            obj.absence_date_end = request.POST.get("end_date")
-            obj.absence_date_start = form.cleaned_data["start_date"]
-            obj.absence_date_end = form.cleaned_data["end_date"]
-            obj.request_accepted = False  # TODO
-            obj.User_ID = request.user
-            obj.Target_User_ID = form.cleaned_data["user"].user
-            message = "Absence successfully created"
-            msg_type = "is-success"
-            absence_valid = True
-            for x in Absence.objects.filter(User_ID=request.user.id):
-                if (obj.absence_date_start >= x.absence_date_start and obj.absence_date_end <= x.absence_date_end) \
-                    or x.absence_date_start == obj.absence_date_end or x.absence_date_end == x.absence_date_start:
-                        message = "Absence already created"
-                        msg_type = "is-danger"
-                        absence_valid = False
-            if absence_valid:
-                obj.save()
-            return render(
-                request,
-                "ap_app/add_absence.html",
-                {
+            absence = Absence()
+            absence.absence_date_start = form.cleaned_data["start_date"]
+            absence.absence_date_end = form.cleaned_data["end_date"]
+            absence.User_ID = request.user
+            absence.Target_User_ID = form.cleaned_data["user"].user
+
+            #JC - Check if the dates overlap with an existing absence. 
+            valid = True
+            Range = namedtuple('Range', ['start', 'end'])
+            r1 = Range(start=absence.absence_date_start, end=absence.absence_date_end)
+            for x in Absence.objects.filter(Target_User_ID=form.cleaned_data["user"].user.id):
+                r2 = Range(start=x.absence_date_start, end=x.absence_date_end)
+                delta = (min(r1.end, r2.end) -max(r1.start, r2.start)).days + 1
+                overlapp = max(0, delta)
+                if overlapp == 1:
+                    valid = False
+            
+            if valid:
+                absence.save()
+                return redirect("/")
+            else:
+                return render(request, "ap_app/add_absence.html", {
                     "form": form,
-                    "message": message,
-                    "message_type": msg_type,
-                    "add_absence_active": True,
-                },
-            )
-            # redirect to success page
+                    "message": "The absence conflicts with an existing absence",
+                    "message_type": "is-danger"
+                })
+
+    #JC - GET request
     else:
         form = AbsenceForm(user=request.user)
+        #JC - Allow users to edit others absence if they have permission
         form.fields["user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
         )
-
-    content = {"form": form, "add_absence_active": True}
+    
+    content = {"form": form}
     return render(request, "ap_app/add_absence.html", content)
 
 #Add an absence when clicking on the calendar
@@ -461,7 +472,10 @@ def add(request) -> render:
 def click_add(request):
     if request.method == "POST":
         json_data=json.loads(request.body)
-        perm_list = UserProfile.objects.filter(id=json_data["id"])[0].edit_whitelist.all()
+        if UserProfile.objects.filter(user__username=json_data["username"]).exists():
+            perm_list = UserProfile.objects.filter(user__username=json_data["username"])[0].edit_whitelist.all()
+        else:
+            perm_list = [UserProfile.objects.get(user=request.user)]
         if request.user in perm_list:
             date = datetime.datetime.strptime(json_data["date"], "%Y-%m-%d").date()
             #This will add a half
@@ -469,7 +483,7 @@ def click_add(request):
                 absence = Absence()
                 absence.absence_date_start = json_data['date']
                 absence.absence_date_end = json_data['date']
-                absence.Target_User_ID_id = json_data["id"]
+                absence.Target_User_ID_id = User.objects.get(username=json_data["username"]).id
                 absence.User_ID = request.user
                 if json_data["half_day_time"] == "M":
                     absence.half_day = "MORNING"
@@ -482,21 +496,21 @@ def click_add(request):
                     absence = Absence()
                     absence.absence_date_start = json_data['date']
                     absence.absence_date_end = json_data['date']
-                    absence.Target_User_ID_id = json_data["id"]
+                    absence.Target_User_ID_id = User.objects.get(username=json_data["username"]).id
                     absence.User_ID = request.user
                     absence.save()
                     return absence
                 date = datetime.datetime.strptime(json_data["date"], "%Y-%m-%d").date()
                 absence = None
-                if date - timedelta(days=1) in Absence.objects.filter(Target_User_ID_id=json_data["id"]).values_list("absence_date_end", flat=True) \
-                    and date + timedelta(days=1) in Absence.objects.filter(Target_User_ID_id=json_data["id"]).values_list("absence_date_start", flat=True):
-                    ab_1 = Absence.objects.filter(Target_User_ID_id=json_data["id"], absence_date_start=date+timedelta(days=1))[0]
-                    ab_2 = Absence.objects.filter(Target_User_ID_id=json_data["id"], absence_date_end=date-timedelta(days=1))[0]
+                if date - timedelta(days=1) in Absence.objects.filter(Target_User_ID__username=json_data["username"]).values_list("absence_date_end", flat=True) \
+                    and date + timedelta(days=1) in Absence.objects.filter(Target_User_ID__username=json_data["username"]).values_list("absence_date_start", flat=True):
+                    ab_1 = Absence.objects.filter(Target_User_ID__username=json_data["username"], absence_date_start=date+timedelta(days=1))[0]
+                    ab_2 = Absence.objects.filter(Target_User_ID__username=json_data["username"], absence_date_end=date-timedelta(days=1))[0]
                     if ab_1.half_day == "NORMAL" and ab_2.half_day == "NORMAL":
                         absence = Absence()
                         absence.absence_date_start = ab_2.absence_date_start
                         absence.absence_date_end = ab_1.absence_date_end
-                        absence.Target_User_ID_id = json_data["id"]
+                        absence.Target_User_ID_id = User.objects.get(username=json_data["username"]).id
                         absence.User_ID = request.user
                         ab_1.delete()
                         ab_2.delete()
@@ -504,32 +518,32 @@ def click_add(request):
                     else:
                         absence = non_connected()
                     
-                elif date - timedelta(days=1) in Absence.objects.filter(Target_User_ID_id=json_data["id"]).values_list("absence_date_start", flat=True):
-                    a = Absence.objects.filter(Target_User_ID_id=json_data["id"], absence_date_start=date-timedelta(days=1))[0]
+                elif date - timedelta(days=1) in Absence.objects.filter(Target_User_ID__username=json_data["username"]).values_list("absence_date_start", flat=True):
+                    a = Absence.objects.filter(Target_User_ID__username=json_data["username"], absence_date_start=date-timedelta(days=1))[0]
                     if a.half_day == "NORMAL":
                         a.absence_date_end = date
                         a.save()
                         absence = a
                     else:
                         absence = non_connected()
-                elif date + timedelta(days=1) in Absence.objects.filter(Target_User_ID_id=json_data["id"]).values_list("absence_date_end", flat=True):
-                    a = Absence.objects.filter(Target_User_ID_id=json_data["id"], absence_date_end=date+timedelta(days=1))[0]
+                elif date + timedelta(days=1) in Absence.objects.filter(Target_User_ID__username=json_data["username"]).values_list("absence_date_end", flat=True):
+                    a = Absence.objects.filter(Target_User_ID__username=json_data["username"], absence_date_end=date+timedelta(days=1))[0]
                     if a.half_day == "NORMAL":
                         a.absence_date_start = date
                         a.save()
                         absence = a
                     else:
                         absence = non_connected()
-                elif date - timedelta(days=1) in Absence.objects.filter(Target_User_ID_id=json_data["id"]).values_list("absence_date_end", flat=True):
-                    a =Absence.objects.filter(Target_User_ID_id=json_data["id"], absence_date_end=date-timedelta(days=1))[0]
+                elif date - timedelta(days=1) in Absence.objects.filter(Target_User_ID__username=json_data["username"]).values_list("absence_date_end", flat=True):
+                    a =Absence.objects.filter(Target_User_ID__username=json_data["username"], absence_date_end=date-timedelta(days=1))[0]
                     if a.half_day == "NORMAL":
                         a.absence_date_end = date
                         a.save()
                         absence = a
                     else:
                         absence = non_connected()
-                elif date + timedelta(days=1) in Absence.objects.filter(Target_User_ID_id=json_data["id"]).values_list("absence_date_start", flat=True):
-                    a = Absence.objects.filter(Target_User_ID_id=json_data["id"], absence_date_start=date+timedelta(days=1))[0]
+                elif date + timedelta(days=1) in Absence.objects.filter(Target_User_ID__username=json_data["username"]).values_list("absence_date_start", flat=True):
+                    a = Absence.objects.filter(Target_User_ID__username=json_data["username"], absence_date_start=date+timedelta(days=1))[0]
                     if a.half_day == "NORMAL":
                         a.absence_date_start = date
                         a.save()
@@ -549,41 +563,47 @@ def click_remove(request):
     if request.method == "POST":
         data = json.loads(request.body)
         date = datetime.datetime.strptime(data["date"], "%Y-%m-%d").date()
-        #Remove absence if start date and end date is the same
-        if date in Absence.objects.filter(Target_User_ID_id=data["id"]).values_list("absence_date_start", flat=True) \
-            and date in Absence.objects.filter(Target_User_ID_id=data["id"]).values_list("absence_date_end", flat=True):
-            absence = Absence.objects.filter(Target_User_ID_id=data["id"], absence_date_start=date, absence_date_end=date)[0]
-            absence.delete()
-        #Change absence start date if current start date removed
-        elif date in Absence.objects.filter(Target_User_ID_id=data["id"]).values_list("absence_date_start", flat=True):
-            absence = Absence.objects.filter(Target_User_ID_id=data["id"], absence_date_start=date)[0]
-            absence.absence_date_start = date + timedelta(days=1)
-            absence.save()
-        #Change absence end date if current end date removed
-        elif date in Absence.objects.filter(Target_User_ID_id=data["id"]).values_list("absence_date_end", flat=True):
-            absence = Absence.objects.filter(Target_User_ID_id=data["id"], absence_date_end=date)[0]
-            absence.absence_date_end = date - timedelta(days=1)
-            absence.save()
+        if UserProfile.objects.filter(user__username=data["username"]).exists():
+            perm_list = UserProfile.objects.filter(user__username=data["username"])[0].edit_whitelist.all()
         else:
-            for absence in Absence.objects.filter(Target_User_ID_id=data["id"]):
-                start_date = absence.absence_date_start
-                end_date = absence.absence_date_end
-                if date > start_date and date < end_date:
-                    ab_1 = Absence()
-                    ab_1.absence_date_start = start_date
-                    ab_1.absence_date_end = date - timedelta(days=1)
-                    ab_1.Target_User_ID_id = data["id"]
-                    ab_1.User_ID = request.user
+            perm_list = [UserProfile.objects.get(user=request.user)]
 
-                    ab_2 = Absence()
-                    ab_2.absence_date_start = date + timedelta(days=1)
-                    ab_2.absence_date_end = end_date
-                    ab_2.Target_User_ID_id = data["id"]
-                    ab_2.User_ID = request.user
+        if request.user in perm_list:
+            #Remove absence if start date and end date is the same
+            if date in Absence.objects.filter(Target_User_ID__username=data["username"]).values_list("absence_date_start", flat=True) \
+                and date in Absence.objects.filter(Target_User_ID__username=data["username"]).values_list("absence_date_end", flat=True):
+                absence = Absence.objects.filter(Target_User_ID__username=data["username"], absence_date_start=date, absence_date_end=date)[0]
+                absence.delete()
+            #Change absence start date if current start date removed
+            elif date in Absence.objects.filter(Target_User_ID__username=data["username"]).values_list("absence_date_start", flat=True):
+                absence = Absence.objects.filter(Target_User_ID__username=data["username"], absence_date_start=date)[0]
+                absence.absence_date_start = date + timedelta(days=1)
+                absence.save()
+            #Change absence end date if current end date removed
+            elif date in Absence.objects.filter(Target_User_ID__username=data["username"]).values_list("absence_date_end", flat=True):
+                absence = Absence.objects.filter(Target_User_ID__username=data["username"], absence_date_end=date)[0]
+                absence.absence_date_end = date - timedelta(days=1)
+                absence.save()
+            else:
+                for absence in Absence.objects.filter(Target_User_ID__username=data["username"]):
+                    start_date = absence.absence_date_start
+                    end_date = absence.absence_date_end
+                    if date > start_date and date < end_date:
+                        ab_1 = Absence()
+                        ab_1.absence_date_start = start_date
+                        ab_1.absence_date_end = date - timedelta(days=1)
+                        ab_1.Target_User_ID_id = User.objects.get(username=data["username"]).id
+                        ab_1.User_ID = request.user
 
-                    absence.delete()
-                    ab_1.save()
-                    ab_2.save()
+                        ab_2 = Absence()
+                        ab_2.absence_date_start = date + timedelta(days=1)
+                        ab_2.absence_date_end = end_date
+                        ab_2.Target_User_ID_id = User.objects.get(username=data["username"]).id
+                        ab_2.User_ID = request.user
+
+                        absence.delete()
+                        ab_1.save()
+                        ab_2.save()
 
         return JsonResponse({"start_date": data["date"]})
     else:
@@ -822,7 +842,7 @@ def team_calendar(
         data_1 = get_date_data(userprofile.region, month, year)
 
         users = Relationship.objects.all().filter(
-            team=id, status=State.objects.get(slug="active")
+            team=id, status=Status.objects.get(status="Active")
         )
 
         data_2 = get_absence_data(users, 1)
@@ -870,7 +890,7 @@ def team_calendar(
             "team": team,
             "all_users": User.objects.all().exclude(id__in=user_in_teams),
             "team_count": Relationship.objects.filter(
-                team=team.id, status=State.objects.get(slug="active")
+                team=team.id, status=Status.objects.get(status="Active")
             ).count(),
         }
 
@@ -897,6 +917,14 @@ def all_calendar(
         userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
     except IndexError:
         return redirect("/")
+    
+    if userprofile.external_teams:
+        try:
+            if requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username)).status_code == 200:
+                return redirect("/calendar/1")
+        except:
+            print("Failed to load api")
+
 
     data_1 = get_date_data(userprofile.region, month, year)
     
@@ -911,14 +939,14 @@ def all_calendar(
     all_users.append(request.user)
 
     user_relations = Relationship.objects.filter(
-        user=request.user, status=State.objects.get(slug="active")
+        user=request.user, status=Status.objects.get(status="Active")
     )
     hiding_users = False
 
 
     for index, relation in enumerate(user_relations):
         rels = Relationship.objects.filter(
-            team=relation.team, status=State.objects.get(slug="active")
+            team=relation.team, status=Status.objects.get(status="Active")
         )
 
         # Finds the viewers role in the team
@@ -1192,13 +1220,18 @@ def profile_settings(request) -> render:
             userprofile.privacy = False
         elif request.POST.get("privacy") == "on":
             userprofile.privacy = True
+        if request.POST.get("teams") == None:
+            userprofile.external_teams = False
+        elif request.POST.get("teams") == "on":
+            userprofile.external_teams = True
         userprofile.save()
     
     country_data = get_region_data()
     country_name = pycountry.countries.get(alpha_2=userprofile.region).name
 
     privacy_status = userprofile.privacy
-    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status, "current_country": country_name, **country_data}
+    teams_status = userprofile.external_teams
+    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status, "external_teams": teams_status,"current_country": country_name, **country_data}
     return render(request, "ap_app/settings.html", context)
 
 
@@ -1400,19 +1433,27 @@ def api_calendar_view(
     year=datetime.datetime.now().year
 ):
     
+    try:
+        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
+    except IndexError:
+        return redirect("/")
+    
+    if not userprofile.external_teams:
+        return redirect("/calendar/0")
+    
     #JC - Get API data
     api_data = None
     if request.method == "GET":
         try:
-            r = requests.get("http://127.0.0.1:8000/api/teams/?username={}".format(request.user.username))
+            r = requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username))
         except:
             print("API failed to connect")
             return redirect("/")
         if r.status_code == 200:
             api_data = r.json()
         else:
-            result = r.json()
-            if result and result["code"]:
+            if r:
+                result = r.json()
                 if result["code"] == "I":
                     print("Username not found in Team App database.")
                 elif result["code"] == "N":
@@ -1424,11 +1465,6 @@ def api_calendar_view(
     if date:
         month = date.strftime("%B")
         year = date.year
-    
-    try:
-        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
-    except IndexError:
-        return redirect("/")
 
     data_1 = get_date_data(userprofile.region, month, year)
     

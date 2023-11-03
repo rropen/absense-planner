@@ -11,7 +11,12 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 import os
+import environ
 from pathlib import Path
+
+# Retrieve Environment Variables
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,7 +37,6 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
-    "river",
     "ap_app.apps.ap_appConfig",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -70,6 +74,8 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "ap_site.context_processors.production", #This is the context processor that will communicate with the context processors .py file.
+                "ap_site.context_processors.info",
+                "ap_site.context_processors.team_api_data"
             ],
             "libraries": {
                 "get_key": "ap_app.templatetags.get_key",
@@ -152,4 +158,6 @@ DATE_FORMAT = "d/m/Y"
 DATE_INPUT_FORMATS = ["%d/%m/%Y"]
 SHORT_DATE_FORMAT = "dd/mm/YYYY"
 
+# Info retrieved from environment variables
 PRODUCTION_UI = False
+VERSION = "1.3.0"
