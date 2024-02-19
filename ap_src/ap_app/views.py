@@ -17,11 +17,13 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models.functions import Lower
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, UpdateView
 from django.contrib.auth.models import User
+
+from collections import namedtuple
 
 from .forms import *
 from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
@@ -87,8 +89,14 @@ def teams_dashboard(request) -> render:
     invite_rel_count = Relationship.objects.filter(
         user=request.user, status=Status.objects.get(status="Invited")
     ).count()
-
-    r = requests.get("http://localhost:8000/api/teams/?username={}".format(request.user.username))
+    
+    try:
+        r = requests.get("http://localhost:8000/api/teams/?username={}".format(request.user.username))
+    except:
+        return render(
+        request,
+        "teams/dashboard.html",
+        {"rels": rels, "invite_count": invite_rel_count, "external_teams": False, "teamspage_active": True})
     if r.status_code == 200:
         if len(r.json()) == 0 :
             external_teams_data = False
@@ -408,62 +416,61 @@ def joining_team_request(request, id, response):
         return redirect("leave_team", id)
     return redirect("dashboard")
 
-
+#JC - Add an absence via the form
 @login_required
-def add(request) -> render:
-    """create new absence record"""
+def manual_add(request:HttpRequest) -> render:
+    #JC - POST request
     if request.method == "POST":
         form = AbsenceForm(
-            request.POST,
+            request.POST, 
             user=request.user,
             initial={
                 "start_date": datetime.datetime.now(),
-                "end_date": lambda: datetime.datetime.now().date()
-                + datetime.timedelta(days=1),
-            },
+                "end_date": lambda: datetime.datetime.now().date() + datetime.timedelta(days=1)
+            }
         )
         form.fields["user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
         )
 
+        #JC - Create absence
         if form.is_valid():
-            obj = Absence()
-            obj.absence_date_start = request.POST.get("start_date")
-            obj.absence_date_end = request.POST.get("end_date")
-            obj.absence_date_start = form.cleaned_data["start_date"]
-            obj.absence_date_end = form.cleaned_data["end_date"]
-            obj.request_accepted = False  # TODO
-            obj.User_ID = request.user
-            obj.Target_User_ID = form.cleaned_data["user"].user
-            message = "Absence successfully created"
-            msg_type = "is-success"
-            absence_valid = True
-            for x in Absence.objects.filter(User_ID=request.user.id):
-                if (obj.absence_date_start >= x.absence_date_start and obj.absence_date_end <= x.absence_date_end) \
-                    or x.absence_date_start == obj.absence_date_end or x.absence_date_end == x.absence_date_start:
-                        message = "Absence already created"
-                        msg_type = "is-danger"
-                        absence_valid = False
-            if absence_valid:
-                obj.save()
-            return render(
-                request,
-                "ap_app/add_absence.html",
-                {
+            absence = Absence()
+            absence.absence_date_start = form.cleaned_data["start_date"]
+            absence.absence_date_end = form.cleaned_data["end_date"]
+            absence.User_ID = request.user
+            absence.Target_User_ID = form.cleaned_data["user"].user
+
+            #JC - Check if the dates overlap with an existing absence. 
+            valid = True
+            Range = namedtuple('Range', ['start', 'end'])
+            r1 = Range(start=absence.absence_date_start, end=absence.absence_date_end)
+            for x in Absence.objects.filter(Target_User_ID=form.cleaned_data["user"].user.id):
+                r2 = Range(start=x.absence_date_start, end=x.absence_date_end)
+                delta = (min(r1.end, r2.end) -max(r1.start, r2.start)).days + 1
+                overlapp = max(0, delta)
+                if overlapp == 1:
+                    valid = False
+            
+            if valid:
+                absence.save()
+                return redirect("/")
+            else:
+                return render(request, "ap_app/add_absence.html", {
                     "form": form,
-                    "message": message,
-                    "message_type": msg_type,
-                    "add_absence_active": True,
-                },
-            )
-            # redirect to success page
+                    "message": "The absence conflicts with an existing absence",
+                    "message_type": "is-danger"
+                })
+
+    #JC - GET request
     else:
         form = AbsenceForm(user=request.user)
+        #JC - Allow users to edit others absence if they have permission
         form.fields["user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
         )
-
-    content = {"form": form, "add_absence_active": True}
+    
+    content = {"form": form}
     return render(request, "ap_app/add_absence.html", content)
 
 #Add an absence when clicking on the calendar
