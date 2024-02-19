@@ -320,7 +320,29 @@
                             </button>
                         </p>
                     </a>
-
+                    <a id="CalendarClick-Toggle" title="Calendar Booking Functions">
+                        <p class="buttons">
+                            <button class="button " style="border-width:2px; border-color:green" id="question-mark">
+                                <span class="icon ">
+                                    <i class="fas fa-question"></i>
+                                </span>
+                            </button>
+                        </p>
+                    </a>
+                    <article class="message is-" style="display: none; position: fixed; z-index: 5;" id="confirmationBox">
+                        <div class="message-header">
+                            <p>Absence Removal</p>
+                            <button class="delete" aria-label="delete" id="question-mark"></button>
+                        </div>
+                        <div class="message-body" style="text-align: center;">
+                            <h1><b>This will make you Remove an Absence</b></h1>
+                            <p>Are you sure you want to remove this Absence?</p>
+                            <button class="button button2", id="removeAbsence"><b>Remove Absence</b></button>
+                            <button class="button button1", id="cancelAbsece"><b>Cancel</b></button>
+                        </div>
+                    </article>
+  
+  
                 </div>
 
                     
@@ -456,10 +478,10 @@
                                     {% elif check_absence %}
                                         <td style="background-color: #ff0000;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
                                     {% elif check_half_day == "A" %}
-                                        <td style="background: linear-gradient(to bottom, #ff0000 50%, #ffffff 50%);", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                        <td style="background: linear-gradient(to right, #ffffff 50%, #ff0000 50% );", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
                                     {% elif check_half_day == "M" %}
-                                        <td style="background: linear-gradient(to bottom, #ffffff 50%, #ff0000 50%);", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
-                                    {% else %}
+                                        <td style="background: linear-gradient(to right, #ff0000 50%, #ffffff 50%);", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                    {% else %} 
                                         {% if day in bank_hol %}
                                             <td style = "background-color: #28663a;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                         {% elif day in weekend_list %}

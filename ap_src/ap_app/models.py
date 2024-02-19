@@ -31,7 +31,7 @@ class Absence(models.Model):
     absence_date_end = models.DateField(
         _("Date"), max_length=200, default=now
     )
-#Destiny, this is what adds the columns to the database, you use py manage.py makemigrations then after that you use py manage.py migrate
+
     DAYS_CHOICES = (
     ("NORMAL", "Normal"),
     ("AFTERNOON", "Afternoon"),
