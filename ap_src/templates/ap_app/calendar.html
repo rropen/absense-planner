@@ -120,13 +120,13 @@
                     
                     {% if current_month_num == month_num %}
 
-                       <a id="previous" href="/calendar/0/{{previous_month}}/{{year}}" class="button">
+                       <a id="previous" title = "Go To Previous Month" href="/calendar/0/{{previous_month}}/{{year}}" class="button">
                            <span class="icon">
                                <i class="fas fa-arrow-left"></i>
                            </span>
                        </a>
-
-                       <a id="next" href="/calendar/0/{{next_month}}/{{year}}" class="button">
+                        
+                       <a id="next" title = "Go To Next Month" href="/calendar/0/{{next_month}}/{{year}}" class="button">
                            <span class="icon ">
                                <i class="fas fa-arrow-right"></i>
                            </span>
@@ -134,12 +134,12 @@
 
                        {% elif month_num == 1 %}
 
-                       <a id="previous" href="/calendar/0/{{previous_month}}/{{previous_year}}" class="button">
+                       <a id="previous" "Go To Previous Month" href="/calendar/0/{{previous_month}}/{{previous_year}}" class="button">
                            <span class="icon ">
                                <i class="fas fa-arrow-left"></i>
                            </span>
                        </a>
-                       <a id="next" href="/calendar/0/February/{{year}}" class="button">
+                       <a id="next" "Go To Next Month" href="/calendar/0/February/{{year}}" class="button">
                            <span class="icon ">
                                <i class="fas fa-arrow-right"></i>
                            </span>
@@ -147,12 +147,12 @@
 
                        {% elif month_num == 12 %}
 
-                           <a id="previous" href="/calendar/0/{{previous_month}}/{{year}}" class="button">
+                           <a id="previous" title = "Go To Previous Month" href="/calendar/0/{{previous_month}}/{{year}}" class="button">
                                <span class="icon ">
                                    <i class="fas fa-arrow-left"></i>
                                </span>
                            </a>
-                           <a id="next" href="/calendar/0/January/{{next_year}}" class="button">
+                           <a id="next" title = "Go To Next Month" href="/calendar/0/January/{{next_year}}" class="button">
                                <span class="icon ">
                                    <i class="fas fa-arrow-right"></i>
                                </span>
@@ -160,12 +160,12 @@
 
                            {% else %}
 
-                           <a id="previous" href="/calendar/0/{{previous_month}}/{{year}}" class="button">
+                           <a id="previous" "Go To Previous Month" href="/calendar/0/{{previous_month}}/{{year}}" class="button">
                                <span class="icon ">
                                    <i class="fas fa-arrow-left"></i>
                                </span>
                            </a>
-                           <a id="next" href="/calendar/0/{{next_month}}/{{year}}" class="button">
+                           <a id="next" title = "Go To Next Month" href="/calendar/0/{{next_month}}/{{year}}" class="button">
                                <span class="icon ">
                                    <i class="fas fa-arrow-right"></i>
                                </span>
@@ -176,12 +176,12 @@
                    {% elif current_year|add:"2" == next_year %}
                        {% if month_num == 1 %}
 
-                           <a id="previous" href="/calendar/0/December/{{previous_year}}" class="button">
+                           <a id="previous" title = "Go To Previous Month" href="/calendar/0/December/{{previous_year}}" class="button">
                                <span class="icon ">
                                    <i class="fas fa-arrow-left"></i>
                                </span>
                            </a>
-                           <a id="next" href="/calendar/0/{{next_month}}/{{year}}" class="button">
+                           <a id="next" title = "Go To Next Month" href="/calendar/0/{{next_month}}/{{year}}" class="button">
                                <span class="icon ">
                                    <i class="fas fa-arrow-right"></i>
                                </span>
@@ -189,12 +189,12 @@
 
                            {% elif month_num == 12 %}
 
-                               <a id="previous" href="/calendar/0/{{previous_month}}/{{year}}" class="button">
+                               <a id="previous" title = "Go To Previous Month" href="/calendar/0/{{previous_month}}/{{year}}" class="button">
                                    <span class="icon ">
                                        <i class="fas fa-arrow-left"></i>
                                    </span>
                                </a>
-                               <a id="next" href="" class="noHover button" aria-disabled="true" disabled>
+                               <a id="next" title = "Go To Next Month" href="" class="noHover button" aria-disabled="true" disabled>
                                    <span class="icon ">
                                        <i class="fas fa-arrow-right"></i>
                                    </span>
@@ -203,12 +203,12 @@
 
                            {% else %}
 
-                               <a id="previous" href="/calendar/0/{{previous_month}}/{{year}}" class="button">
+                               <a id="previous" title = "Go To Previous Month" href="/calendar/0/{{previous_month}}/{{year}}" class="button">
                                    <span class="icon ">
                                        <i class="fas fa-arrow-left"></i>
                                    </span>
                                </a>
-                               <a id="next" href="/calendar/0/{{next_month}}/{{year}}" class="button">
+                               <a id="next" title = "Go To Next Month" href="/calendar/0/{{next_month}}/{{year}}" class="button">
                                    <span class="icon ">
                                        <i class="fas fa-arrow-right"></i>
                                    </span>
@@ -221,12 +221,12 @@
                        {% if month_num == 12 %}
 
 
-                       <a id="previous" href="/calendar/0/{{previous_month}}/{{year}}" class="button">
+                       <a id="previous" title = "Go To Previous Month" href="/calendar/0/{{previous_month}}/{{year}}" class="button">
                            <span class="icon ">
                                <i class="fas fa-arrow-left"></i>
                            </span>
                        </a>
-                       <a id="next" href="/calendar/0/January/{{next_year}}" class="button">
+                       <a id="next" title = "Go To Next Month" href="/calendar/0/January/{{next_year}}" class="button">
                            <span class="icon ">
                                <i class="fas fa-arrow-right"></i>
                            </span>
@@ -234,13 +234,13 @@
 
                        {% elif current_month_num == month_num %}
 
-                       <a id="previous" href="" class="noHover button" aria-disabled="true" disabled>
+                       <a id="previous" title = "Go To Previous Month" href="" class="noHover button" aria-disabled="true" disabled>
                            <span class="icon">
                                <i class="fas fa-arrow-left"></i>
                            </span>
                        </a>
 
-                       <a id="next" href="/calendar/0/{{next_month}}/{{year}}" class="button">
+                       <a id="next" title = "Go To Next Month" href="/calendar/0/{{next_month}}/{{year}}" class="button">
                            <span class="icon ">
                                <i class="fas fa-arrow-right"></i>
                            </span>
@@ -249,12 +249,12 @@
 
                        {% else %}
 
-                       <a id="previous" href="/calendar/0/{{previous_month}}/{{year}}" class="button">
+                       <a id="previous" title = "Go To Previous Month" href="/calendar/0/{{previous_month}}/{{year}}" class="button">
                            <span class="icon ">
                                <i class="fas fa-arrow-left"></i>
                            </span>
                        </a>
-                       <a id="next" href="/calendar/0/{{next_month}}/{{year}}" class="button">
+                       <a id="next" title = "Go To Next Month" href="/calendar/0/{{next_month}}/{{year}}" class="button">
                            <span class="icon ">
                                <i class="fas fa-arrow-right"></i>
                            </span>
@@ -285,7 +285,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <button class="button" type="submit">
+                    <button class="button" type="submit" title = "Submit">
                         <span class="icon">
                             <i class="fas fa-check" aria-hidden="true"></i>
                         </span>
@@ -329,7 +329,7 @@
                             </button>
                         </p>
                     </a>
-                    <article class="message is-" style="display: none; position: fixed; z-index: 5;" id="confirmationBox">
+                    <article class="message is-" style="display: none; position: fixed; z-index: 5;" id="confirmationBox" >
                         <div class="message-header">
                             <p>Absence Removal</p>
                             <button class="delete" aria-label="delete" id="question-mark"></button>
@@ -365,7 +365,7 @@
                             
                                     <input class="checkbox" type="checkbox" name="absent"> Filter By Absence
                                 </div>
-                                <button class="button is-info is-outlined mx-1" type="submit"><i class="fas fa-filter"></i></button>
+                                <button class="button is-info is-outlined mx-1" type="submit" title = "Filter"><i class="fas fa-filter"></i></button>
                         </form>
                     </div>
 
@@ -474,13 +474,13 @@
                                     {% check_absences recurring_absence_dates|get_key:user.username year month_num day as check_recurring_absence %}
                                     {% check_half_day half_days_data|get_key:user.username year month_num day as check_half_day %}
                                     {% if check_recurring_absence %}
-                                        <td style="background-color: #ffaa00",  id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                        <td style="background-color: #ffaa00",  id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="R"></td>
                                     {% elif check_absence %}
-                                        <td style="background-color: #ff0000;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                        <td style="background-color: #ff0000;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="S"></td>
                                     {% elif check_half_day == "A" %}
-                                        <td style="background: linear-gradient(to right, #ffffff 50%, #ff0000 50% );", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                        <td style="background: linear-gradient(to right, #ffffff 50%, #ff0000 50% );", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="A"></td>
                                     {% elif check_half_day == "M" %}
-                                        <td style="background: linear-gradient(to right, #ff0000 50%, #ffffff 50%);", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                        <td style="background: linear-gradient(to right, #ff0000 50%, #ffffff 50%);", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="M"></td>
                                     {% else %} 
                                         {% if day in bank_hol %}
                                             <td style = "background-color: #28663a;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
