@@ -941,7 +941,9 @@ def all_calendar(
     
     if userprofile.external_teams:
         try:
-            if requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username)).status_code == 200:
+            token = (str(request.user) + "AbsencePlanner").encode()
+            encryption = hashlib.sha256(token).hexdigest()
+            if requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username), headers={"TEAMS-TOKEN": encryption}).status_code == 200:
                 return redirect("/calendar/1")
         except:
             print("Failed to load api")
