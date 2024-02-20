@@ -10,6 +10,7 @@ import pycountry
 import pandas as pd
 import requests
 import environ
+import hashlib
 from datetime import timedelta
 
 from django.contrib import messages
@@ -91,7 +92,9 @@ def teams_dashboard(request) -> render:
     ).count()
     
     try:
-        r = requests.get("http://localhost:8000/api/teams/?username={}".format(request.user.username))
+        token = (str(request.user) + "AbsencePlanner").encode()
+        encryption = hashlib.sha256(token).hexdigest()
+        r = requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username), headers={"TEAMS-TOKEN": encryption})
     except:
         return render(
         request,
@@ -1463,7 +1466,9 @@ def api_calendar_view(
     api_data = None
     if request.method == "GET":
         try:
-            r = requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username))
+            token = (str(request.user) + "AbsencePlanner").encode()
+            encryption = hashlib.sha256(token).hexdigest()
+            r = requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username), headers={"TEAMS-TOKEN": encryption})
         except:
             print("API failed to connect")
             return redirect("/")
