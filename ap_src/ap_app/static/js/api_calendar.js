@@ -2,8 +2,8 @@ var calendarClickToggle = true;
 var token = document.currentScript.getAttribute("token");
 
 //Send the data to the backend
-function sendData(username, date, half_day, half_day_time, type) {
-    var data = JSON.stringify({"username": username, "date": date, "half_day": half_day, "half_day_time": half_day_time, "type": type})
+function sendData(username, date, half_day, half_day_time, type, absence_type) {
+    var data = JSON.stringify({"username": username, "date": date, "half_day": half_day, "half_day_time": half_day_time, "type": type, "absence_type": absence_type})
     if (type == "add") {
         var link = window.location.origin + "/absence/click_add"
     } else {
@@ -37,11 +37,11 @@ document.addEventListener('click', function(e) {
                     document.getElementById("halfDayConfirmation").style.display = "block";
                     //Morning Clicked
                     document.getElementById("halfDayMorning").onclick = function() {
-                        sendData(username, date, true, "M", "add")
+                        sendData(username, date, true, "M", "add", "E")
                         document.getElementById("halfDayConfirmation").style.display = "none";
                     }
                     document.getElementById("halfDayAfternoon").onclick = function() {
-                        sendData(username, date, true, "A", "add")
+                        sendData(username, date, true, "A", "add", "E")
                         document.getElementById("halfDayConfirmation").style.display = "none";
                     }
                     document.getElementById("halfDayClose").onclick = function() {
@@ -50,11 +50,12 @@ document.addEventListener('click', function(e) {
                 }
                 //Full day absence
                 else {
-                    sendData(username, date, false, "N", "add")
+                    sendData(username, date, false, "N", "add", "E")
                 }
             }
             //Remove an absnece
             else {
+                var absence_type = e.target.dataset.absenceType;
                 var confirmationPage = document.getElementById("confirmationBox")
                 confirmationPage.style.display = "block";
                 document.getElementById("cancelAbsece").onclick = function() {
@@ -64,7 +65,7 @@ document.addEventListener('click', function(e) {
                     document.getElementById("confirmationBox").style.display = "none";
                 }
                 document.getElementById("removeAbsence").onclick = function() {
-                    sendData(username, date, false, "N", "remove")
+                    sendData(username, date, false, "N", "remove", absence_type)
                     confirmationPage.style.display = "none";
                 }
             }
