@@ -31,7 +31,7 @@ class Absence(models.Model):
     absence_date_end = models.DateField(
         _("Date"), max_length=200, default=now
     )
-#Destiny, this is what adds the columns to the database, you use py manage.py makemigrations then after that you use py manage.py migrate
+
     DAYS_CHOICES = (
     ("NORMAL", "Normal"),
     ("AFTERNOON", "Afternoon"),
@@ -168,3 +168,10 @@ class UserProfile(models.Model):
     def __str__(self):
         return f"{self.user.username}"
 
+
+class RecurringException(models.Model):
+    ID = models.AutoField(primary_key=True)
+    Target_User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="+")
+    User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="recurringexception")
+    Exception_Start = models.DateField(_("Date"), max_length=200, default=now)
+    Exception_End = models.DateField(_("Date"), max_length=200, default=now)
