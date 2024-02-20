@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from . import views, teams, absences, calendarview
 
 js_info_dict = {
     'packages' : ('recurrence', ),
@@ -28,7 +28,7 @@ urlpatterns = [
     path("teams/settings/demote/<int:id>/<int:user_id>", views.demote_team_member, name="demote_team_member"),
     path("teams/settings/remove/<int:id>/<int:user_id>", views.remove_team_member, name="remove_team_member"),
     path("teams/misc/<int:id>", views.team_misc, name="misc"),
-    path("absence/add", views.manual_add, name="add"),
+    path("absence/add", teams.manual_add, name="add"),
     path("absence/add_recurring", views.add_recurring, name="add_recurring"),
     path("profile/", views.profile_page, name="profile"),
     path("privacy/", views.privacy_page, name="privacy"),
@@ -49,6 +49,6 @@ urlpatterns = [
     path("calendar/1/<str:month>/<int:year>", views.api_calendar_view, name="api_calendar")
 ]
 
-handler404 = 'ap_app.views.handler404'
-handler500 = 'ap_app.views.handler500'
-handler400 = 'ap_app.views.handler400'
+handler404 = 'ap_app.errors.handler404'
+handler500 = 'ap_app.errors.handler500'
+handler400 = 'ap_app.errors.handler400'
