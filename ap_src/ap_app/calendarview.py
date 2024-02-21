@@ -8,6 +8,8 @@
 
 import datetime
 import requests
+import hashlib
+import environ
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
@@ -17,6 +19,10 @@ from .models import ( Relationship, Role, Team,
                      UserProfile, Status)
 
 from .absences import *
+from .teams import *
+
+env = environ.Env()
+environ.Env.read_env()
 
 def check_calendar_date(year, month) -> datetime.datetime:
     """ This function will determine if the requested date is acceptable - (NOT before current date - 12 months) """

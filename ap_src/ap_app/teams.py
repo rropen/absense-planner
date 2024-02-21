@@ -16,6 +16,10 @@
 #is_member
 #is_owner
 
+import hashlib
+import requests
+import environ
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -30,6 +34,9 @@ from .models import (Absence, Relationship, Role, Team, Status
                      )
 
 from .absences import *
+
+env = environ.Env()
+environ.Env.read_env()
 
 
 def teams_dashboard(request) -> render:
@@ -231,6 +238,16 @@ def team_cleaner(rel):
     if all_team_relationships.count() == 0:
         team.delete()
 
+def is_member(user, team_id) -> bool:
+    """ Determines if the user is a member of the team before accessing its contents """
+
+    team = Relationship.objects.filter(team=Team.objects.get(id=team_id))
+
+    # Boolean determines if viewer is in this team
+    for rel in team:
+        if rel.user == user:
+            return True
+
 
 @login_required
 def team_misc(request, id):
@@ -281,6 +298,7 @@ def team_settings(request, id):
     return redirect("dashboard")
 
 def edit_team_member_absence(request, id, user_id) -> render:
+    from absences import text_rules
     """Checks to see if user is the owner and renders the Edit absences page for that user"""
     team = Team.objects.get(id=id)
         
