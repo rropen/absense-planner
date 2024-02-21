@@ -21,9 +21,6 @@ from .models import ( Relationship, Role, Team,
 from .absences import *
 from .teams import *
 
-env = environ.Env()
-environ.Env.read_env()
-
 def check_calendar_date(year, month) -> datetime.datetime:
     """ This function will determine if the requested date is acceptable - (NOT before current date - 12 months) """
     # Current year * 12     + current month as num      = amount of months been  
