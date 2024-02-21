@@ -239,6 +239,8 @@ def team_calendar(
 
     return redirect("dashboard")
 
+#JC - Calendar view using the API
+@login_required
 def api_calendar_view(
     request,
     #JC - These are the default values for the calendar.
@@ -273,6 +275,54 @@ def api_calendar_view(
                     print("Username not found in Team App database.")
                 elif result["code"] == "N":
                     print("A username was not provided with the request.")
+            else:
+                print("Fatal Error")
+
+    date = check_calendar_date(year, month)
+    if date:
+        month = date.strftime("%B")
+        year = date.year
+
+    data_1 = get_date_data(userprofile.region, month, year)
+    
+    current_month = data_1["current_month"]
+    current_year = data_1["current_year"]
+    current_day = datetime.datetime.now().day
+    date = f"{current_day} {current_month} {current_year}"
+    date = datetime.datetime.strptime(date, "%d %B %Y")
+
+
+    all_users = []
+    all_users.append(request.user)
+
+    if api_data:
+        for team in api_data:
+            for member in team["team"]["members"]:
+                retrieved_user = User.objects.filter(username=member["user"]["username"])
+                if retrieved_user.exists() and retrieved_user not in all_users:
+                    all_users.append(retrieved_user[0])
+
+    data_2 = get_absence_data(all_users, 2)
+
+    data_3 = {"Sa": "Sa", "Su": "Su"}
+
+    grid_calendar_month_values = list(data_1["day_range"])
+    # NOTE: This will select which value to use to fill in how many blank cells where previous month overrides prevailing months days. 
+    # This is done by finding the weekday value for the 1st day of the month. Example: "Tu" will require 1 blank space/cell.
+    for i in range({"Mo":0, "Tu":1, "We":2, "Th":3, "Fr":4, "Sa":5, "Su":6}[data_1["days_name"][0]]):
+        grid_calendar_month_values.insert(0, -1)
+
+
+    context = {
+        **data_1,
+        **data_2,
+        **data_3,
+        "home_active": True,
+        "api_data": api_data,
+    }
+
+    return render(request, "api_pages/calendar.html", context)
+                    
 def get_date_data(
     region,
     month=datetime.datetime.now().strftime("%B"),

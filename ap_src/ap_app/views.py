@@ -199,13 +199,20 @@ def profile_settings(request) -> render:
             userprofile.privacy = False
         elif request.POST.get("privacy") == "on":
             userprofile.privacy = True
+
+        if request.POST.get("teams") == None:
+            userprofile.external_teams = False
+        elif request.POST.get("teams") == "on":
+            userprofile.external_teams = True
+        
         userprofile.save()
     
     country_data = get_region_data()
     country_name = pycountry.countries.get(alpha_2=userprofile.region).name
 
     privacy_status = userprofile.privacy
-    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status, "current_country": country_name, **country_data}
+    teams_status = userprofile.external_teams
+    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status, "external_teams": teams_status,"current_country": country_name, **country_data}
     return render(request, "ap_app/settings.html", context)
 
 
