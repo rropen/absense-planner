@@ -266,7 +266,7 @@
                    {% endif %}
                    {% endif %}
 
-                   <form method="POST" action="/calendar/set_month">
+                   <form method="POST" action="/calendar/set_month" id="month_form">
                     {% csrf_token %}
                     <div class="select">
                         <select name="month_names" id="month_names">
@@ -284,12 +284,9 @@
                                 
                             {% endfor %}
                         </select>
+                        <input type="submit" value="Submit" class="Submit" id="confirmbtn"/>
                     </div>
-                    <button class="button" type="submit" title = "Submit">
-                        <span class="icon">
-                            <i class="fas fa-check" aria-hidden="true"></i>
-                        </span>
-                    </button>
+                    
                 </form>
 
 
@@ -500,9 +497,26 @@
         </div>
     </section>
 </div>
+    
+
+<script>
+    var visible_root = document.getElementById("month_form");
+    while (visible_root.length < 1) {
+        continue;
+    }
+    visible_root = visible_root[0];
+    document.getElementById('confirmbtn').style.visibility = "hidden"
+    visible_root.id = "jsOn";
+    document.getElementById("month_names").onchange = function() {
+        document.getElementById("month_form").submit();
+    };
+</script>
+
+
 
 <script src="{% static "js/api_calendar.js" %}" token="{{ csrf_token }}"></script>
 <script>
+
     // Colour Key Prototype 
     // $(document).ready(function()
     // {

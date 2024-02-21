@@ -33,11 +33,11 @@ def check_calendar_date(year, month) -> datetime.datetime:
     months_difference = current_months_amount - requested_months_amount
 
 
-    if months_difference > 12:
-        # Return the most earliest date acceptable - (now - 12 months)
-        return datetime.datetime(todays_date.year - 1, todays_date.month, 1)  
-    else:
-        return None
+ #   if months_difference > 12:
+  #      # Return the most earliest date acceptable - (now - 12 months)
+   #     return datetime.datetime(todays_date.year - 1, todays_date.month, 1)  
+    #else:
+     #   return None
     
 
 @login_required
@@ -339,8 +339,20 @@ def get_date_data(
     data["month"] = month
     data["next_current_year"] = datetime.datetime.now().year + 1
     data["next_second_year"] = datetime.datetime.now().year + 2
-    
-    start_date, end_date = "2022-07-03", "2024-07-03"
+
+    last_year = datetime.datetime.today().year - 1
+    next_year = datetime.datetime.today().year + 1
+
+    try:
+        last_year_date = datetime.datetime.strptime(f"{last_year}-{datetime.datetime.today().month}-{datetime.datetime.today().day}",'%Y-%m-%d').date()
+        next_year_date = datetime.datetime.strptime(f"{next_year}-{datetime.datetime.today().month}-{datetime.datetime.today().day}",'%Y-%m-%d').date()
+    except ValueError: 
+        last_year_date = datetime.datetime.strptime(f"{last_year}-{datetime.datetime.today().month}-{datetime.datetime.today().day-1}",'%Y-%m-%d').date()
+        next_year_date = datetime.datetime.strptime(f"{next_year}-{datetime.datetime.today().month}-{datetime.datetime.today().day-1}",'%Y-%m-%d').date()
+
+
+    #YYYY/MM/DD    
+    start_date, end_date = last_year_date, next_year_date
  
     data["month_list"] = pd.period_range(start=start_date, end=end_date, freq='M')
     data["month_list"] = [month.strftime("%B %Y") for month in data["month_list"]]
