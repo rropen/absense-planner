@@ -53,6 +53,15 @@ def check_for_lingering_switch_perms(request): # stops users from having switch 
     END IF
     """
 
+# this check should be activated when giving switch permissions to a member in the profile settings
+@login_required
+def check_for_teams_in_common(request, user_being_given_perms): # this stops users from giving switch permissions to members not in a team
+    users_sharing_teams = grab_users_sharing_teams(request)
+    if user_being_given_perms not in users_sharing_teams:
+        return False
+
+    return True
+
 @login_required
 def grab_users_sharing_teams(request):
     response = requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username))
