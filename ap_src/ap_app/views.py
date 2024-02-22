@@ -10,6 +10,7 @@ import pycountry
 import pandas as pd
 import requests
 import environ
+import hashlib
 from datetime import timedelta
 
 from django.contrib import messages
@@ -1210,7 +1211,7 @@ def edit_recurring_absences(request, pk):
 
 @login_required
 def profile_settings(request) -> render:
-    """returns the settings page"""
+    """Returns the settings page"""
 
     if len(request.POST) > 0:
         if request.POST.get("firstName") != "" and request.POST.get("firstName") != request.user.first_name:
@@ -1222,14 +1223,12 @@ def profile_settings(request) -> render:
         if request.POST.get("email") != request.user.email:
             request.user.email = request.POST.get("email")
             request.user.save()
+        try:
+            userprofile: UserProfile = UserProfile.objects.get(user=request.user)
+        except UserProfile.DoesNotExist:
+            # Create user profile if it doesn't exist
+            userprofile = UserProfile.objects.create(user=request.user)
 
-    try:
-        userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
-    except IndexError:
-        # TODO Create error page
-        return redirect("/")
-    
-    if len(request.POST) > 0:
         region = request.POST.get("region")
         region_code = pycountry.countries.get(name=region).alpha_2
         if region_code != userprofile.region:
@@ -1238,18 +1237,47 @@ def profile_settings(request) -> render:
             userprofile.privacy = False
         elif request.POST.get("privacy") == "on":
             userprofile.privacy = True
+
         if request.POST.get("teams") == None:
             userprofile.external_teams = False
         elif request.POST.get("teams") == "on":
             userprofile.external_teams = True
+        
         userprofile.save()
-    
+
+        # Handle timezone selection
+        user_timezone = request.POST.get("timezone")
+        if user_timezone:
+            request.session['user_timezone'] = user_timezone
+            userprofile.timezone = user_timezone  # Save the timezone in the UserProfile model
+            userprofile.save()
+
+    try:
+        userprofile = UserProfile.objects.get(user=request.user)
+    except UserProfile.DoesNotExist:
+        # Create user profile if it doesn't exist
+        userprofile = UserProfile.objects.create(user=request.user)
+
     country_data = get_region_data()
     country_name = pycountry.countries.get(alpha_2=userprofile.region).name
 
+    # Retrieve user's timezone from session or default to UTC
+    user_timezone = request.session.get('user_timezone', 'UTC')
+    
+    # Get list of timezone options
+    timezones = pytz.all_timezones
+
     privacy_status = userprofile.privacy
     teams_status = userprofile.external_teams
-    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status, "external_teams": teams_status,"current_country": country_name, **country_data}
+    context = {
+        "userprofile": userprofile, 
+        "data_privacy_mode": privacy_status, 
+        "external_teams": teams_status,
+        "current_country": country_name, 
+        **country_data,
+        'user_timezone': user_timezone,
+        'timezones': timezones
+    }
     return render(request, "ap_app/settings.html", context)
 
 
@@ -1444,82 +1472,47 @@ def handler400(request, exception):
 
 #JC - Calendar view using the API
 @login_required
-def api_calendar_view(
-    request,
-    #JC - These are the default values for the calendar.
-    month=datetime.datetime.now().strftime("%B"),
-    year=datetime.datetime.now().year
-):
-    
-    try:
-        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
-    except IndexError:
-        return redirect("/")
-    
-    if not userprofile.external_teams:
-        return redirect("/calendar/0")
-    
-    #JC - Get API data
-    api_data = None
-    if request.method == "GET":
-        try:
-            r = requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username))
-        except:
-            print("API failed to connect")
-            return redirect("/")
-        if r.status_code == 200:
-            api_data = r.json()
+def click_remove(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        date = datetime.datetime.strptime(data["date"], "%Y-%m-%d").date()
+        #Remove absence if start date and end date is the same
+        if date in Absence.objects.filter(Target_User_ID_id=data["id"]).values_list("absence_date_start", flat=True) \
+            and date in Absence.objects.filter(Target_User_ID_id=data["id"]).values_list("absence_date_end", flat=True):
+            absence = Absence.objects.filter(Target_User_ID_id=data["id"], absence_date_start=date, absence_date_end=date)[0]
+            absence.delete()
+        #Change absence start date if current start date removed
+        elif date in Absence.objects.filter(Target_User_ID_id=data["id"]).values_list("absence_date_start", flat=True):
+            absence = Absence.objects.filter(Target_User_ID_id=data["id"], absence_date_start=date)[0]
+            absence.absence_date_start = date + timedelta(days=1)
+            absence.save()
+        #Change absence end date if current end date removed
+        elif date in Absence.objects.filter(Target_User_ID_id=data["id"]).values_list("absence_date_end", flat=True):
+            absence = Absence.objects.filter(Target_User_ID_id=data["id"], absence_date_end=date)[0]
+            absence.absence_date_end = date - timedelta(days=1)
+            absence.save()
         else:
-            if r:
-                result = r.json()
-                if result["code"] == "I":
-                    print("Username not found in Team App database.")
-                elif result["code"] == "N":
-                    print("A username was not provided with the request.")
-            else:
-                print("Fatal Error")
+            for absence in Absence.objects.filter(Target_User_ID_id=data["id"]):
+                start_date = absence.absence_date_start
+                end_date = absence.absence_date_end
+                if date > start_date and date < end_date:
+                    ab_1 = Absence()
+                    ab_1.absence_date_start = start_date
+                    ab_1.absence_date_end = date - timedelta(days=1)
+                    ab_1.Target_User_ID_id = data["id"]
+                    ab_1.User_ID = request.user
 
-    date = check_calendar_date(year, month)
-    if date:
-        month = date.strftime("%B")
-        year = date.year
+                    ab_2 = Absence()
+                    ab_2.absence_date_start = date + timedelta(days=1)
+                    ab_2.absence_date_end = end_date
+                    ab_2.Target_User_ID_id = data["id"]
+                    ab_2.User_ID = request.user
 
-    data_1 = get_date_data(userprofile.region, month, year)
+                    absence.delete()
+                    ab_1.save()
+                    ab_2.save()
+
+        return JsonResponse({"start_date": data["date"]})
+    else:
+        return HttpResponse("404")
     
-    current_month = data_1["current_month"]
-    current_year = data_1["current_year"]
-    current_day = datetime.datetime.now().day
-    date = f"{current_day} {current_month} {current_year}"
-    date = datetime.datetime.strptime(date, "%d %B %Y")
-
-
-    all_users = []
-    all_users.append(request.user)
-
-    if api_data:
-        for team in api_data:
-            for member in team["team"]["members"]:
-                retrieved_user = User.objects.filter(username=member["user"]["username"])
-                if retrieved_user.exists() and retrieved_user not in all_users:
-                    all_users.append(retrieved_user[0])
-
-    data_2 = get_absence_data(all_users, 2)
-
-    data_3 = {"Sa": "Sa", "Su": "Su"}
-
-    grid_calendar_month_values = list(data_1["day_range"])
-    # NOTE: This will select which value to use to fill in how many blank cells where previous month overrides prevailing months days. 
-    # This is done by finding the weekday value for the 1st day of the month. Example: "Tu" will require 1 blank space/cell.
-    for i in range({"Mo":0, "Tu":1, "We":2, "Th":3, "Fr":4, "Sa":5, "Su":6}[data_1["days_name"][0]]):
-        grid_calendar_month_values.insert(0, -1)
-
-
-    context = {
-        **data_1,
-        **data_2,
-        **data_3,
-        "home_active": True,
-        "api_data": api_data,
-    }
-
-    return render(request, "api_pages/calendar.html", context)

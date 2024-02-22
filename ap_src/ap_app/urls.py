@@ -47,6 +47,7 @@ urlpatterns = [
     path("calendar/set_month",views.set_calendar_month, name="set_month"),
     path("calendar/1/", views.api_calendar_view, name="api_calendar"),
     path("calendar/1/<str:month>/<int:year>", views.api_calendar_view, name="api_calendar")
+    
 ]
 
 handler404 = 'ap_app.views.handler404'
