@@ -28,6 +28,31 @@ from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
 env = environ.Env()
 environ.Env.read_env()
 
+
+# this check should be activated when the user leaves a team
+@login_required
+def check_for_lingering_switch_perms(request): # stops users from having switch perms when they don't share any teams
+    user_edited = request.user.username
+    users_with_perms = grab_users_with_perms(request)
+    users_sharing_teams = grab_users_sharing_teams(request)
+    print(users_with_perms)
+    print(users_sharing_teams)
+
+    for user_with_perms in users_with_perms:
+        if user_with_perms not in users_sharing_teams:
+            print("Redundant permissions found for", user_with_perms + "!")
+    """
+    SET user ID whose absences are being edited AS (int) user_ID_edited
+    SET user IDs with permission to edit absences AS (list of int) user_IDs_with_perms
+    SET user IDs who are in the same team as user_ID_edited AS (list of int) user_IDs_sharing_teams
+
+    IF user_ID_edited_leave_team THEN
+    FOR EACH (int) user_ID_with_perms FROM (list) user_IDs_with_perms DO
+        IF user_ID_with_perms NOT IN user_IDs_sharing_teams THEN remove_permissions
+    END FOREACH
+    END IF
+    """
+
 @login_required
 def grab_users_sharing_teams(request):
     response = requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username))
