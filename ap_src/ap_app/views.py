@@ -10,7 +10,7 @@ import pycountry
 import pandas as pd
 import requests
 import environ
-import hashlib
+import pytz
 from datetime import timedelta
 
 from django.contrib import messages
@@ -28,7 +28,7 @@ from collections import namedtuple
 
 from .forms import *
 from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
-                     UserProfile, Status, RecurringException)
+                     UserProfile, Status)
 
 env = environ.Env()
 environ.Env.read_env()
@@ -576,50 +576,41 @@ def click_remove(request):
             perm_list = [UserProfile.objects.get(user=request.user)]
 
         if request.user in perm_list:
-            #Add an exception for recurring absence
-            if data["absence_type"] == "R":
-                exception = RecurringException()
-                exception.Target_User_ID = User.objects.get(username=data["username"])
-                exception.User_ID = request.user
-                exception.Exception_Start = data["date"]
-                exception.Exception_End = data["date"]
-                exception.save()
+            #Remove absence if start date and end date is the same
+            if date in Absence.objects.filter(Target_User_ID__username=data["username"]).values_list("absence_date_start", flat=True) \
+                and date in Absence.objects.filter(Target_User_ID__username=data["username"]).values_list("absence_date_end", flat=True):
+                absence = Absence.objects.filter(Target_User_ID__username=data["username"], absence_date_start=date, absence_date_end=date)[0]
+                absence.delete()
+            #Change absence start date if current start date removed
+            elif date in Absence.objects.filter(Target_User_ID__username=data["username"]).values_list("absence_date_start", flat=True):
+                absence = Absence.objects.filter(Target_User_ID__username=data["username"], absence_date_start=date)[0]
+                absence.absence_date_start = date + timedelta(days=1)
+                absence.save()
+            #Change absence end date if current end date removed
+            elif date in Absence.objects.filter(Target_User_ID__username=data["username"]).values_list("absence_date_end", flat=True):
+                absence = Absence.objects.filter(Target_User_ID__username=data["username"], absence_date_end=date)[0]
+                absence.absence_date_end = date - timedelta(days=1)
+                absence.save()
             else:
-                #Remove absence if start date and end date is the same
-                if date in Absence.objects.filter(Target_User_ID__username=data["username"]).values_list("absence_date_start", flat=True) \
-                    and date in Absence.objects.filter(Target_User_ID__username=data["username"]).values_list("absence_date_end", flat=True):
-                    absence = Absence.objects.filter(Target_User_ID__username=data["username"], absence_date_start=date, absence_date_end=date)[0]
-                    absence.delete()
-                #Change absence start date if current start date removed
-                elif date in Absence.objects.filter(Target_User_ID__username=data["username"]).values_list("absence_date_start", flat=True):
-                    absence = Absence.objects.filter(Target_User_ID__username=data["username"], absence_date_start=date)[0]
-                    absence.absence_date_start = date + timedelta(days=1)
-                    absence.save()
-                #Change absence end date if current end date removed
-                elif date in Absence.objects.filter(Target_User_ID__username=data["username"]).values_list("absence_date_end", flat=True):
-                    absence = Absence.objects.filter(Target_User_ID__username=data["username"], absence_date_end=date)[0]
-                    absence.absence_date_end = date - timedelta(days=1)
-                    absence.save()
-                else:
-                    for absence in Absence.objects.filter(Target_User_ID__username=data["username"]):
-                        start_date = absence.absence_date_start
-                        end_date = absence.absence_date_end
-                        if date > start_date and date < end_date:
-                            ab_1 = Absence()
-                            ab_1.absence_date_start = start_date
-                            ab_1.absence_date_end = date - timedelta(days=1)
-                            ab_1.Target_User_ID_id = User.objects.get(username=data["username"]).id
-                            ab_1.User_ID = request.user
+                for absence in Absence.objects.filter(Target_User_ID__username=data["username"]):
+                    start_date = absence.absence_date_start
+                    end_date = absence.absence_date_end
+                    if date > start_date and date < end_date:
+                        ab_1 = Absence()
+                        ab_1.absence_date_start = start_date
+                        ab_1.absence_date_end = date - timedelta(days=1)
+                        ab_1.Target_User_ID_id = User.objects.get(username=data["username"]).id
+                        ab_1.User_ID = request.user
 
-                            ab_2 = Absence()
-                            ab_2.absence_date_start = date + timedelta(days=1)
-                            ab_2.absence_date_end = end_date
-                            ab_2.Target_User_ID_id = User.objects.get(username=data["username"]).id
-                            ab_2.User_ID = request.user
+                        ab_2 = Absence()
+                        ab_2.absence_date_start = date + timedelta(days=1)
+                        ab_2.absence_date_end = end_date
+                        ab_2.Target_User_ID_id = User.objects.get(username=data["username"]).id
+                        ab_2.User_ID = request.user
 
-                            absence.delete()
-                            ab_1.save()
-                            ab_2.save()
+                        absence.delete()
+                        ab_1.save()
+                        ab_2.save()
 
         return JsonResponse({"start_date": data["date"]})
     else:
@@ -822,10 +813,7 @@ def get_absence_data(users, user_type):
                     time_var = datetime.datetime.strftime(x, "%H:%M:%S")
                     if time_const == time_var:
                         x += timedelta(days=1)
-                    
-                    #print(RecurringException.objects.filter(Target_User_ID__username=user_username, Exception_Start=x).count())
-                    if RecurringException.objects.filter(Target_User_ID__username=user_username, Exception_Start=x).count() == 0:
-                        total_recurring_dates[user_username].append(x)
+                    total_recurring_dates[user_username].append(x)
                 # TODO: add auto deleting for recurring absences once last date of absences in before now
                 # if x < datetime.datetime.now():
                 #    pass
@@ -1208,7 +1196,6 @@ def edit_recurring_absences(request, pk):
         request, "ap_app/edit_recurring_absence.html", {"form": form, "form2": form2}
     )
 
-
 @login_required
 def profile_settings(request) -> render:
     """Returns the settings page"""
@@ -1223,6 +1210,7 @@ def profile_settings(request) -> render:
         if request.POST.get("email") != request.user.email:
             request.user.email = request.POST.get("email")
             request.user.save()
+
         try:
             userprofile: UserProfile = UserProfile.objects.get(user=request.user)
         except UserProfile.DoesNotExist:
@@ -1233,16 +1221,11 @@ def profile_settings(request) -> render:
         region_code = pycountry.countries.get(name=region).alpha_2
         if region_code != userprofile.region:
             userprofile.region = region_code
-        if request.POST.get("privacy") == None:
-            userprofile.privacy = False
-        elif request.POST.get("privacy") == "on":
-            userprofile.privacy = True
+            userprofile.save()
 
-        if request.POST.get("teams") == None:
-            userprofile.external_teams = False
-        elif request.POST.get("teams") == "on":
-            userprofile.external_teams = True
-        
+        # Update user's privacy and teams settings
+        userprofile.privacy = request.POST.get("privacy") == "on"
+        userprofile.external_teams = request.POST.get("teams") == "on"
         userprofile.save()
 
         # Handle timezone selection
@@ -1251,7 +1234,6 @@ def profile_settings(request) -> render:
             request.session['user_timezone'] = user_timezone
             userprofile.timezone = user_timezone  # Save the timezone in the UserProfile model
             userprofile.save()
-
     try:
         userprofile = UserProfile.objects.get(user=request.user)
     except UserProfile.DoesNotExist:
@@ -1472,47 +1454,82 @@ def handler400(request, exception):
 
 #JC - Calendar view using the API
 @login_required
-def click_remove(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        date = datetime.datetime.strptime(data["date"], "%Y-%m-%d").date()
-        #Remove absence if start date and end date is the same
-        if date in Absence.objects.filter(Target_User_ID_id=data["id"]).values_list("absence_date_start", flat=True) \
-            and date in Absence.objects.filter(Target_User_ID_id=data["id"]).values_list("absence_date_end", flat=True):
-            absence = Absence.objects.filter(Target_User_ID_id=data["id"], absence_date_start=date, absence_date_end=date)[0]
-            absence.delete()
-        #Change absence start date if current start date removed
-        elif date in Absence.objects.filter(Target_User_ID_id=data["id"]).values_list("absence_date_start", flat=True):
-            absence = Absence.objects.filter(Target_User_ID_id=data["id"], absence_date_start=date)[0]
-            absence.absence_date_start = date + timedelta(days=1)
-            absence.save()
-        #Change absence end date if current end date removed
-        elif date in Absence.objects.filter(Target_User_ID_id=data["id"]).values_list("absence_date_end", flat=True):
-            absence = Absence.objects.filter(Target_User_ID_id=data["id"], absence_date_end=date)[0]
-            absence.absence_date_end = date - timedelta(days=1)
-            absence.save()
-        else:
-            for absence in Absence.objects.filter(Target_User_ID_id=data["id"]):
-                start_date = absence.absence_date_start
-                end_date = absence.absence_date_end
-                if date > start_date and date < end_date:
-                    ab_1 = Absence()
-                    ab_1.absence_date_start = start_date
-                    ab_1.absence_date_end = date - timedelta(days=1)
-                    ab_1.Target_User_ID_id = data["id"]
-                    ab_1.User_ID = request.user
-
-                    ab_2 = Absence()
-                    ab_2.absence_date_start = date + timedelta(days=1)
-                    ab_2.absence_date_end = end_date
-                    ab_2.Target_User_ID_id = data["id"]
-                    ab_2.User_ID = request.user
-
-                    absence.delete()
-                    ab_1.save()
-                    ab_2.save()
-
-        return JsonResponse({"start_date": data["date"]})
-    else:
-        return HttpResponse("404")
+def api_calendar_view(
+    request,
+    #JC - These are the default values for the calendar.
+    month=datetime.datetime.now().strftime("%B"),
+    year=datetime.datetime.now().year
+):
     
+    try:
+        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
+    except IndexError:
+        return redirect("/")
+    
+    if not userprofile.external_teams:
+        return redirect("/calendar/0")
+    
+    #JC - Get API data
+    api_data = None
+    if request.method == "GET":
+        try:
+            r = requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username))
+        except:
+            print("API failed to connect")
+            return redirect("/")
+        if r.status_code == 200:
+            api_data = r.json()
+        else:
+            if r:
+                result = r.json()
+                if result["code"] == "I":
+                    print("Username not found in Team App database.")
+                elif result["code"] == "N":
+                    print("A username was not provided with the request.")
+            else:
+                print("Fatal Error")
+
+    date = check_calendar_date(year, month)
+    if date:
+        month = date.strftime("%B")
+        year = date.year
+
+    data_1 = get_date_data(userprofile.region, month, year)
+    
+    current_month = data_1["current_month"]
+    current_year = data_1["current_year"]
+    current_day = datetime.datetime.now().day
+    date = f"{current_day} {current_month} {current_year}"
+    date = datetime.datetime.strptime(date, "%d %B %Y")
+
+
+    all_users = []
+    all_users.append(request.user)
+
+    if api_data:
+        for team in api_data:
+            for member in team["team"]["members"]:
+                retrieved_user = User.objects.filter(username=member["user"]["username"])
+                if retrieved_user.exists() and retrieved_user not in all_users:
+                    all_users.append(retrieved_user[0])
+
+    data_2 = get_absence_data(all_users, 2)
+
+    data_3 = {"Sa": "Sa", "Su": "Su"}
+
+    grid_calendar_month_values = list(data_1["day_range"])
+    # NOTE: This will select which value to use to fill in how many blank cells where previous month overrides prevailing months days. 
+    # This is done by finding the weekday value for the 1st day of the month. Example: "Tu" will require 1 blank space/cell.
+    for i in range({"Mo":0, "Tu":1, "We":2, "Th":3, "Fr":4, "Sa":5, "Su":6}[data_1["days_name"][0]]):
+        grid_calendar_month_values.insert(0, -1)
+
+
+    context = {
+        **data_1,
+        **data_2,
+        **data_3,
+        "home_active": True,
+        "api_data": api_data,
+    }
+
+    return render(request, "api_pages/calendar.html", context)

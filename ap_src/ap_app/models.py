@@ -168,7 +168,7 @@ class UserProfile(models.Model):
     # New field for storing the timezone
     timezone = models.CharField(max_length=100, default='UTC')
 
-    def str(self):
+    def __str__(self):
         return self.user.username
 
 class RecurringException(models.Model):
