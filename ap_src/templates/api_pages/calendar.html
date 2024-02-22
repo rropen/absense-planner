@@ -233,7 +233,7 @@
                    {% endif %}
                     <a id="CalendarClick-Toggle" title="Toggle Clickable Calendar">
                         <p class="buttons">
-                            <button class="button " style="border-width:2px; border-color:green" id="ClickToggle">
+                            <button class="button " style="border-width:2px; border-color:#01661f" id="ClickToggle">
                                 <span class="icon ">
                                     <i class="fas fa-mouse-pointer"></i>
                                 </span>
@@ -265,7 +265,7 @@
                                 <th style="color: black;"></th>
                                 {% for day in days_name %}
                                 {% if day == Sa or day == Su %}
-                                <th style="background-color: #055496; color: white;">{{day}}</th>
+                                <th style="background-color: #206cab; color: white;">{{day}}</th>
                                 {% elif forloop.counter in bank_hol%}
                                 <th style="background-color: #01661f; color: white;">{{day}}</th>
                                 {% else %}
@@ -277,7 +277,7 @@
                                 <th style="color: black;"></th>
                                 {% for day in day_range %}
                                 {% if day == today and month == current_month and year == current_year %}
-                                <th style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255);">{{day}}</th>
+                                <th style="background-color: #206cab; color: rgb(255, 255, 255);">{{day}}</th>
                                 {% elif day in bank_hol %}
                                 <td style = "background-color: #28663a; color: rgb(255, 255, 255);">{{day}}</td>
                                 {% elif day in weekend_list%}
@@ -291,7 +291,7 @@
                                 {% for member in item.team.members %}
                                 <tr id="{{ member.user.username }}">
                                     {% if member.user.username == user.username %}
-                                    <td style="width: 80x; background-color: #0e00d6; color: white;">{{user.username}}</td>
+                                    <td style="width: 80x; background-color: #206cab; color: white;">{{user.username}}</td>
                                     {% else %}
                                     <td style="width: 80px;">{{ member.user.username }}</td>
                                     {% endif %}
@@ -302,7 +302,7 @@
                                         {% check_absences recurring_absence_dates|get_key:member.user.username year month_num day as check_recurring_absence %}
                                         {% check_half_day half_days_data|get_key:member.user.username year month_num day as check_half_day %}
                                         {% if check_recurring_absence %}
-                                        <td style="background-color: #ffaa00",  id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                        <td style="background-color: #eeff00",  id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
                                         {% elif check_absence %}
                                         <td style="background-color: #ff0000;", id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
                                         {% elif check_half_day == "A" %}

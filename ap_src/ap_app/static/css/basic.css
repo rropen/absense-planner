@@ -1,5 +1,5 @@
 .active {
-    color: green;
+    color: #01661f;
     
 }
 
@@ -40,20 +40,20 @@ body {
 }
 
 .attending {
-    color: green;
+    color: #01661f;
 }
 
 .not_attending {
-    color: red;
+    color: #ff0000;
 }
 
 .rr-primary {
-    background-color: #10069f;
+    background-color: #206cab;
     color: #fff;
 }
 
 .rr-secondary {
-    background-color: #271EA8;
+    background-color: #206cab;
     color: #fff;
 }
 
@@ -77,12 +77,12 @@ body {
 }
 
 .navbar .active {
-    color: #10069f;
+    color: #206cab;
     background-color: white;
 }
 
 .navbar .dev-active {
-    color: #9f0606;
+    color: #ff0000;
     background-color: white;
 }
 

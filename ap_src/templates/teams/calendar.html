@@ -212,11 +212,11 @@
                         {% for user in users %}
                         <tr>
                             {% if user.role == owner and user.id == current_user.id %}
-                            <td style="background-color: #0e00d6; color:white">{{user.user.username}}(Owner)</td>
+                            <td style="background-color: #206cab; color:white">{{user.user.username}}(Owner)</td>
                             {% elif user.role == owner %}
                             <td>{{user.user.username}}(Owner)</td>
                             {% elif user.id == current_user.id %}
-                            <td style="background-color: #0e00d6; color:white">{{user.user.username}}</td>
+                            <td style="background-color: #206cab; color:white">{{user.user.username}}</td>
                             {% else %}
                             <td>{{user.user.username}}</td>
                             {% endif %}
@@ -226,7 +226,7 @@
                             {% check_absences absence_dates|get_key:user year month_num day as check_absence %}
                             {% check_absences recurring_absence_dates|get_key:user year month_num day as check_recurring_absence %}
                             {% if check_recurring_absence %}
-                            <td style="background-color: #ffaa00"></td>
+                            <td style="background-color: #eeff00"></td>
                             {% elif check_absence %}
                             <td style="background-color: #ff0000"></td>
                             {% else %}

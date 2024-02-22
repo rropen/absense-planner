@@ -10,7 +10,7 @@
     .RefreshBox {
         pointer-events: none;
         text-align: right;
-        background-color: ghostwhite;
+        background-color: rgb(255, 255, 255);
         border: 0px;
         font-size: 11pt;
         width: 24px;
@@ -21,9 +21,9 @@
         border: 1px solid #ff0000;
         border-radius: 12px
     }
-    .button1 {background-color: #f44336;} /* Red */ 
-    .button2 {background-color: #32cd32;} /* Green */
-    .button3 {background-color: #black;} /* Black */ 
+    .button1 {background-color: #ff0000;} /* Red */ 
+    .button2 {background-color: #01661f;} /* Green */
+    .button3 {background-color: #000000;} /* Black */ 
 </style>
 
   
@@ -304,7 +304,7 @@
                     </a>
                     <a id="CalendarFormatAlternate-Linear" title="Main Calendar View">
                         <p class="buttons">
-                            <button class="button " style="border-width:2px; border-color:green;" id="LinearSelect">
+                            <button class="button " style="border-width:2px; border-color:#01661f;" id="LinearSelect">
                                 <span class="icon ">
                                     <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
                                 </span>
@@ -313,7 +313,7 @@
                     </a>
                     <a id="CalendarClick-Toggle" title="Toggle Clickable Calendar">
                         <p class="buttons">
-                            <button class="button " style="border-width:2px; border-color:green" id="ClickToggle">
+                            <button class="button " style="border-width:2px; border-color:#01661f" id="ClickToggle">
                                 <span class="icon ">
                                     <i class="fas fa-mouse-pointer"></i>
                                 </span>
@@ -350,9 +350,9 @@
                 </div>
             </div>
             <!--DIO CHANGES--> <!--This add a text explaining how each colour works, for example half day and full day-->
-        <p style="color:red">Use Left Click to select a full day</p>
-        <p style="color:red">Use Shift Left Click to select a half-day</p>
-        <p style="color:black">If half-day booked, top half of the box means Afternoon has been marked as absence, bottom half means Morning has been marked as absence</p>
+        <p style="color:#ff0000">Use Left Click to select a full day</p>
+        <p style="color:#ff0000">Use Shift Left Click to select a half-day</p>
+        <p style="color:#000000">If half-day booked, top half of the box means Afternoon has been marked as absence, bottom half means Morning has been marked as absence</p>
             <!-- Prototype Grid-Based Calendar -->
             <div id="Grid-Calendar">
 
@@ -411,9 +411,11 @@
                             <th style="color: black;"></th>
                             {% for day in days_name %}
                             {% if day == Sa or day == Su %}
-                            <th style="background-color: #055496; color: white;">{{day}}</th>
+                            <th style="background-color: #206cab; color: white;">{{day}}</th>
                             {% elif forloop.counter in bank_hol%}
                             <th style="background-color: #01661f; color: white;">{{day}}</th>
+                            {% elif forloop.counter == today and month == current_month and year == current_year %}
+                            <th style="background-color: #eeff00; color: rgb(0, 0, 0);">{{day}}</th>
                             {% else %}
                             <th style="background-color: rgb(255, 255, 255); color: black;">{{day}}</th>
                             {% endif %}
@@ -423,11 +425,11 @@
                             <th style="color: black;"></th>
                             {% for day in day_range %}
                             {% if day == today and month == current_month and year == current_year %}
-                            <th style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255);">{{day}}</th>
+                            <th style = "background-color: #d4d800; color: rgb(0, 0, 0);" onmouseover="Test">{{day}}</th>
                             {% elif day in bank_hol %}
                             <td style = "background-color: #28663a; color: rgb(255, 255, 255);" onmouseover="Test">{{day}}</td>
                             {% elif day in weekend_list%}
-                            <td style = "background-color: #206cab; color: rgb(255, 255, 255);">{{day}}</td>
+                            <td style = "background-color: #3c6a8f; color: rgb(255, 255, 255);">{{day}}</td>
                             {% else %}
                             <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
                             {% endif %}
@@ -437,7 +439,7 @@
                             {% for user in users_filter %}
                             <tr>
                                 {% if user.id == users.0.id %}
-                                <td style="background-color: #0e00d6;color: white;">{{user.username}}</td>
+                                <td style="background-color: #ffffff;color: rgb(0, 0, 0);">{{user.username}}</td>
                                 {% else %}
                                     {% if user|check_permissions:users.0 %}
                                         <td>{{user.username}}*</td>
@@ -452,15 +454,29 @@
                                     {% check_absences recurring_absence_dates|get_key:user.username year month_num day as check_recurring_absence %}
                                     {% check_half_day half_days_data|get_key:user.username year month_num day as check_half_day %}
                                     {% if check_recurring_absence %}
-                                        <td style="background-color: #ffaa00",  id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                        <td style="background-color: #ff0000",  id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"><p><b>R</b></p></td>
                                     {% elif check_absence %}
                                         <td style="background-color: #ff0000;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
-                                    {% elif check_half_day == "A" %}
-                                        <td style="background: linear-gradient(to bottom, #ff0000 50%, #ffffff 50%);", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
-                                    {% elif check_half_day == "M" %}
-                                        <td style="background: linear-gradient(to bottom, #ffffff 50%, #ff0000 50%);", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                    {% elif check_half_day == "A" and day == today and month == current_month and year == current_year %}
+                                        <td style="background: linear-gradient(to left, #ff0000 50%, #eeff00 50%);", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                    {% elif check_half_day == "M" and day == today and month == current_month and year == current_year %}
+                                        <td style="background: linear-gradient(to right, #ff0000 50%, #eeff00 50%);", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                    {% elif check_half_day == "A" and day in weekend_list %}
+                                        <td style="background: linear-gradient(to left, #ff0000 50%, #206cab 50%);", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                    {% elif check_half_day == "M" and day in weekend_list %}
+                                        <td style="background: linear-gradient(to left, #206cab 50%, #ff0000 50%);", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                    {% elif check_half_day == "A" and day not in weekend_list and day not in bank_hol %}
+                                        <td style="background: linear-gradient(to left, #ff0000 50%, #ffffff 50%);", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                    {% elif check_half_day == "M" and day not in weekend_list and day not in bank_hol %}
+                                        <td style="background: linear-gradient(to left, #ffffff 50%, #ff0000 50%);", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                    {% elif check_half_day == "A" and day in bank_hol %}
+                                        <td style="background: linear-gradient(to left, #ff0000 50%, #28663a 50%);", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
+                                    {% elif check_half_day == "M" and day in bank_hol %}
+                                        <td style="background: linear-gradient(to right, #ff0000 50%, #28663a 50%);", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE"></td>
                                     {% else %}
-                                        {% if day in bank_hol %}
+                                        {% if day == today and month == current_month and year == current_year %}
+                                            <td style = "background-color: #eeff00;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                        {% elif day in bank_hol %}
                                             <td style = "background-color: #28663a;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                         {% elif day in weekend_list %}
                                             <td style = "background-color: #206cab;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
