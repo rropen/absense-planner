@@ -51,21 +51,21 @@
             <div class="column is-one-third">
                 <div class="field">
                     <label class="label">First Name</label>
-                    <div class ="control">
+                    <div class="control">
                         {% if user.first_name %}
-                        <input class="input is-rounded is-success" type="text" placeholder="First Name" value="{{ user.first_name }}" name="firstName">
+                            <input class="input is-rounded is-success" type="text" placeholder="First Name" value="{{ user.first_name }}" name="firstName">
                         {% else %}
-                        <input class="input is-rounded is-warning" type="text" placeholder="First Name" name="firstName">
+                            <input class="input is-rounded is-warning" type="text" placeholder="First Name" name="firstName">
                         {% endif %}
                     </div>
                 </div>
                 <div class="field">
                     <label class="label">Last Name</label>
-                    <div class ="control">
+                    <div class="control">
                         {% if user.last_name %}
-                        <input class="input is-rounded is-success" type="text" placeholder="Last Name" value="{{ user.last_name }}" name="lastName">
+                            <input class="input is-rounded is-success" type="text" placeholder="Last Name" value="{{ user.last_name }}" name="lastName">
                         {% else %}
-                        <input class="input is-rounded is-warning" type="text" placeholder="Last Name" name="lastName">
+                            <input class="input is-rounded is-warning" type="text" placeholder="Last Name" name="lastName">
                         {% endif %}
                     </div>
                 </div>
@@ -73,12 +73,12 @@
                     <label class="label">Email</label>
                     <div class="control has-icons-right">
                         {% if user.email %}
-                        <input class="input is-rounded is-success" type="email" placeholder="Email Address" name="email" id="email-input" value="{{ user.email }}">
-                        <span class="icon is-small is-right">
-                            <button class="delete" aria-label="delete" onclick="deleteInputtedValue('email-input')"></button>
-                        </span>
+                            <input class="input is-rounded is-success" type="email" placeholder="Email Address" name="email" id="email-input" value="{{ user.email }}">
+                            <span class="icon is-small is-right">
+                                <button class="delete" aria-label="delete" onclick="deleteInputtedValue('email-input')"></button>
+                            </span>
                         {% else %}
-                        <input class="input is-rounded is-warning" type="email" placeholder="Email Address" name="email">
+                            <input class="input is-rounded is-warning" type="email" placeholder="Email Address" name="email">
                         {% endif %}
                     </div>
                 </div>
@@ -92,6 +92,23 @@
                                         <option value="{{country}}" selected="selected">{{country}}</option>
                                     {% else %}
                                         <option value="{{country}}">{{country}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!-- New field for timezone selection -->
+                <div class="field">
+                    <label class="label">Timezone</label>
+                    <div class="control">
+                        <div class="select is-rounded">
+                            <select name="timezone">
+                                {% for tz in timezones %}
+                                    {% if tz == user_timezone %}
+                                        <option value="{{ tz }}" selected="selected">{{ tz }}</option>
+                                    {% else %}
+                                        <option value="{{ tz }}">{{ tz }}</option>
                                     {% endif %}
                                 {% endfor %}
                             </select>
@@ -121,9 +138,9 @@
                     <div class="control">
                         <label>
                             {% if data_privacy_mode %}
-                            <input type="checkbox" checked="checked" name="privacy"></input>
+                                <input type="checkbox" checked="checked" name="privacy"></input>
                             {% else %}
-                            <input type="checkbox" name="privacy"></input>
+                                <input type="checkbox" name="privacy"></input>
                             {% endif %}
                             Keep data private (Hide data from non team members)
                         </label>
@@ -131,9 +148,9 @@
                     <div class="control">
                         <label>
                             {% if external_teams %}
-                            <input type="checkbox" checked="checked" name="teams"></input>
+                                <input type="checkbox" checked="checked" name="teams"></input>
                             {% else %}
-                            <input type="checkbox" name="teams"></input>
+                                <input type="checkbox" name="teams"></input>
                             {% endif %}
                             Use the team app data instead of local data
                         </label>
@@ -167,9 +184,7 @@
             });
         }
     </script>
-    <script src="{% static "js/profile_update.js" %}">
-
-    </script>
+    <script src="{% static "js/profile_update.js" %}"></script>
 
 </body>
 {% endblock %}
