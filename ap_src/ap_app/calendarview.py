@@ -76,7 +76,7 @@ def all_calendar(
         try:
             token = (str(request.user) + "AbsencePlanner").encode()
             encryption = hashlib.sha256(token).hexdigest()
-            if requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username), headers={"TEAMS-TOKEN": encryption}).status_code == 200:
+            if requests.get(env("TEAM_DATA_URL") + "api/user/teams/?format=json&username={}".format(request.user.username), headers={"TEAMS-TOKEN": encryption}).status_code == 200:
                 return redirect("/calendar/1")
         except:
             print("Failed to load api")
@@ -262,7 +262,7 @@ def api_calendar_view(
         try:
             token = (str(request.user) + "AbsencePlanner").encode()
             encryption = hashlib.sha256(token).hexdigest()
-            r = requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username), headers={"TEAMS-TOKEN": encryption})
+            r = requests.get(env("TEAM_DATA_URL") + "api/user/teams/?format=json&username={}".format(request.user.username), headers={"TEAMS-TOKEN": encryption})
         except:
             print("API failed to connect")
             return redirect("/")

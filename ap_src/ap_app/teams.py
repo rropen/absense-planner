@@ -50,7 +50,7 @@ def teams_dashboard(request) -> render:
     try:
         token = (str(request.user) + "AbsencePlanner").encode()
         encryption = hashlib.sha256(token).hexdigest()
-        r = requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username), headers={"TEAMS-TOKEN": encryption})
+        r = requests.get(env("TEAM_DATA_URL") + "api/user/teams/?username={}".format(request.user.username), headers={"TEAMS-TOKEN": encryption})
     except:
         return render(
         request,
@@ -96,6 +96,12 @@ def create_team(request) -> render:
             return redirect("/teams/", {"message": "Team successfully created."})
     else:
         form = CreateTeamForm()
+
+    try:
+        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
+    except IndexError:
+        return redirect("/")
+
     teams = Team.objects.all()
     existing_teams = ""
     existing_teams_ids = ""
@@ -113,6 +119,8 @@ def create_team(request) -> render:
             "form": form,
             "existing_teams": existing_teams,
             "existing_teams_ids": existing_teams_ids,
+            "api_enabled": userprofile.external_teams,
+            "api_url": env("TEAM_DATA_URL") + "api/teams/"
         },
     )
 

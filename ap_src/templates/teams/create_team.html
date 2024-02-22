@@ -13,7 +13,11 @@
 <div class="main container">
     
     <h1 class="title">Create a Team</h1>
+    {% if api_enabled %}
+    <form method="post" class="text-center" action="{{ api_url }}">
+    {% else %}
     <form method="post" class="text-center">
+    {% endif %}
         {% if message %}
         {% include "messages.html" %}
         {% endif %}
@@ -29,6 +33,7 @@
 
 
     <h2 class="description"><b>Please avoid using personal information in the description as it will be seen by non team members.<b></h2>
+    <input type="hidden" name="url" value="{{ request.get_host }}">
     <input id="submit" class="button is-link" type="submit" value="Submit" onclick="makeAlert()">
     </form>
 </div>

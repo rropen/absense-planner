@@ -31,7 +31,7 @@ from .teams import *
 
 from .forms import *
 from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
-                     UserProfile)
+                     UserProfile, RecurringException)
 
 def get_absence_data(users, user_type):
     data = {}
