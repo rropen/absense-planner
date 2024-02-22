@@ -31,7 +31,8 @@ environ.Env.read_env()
 
 # this check should be activated when the user leaves a team
 @login_required
-def check_for_lingering_switch_perms(request, user_giving_perms): # stops users from having switch perms when they don't share any teams
+def check_for_lingering_switch_perms(request): # stops users from having switch perms when they don't share any teams
+    user_edited = request.user.username
     users_with_perms = grab_users_with_perms(request)
     users_sharing_teams = grab_users_sharing_teams(request)
     print(users_with_perms)
@@ -40,7 +41,6 @@ def check_for_lingering_switch_perms(request, user_giving_perms): # stops users 
     for user_with_perms in users_with_perms:
         if user_with_perms not in users_sharing_teams:
             print("Redundant permissions found for", user_with_perms + "!")
-            remove_switch_perms(request, user_with_perms)
     """
     SET user ID whose absences are being edited AS (int) user_ID_edited
     SET user IDs with permission to edit absences AS (list of int) user_IDs_with_perms
@@ -63,8 +63,8 @@ def check_for_teams_in_common(request, user_being_given_perms): # this stops use
     return True
 
 @login_required
-def grab_users_sharing_teams(request, user_giving_perms):
-    response = requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(user_giving_perms))
+def grab_users_sharing_teams(request):
+    response = requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username))
     teams = response.json()
 
     users_sharing_teams = []
@@ -78,8 +78,9 @@ def grab_users_sharing_teams(request, user_giving_perms):
     return users_sharing_teams
 
 @login_required
-def grab_users_with_perms(request, user_giving_perms):
-    user_profiles_with_perms = UserProfile.objects.filter(edit_whitelist__username=user_giving_perms)
+def grab_users_with_perms(request):
+    current_username = request.user.username
+    user_profiles_with_perms = UserProfile.objects.filter(edit_whitelist__username=current_username)
     user_ids_with_perms = user_profiles_with_perms.values_list("user_id", flat=True)
     user_ids_with_perms = list(user_ids_with_perms)
 
@@ -91,7 +92,3 @@ def grab_users_with_perms(request, user_giving_perms):
         usernames_with_perms.append(username_matching_user_id)
     
     return usernames_with_perms
-
-@login_required
-def remove_switch_perms(request, username):
-    pass
