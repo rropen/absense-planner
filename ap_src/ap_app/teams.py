@@ -125,6 +125,7 @@ def create_team(request) -> render:
     )
 
 
+
 @login_required
 def join_team(request) -> render:
     """Renders page with all teams the user is not currently in"""
@@ -145,10 +146,26 @@ def join_team(request) -> render:
     else:
         all_teams_filtered = all_teams
 
+    try:
+        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
+    except IndexError:
+        return redirect("/")
+    
+    data = None
+    api_enabled = False
+    if userprofile.external_teams:
+        try:
+            r = requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username))
+        except:
+            print("Api failed to load")
+        if r != None and r.status_code == 200:
+            data = r.json()
+            api_enabled = True
+
     return render(
         request,
         "teams/join_team.html",
-        {"all_teams": all_teams_filtered, "joined_teams": user_teams},
+        {"all_teams": all_teams_filtered, "joined_teams": user_teams, "api_enabled": api_enabled, "team_data": data},
     )
 
 
