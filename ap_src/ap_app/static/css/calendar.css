@@ -22,7 +22,7 @@
     display: none;
     position: fixed;
     z-index: 5;
-   background-color: #479efa/*rgba(23, 13, 213, 0.3);  Blue background with transparency */
+   background-color: #479efa/* Blue background with transparency */
     /* Add other styling properties as needed */
 }
 
