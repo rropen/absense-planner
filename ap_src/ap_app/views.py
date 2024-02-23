@@ -33,9 +33,10 @@ from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
 env = environ.Env()
 environ.Env.read_env()
 
-def index(request) -> render:
-    """Branched view.                       \n
-    IF NOT Logged in: returns the home page \n
+
+def index(request):
+    """Branched view.
+    IF NOT Logged in: returns the home page
     ELSE: returns the calendar page"""
 
     # If its the first time a user is logging in, will create an object of UserProfile model for that user.
@@ -46,7 +47,7 @@ def index(request) -> render:
         else:
             user = UserProfile.objects.filter(user=request.user)[0]
             user.edit_whitelist.add(request.user)
-        # Until the accepted_policy field is checked, the user will keep being redirected to the policy page to accept
+
         if not user.accepted_policy:
             return privacy_page(request, to_accept=True)
 
@@ -55,11 +56,11 @@ def index(request) -> render:
         user = UserProfile.objects.get(user=request.user)
         user.edit_whitelist.add(request.user)
         return all_calendar(request)
+
     return render(request, "ap_app/index.html")
 
 
-def privacy_page(request, to_accept=False) -> render:
-    # If true, the user accepted the policy
+def privacy_page(request, to_accept=False):
     if request.method == "POST":
         user = find_user_obj(request.user)
         user.accepted_policy = True
@@ -67,12 +68,11 @@ def privacy_page(request, to_accept=False) -> render:
 
     # If the user has been redirected from home page to accepted policy
     elif to_accept:
-        return render(
-            request, "registration/accept_policy.html", {"form": AcceptPolicyForm()}
-        )
+        return render(request, "registration/accept_policy.html", {"form": AcceptPolicyForm()})
     else:
         # Viewing general policy page - (Without the acceptancy form)
         return render(request, "ap_app/privacy.html")
+
     return all_calendar(request)
 
 
@@ -83,45 +83,35 @@ class SignUpView(CreateView):
 
 
 @login_required
-def teams_dashboard(request) -> render:
+def teams_dashboard(request):
     rels = Relationship.objects.order_by(Lower("team__name")).filter(
         user=request.user, status=Status.objects.get(status="Active")
     )
     invite_rel_count = Relationship.objects.filter(
         user=request.user, status=Status.objects.get(status="Invited")
     ).count()
-    
+
     try:
         r = requests.get("http://localhost:8000/api/teams/?username={}".format(request.user.username))
-    except:
-        return render(
-        request,
-        "teams/dashboard.html",
-        {"rels": rels, "invite_count": invite_rel_count, "external_teams": False, "teamspage_active": True})
-    if r.status_code == 200:
-        if len(r.json()) == 0 :
-            external_teams_data = False
+        if r.status_code == 200:
+            external_teams_data = r.json() if len(r.json()) > 0 else False
         else:
-            external_teams_data = r.json()
-    else:
+            external_teams_data = False
+    except requests.exceptions.RequestException:
         external_teams_data = False
+
     return render(
         request,
         "teams/dashboard.html",
         {"rels": rels, "invite_count": invite_rel_count, "external_teams": external_teams_data, "teamspage_active": True},
     )
 
-
 @login_required
-def create_team(request) -> render:
+def create_team(request):
     if request.method == "POST":
         form = CreateTeamForm(request.POST)
         if form.name_similarity():
-            # TODO: write code to tell the user that their team name is similar and to give them
-            # options to change the team name.
-            return HttpResponse(
-                "Debug: Did not create form because the name is too similar to another team name"
-            )
+            return HttpResponse("Debug: Did not create form because the name is too similar to another team name")
 
         if form.is_valid():
             form.save()
@@ -138,15 +128,10 @@ def create_team(request) -> render:
             return redirect("/teams/", {"message": "Team successfully created."})
     else:
         form = CreateTeamForm()
+
     teams = Team.objects.all()
-    existing_teams = ""
-    existing_teams_ids = ""
-    for i, team in enumerate(teams):
-        existing_teams += team.name
-        existing_teams_ids += str(team.id)
-        if i != len(teams) - 1:
-            existing_teams += ","
-            existing_teams_ids += ","
+    existing_teams = ",".join(team.name for team in teams)
+    existing_teams_ids = ",".join(str(team.id) for team in teams)
 
     return render(
         request,
@@ -303,6 +288,30 @@ def team_misc(request, id):
         )
     return redirect("dashboard")
 
+
+@login_required
+def join_requests(request, id):
+    team = Team.objects.get(id=id)
+    
+    if is_owner(user=request.user, team_id=id): 
+        all_pending_relations = Relationship.objects.filter(
+            team=id, status=Status.objects.get(status="Pending")
+        )
+        return render(
+            request,
+            "teams/join_requests.html",
+            {
+                "user": request.user,
+                "team": team,
+                "pending_rels": all_pending_relations,
+                "Team_users": team.users,
+                "member": Role.objects.get(role="Member"),
+                "coowner": Role.objects.get(role="Co-Owner"),
+                "follower": Role.objects.get(role="Follower"),
+                "owner": Role.objects.get(role="Owner"),
+            },
+        )
+    return redirect("dashboard")
 
 @login_required
 def team_settings(request, id):

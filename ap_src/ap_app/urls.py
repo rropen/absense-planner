@@ -20,6 +20,7 @@ urlpatterns = [
     path("teams/join/<int:id>/<str:role>", views.joining_team_process, name="join_team_2"),
     path("teams/join/apply/<int:id>/<str:response>", views.joining_team_request, name="joining_team_request"),
     path("teams/leave/<int:id>", views.leave_team, name="leave_team"),
+    path("teams/join_requests/<int:id>/", views.join_requests, name="join_requests"),
     path("teams/settings/<int:id>/", views.team_settings, name="team_settings"),
     path("teams/calendar/<int:id>", views.team_calendar, name="Calendar"),
     path("teams/calendar/<int:id>/<str:month>/<int:year>", views.team_calendar, name="calendar"),
