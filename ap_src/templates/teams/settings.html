@@ -4,31 +4,6 @@
 {% load static %}
 {% block content %}
 <div class="container">
-    <table class="table is-striped" style="width:100%">
-        <thead>
-            <th class="is-light is-size-5 has-text-weight-bold">Joining Requests</th>
-        </thead>
-        <tbody>
-            {% for pending_rel in pending_rels %}
-            <tr>
-                <td class="columns">
-                    <div class="column">
-                        <span class="is-size-6 has-text-weight-bold">User: {{pending_rel.user.username}}</span>
-                    </div>
-                    <div class="column">
-                        <span class="is-size-6 has-text-weight-bold">Applied for: {{pending_rel.role.role}}</span>
-                    </div>
-                    <div class="column has-text-right">
-                        <a id="accept_{{pending_rel.user.username}}" href="{% url 'joining_team_request' pending_rel.id 'accepted' %}"
-                            class="button is-success is-size-9 mx-2">Accept</a>
-                        <a id="decline_{{pending_rel.user.username}}" href="{% url 'joining_team_request' pending_rel.id 'nonactive' %}"
-                            class="button is-danger is-size-9">Decline</a>
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
     <div class="content">
         <h2>Users</h2>
         <div class="columns is-multiline">

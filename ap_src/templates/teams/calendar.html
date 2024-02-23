@@ -41,6 +41,12 @@
                     <a id="settings" class="button is-info is-outlined mx-1" href="{% url 'team_settings' team.id %}">
                         <i class="fas fa-cog"></i>
                     </a>
+                    <a id="join_requests" class="button is-primary modal-button mx-2" href="{% url 'join_requests' team.id %}">
+                        <span class="icon">
+                            <i class="fas fa-envelope"></i>
+                            <span id="join_requests_count" class="tag is-danger is-rounded is-size-7" style="position: absolute; top: -8px; right: -8px;">0</span>
+                        </span>
+                    </a>
                     {% endif %}
 
                     <a id="leave" class="button is-danger" href="{% url 'leave_team' current_user.id %}">Leave</a>
