@@ -13,24 +13,24 @@
     <div class="container">
         <div class="columns is-centered">
             <div class="column is-one-quarter">
-                <article class="message is-" style="display: none; position: fixed; z-index: 5;", id="halfDayConfirmation">
+                <article class="message is-confirmation" style="display: none; position: fixed; z-index: 5;", id="halfDayConfirmation">
                     <div class="message-header">
                         <h1><b>You are creating a half-day booking</b></h1>                   
                         <button class="delete" aria-label="delete" id="halfDayClose"></button>
                     </div>
-                    <div class="message-body" style="text-align:center;">
+                    <div class="message-body" style="text-align:center; color: white;">
                         <p><b>Select Time</b></p>
                         <p>Morning or Afternoon?</p>
-                        <button class="button button3" id="halfDayMorning"><b>Morning</b></button>
-                        <button class="button button3" id="halfDayAfternoon"><b>Afternoon</b></button>
+                        <button class="button button4" id="halfDayMorning"style="color: white;"><b>Morning</b></button>
+                        <button class="button button4" id="halfDayAfternoon"style="color: white;"><b>Afternoon</b></button>
                     </div>
                 </article>
-                <article class="message is-" style="display: none; position: fixed; z-index: 5;" id="confirmationBox">
+                <article class="message is-confirmation" style="display: none; position: fixed; z-index: 5;" id="confirmationBox">
                     <div class="message-header">
                         <p>Absence Removal</p>
                         <button class="delete" aria-label="delete" id="absenceClose"></button>
                     </div>
-                    <div class="message-body" style="text-align: center;">
+                    <div class="message-body" style="text-align: center; color: white;">
                         <h1><b>This will make you Remove an Absence</b></h1>
                         <p>Are you sure you want to remove this Absence?</p>
                         <button class="button button2", id="removeAbsence"><b>Remove Absence</b></button>
@@ -309,7 +309,7 @@
                             </button>
                         </p>
                     </a>
-                    <article class="message is-" style="display: none; position: fixed; z-index: 5;" id="confirmationBox" >
+                    <article class="message is-confirmation" id="confirmationBox" >
                         <div class="message-header">
                             <p>Absence Removal</p>
                             <button class="delete" aria-label="delete" id="question-mark"></button>
