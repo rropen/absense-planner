@@ -35,12 +35,11 @@ def check_for_lingering_switch_perms(request): # stops users from having switch 
     user_edited = request.user.username
     users_with_perms = grab_users_with_perms(request)
     users_sharing_teams = grab_users_sharing_teams(request)
-    print(users_with_perms)
-    print(users_sharing_teams)
 
     for user_with_perms in users_with_perms:
         if user_with_perms not in users_sharing_teams:
             print("Redundant permissions found for", user_with_perms + "!")
+            remove_switch_permissions(request, user_with_perms)
     """
     SET user ID whose absences are being edited AS (int) user_ID_edited
     SET user IDs with permission to edit absences AS (list of int) user_IDs_with_perms
@@ -92,3 +91,21 @@ def grab_users_with_perms(request):
         usernames_with_perms.append(username_matching_user_id)
     
     return usernames_with_perms
+
+@login_required
+def remove_switch_permissions(request, selected_username): # selected here meaning the user we want to remove perms from, current meaning the one sending the request
+    current_username = request.user.username
+    current_user_id = get_user_id_from_username(current_username)
+    current_userprofile = UserProfile.objects.get(user_id=current_user_id)
+
+    # selected_username
+    selected_user = User.objects.get(username=selected_username)
+
+    current_userprofile.edit_whitelist.remove(selected_user)
+
+def get_user_id_from_username(selected_username):
+    user_matching_user_id = User.objects.filter(username=selected_username)
+    user_id_matching_username = user_matching_user_id.values_list("id", flat=True)
+    user_id_matching_username = int(user_id_matching_username[0])
+
+    return user_id_matching_username
