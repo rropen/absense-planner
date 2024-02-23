@@ -312,7 +312,6 @@ def api_calendar_view(
     for i in range({"Mo":0, "Tu":1, "We":2, "Th":3, "Fr":4, "Sa":5, "Su":6}[data_1["days_name"][0]]):
         grid_calendar_month_values.insert(0, -1)
 
-
     context = {
         **data_1,
         **data_2,
