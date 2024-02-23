@@ -6,26 +6,8 @@
 {% block title %}Calendar{% endblock %}
 {% load static %}
 {% block content %}
-<style>
-    .RefreshBox {
-        pointer-events: none;
-        text-align: right;
-        background-color: ghostwhite;
-        border: 0px;
-        font-size: 11pt;
-        width: 24px;
-        height: 12px;
-    }
-    .AbsenceBox {
-        background-color: #ff0000;
-        border: 1px solid #ff0000;
-        border-radius: 12px
-    }
-    .button1 {background-color: #f44336;} /* Red */ 
-    .button2 {background-color: #32cd32;} /* Green */
-    .button3 {background-color: #black;} /* Black */ 
-</style>
 
+<link rel="stylesheet" href="{% static 'css/calendar.css' %}">
   
 <div class="main">
     <div class="container">

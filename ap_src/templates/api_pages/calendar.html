@@ -6,22 +6,8 @@
 {% block title %}Calendar{% endblock %}
 {% load static %}
 {% block content %}
-<style>
-    .RefreshBox {
-        pointer-events: none;
-        text-align: right;
-        background-color: ghostwhite;
-        border: 0px;
-        font-size: 11pt;
-        width: 24px;
-        height: 12px;
-    }
-    .AbsenceBox {
-        background-color: #ff0000;
-        border: 1px solid #ff0000;
-        border-radius: 12px
-    }
-</style>
+
+<link rel="stylesheet" href="{% static 'css/calendar.csssettings.css' %}">
 
 <div class="main">
     <div class="container">
