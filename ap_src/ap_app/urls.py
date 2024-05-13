@@ -6,6 +6,9 @@ js_info_dict = {
 }
 
 from django.conf.urls import handler404, handler500
+from django.urls import re_path
+from django.views.static import serve
+from django.conf import settings
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -46,8 +49,10 @@ urlpatterns = [
     path("profile/settings/set-region", views.set_region, name="set-region"),
     path("calendar/set_month",views.set_calendar_month, name="set_month"),
     path("calendar/1/", views.api_calendar_view, name="api_calendar"),
-    path("calendar/1/<str:month>/<int:year>", views.api_calendar_view, name="api_calendar")
-]
+    path("calendar/1/<str:month>/<int:year>", views.api_calendar_view, name="api_calendar"),
+    re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}) #This lets Django find the CSS files when debug is set to false
+
+] 
 
 handler404 = 'ap_app.errors.handler404'
 handler500 = 'ap_app.errors.handler500'

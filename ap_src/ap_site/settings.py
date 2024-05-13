@@ -31,6 +31,9 @@ SECRET_KEY = "django-insecure-duam^e#bui)v&(*6!z5j1_9!mm55v#o(b_ni77ttxm#55bzs=1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+#Location of the CSS files
+STATIC_ROOT = BASE_DIR / 'static/css'
+
 ALLOWED_HOSTS = ["*"]
 
 
