@@ -472,3 +472,38 @@ def is_owner(user, team_id) -> bool:
     
     user_relation = Relationship.objects.get(team=team_id, user=user)
     return (user_relation.role.role == "Owner")
+
+
+def edit_api_data(userprofile, name):
+    data = None
+    if userprofile.external_teams:
+        try:
+            r = requests.get(env("TEAM_DATA_URL") + "api/members/?team={}".format(name))
+            data = r.json()
+        except:
+            raise NotImplementedError("Could not find API (No error page)")
+        
+        if r.status_code != 200:
+            raise NotImplementedError("Invalid team name (No error page)")
+    else:
+        raise NotImplementedError("The API setting is not enabled in your profile. (No error page)")
+    
+    return data
+
+#This page allows owners of a team to modify differnt properties of a team.
+#Links to: teams/edit_team.html
+@login_required
+def edit_team(request:HttpRequest, name):
+
+    if not name:
+        return JsonResponse({"Error": "Team name not found"})
+
+    userprofile: UserProfile = UserProfile.objects.get(user=request.user)
+
+    api_data = edit_api_data(userprofile, name)
+    if api_data == None:
+        raise ValueError("Invalid API Data")
+    
+    roles = Role.objects.all()
+
+    return render(request, "teams/edit_team.html", context={"team": api_data[0], "roles": roles})

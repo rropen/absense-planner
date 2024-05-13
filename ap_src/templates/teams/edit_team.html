@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load bulma_tags %}
+{% load static %}
+{% block title %}Edit Team{% endblock %}
+
+{% block content %}
+<div class="container is-centered p-5">
+        <h1 class="title">{{ team.name }}</h1>
+        <h2 class="subtitle">{{ team.description }}</h2>
+
+        <div class="has-background-light box">
+            <span class="is-block is-size-5 has-text-weight-bold">
+                <i class="fas fa-users"></i>
+                Members
+            </span>
+            {% for role in roles %}
+            <span class="is-block is-size-6 has-text-weight-bold">{{ role }}s</span>
+            <div class="field is-grouped is-grouped-multiline">
+                {% for member in team.members %}
+                    {% if member.user.role_info.role == role.role %}
+                    <span class="tag is-dark">
+                        {{ member.user.username }}
+                    </span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+</div>
+{% endblock %}

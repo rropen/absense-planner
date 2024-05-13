@@ -28,6 +28,7 @@ urlpatterns = [
     path("teams/settings/demote/<int:id>/<int:user_id>", views.demote_team_member, name="demote_team_member"),
     path("teams/settings/remove/<int:id>/<int:user_id>", views.remove_team_member, name="remove_team_member"),
     path("teams/misc/<int:id>", views.team_misc, name="misc"),
+    path("teams/edit/<str:name>", views.edit_team, name="edit_team"),
     path("absence/add", teams.manual_add, name="add"),
     path("absence/add_recurring", views.add_recurring, name="add_recurring"),
     path("profile/", views.profile_page, name="profile"),
