@@ -71,7 +71,7 @@ def teams_dashboard(request) -> render:
 
 
 @login_required
-def create_team(request) -> render:
+def create_team(request:HttpRequest) -> render:
     if request.method == "POST":
         form = CreateTeamForm(request.POST)
         if form.name_similarity():
@@ -82,18 +82,26 @@ def create_team(request) -> render:
             )
 
         if form.is_valid():
-            form.save()
-            # Gets the created team and "Owner" Role and creates a Link between
-            # the user and their team
-            created_team = Team.objects.get(name=form.cleaned_data["name"])
-            assign_role = Role.objects.get(role="Owner")
-            Relationship.objects.create(
-                user=request.user,
-                team=created_team,
-                role=assign_role,
-                status=Status.objects.get(status="Active"),
-            )
-            return redirect("/teams/", {"message": "Team successfully created."})
+            # form.save()
+            # # Gets the created team and "Owner" Role and creates a Link between
+            # # the user and their team
+            # created_team = Team.objects.get(name=form.cleaned_data["name"])
+            # assign_role = Role.objects.get(role="Owner")
+            # Relationship.objects.create(
+            #     user=request.user,
+            #     team=created_team,
+            #     role=assign_role,
+            #     status=Status.objects.get(status="Active"),
+            # )
+            # return redirect("/teams/", {"message": "Team successfully created."})
+            response = requests.post(env("TEAM_DATA_URL") + "api/teams/?format=json", data=request.POST)
+            if response.status_code == 200:
+                return redirect("/teams")
+            elif response.status_code == 400:
+                context = {"form": form}
+                if response.json()["name"] != None:
+                    context["message"] = "That team name already exists"
+                return render(request, "teams/create_team.html", context=context)
     else:
         form = CreateTeamForm()
 
@@ -120,7 +128,7 @@ def create_team(request) -> render:
             "existing_teams": existing_teams,
             "existing_teams_ids": existing_teams_ids,
             "api_enabled": userprofile.external_teams,
-            "api_url": env("TEAM_DATA_URL") + "api/teams/"
+            "api_url": env("TEAM_DATA_URL") + "api/teams/?format=json"
         },
     )
 
