@@ -273,7 +273,7 @@
                 </form>
 
 
-                    <a id="CalendarFormatAlternate-Grid" title="Alternate Calendar View">
+                <!--   <a id="CalendarFormatAlternate-Grid" title="Alternate Calendar View">
                         <p class="buttons">
                             <button class="button " style="border-width:2px;" id="GridSelect">
                                 <span class="icon ">
@@ -282,6 +282,7 @@
                             </button>
                         </p>
                     </a>
+                   
                     <a id="CalendarFormatAlternate-Linear" title="Main Calendar View">
                         <p class="buttons">
                             <button class="button " style="border-width:2px; border-color:green;" id="LinearSelect">
@@ -291,6 +292,7 @@
                             </button>
                         </p>
                     </a>
+                     --> 
                     <a id="CalendarClick-Toggle" title="Toggle Clickable Calendar">
                         <p class="buttons">
                             <button class="button " style="border-width:2px; border-color:green" id="ClickToggle">
@@ -356,7 +358,7 @@
         <p style="color:red">Use Shift Left Click to select a half-day</p>
         <p style="color:black">If half-day booked, top half of the box means Afternoon has been marked as absence, bottom half means Morning has been marked as absence</p>
              Prototype Grid-Based Calendar -->
-            <div id="Grid-Calendar">
+            {% comment %} <div id="Grid-Calendar">
 
                 <table class="table is-bordered is-striped" style="width:auto; display:inline-block;">
                     <!-- Thread has constant values - (day headings) which is the very top row -->
@@ -402,7 +404,7 @@
                     {% endfor %}
                 </table>
             </div>
-
+ {% endcomment %}
 
 
             <!-- Calendar starts here . . . -->
@@ -514,7 +516,7 @@
     //     )
     // });
 
-    $("#Grid-Calendar").hide();
+    {% comment %} $("#Grid-Calendar").hide();
     
     $("#CalendarFormatAlternate-Grid").click(function() {
           
@@ -534,7 +536,7 @@
         $("#LinearSelect").css("border-color", "green");
         $("#GridSelect").css("border-color", "");
 
-    });
+    }); {% endcomment %}
     {% comment %} var calendarCickToggle = true;
     //This is a script to detect what id has been clicked on then add that day to be absence
     var csrftoken = '{{ csrf_token }}';
