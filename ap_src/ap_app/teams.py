@@ -482,11 +482,11 @@ def is_owner(user, team_id) -> bool:
     return (user_relation.role.role == "Owner")
 
 
-def edit_api_data(userprofile, name):
+def edit_api_data(userprofile, id):
     data = None
     if userprofile.external_teams:
         try:
-            r = requests.get(env("TEAM_DATA_URL") + "api/members/?team={}".format(name))
+            r = requests.get(env("TEAM_DATA_URL") + "api/members/?id={}".format(id))
             data = r.json()
         except:
             raise NotImplementedError("Could not find API (No error page)")
@@ -501,14 +501,14 @@ def edit_api_data(userprofile, name):
 #This page allows owners of a team to modify differnt properties of a team.
 #Links to: teams/edit_team.html
 @login_required
-def edit_team(request:HttpRequest, name):
+def edit_team(request:HttpRequest, id):
 
-    if not name:
+    if not id:
         return JsonResponse({"Error": "Team name not found"})
 
     userprofile: UserProfile = UserProfile.objects.get(user=request.user)
 
-    api_data = edit_api_data(userprofile, name)
+    api_data = edit_api_data(userprofile, id)
     if api_data == None:
         raise ValueError("Invalid API Data")
     

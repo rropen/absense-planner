@@ -239,6 +239,59 @@ def team_calendar(
 
     return redirect("dashboard")
 
+def team_calendar_data(id):
+    data = None
+
+    try:
+        response = requests.get(env("TEAM_DATA_URL") + "api/members/?id={}".format(id))
+        data = response.json()
+    except:
+        # TODO Create error page for API failure
+        raise NotImplementedError("Failed to retrieve API data (No error page)")
+    
+    if response.status_code != 200:
+        raise NotImplementedError("Failed to retrieve API data (No error page)")
+    
+    return data
+
+#JC - Specific team calendar using the API
+@login_required
+def api_team_calendar(
+    request:HttpRequest,
+    id,
+    month=datetime.datetime.now().strftime("%B"),
+    year=datetime.datetime.now().year
+):
+    
+    date = check_calendar_date(year, month)
+    if date:
+        month = date.strftime("%B")
+        year = date.year
+
+    try:
+        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
+    except IndexError:
+        # TODO Create an error page if a userprofile is not found.
+        raise NotImplementedError("Invalid User profile (No error page)")
+    
+    dates = get_date_data(userprofile.region, month, year)
+
+    team_data = team_calendar_data(id)
+    user_data = None
+    for user in team_data[0]["members"]:
+        if user["user"]["username"] == request.user.username:
+            user_data = user["user"]
+    
+    data = {
+        **dates,
+        "team": team_data[0],
+        "user_data": user_data,
+        "id": id
+    }
+
+    return render(request, "api_pages/team_calendar.html", data)
+
+
 #JC - Calendar view using the API
 @login_required
 def api_calendar_view(

@@ -26,5 +26,30 @@
             </div>
             {% endfor %}
         </div>
+        <div class="has-background-light box">
+            <span class="is-block is-size-5 has-text-weight-bold">
+                <i class="fas fa-cog"></i>
+                Team Management
+            </span>
+            <form class="py-1">
+                {% csrf_token %}
+                <div class="field">
+                    <label class="label">Name:</label>
+                    <input class="input" type="text" value="{{ team.name }}" required/> 
+                </div>
+                <div class="field">
+                    <label class="label py-1">Description:</label>
+                    <textarea class="textarea">{{ team.description }}</textarea>
+                </div>
+                <div class="field">
+                    <label class="label py-1">Private:</label>
+                    <label class="checkbox">
+                        <input type="checkbox" />
+                        Private Team
+                    </label>
+                </div>
+                <input class="button is-link" type="submit" value="Submit" />
+            </form>
+        </div>
 </div>
 {% endblock %}

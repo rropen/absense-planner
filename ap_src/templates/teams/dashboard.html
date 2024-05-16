@@ -106,9 +106,9 @@
         </div>
         <span class="is-block is-size-6">{{team.team.description}}</span>
         <div class="level-right mt-3">
-            <a class="button is-link mx-1">View</a>
+            <a class="button is-link mx-1" href={% url 'api_team_calendar' id=team.team.id %}>View</a>
             {% if team.role.role == "Owner" or team.role.role == "Co-Owner"%}
-            <a class="button is-info mx-1" href={% url 'edit_team' name=team.team.name %}>Edit</a>
+            <a class="button is-info mx-1" href={% url 'edit_team' id=team.team.id %}>Edit</a>
             {% endif %}
             <a class="button is-danger mx-1">Leave</a>
         </div>
