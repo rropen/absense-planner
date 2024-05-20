@@ -96,7 +96,7 @@ def create_team(request:HttpRequest) -> render:
             # return redirect("/teams/", {"message": "Team successfully created."})
             response = requests.post(env("TEAM_DATA_URL") + "api/teams/?format=json", data=request.POST)
             if response.status_code == 200:
-                return redirect("/teams")
+                return redirect("/teams/api-calendar/" + str(response.json()["id"]))
             elif response.status_code == 400:
                 context = {"form": form}
                 if response.json()["name"] != None:

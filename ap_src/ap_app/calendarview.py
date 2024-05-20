@@ -276,15 +276,25 @@ def api_team_calendar(
     
     dates = get_date_data(userprofile.region, month, year)
 
-    team_data = team_calendar_data(id)
+    team_data = team_calendar_data(id)[0]
+
+    #Get absence data
+    team_users = []
     user_data = None
-    for user in team_data[0]["members"]:
+    for user in team_data["members"]:
+        user_instance = User.objects.filter(username=user["user"]["username"])
+        if user_instance.exists() and user_instance not in team_users:
+            team_users.append(user_instance[0])
+
         if user["user"]["username"] == request.user.username:
             user_data = user["user"]
+
+    absence_data = get_absence_data(team_users, 2)
     
     data = {
         **dates,
-        "team": team_data[0],
+        **absence_data,
+        "team": team_data,
         "user_data": user_data,
         "id": id
     }
@@ -321,6 +331,7 @@ def api_calendar_view(
             return redirect("/")
         if r.status_code == 200:
             api_data = r.json()
+            print(r.elapsed.total_seconds())
         else:
             if r:
                 result = r.json()

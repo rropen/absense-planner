@@ -205,7 +205,7 @@
                     </select>
                 </div>
             </form>
-            <a class="button" title="Toggle Clickable Calendar" style="border-width:2px; border-color:green">
+            <a class="button" title="Toggle Clickable Calendar" style="border-width:2px; border-color:green" id="ClickToggle">
                 <i class="fas fa-mouse-pointer"></i>
             </a>
             <span class="is-block is-size-5 has-text-weight-semibold pl-3">{{ month }} {{ year }}</span>
@@ -248,7 +248,7 @@
                     {% if user.user.username == user_data.username %}
                     <td style="background-color: #0e00d6;color: white;">{{ user.user.username }}</td>
                     {% else %}
-                        {% if user|check_permissions:users.0 %}
+                        {% if user|check_permissions:users.0.user.id %}
                         <td>{{user.user.username}}*</td>
                         {% else %}
                             <td>{{user.user.username}}</td>
@@ -282,4 +282,5 @@
         </table>
     </div>
 </section>
+<script src="{% static "js/api_calendar.js" %}" token="{{ csrf_token }}">
 {% endblock %}
