@@ -4,9 +4,9 @@ from ap_app.models import UserProfile
 register = template.Library()
 
 
-@register.filter(name="check_permissions")
+@register.simple_tag
 def check_permissions(user, active_user):
-    perm_list = UserProfile.objects.filter(user=user)[0].edit_whitelist.all()
+    perm_list = UserProfile.objects.get(user__username=user["user"]["username"]).edit_whitelist.all()
     if active_user in perm_list:
         return True
     else:

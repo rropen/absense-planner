@@ -8,6 +8,21 @@
 {% load static %}
 
 {% block content %}
+<div class="modal" id="confirmationBox">
+    <div class="modal-background"></div>
+    <article class="message is-danger modal-card" style="width: 25%;">
+        <div class="message-header">
+            <p>Absence Removal</p>
+            <button class="delete" aria-label="delete" id="deleteButton"></button>
+        </div>
+        <div class="message-body" style="text-align: center;">
+            <h1><b>This will make you Remove an Absence</b></h1>
+            <p>Are you sure you want to remove this Absence?</p>
+            <button class="button is-danger", id="removeAbsence"><b>Remove Absence</b></button>
+            <button class="button button1", id="cancelAbsece"><b>Cancel</b></button>
+        </div>
+    </article>
+</div>
 <section class="section" style="padding-left: 7.5vw!important; padding-right: 7.5vw!important;">
     <div class="columns">
         <div class="column">
@@ -248,7 +263,8 @@
                     {% if user.user.username == user_data.username %}
                     <td style="background-color: #0e00d6;color: white;">{{ user.user.username }}</td>
                     {% else %}
-                        {% if user|check_permissions:users.0.user.id %}
+                        {% check_permissions user request.user as editable %}
+                        {% if editable %}
                         <td>{{user.user.username}}*</td>
                         {% else %}
                             <td>{{user.user.username}}</td>
@@ -261,7 +277,7 @@
                         {% if check_recurring_absence %}
                             <td style="background-color: #ffaa00",  id="{{user.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="R"></td>
                         {% elif check_absence %}
-                            <td style="background-color: #ff0000;", id="{{users.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="S"></td>
+                            <td style="background-color: #ff0000;", id="{{user.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="S"></td>
                         {% elif check_half_day == "A" %}
                             <td style="background: linear-gradient(to right, #ffffff 50%, #ff0000 50% );", id="{{user.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="A"></td>
                         {% elif check_half_day == "M" %}

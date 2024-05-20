@@ -8,7 +8,21 @@
 {% block content %}
 
 <link rel="stylesheet" href="{% static 'css/calendar.css' %}">
-
+<div class="modal" id="confirmationBox">
+    <div class="modal-background"></div>
+    <article class="message is-danger modal-card" style="width: 25%;">
+        <div class="message-header">
+            <p>Absence Removal</p>
+            <button class="delete" aria-label="delete" id="deleteButton"></button>
+        </div>
+        <div class="message-body" style="text-align: center;">
+            <h1><b>This will make you Remove an Absence</b></h1>
+            <p>Are you sure you want to remove this Absence?</p>
+            <button class="button is-danger", id="removeAbsence"><b>Remove Absence</b></button>
+            <button class="button button1", id="cancelAbsece"><b>Cancel</b></button>
+        </div>
+    </article>
+</div>
 <div class="main">
     <div class="container">
         <div class="columns is-centered">
@@ -22,17 +36,6 @@
                         <p>Morning or Afternoon?</p>
                         <button class="button is-info" id="halfDayMorning">Morning</button>
                         <button class="button is-info" id="halfDayAfternoon">Afternoon</button>
-                    </div>
-                </article>
-                <article class="message is-info" style="display: none; position: fixed; z-index: 5;" id="confirmationBox">
-                    <div class="message-header">
-                        <p>Absence Removal</p>
-                        <button class="delete" aria-label="delete" id="absenceClose"></button>
-                    </div>
-                    <div class="message-body" style="text-align: center;">
-                        <p>Remove the absence?</p>
-                        <button class="button is-info", id="removeAbsence">Remove Absence</button>
-                        <button class="button is-info", id="cancelAbsece">Cancel</button>
                     </div>
                 </article>
             </div>
@@ -279,7 +282,12 @@
                                     {% if member.user.username == user.username %}
                                     <td style="width: 80x; background-color: #0e00d6; color: white;">{{user.username}}</td>
                                     {% else %}
-                                    <td style="width: 80px;">{{ member.user.username }}</td>
+                                        {% check_permissions member request.user as editable %}
+                                        {% if editable %}
+                                        <td>{{member.user.username}}*</td>
+                                        {% else %}
+                                        <td>{{member.user.username}}</td>
+                                        {% endif %}
                                     {% endif %}
 
                                     {% for day in day_range %}

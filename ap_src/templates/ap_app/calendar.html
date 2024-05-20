@@ -25,10 +25,10 @@
                         <button class="button button4" id="halfDayAfternoon"style="color: white;"><b>Afternoon</b></button>
                     </div>
                 </article>
-                <article class="message is-confirmation" style="display: none; position: fixed; z-index: 5;" id="confirmationBox">
+                <article class="message is-confirmation" style="display:none;" id="confirmationBox">
                     <div class="message-header">
                         <p>Absence Removal</p>
-                        <button class="delete" aria-label="delete" id="absenceClose"></button>
+                        <button class="delete" aria-label="delete" id="deleteButton"></button>
                     </div>
                     <div class="message-body" style="text-align: center; color: white;">
                         <h1><b>This will make you Remove an Absence</b></h1>
@@ -311,18 +311,6 @@
                             </button>
                         </p>
                     </a>
-                    <article class="message is-confirmation" id="confirmationBox" >
-                        <div class="message-header">
-                            <p>Absence Removal</p>
-                            <button class="delete" aria-label="delete" id="question-mark"></button>
-                        </div>
-                        <div class="message-body" style="text-align: center;">
-                            <h1><b>This will make you Remove an Absence</b></h1>
-                            <p>Are you sure you want to remove this Absence?</p>
-                            <button class="button button2", id="removeAbsence"><b>Remove Absence</b></button>
-                            <button class="button button1", id="cancelAbsece"><b>Cancel</b></button>
-                        </div>
-                    </article>
   
   
                 </div>
@@ -429,7 +417,7 @@
                             {% if day == today and month == current_month and year == current_year %}
                             <th style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255);">{{day}}</th>
                             {% elif day in bank_hol %}
-                            <td style = "background-color: #28663a; color: rgb(255, 255, 255);" onmouseover="Test">{{day}}</td>
+                            <td style = "background-color: #28663a; color: rgb(255, 255, 255);">{{day}}</td>
                             {% elif day in weekend_list%}
                             <td style = "background-color: #206cab; color: rgb(255, 255, 255);">{{day}}</td>
                             {% else %}
@@ -443,7 +431,8 @@
                                 {% if user.id == users.0.id %}
                                 <td style="background-color: #0e00d6;color: white;">{{user.username}}</td>
                                 {% else %}
-                                    {% if user|check_permissions:users.0 %}
+                                    {% check_permissions user request.user as editable %}
+                                    {% if editable %}
                                         <td>{{user.username}}*</td>
                                     {% else %}
                                         <td>{{user.username}}</td>

@@ -12,30 +12,3 @@
     border: 1px solid #ff0000;
     border-radius: 12px
 }
-.button1 {background-color: #f44336;} /* Red */ 
-.button2 {background-color: #32cd32;} /* Green */
-.button3 {background-color: black;} /* Black */ 
-.button4 {background-color: #66a3ff;} /* Blue */ 
-
-/* Define the style for the confirmation box */
-.message.is-confirmation {
-    display: none;
-    position: fixed;
-    z-index: 5;
-   background-color: #479efa/* Blue background with transparency */
-    /* Add other styling properties as needed */
-}
-
-/* Style the header of the confirmation box */
-.message-header {
-    background-color: #007bff; /* Blue header */
-    color: #fff; /* White text */
-    /* Add other header styles as needed */
-}
-
-/* Style the buttons within the confirmation box */
-.message-body .button {
-    background-color: #007bff; /* Blue button */
-    color: #fff; /* White text */
-    /* Add other button styles as needed */
-}
