@@ -82,7 +82,8 @@
     {% for team in external_teams %}
     <div class="container has-background-light box">
         <div class="is-size-5 mb-3">
-            <span class="is-block is-size-5	has-text-weight-bold">{{ team.team.name }} <i class="fas fa-users mx-1"></i>{{ team.team.members|length }}</span>
+            <span class="is-block is-size-5	has-text-weight-bold">{{ team.team.name }} <i class="fas fa-users mx-1"></i>{{ team.team.members|length }}
+            <button class="button is-ghost" style="color: gold !important;" onclick="favouriteTeam(this)" onmouseover="starHover(this)" onmouseout="removeHover(this)" data-star="false"><i class="far fa-star"></i></button></span>
             {% if team.team.private %}
                 <span class="tag is-info is-rounded">
                     <i class="fas fa-lock"></i>&nbsp;Private
@@ -117,4 +118,5 @@
     {% endif %}
     
 </div>
+<script src="{% static 'js/teams.js' %}"> </script>
 {% endblock %}
