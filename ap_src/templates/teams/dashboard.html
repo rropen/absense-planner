@@ -75,7 +75,7 @@
     {% if not external_teams %}
     <div class="container has-background-light box">
         <div class="is-size-5 mb-3">
-            <span class="is-block is-size-5">No external teams found.</span>
+            <span class="is-block is-size-5">No teams found.</span>
         </div>
     </div>
     {% else %}
@@ -83,7 +83,7 @@
     <div class="container has-background-light box">
         <div class="is-size-5 mb-3">
             <span class="is-block is-size-5	has-text-weight-bold">{{ team.team.name }} <i class="fas fa-users mx-1"></i>{{ team.team.members|length }}
-            <button class="button is-ghost" style="color: gold !important;" onclick="favouriteTeam(this)" onmouseover="starHover(this)" onmouseout="removeHover(this)" data-star="false"><i class="far fa-star"></i></button></span>
+            <button class="button is-ghost" style="color: gold !important;" onclick="favouriteTeam(this, '{{ request.user.username }}', {{ team.team.id }})" onmouseover="starHover(this)" onmouseout="removeHover(this)" data-star="false"><i class="far fa-star"></i></button></span>
             {% if team.team.private %}
                 <span class="tag is-info is-rounded">
                     <i class="fas fa-lock"></i>&nbsp;Private
@@ -111,12 +111,12 @@
             {% if team.role.role == "Owner" or team.role.role == "Co-Owner"%}
             <a class="button is-info mx-1" href={% url 'edit_team' id=team.team.id %}>Edit</a>
             {% endif %}
-            <a class="button is-danger mx-1">Leave</a>
+            <button class="button is-danger mx-1" id="{{ team.team.id }}" onclick="LeaveTeam(this, '{{ request.user.username }}', false)">Leave</button>
         </div>
     </div>
     {% endfor %}
     {% endif %}
     
 </div>
-<script src="{% static 'js/teams.js' %}"> </script>
+<script src="{% static 'js/teams.js' %}" apiURL="{{ url }}"></script>
 {% endblock %}

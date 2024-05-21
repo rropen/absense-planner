@@ -296,7 +296,8 @@ def api_team_calendar(
         **absence_data,
         "team": team_data,
         "user_data": user_data,
-        "id": id
+        "id": id,
+        "url": env("TEAM_DATA_URL")
     }
 
     return render(request, "api_pages/team_calendar.html", data)

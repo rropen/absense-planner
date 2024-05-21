@@ -8,18 +8,11 @@
                 <i class="fas fa-user-alt mx-2"></i>{{team.count}}</span>
             <span class="is-block is-size-6">{{ team.description }}</span>
             <div class="is-grouped">
-                <form method="POST" action="http://localhost:8000/api/joinable/">
-                    <input type="hidden" name="user" value="{{ request.user.username }}">
-                    <input type="hidden" name="team" value="{{ team.name }}">
-                    <input type="hidden" name="role" value="Member">
-                    <input type="hidden" name="status" value="Active">
-                    <input type="hidden" name="url" value="{{ request.get_host }}">
-                    <button class="button is-success" type="submit">Join Team</button>
-                    <button class="button is-link">View</button>
-                </form>
+                <button class="button is-success" id="{{ team.id }}" onclick="JoinTeam(this, '{{ request.user.username }}', true)">Join Team</button>
+                <button class="button is-link">View</button>
             </div>
         </div>
     </div>
     {% endfor %}
 </div>
-<script src="{% static "js/teams.js" %}"></script>
+<script src="{% static "js/teams.js" %}" apiURL="{{ url }}"></script>

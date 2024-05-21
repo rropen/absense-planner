@@ -66,7 +66,7 @@ def teams_dashboard(request) -> render:
     return render(
         request,
         "teams/dashboard.html",
-        {"rels": rels, "invite_count": invite_rel_count, "external_teams": external_teams_data, "teamspage_active": True},
+        {"rels": rels, "invite_count": invite_rel_count, "external_teams": external_teams_data, "teamspage_active": True, "url": env("TEAM_DATA_URL")},
     )
 
 
@@ -173,7 +173,7 @@ def join_team(request) -> render:
     return render(
         request,
         "teams/join_team.html",
-        {"all_teams": all_teams_filtered, "joined_teams": user_teams, "api_enabled": api_enabled, "team_data": data},
+        {"all_teams": all_teams_filtered, "joined_teams": user_teams, "api_enabled": api_enabled, "team_data": data, "url": env("TEAM_DATA_URL")},
     )
 
 

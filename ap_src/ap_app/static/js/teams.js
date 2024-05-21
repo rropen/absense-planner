@@ -1,6 +1,24 @@
-function JoinTeam(e) {
-    console.log(e.dataset.username)
-    console.log(e.dataset.team)
+var apiURL = document.currentScript.getAttribute("apiURL");
+
+function JoinTeam(e, user, redirect) {
+    var data = JSON.stringify({"username": user, "team": e.id})
+    fetch(apiURL + 'api/manage/?method=join', {
+        method: "post",
+        body: data,
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    .then(() => {
+        if (redirect) {
+            location.replace(location.origin + "/teams/api-calendar/" + e.id)
+        } else {
+            location.reload()
+        }
+    })
+    .catch(err => {
+        console.log(err)
+    })
 }
 
 function starHover(e) {
@@ -19,12 +37,39 @@ function removeHover(e) {
 }
 
 function favouriteTeam(e, user, id) {
-    var data = JSON.stringify({"username":user,"team":id})
-    fetch('http://localhost:8000/api/manage/?method=favourite', {
-        method:"POST",
-        body:data,
+    var data = {"username": user, "team": id}
+    fetch(apiURL + 'api/manage/?method=favourite', {
+        method:"post",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
     })
-    .then(()=>{
+    .then(() => {
         location.reload()
+    })
+    .catch(err => {
+        console.log(err)
+    })
+}
+
+function LeaveTeam(e, user, redirect) {
+    var data = JSON.stringify({"username": user, "team": e.id})
+    fetch(apiURL + 'api/manage/?method=leave', {
+        method: "post",
+        body: data,
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    .then(() => {
+        if (redirect) {
+            location.replace(location.origin + "/teams")
+        } else {
+            location.reload()
+        }
+    })
+    .catch(err => {
+        console.log(err)
     })
 }
