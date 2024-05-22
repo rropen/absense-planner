@@ -419,7 +419,8 @@
                             {% elif day in bank_hol %}
                             <td style = "background-color: #28663a; color: rgb(255, 255, 255);">{{day}}</td>
                             {% elif day in weekend_list%}
-                            <td style = "background-color: #206cab; color: rgb(255, 255, 255);">{{day}}</td>
+                            {%comment%}<td style = "background-color: #206cab; color: rgb(255, 255, 255);">{{day}}</td>{%endcomment%}
+                            <td style="display:none"></td>
                             {% else %}
                             <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
                             {% endif %}
@@ -456,7 +457,8 @@
                                         {% if day in bank_hol %}
                                             <td style = "background-color: #28663a;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                         {% elif day in weekend_list %}
-                                            <td style = "background-color: #206cab;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                            {%comment%}<td style = "background-color: #206cab;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>{%endcomment%}
+                                            <td style="display:none"></td>
                                         {% else %}
                                             <td id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                         {% endif %}

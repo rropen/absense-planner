@@ -235,7 +235,8 @@
                 <th style="color: black;"></th>
                 {% for day in days_name %}
                 {% if day == 'Sa' or day == 'Su' %}
-                <th style="background-color: #055496; color: white;">{{day}}</th>
+                {%comment%}<th style="background-color: #055496; color: white;">{{day}}</th>{%endcomment%}
+                <th></th>
                 {% elif forloop.counter in bank_hol%}
                 <th style="background-color: #01661f; color: white;">{{day}}</th>
                 {% else %}
@@ -251,7 +252,8 @@
                 {% elif day in bank_hol %}
                 <td style = "background-color: #28663a; color: rgb(255, 255, 255);" onmouseover="Test">{{day}}</td>
                 {% elif day in weekend_list%}
-                <td style = "background-color: #206cab; color: rgb(255, 255, 255);">{{day}}</td>
+                {%comment%}<td style = "background-color: #206cab; color: rgb(255, 255, 255);">{{day}}</td>{%endcomment%}
+                <td style="display:none"></td>
                 {% else %}
                 <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
                 {% endif %}
@@ -286,7 +288,8 @@
                             {% if day in bank_hol %}
                                 <td style = "background-color: #28663a;", id="{{user.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                             {% elif day in weekend_list %}
-                                <td style = "background-color: #206cab;", id="{{user.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                {%comment%}<td style = "background-color: #206cab;", id="{{user.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>{%endcomment%}
+                                <td style="display:none"></td>
                             {% else %}
                                 <td id="{{user.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                             {% endif %}
