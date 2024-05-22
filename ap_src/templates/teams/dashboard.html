@@ -83,7 +83,12 @@
     <div class="container has-background-light box">
         <div class="is-size-5 mb-3">
             <span class="is-block is-size-5	has-text-weight-bold">{{ team.team.name }} <i class="fas fa-users mx-1"></i>{{ team.team.members|length }}
-            <button class="button is-ghost" style="color: gold !important;" onclick="favouriteTeam(this, '{{ request.user.username }}', {{ team.team.id }})" onmouseover="starHover(this)" onmouseout="removeHover(this)" data-star="false"><i class="far fa-star"></i></button></span>
+                {% if team.favourite %}
+                <button class="button is-ghost" style="color: gold !important;" onclick="favouriteTeam(this, '{{ request.user.username }}', {{ team.team.id }})" onmouseover="starHover(this)" onmouseout="removeHover(this)" data-star="True"><i class="fas fa-star"></i></button>
+                {% else %}
+                <button class="button is-ghost" style="color: gold !important;" onclick="favouriteTeam(this, '{{ request.user.username }}', {{ team.team.id }})" onmouseover="starHover(this)" onmouseout="removeHover(this)" data-star="false"><i class="far fa-star"></i></button>
+                {% endif %}
+            </span>
             {% if team.team.private %}
                 <span class="tag is-info is-rounded">
                     <i class="fas fa-lock"></i>&nbsp;Private
