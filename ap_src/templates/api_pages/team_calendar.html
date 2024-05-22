@@ -236,7 +236,7 @@
                 {% for day in days_name %}
                 {% if day == 'Sa' or day == 'Su' %}
                 {%comment%}<th style="background-color: #055496; color: white;">{{day}}</th>{%endcomment%}
-                <th></th>
+                <th style="display:none"></th>
                 {% elif forloop.counter in bank_hol%}
                 <th style="background-color: #01661f; color: white;">{{day}}</th>
                 {% else %}
