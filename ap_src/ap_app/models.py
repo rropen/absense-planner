@@ -165,6 +165,8 @@ class UserProfile(models.Model):
 
     external_teams = models.BooleanField(default=False)
 
+
+
     def __str__(self):
         return f"{self.user.username}"
 
@@ -175,3 +177,15 @@ class RecurringException(models.Model):
     User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="recurringexception")
     Exception_Start = models.DateField(_("Date"), max_length=200, default=now)
     Exception_End = models.DateField(_("Date"), max_length=200, default=now)
+
+class ColourScheme(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=200)
+    default = models.CharField(max_length=100)
+
+class ColorData(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.ForeignKey(ColourScheme, on_delete=models.CASCADE, related_name="colorscheme")
+    color = models.CharField(max_length=20)
+    enabled = models.BooleanField(default=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
