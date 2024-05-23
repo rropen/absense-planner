@@ -16,7 +16,7 @@ from django.shortcuts import redirect, render
 
 from .forms import *
 from .models import ( Relationship, Role, Team,
-                     UserProfile, Status)
+                     UserProfile, Status, ColorData, ColourScheme)
 
 from .absences import *
 from .teams import *
@@ -54,6 +54,33 @@ def set_calendar_month(request):
         print(month)
 
     return redirect('all_calendar', month=month, year=year)
+
+def color_variant(hex_color, brightness_offset=1):
+    if len(hex_color) != 7:
+        raise Exception("Passed %s into color_variant(), needs to be in #87c95f format." % hex_color)
+    rgb_hex = [hex_color[x:x+2] for x in [1, 3, 5]]
+    new_rgb_int = [int(hex_value, 16) + brightness_offset for hex_value in rgb_hex]
+    new_rgb_int = [min([255, max([0, i])]) for i in new_rgb_int] # make sure new values are between 0 and 255
+    return "rgb" + str(new_rgb_int).replace("[", "(").replace("]", ")")
+    #return "#" + "".join([hex(i)[2:] for i in new_rgb_int])
+
+def get_colour_data(request:HttpRequest):
+    colour_data = {}
+    for scheme in ColourScheme.objects.all():
+        scheme_data = {}
+        data = ColorData.objects.filter(user=request.user, scheme=scheme)
+        if data.exists():
+            scheme_data["enabled"] = data[0].enabled
+            scheme_data["colour"] = data[0].color
+            scheme_data["offset"] = color_variant(data[0].color, -30)
+        else:
+            scheme_data["enabled"] = True
+            scheme_data["colour"] = scheme.default
+            scheme_data["offset"] = color_variant(scheme.default, -30)
+        
+        colour_data[scheme.name.replace(" ", "_").lower()] = scheme_data
+    
+    return colour_data
 
 @login_required
 def all_calendar(
@@ -332,7 +359,6 @@ def api_calendar_view(
             return redirect("/")
         if r.status_code == 200:
             api_data = r.json()
-            print(r.elapsed.total_seconds())
         else:
             if r:
                 result = r.json()
@@ -377,10 +403,13 @@ def api_calendar_view(
     for i in range({"Mo":0, "Tu":1, "We":2, "Th":3, "Fr":4, "Sa":5, "Su":6}[data_1["days_name"][0]]):
         grid_calendar_month_values.insert(0, -1)
 
+    colour_data = get_colour_data(request)
+
     context = {
         **data_1,
         **data_2,
         **data_3,
+        **colour_data,
         "home_active": True,
         "api_data": api_data,
     }

@@ -8,116 +8,120 @@
 
 <body>
 
-    <form method="POST">
-        {% csrf_token %}
-        <div class="columns is-centered">
-            <div class="column is-one-third">
-                <div class="field">
-                    <label class="label">First Name</label>
-                    <div class ="control">
-                        {% if user.first_name %}
-                        <input class="input is-rounded is-success" type="text" placeholder="First Name" value="{{ user.first_name }}" name="firstName">
-                        {% else %}
-                        <input class="input is-rounded is-warning" type="text" placeholder="First Name" name="firstName">
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Last Name</label>
-                    <div class ="control">
-                        {% if user.last_name %}
-                        <input class="input is-rounded is-success" type="text" placeholder="Last Name" value="{{ user.last_name }}" name="lastName">
-                        {% else %}
-                        <input class="input is-rounded is-warning" type="text" placeholder="Last Name" name="lastName">
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Email</label>
-                    <div class="control has-icons-right">
-                        {% if user.email %}
-                        <input class="input is-rounded is-success" type="email" placeholder="Email Address" name="email" id="email-input" value="{{ user.email }}">
-                        <span class="icon is-small is-right">
-                            <button class="delete" aria-label="delete" onclick="deleteInputtedValue('email-input')"></button>
-                        </span>
-                        {% else %}
-                        <input class="input is-rounded is-warning" type="email" placeholder="Email Address" name="email">
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Region</label>
-                    <div class="control">
-                        <div class="select is-rounded">
-                            <select name="region">
-                                {% for country in countries %}
-                                    {% if country == current_country %}
-                                        <option value="{{country}}" selected="selected">{{country}}</option>
-                                    {% else %}
-                                        <option value="{{country}}">{{country}}</option>
-                                    {% endif %}
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Permission Settings</label>
-                    <nav class="navbar">
-                        <div class="control">
-                            <input class="input is-rounded" placeholder="Add a user" type="text" size="50" id="user_permission_input">
-                        </div>
-                        <div class="control">
-                            {% csrf_token %}
-                            <button class="button is-rounded" onclick="addUserPermission( '{{ csrf_token }}' )">Submit</button>
-                        </div>
-                    </nav>
-                    <p>Users with permission to edit your absences:</p>
-                    <div class="tags">
-                        {% for user in userprofile.edit_whitelist.all %}
-                            <span class="tag is-dark">{{user}}</span>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Data Settings</label>
-                    <div class="control">
-                        <label>
-                            {% if data_privacy_mode %}
-                            <input type="checkbox" checked="checked" name="privacy"></input>
+    <div class="columns is-centered">
+        <div class="column is-one-third">
+            <div class="box">
+                <h3 class="title is-4">User Information</h3>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="field">
+                        <label class="label">First Name</label>
+                        <div class ="control">
+                            {% if user.first_name %}
+                            <input class="input is-rounded is-success" type="text" placeholder="First Name" value="{{ user.first_name }}" name="firstName">
                             {% else %}
-                            <input type="checkbox" name="privacy"></input>
+                            <input class="input is-rounded is-warning" type="text" placeholder="First Name" name="firstName">
                             {% endif %}
-                            Keep data private (Hide data from non team members)
-                        </label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Last Name</label>
+                        <div class ="control">
+                            {% if user.last_name %}
+                            <input class="input is-rounded is-success" type="text" placeholder="Last Name" value="{{ user.last_name }}" name="lastName">
+                            {% else %}
+                            <input class="input is-rounded is-warning" type="text" placeholder="Last Name" name="lastName">
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Email</label>
+                        <div class="control has-icons-right">
+                            {% if user.email %}
+                            <input class="input is-rounded is-success" type="email" placeholder="Email Address" name="email" id="email-input" value="{{ user.email }}">
+                            <span class="icon is-small is-right">
+                                <button class="delete" aria-label="delete" onclick="deleteInputtedValue('email-input')"></button>
+                            </span>
+                            {% else %}
+                            <input class="input is-rounded is-warning" type="email" placeholder="Email Address" name="email">
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Region</label>
+                        <div class="control">
+                            <div class="select is-rounded">
+                                <select name="region">
+                                    {% for country in countries %}
+                                        {% if country == current_country %}
+                                            <option value="{{country}}" selected="selected">{{country}}</option>
+                                        {% else %}
+                                            <option value="{{country}}">{{country}}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Data Settings</label>
+                        <div class="control">
+                            <label>
+                                {% if data_privacy_mode %}
+                                <input type="checkbox" checked="checked" name="privacy"></input>
+                                {% else %}
+                                <input type="checkbox" name="privacy"></input>
+                                {% endif %}
+                                Keep data private (Hide data from non team members)
+                            </label>
+                        </div>
+                        <div class="control">
+                            <label>
+                                {% if external_teams %}
+                                <input type="checkbox" checked="checked" name="teams"></input>
+                                {% else %}
+                                <input type="checkbox" name="teams"></input>
+                                {% endif %}
+                                Use the team app data instead of local data
+                            </label>
+                        </div>
+                    </div>
+                    <div class="field is-grouped my-4">
+                        <div class="control">
+                            <button class="button is-link">Submit</button>
+                        </div>
+                        <div class="control">
+                            <button class="button is-link">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="box">
+                <h3 class="title is-4">App Information</h3>
+                <label class="label">Permission Settings</label>
+                <nav class="navbar">
+                    <div class="control">
+                        <input class="input is-rounded" placeholder="Add a user" type="text" size="50" id="user_permission_input">
                     </div>
                     <div class="control">
-                        <label>
-                            {% if external_teams %}
-                            <input type="checkbox" checked="checked" name="teams"></input>
-                            {% else %}
-                            <input type="checkbox" name="teams"></input>
-                            {% endif %}
-                            Use the team app data instead of local data
-                        </label>
+                        {% csrf_token %}
+                        <button class="button is-rounded" onclick="addUserPermission( '{{ csrf_token }}' )">Submit</button>
                     </div>
+                </nav>
+                <p>Users with permission to edit your absences:</p>
+                <div class="tags">
+                    {% for user in userprofile.edit_whitelist.all %}
+                        <span class="tag is-dark">{{user}}</span>
+                    {% endfor %}
                 </div>
                 <label class="label">Calendar Settings</label>
-                <h6>Weekends<h6>
-                {% include 'ap_app/elements/colour_picker.html' %}
-                <h6>Bank Holidays<h6>
-                {% include 'ap_app/elements/colour_picker.html' %}
-                <div class="field is-grouped my-4">
-                    <div class="control">
-                        <button class="button is-link">Submit</button>
-                    </div>
-                    <div class="control">
-                        <button class="button is-link">Cancel</button>
-                    </div>
-                </div>
+                {% for colour in colours %}
+                <h6>{{ colour.name }}</h6>
+                {% include 'ap_app/elements/colour_picker.html' with colour_value=colour.colour name=colour.name enabled=colour.enabled %}
+                {% endfor %}
             </div>
         </div>
-    </form>
+    </div>
 
     <script>
         var coll = document.getElementsByClassName("collapsible");

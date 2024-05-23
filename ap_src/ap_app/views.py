@@ -38,7 +38,7 @@ from .calendarview import *
 
 from .forms import *
 from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
-                     UserProfile)
+                     UserProfile, ColourScheme, ColorData)
 
 User = get_user_model()
 
@@ -170,7 +170,7 @@ def deleteuser(request):
     return render(request, "registration/delete_account.html", context)
 
 @login_required
-def profile_settings(request) -> render:
+def profile_settings(request:HttpRequest) -> render:
     """returns the settings page"""
 
     if len(request.POST) > 0:
@@ -210,11 +210,53 @@ def profile_settings(request) -> render:
     country_data = get_region_data()
     country_name = pycountry.countries.get(alpha_2=userprofile.region).name
 
+    colour_data = []
+    for scheme in ColourScheme.objects.all():
+        colour = {}
+        data = ColorData.objects.filter(user=request.user, scheme=scheme)
+        colour["name"] = scheme.name
+        if data.exists():
+            colour["colour"] = data[0].color
+            colour["enabled"] = data[0].enabled
+        else:
+            colour["colour"] = scheme.default
+            colour["enabled"] = True
+
+        colour_data.append(colour)
+
     privacy_status = userprofile.privacy
     teams_status = userprofile.external_teams
-    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status, "external_teams": teams_status,"current_country": country_name, **country_data}
+    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status, "external_teams": teams_status,
+               "current_country": country_name, **country_data, "colours": colour_data}
     return render(request, "ap_app/settings.html", context)
 
+def update_colour(request:HttpRequest):
+    if request.method == "POST":
+        default = ColourScheme.objects.get(name=request.POST["name"])
+        data = ColorData.objects.filter(user=request.user, scheme__name=request.POST["name"])
+        if data.exists():
+            update_data = ColorData.objects.get(id=data[0].id)
+            if request.POST["enabled"] == 'True':
+                update_data.enabled = True
+            else:
+                update_data.enabled = False
+            update_data.color = request.POST["colour"]
+            update_data.save()
+        else:
+            print(request.POST)
+            if request.POST["colour"] != default.default or request.POST["enabled"] != 'True':
+                print("Created colour data")
+                newData = ColorData()
+                if request.POST["enabled"] == 'True':
+                    newData.enabled = True
+                else:
+                    newData.enabled = False
+                newData.scheme = default
+                newData.color = request.POST["colour"]
+                newData.user = request.user
+                newData.save()
+    
+    return redirect('profile_settings')
 
 @login_required
 def add_user(request) -> render:
