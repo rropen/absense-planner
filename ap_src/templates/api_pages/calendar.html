@@ -263,6 +263,8 @@
                                 {% for day in days_name %}
                                 {% if day == Sa and weekends.enabled or day == Su and weekends.enabled %}
                                 <th style="background-color: {{ weekends.offset}}; color: white;">{{day}}</th>
+                                {% elif day == Sa and not weekends.enabled or day == Su and not weekends.enabled %}
+                                <th style="display:none"> </th>
                                 {% elif forloop.counter in bank_hol and bank_holidays.enabled %}
                                 <th style="background-color: {{ bank_holidays.offset }}; color: white;">{{day}}</th>
                                 {% else %}
@@ -279,6 +281,8 @@
                                 <td style = "background-color: {{ bank_holidays.colour }}; color: rgb(255, 255, 255);">{{day}}</td>
                                 {% elif day in weekend_list and weekends.enabled %}
                                 <td style = "background-color: {{ weekends.colour }}; color: rgb(255, 255, 255);">{{day}}</td>
+                                {% elif day in weekend_list and not weekends.enabled %}
+                                <th style="display:none"> </th>
                                 {% else %}
                                 <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
                                 {% endif %}
@@ -316,6 +320,8 @@
                                                 <td style = "background-color: {{ bank_holidays.colour }};", id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                             {% elif day in weekend_list and weekends.enabled %}
                                                 <td style = "background-color: {{ weekends.colour }};", id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                            {% elif day in weekend_list and not weekends.enabled %}
+                                                <th style="display:none"> </th>
                                             {% else %}
                                                 <td id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                             {% endif %}
