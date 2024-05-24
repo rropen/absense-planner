@@ -90,12 +90,6 @@
                 
 
             </div>
-
-            <div id="info-box" style="display:none">
-                <div style="background-color:red; height:30px; width:30px; border: 1px solid black; float: left;"></div> <p class="py-1">Whole day</p>
-                <div style="background:linear-gradient(to right, #ff0000 50%, #ffffff 50%); height:30px; width:30px; border: 1px solid black; float: left;"></div> <p class="py-1">Morning</p>
-                <div style="background:linear-gradient(to right, #ffffff 50%, #ff0000 50% ); height:30px; width:30px; border: 1px solid black; float: left;"></div> <p class="py-1">Afternoon</p>
-            </div>
             <div class="level mb-0">
                 <div class="level-left">
                     
@@ -311,7 +305,7 @@
                             </button>
                         </p>
                     </a>
-                    <a id="CalendarClick-Toggle" title="Calendar Booking Functions">
+                    {% comment %} <a id="CalendarClick-Toggle" title="Calendar Booking Functions">
                         <p class="buttons">
                             <button class="button" style="border-width:2px; border-color:red" id="question-mark" onclick="toggleInfoBox()">
                                 <span class="icon">
@@ -319,16 +313,42 @@
                                 </span>
                             </button>
                         </p>
-                    </a>
-        
+                    </a> {% endcomment %}
                     
-                    {%comment%}<div id="info-box" style="display:none; border:1px solid black; padding:10px; margin-top:10px;">
-                        Use Left Click to select a full day. <br><br>
-                        Use Shift Left Click to select a half-day. <br><br>
-                        If half-day booked, left side of the box means Morning has been marked as absence, right half means Afternoon has been marked as absence. <br><br>
-                        To remove absence click on the red box again and a Remove Absence box will appear for you. <br><br>
-                        If your day is green, that means it is a bank holiday on that selected day.
-                    </div>{%endcomment%}
+<html lang="en">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tool Box</title>
+    <link rel="stylesheet" href={%static 'css/styles.css'%}>
+
+    <a id="CalendarClick-Toggle" title="Calendar Booking Functions">
+        <p class="buttons">
+            <button class="button" style="border-width:2px; border-color:green" id="question-mark">
+                <span class="icon">
+                    <i class="fas fa-question"></i>
+                </span>
+            </button>
+        </p>
+    </a>
+
+    <!-- Modal Structure -->
+    <div id="alertModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p id="alert-text">Use Left Click to select a full day.<br><br>Use Shift Left Click to select a half-day.<br><br>If half-day booked, left side of the box means Morning has been marked as absence, right half means Afternoon has been marked as absence.<br><br>To remove absence click on the red box again and a Remove Absence box will appear for you.<br><br>If your day is green, that means it is a bank holiday on that selected day.<br><br></p>
+            <div id="info-box" style="display:block">
+                <div style="background-color:red; height:30px; width:30px; border: 1px solid black; float: left;"></div> <p class="py-1">Whole day</p>
+                <div style="background:linear-gradient(to right, #ff0000 50%, #ffffff 50%); height:30px; width:30px; border: 1px solid black; float: left;"></div> <p class="py-1">Morning</p>
+                <div style="background:linear-gradient(to right, #ffffff 50%, #ff0000 50% ); height:30px; width:30px; border: 1px solid black; float: left;"></div> <p class="py-1">Afternoon</p>
+            </div>
+            <button id="alert-ok-button" class="button">OK</button>
+        </div>
+    </div>
+
+    <script src="{%static 'js/script.js'%}"></script>
+
+
                     
   
   
