@@ -1,0 +1,18 @@
+[
+    {
+        "model": "ap_app.colourscheme",
+        "pk": 1,
+        "fields": {
+            "name": "Bank Holidays",
+            "default": "#28663a"
+        }
+    },
+    {
+        "model": "ap_app.colourscheme",
+        "pk": 2,
+        "fields": {
+            "name": "Weekends",
+            "default": "#206cab"
+        }
+    }
+]

@@ -63,8 +63,16 @@
                     </form>
                 </span>
             </div>
+
+
+
+
+                
+            <br />
+
             <div class="level mb-3">
                 <div class="level-left">
+
                     
                     <!-- reset button to take user back to present -->
                     <a href="/calendar/1/{{current_month}}/{{current_year}}" class="mr-4 button" title="Refresh The Calendar">
@@ -253,10 +261,12 @@
                             <thead>
                                 <th style="color: black;"></th>
                                 {% for day in days_name %}
-                                {% if day == Sa or day == Su %}
-                                <th style="background-color: #055496; color: white;">{{day}}</th>
-                                {% elif forloop.counter in bank_hol%}
-                                <th style="background-color: #01661f; color: white;">{{day}}</th>
+                                {% if day == Sa and weekends.enabled or day == Su and weekends.enabled %}
+                                <th style="background-color: {{ weekends.offset}}; color: white;">{{day}}</th>
+                                {% elif day == Sa and not weekends.enabled or day == Su and not weekends.enabled %}
+                                <th style="display:none"> </th>
+                                {% elif forloop.counter in bank_hol and bank_holidays.enabled %}
+                                <th style="background-color: {{ bank_holidays.offset }}; color: white;">{{day}}</th>
                                 {% else %}
                                 <th style="background-color: rgb(255, 255, 255); color: black;">{{day}}</th>
                                 {% endif %}
@@ -267,10 +277,12 @@
                                 {% for day in day_range %}
                                 {% if day == today and month == current_month and year == current_year %}
                                 <th style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255);">{{day}}</th>
-                                {% elif day in bank_hol %}
-                                <td style = "background-color: #28663a; color: rgb(255, 255, 255);">{{day}}</td>
-                                {% elif day in weekend_list%}
-                                <td style = "background-color: #206cab; color: rgb(255, 255, 255);">{{day}}</td>
+                                {% elif day in bank_hol and bank_holidays.enabled %}
+                                <td style = "background-color: {{ bank_holidays.colour }}; color: rgb(255, 255, 255);">{{day}}</td>
+                                {% elif day in weekend_list and weekends.enabled %}
+                                <td style = "background-color: {{ weekends.colour }}; color: rgb(255, 255, 255);">{{day}}</td>
+                                {% elif day in weekend_list and not weekends.enabled %}
+                                <th style="display:none"> </th>
                                 {% else %}
                                 <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
                                 {% endif %}
@@ -304,10 +316,12 @@
                                         {% elif check_half_day == "M" %}
                                         <td style="background: linear-gradient(to right, #ff0000 50%, #ffffff 50%);", id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="M"></td>
                                         {% else %}
-                                            {% if day in bank_hol %}
-                                                <td style = "background-color: #28663a;", id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
-                                            {% elif day in weekend_list %}
-                                                <td style = "background-color: #206cab;", id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                            {% if day in bank_hol and bank_holidays.enabled %}
+                                                <td style = "background-color: {{ bank_holidays.colour }};", id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                            {% elif day in weekend_list and weekends.enabled %}
+                                                <td style = "background-color: {{ weekends.colour }};", id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                            {% elif day in weekend_list and not weekends.enabled %}
+                                                <th style="display:none"> </th>
                                             {% else %}
                                                 <td id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                             {% endif %}

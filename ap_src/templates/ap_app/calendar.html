@@ -62,6 +62,9 @@
                     </form>
                     
                 </span>
+
+
+
                 
                 {% if users_hidden %}
                 <span class="tag">
@@ -85,7 +88,13 @@
                     </div>
                 </div> -->
                 
-                
+
+            </div>
+
+            <div id="info-box" style=display:none>
+                <div style="background-color:red; height:30px; width:30px; border: 1px solid black; float: left;"></div> <p class="py-1">Whole day</p>
+                <div style="background:linear-gradient(to right, #ff0000 50%, #ffffff 50%); height:30px; width:30px; border: 1px solid black; float: left;"></div> <p class="py-1">Morning</p>
+                <div style="background:linear-gradient(to right, #ffffff 50%, #ff0000 50% ); height:30px; width:30px; border: 1px solid black; float: left;"></div> <p class="py-1">Afternoon</p>
             </div>
             <div class="level mb-0">
                 <div class="level-left">
@@ -346,6 +355,17 @@
   
                 </div>
 
+            <script>
+                function toggleInfoBox() {
+                var infoBox = document.getElementById('info-box');
+                if (infoBox.style.display === 'none' || infoBox.style.display === '') {
+                    infoBox.style.display = 'block';
+                } else {
+                    infoBox.style.display = 'none';
+                }
+            }
+
+            </script>
                     
 
                 
@@ -434,7 +454,8 @@
                             <th style="color: black;"></th>
                             {% for day in days_name %}
                             {% if day == Sa or day == Su %}
-                            <th style="background-color: #055496; color: white;">{{day}}</th>
+                            {%comment%}<th style="background-color: #055496; color: white;">{{day}}</th>{%endcomment%}
+                            <th style="display:none"></th>
                             {% elif forloop.counter in bank_hol%}
                             <th style="background-color: #01661f; color: white;">{{day}}</th>
                             {% else %}
@@ -450,7 +471,8 @@
                             {% elif day in bank_hol %}
                             <td style = "background-color: #28663a; color: rgb(255, 255, 255);">{{day}}</td>
                             {% elif day in weekend_list%}
-                            <td style = "background-color: #206cab; color: rgb(255, 255, 255);">{{day}}</td>
+                            {%comment%}<td style = "background-color: #206cab; color: rgb(255, 255, 255);">{{day}}</td>{%endcomment%}
+                            <td style="display:none"></td>
                             {% else %}
                             <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
                             {% endif %}
@@ -487,7 +509,8 @@
                                         {% if day in bank_hol %}
                                             <td style = "background-color: #28663a;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                         {% elif day in weekend_list %}
-                                            <td style = "background-color: #206cab;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                            {%comment%}<td style = "background-color: #206cab;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>{%endcomment%}
+                                            <td style="display:none"></td>
                                         {% else %}
                                             <td id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                         {% endif %}

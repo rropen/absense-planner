@@ -73,3 +73,20 @@ function LeaveTeam(e, user, redirect) {
         console.log(err)
     })
 }
+
+function DeleteTeam(e) {
+    var data = JSON.stringify({"id": e.id})
+    fetch(apiURL + 'api/teams/?method=delete&format=json', {
+        method: "post",
+        body: data,
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    .then(() => {
+        location.replace(location.origin + "/teams")
+    })
+    .catch(err => {
+        console.log(err)
+    })
+}
