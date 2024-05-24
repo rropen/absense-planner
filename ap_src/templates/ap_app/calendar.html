@@ -91,7 +91,7 @@
 
             </div>
 
-            <div id="info-box" style=display:none>
+            <div id="info-box" style="display:none">
                 <div style="background-color:red; height:30px; width:30px; border: 1px solid black; float: left;"></div> <p class="py-1">Whole day</p>
                 <div style="background:linear-gradient(to right, #ff0000 50%, #ffffff 50%); height:30px; width:30px; border: 1px solid black; float: left;"></div> <p class="py-1">Morning</p>
                 <div style="background:linear-gradient(to right, #ffffff 50%, #ff0000 50% ); height:30px; width:30px; border: 1px solid black; float: left;"></div> <p class="py-1">Afternoon</p>
@@ -313,7 +313,7 @@
                     </a>
                     <a id="CalendarClick-Toggle" title="Calendar Booking Functions">
                         <p class="buttons">
-                            <button class="button" style="border-width:2px; border-color:green" id="question-mark" onclick="toggleInfoBox()">
+                            <button class="button" style="border-width:2px; border-color:red" id="question-mark" onclick="toggleInfoBox()">
                                 <span class="icon">
                                     <i class="fas fa-question"></i>
                                 </span>
@@ -335,11 +335,15 @@
                 </div>
 
             <script>
+
                 function toggleInfoBox() {
+                    var calendarClickButton = document.getElementById("question-mark")
                 var infoBox = document.getElementById('info-box');
                 if (infoBox.style.display === 'none' || infoBox.style.display === '') {
+                    calendarClickButton.style.borderColor = "green";
                     infoBox.style.display = 'block';
                 } else {
+                    calendarClickButton.style.borderColor = "red";
                     infoBox.style.display = 'none';
                 }
             }
