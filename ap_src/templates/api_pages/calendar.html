@@ -6,23 +6,23 @@
 {% block title %}Calendar{% endblock %}
 {% load static %}
 {% block content %}
-<style>
-    .RefreshBox {
-        pointer-events: none;
-        text-align: right;
-        background-color: ghostwhite;
-        border: 0px;
-        font-size: 11pt;
-        width: 24px;
-        height: 12px;
-    }
-    .AbsenceBox {
-        background-color: #ff0000;
-        border: 1px solid #ff0000;
-        border-radius: 12px
-    }
-</style>
 
+<link rel="stylesheet" href="{% static 'css/calendar.css' %}">
+<div class="modal" id="confirmationBox">
+    <div class="modal-background"></div>
+    <article class="message is-danger modal-card" style="width: 25%;">
+        <div class="message-header">
+            <p>Absence Removal</p>
+            <button class="delete" aria-label="delete" id="deleteButton"></button>
+        </div>
+        <div class="message-body" style="text-align: center;">
+            <h1><b>This will make you Remove an Absence</b></h1>
+            <p>Are you sure you want to remove this Absence?</p>
+            <button class="button is-danger", id="removeAbsence"><b>Remove Absence</b></button>
+            <button class="button button1", id="cancelAbsece"><b>Cancel</b></button>
+        </div>
+    </article>
+</div>
 <div class="main">
     <div class="container">
         <div class="columns is-centered">
@@ -36,17 +36,6 @@
                         <p>Morning or Afternoon?</p>
                         <button class="button is-info" id="halfDayMorning">Morning</button>
                         <button class="button is-info" id="halfDayAfternoon">Afternoon</button>
-                    </div>
-                </article>
-                <article class="message is-info" style="display: none; position: fixed; z-index: 5;" id="confirmationBox">
-                    <div class="message-header">
-                        <p>Absence Removal</p>
-                        <button class="delete" aria-label="delete" id="absenceClose"></button>
-                    </div>
-                    <div class="message-body" style="text-align: center;">
-                        <p>Remove the absence?</p>
-                        <button class="button is-info", id="removeAbsence">Remove Absence</button>
-                        <button class="button is-info", id="cancelAbsece">Cancel</button>
                     </div>
                 </article>
             </div>
@@ -74,8 +63,16 @@
                     </form>
                 </span>
             </div>
+
+
+
+
+                
+            <br />
+
             <div class="level mb-3">
                 <div class="level-left">
+
                     
                     <!-- reset button to take user back to present -->
                     <a href="/calendar/1/{{current_month}}/{{current_year}}" class="mr-4 button" title="Refresh The Calendar">
@@ -262,10 +259,12 @@
                             <thead>
                                 <th style="color: black; min-width: 200px; max-width: 200px;"></th>
                                 {% for day in days_name %}
-                                {% if day == Sa or day == Su %}
-                                <th style="background-color: #055496; color: white; max-width: 40px; min-width: 40px">{{day}}</th>
-                                {% elif forloop.counter in bank_hol%}
-                                <th style="background-color: #01661f; color: white; max-width: 40px; min-width: 40px">{{day}}</th>
+                                {% if day == Sa and weekends.enabled or day == Su and weekends.enabled %}
+                                <th style="background-color: {{ weekends.offset}}; color: white;">{{day}}</th>
+                                {% elif day == Sa and not weekends.enabled or day == Su and not weekends.enabled %}
+                                <th style="display:none"> </th>
+                                {% elif forloop.counter in bank_hol and bank_holidays.enabled %}
+                                <th style="background-color: {{ bank_holidays.offset }}; color: white; max-width: 40px; min-width: 40px">{{day}}</th>
                                 {% else %}
                                 <th style="background-color: rgb(255, 255, 255); color: black; max-width: 40px; min-width: 40px">{{day}}</th>
                                 {% endif %}
@@ -276,10 +275,12 @@
                                 {% for day in day_range %}
                                 {% if day == today and month == current_month and year == current_year %}
                                 <th style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255); max-width: 40px; min-width: 40px;">{{day}}</th>
-                                {% elif day in bank_hol %}
-                                <td style = "background-color: #28663a; color: rgb(255, 255, 255); max-width: 40px; min-width: 40px;">{{day}}</td>
-                                {% elif day in weekend_list%}
-                                <td style = "background-color: #206cab; color: rgb(255, 255, 255); max-width: 40px; min-width: 40px;">{{day}}</td>
+                                {% elif day in bank_hol and bank_holidays.enabled %}
+                                <td style = "background-color: {{ bank_holidays.colour }}; color: rgb(255, 255, 255); max-width: 40px; min-width: 40px;">{{day}}</td>
+                                {% elif day in weekend_list and weekends.enabled %}
+                                <td style = "background-color: {{ weekends.colour }}; color: rgb(255, 255, 255); max-width: 40px; min-width: 40px;">{{day}}</td>
+                                {% elif day in weekend_list and not weekends.enabled %}
+                                <th style="display:none"> </th>
                                 {% else %}
                                 <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255); max-width: 40px; min-width: 40px;">{{day}}</th>
                                 {% endif %}
@@ -295,7 +296,12 @@
                                     {% if member.user.username == user.username %}
                                     <td style="min-width: 200px; max-width: 200px; background-color: #0e00d6; color: white; overflow-x: auto">{{user.username}}</td>
                                     {% else %}
-                                    <td style="min-width: 200px; max-width: 200px; overflow-x: auto">{{ member.user.username }}</td>
+                                        {% check_permissions member request.user as editable %}
+                                        {% if editable %}
+                                        <td>{{member.user.username}}*</td>
+                                        {% else %}
+                                        <td>{{member.user.username}}</td>
+                                        {% endif %}
                                     {% endif %}
 
                                     {% for day in day_range %}
@@ -312,10 +318,12 @@
                                         {% elif check_half_day == "M" %}
                                         <td style="background: linear-gradient(to right, #ff0000 50%, #ffffff 50%);", id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="M"></td>
                                         {% else %}
-                                            {% if day in bank_hol %}
-                                                <td style = "background-color: #28663a; min-width: 40px; max-width: 40px;", id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
-                                            {% elif day in weekend_list %}
-                                                <td style = "background-color: #206cab; min-width: 40px; max-width: 40px;", id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                            {% if day in bank_hol and bank_holidays.enabled %}
+                                                <td style = "background-color: {{ bank_holidays.colour }};", id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                            {% elif day in weekend_list and weekends.enabled %}
+                                                <td style = "background-color: {{ weekends.colour }}; min-width: 40px; max-width: 40px;", id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                            {% elif day in weekend_list and not weekends.enabled %}
+                                                <th style="display:none"> </th>
                                             {% else %}
                                                 <td style = "min-width: 40px; max-width: 40px", id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                             {% endif %}

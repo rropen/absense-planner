@@ -57,16 +57,16 @@ document.addEventListener('click', function(e) {
             else {
                 var absence_type = e.target.dataset.absenceType;
                 var confirmationPage = document.getElementById("confirmationBox")
-                confirmationPage.style.display = "block";
+                confirmationPage.classList.add("is-active")
                 document.getElementById("cancelAbsece").onclick = function() {
-                    document.getElementById("confirmationBox").style.display = "none";
+                    confirmationPage.classList.remove("is-active")
                 }
-                document.getElementById("absenceClose").onclick = function() {
-                    document.getElementById("confirmationBox").style.display = "none";
+                document.getElementById("deleteButton").onclick = function() {
+                    confirmationPage.classList.remove("is-active")
                 }
                 document.getElementById("removeAbsence").onclick = function() {
                     sendData(username, date, false, "N", "remove", absence_type)
-                    confirmationPage.style.display = "none";
+                    confirmationPage.classList.remove("is-active")
                 }
             }
         }
