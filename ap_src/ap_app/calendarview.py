@@ -333,7 +333,7 @@ def api_team_calendar(
 #JC - Calendar view using the API
 @login_required
 def api_calendar_view(
-    request,
+    request:HttpRequest,
     #JC - These are the default values for the calendar.
     month=datetime.datetime.now().strftime("%B"),
     year=datetime.datetime.now().year
@@ -350,10 +350,13 @@ def api_calendar_view(
     #JC - Get API data
     api_data = None
     if request.method == "GET":
+        sortValue = None
+        if request.GET.get("sortBy") is not None:
+            sortValue = request.GET.get("sortBy")
         try:
             token = (str(request.user) + "AbsencePlanner").encode()
             encryption = hashlib.sha256(token).hexdigest()
-            r = requests.get(env("TEAM_DATA_URL") + "api/user/teams/?format=json&username={}".format(request.user.username), headers={"TEAMS-TOKEN": encryption})
+            r = requests.get(env("TEAM_DATA_URL") + "api/user/teams/?format=json&username={}&sort={}".format(request.user.username, sortValue), headers={"TEAMS-TOKEN": encryption})
         except:
             print("API failed to connect")
             return redirect("/")

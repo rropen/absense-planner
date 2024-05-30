@@ -64,10 +64,6 @@
                 </span>
             </div>
 
-
-
-
-                
             <br />
 
             <div class="level mb-3">
@@ -241,13 +237,25 @@
 
                 </div>
                 <div class="level-right">
-                    <div class="level-right">
-                        <div class="control has-icons-left">
-                            <input class="input" type="text" name="username" placeholder="Search" onkeyup="filterTeams(this)">
-                            <span class="icon is-left">
-                                <i class="fas fa-search"></i>
-                            </span>
+                    <div class="control has-icons-left px-1">
+                        <div class="select">
+                            <select id="SortBy" onchange="sortTeams(this)">
+                                <option value="team__name">Name (A - Z)</option>
+                                <option value="-team__name">Name (Z - A)</option>
+                                <option value="role__id">Role (High to Low)</option>
+                                <option value="-role__id">Role (Low to High)</option>
+                                <option value="-favourite">Favourited</option>
+                            </select>
                         </div>
+                        <span class="icon is-left">
+                            <i class="fas fa-filter"></i>
+                        </span>
+                    </div>
+                    <div class="control has-icons-left px-1">
+                        <input class="input" type="text" name="username" placeholder="Search" onkeyup="filterTeams(this)">
+                        <span class="icon is-left">
+                            <i class="fas fa-search"></i>
+                        </span>
                     </div>
                 </div>
             </div>
