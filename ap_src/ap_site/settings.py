@@ -105,6 +105,16 @@ DATABASES = {
     }
 }
 
+if not DEBUG:
+    DATABASES = {
+        "ENGINE":"django.db.backends.mysql",
+        "NAME":"absenceplanner",
+        "HOST":"104.248.160.195",
+        "USER":"absenceplanneruser",
+        "PASSWORD":"ioier2JJ16xLs5rEb2va",
+        "PORT":"",
+    }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
