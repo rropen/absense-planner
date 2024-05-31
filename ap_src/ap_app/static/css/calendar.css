@@ -12,3 +12,8 @@
     border: 1px solid #ff0000;
     border-radius: 12px
 }
+
+.CalendarCell {
+    min-width: 47px;
+    max-width: 47px;
+}

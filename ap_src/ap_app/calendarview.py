@@ -349,8 +349,8 @@ def api_calendar_view(
     
     #JC - Get API data
     api_data = None
+    sortValue = None
     if request.method == "GET":
-        sortValue = None
         if request.GET.get("sortBy") is not None:
             sortValue = request.GET.get("sortBy")
         try:
@@ -414,6 +414,7 @@ def api_calendar_view(
         **data_3,
         **colour_data,
         "home_active": True,
+        "sort_value": sortValue,
         "api_data": api_data,
     }
 
