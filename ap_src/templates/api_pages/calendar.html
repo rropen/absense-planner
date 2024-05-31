@@ -384,7 +384,7 @@
                                 {% else %}
                                 <option value="-role__id">Role (Low to High)</option>
                                 {% endif %}
-                                {% if sort_value == '-favourite' %}
+                                {% if sort_value == '-favourite' or sort_value == None %}
                                 <option value="-favourite" selected>Favourited</option>
                                 {% else %}
                                 <option value="-favourite">Favourited</option>
@@ -405,9 +405,9 @@
             </div>
             <!--API Linear Calendar (Start)-->
             <div id="Linear-Calendars">
-                <div class="table-container" style="overflow: auto; height: 75vh" id="calendar-group">
+                <div class="table-container" style="overflow: auto; height: 75vh">
                     {% if api_data %}
-                        <table class="table is-bordered is-striped" style="width: 100%; position: sticky; top: 0; z-index: 999" id="{{ item.team.name }}">
+                        <table class="table is-bordered is-striped" style="width: 100%; position: sticky; top: 0; z-index: 5" id="{{ item.team.name }}">
                             <thead>
                                 <th style="color: black; width: 6vw; min-width: 100px; border: none;"></th>
                                 {% for day in days_name %}
@@ -439,55 +439,57 @@
                                 {% endfor %}
                             </thead>
                         </table>
-                        {% for item in api_data %}
-                        <h1 class="is-size-5 has-text-weight-bold" id="title-{{ item.team.name }}">{{ item.team.name }}</h1>
-                        <table class="table is-bordered is-striped" style="width: 100%" id="{{ item.team.name }}">
-                            <tbody>
-                                {% for member in item.team.members %}
-                                <tr id="{{ member.user.username }}">
-                                    {% if member.user.username == user.username %}
-                                    <td style="width: 6vw; min-width: 100px; background-color: #0e00d6; color: white; overflow-x: auto">{{user.username}}</td>
-                                    {% else %}
-                                        {% check_permissions member request.user as editable %}
-                                        {% if editable %}
-                                        <td>{{member.user.username}}*</td>
+                        <div id="calendar-group">
+                            {% for item in api_data %}
+                            <h1 class="is-size-5 has-text-weight-bold" id="title-{{ item.team.name }}">{{ item.team.name }}</h1>
+                            <table class="table is-bordered is-striped" style="width: 100%" id="{{ item.team.name }}">
+                                <tbody>
+                                    {% for member in item.team.members %}
+                                    <tr id="{{ member.user.username }}">
+                                        {% if member.user.username == user.username %}
+                                        <td style="width: 6vw; min-width: 100px; background-color: #0e00d6; color: white; overflow-x: auto">{{user.username}}</td>
                                         {% else %}
-                                        <td>{{member.user.username}}</td>
-                                        {% endif %}
-                                    {% endif %}
-
-                                    {% for day in day_range %}
-
-                                        {% check_absences absence_dates|get_key:member.user.username year month_num day as check_absence %}
-                                        {% check_absences recurring_absence_dates|get_key:member.user.username year month_num day as check_recurring_absence %}
-                                        {% check_half_day half_days_data|get_key:member.user.username year month_num day as check_half_day %}
-                                        {% if check_recurring_absence %}
-                                        <td style="background-color: #ffaa00;" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="R"></td>
-                                        {% elif check_absence %}
-                                        <td style="background-color: #ff0000;" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="S"></td>
-                                        {% elif check_half_day == "A" %}
-                                        <td style="background: linear-gradient(to right, #ffffff 50%, #ff0000 50% );" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="A"></td>
-                                        {% elif check_half_day == "M" %}
-                                        <td style="background: linear-gradient(to right, #ff0000 50%, #ffffff 50%);" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="M"></td>
-                                        {% else %}
-                                            {% if day in bank_hol and bank_holidays.enabled %}
-                                                <td style = "background-color: {{ bank_holidays.colour }};" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
-                                            {% elif day in weekend_list and weekends.enabled %}
-                                                <td style = "background-color: {{ weekends.colour }};" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
-                                            {% elif day in weekend_list and not weekends.enabled %}
-                                                <th style="display:none"> </th>
+                                            {% check_permissions member request.user as editable %}
+                                            {% if editable %}
+                                            <td>{{member.user.username}}*</td>
                                             {% else %}
-                                                <td class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                            <td>{{member.user.username}}</td>
                                             {% endif %}
                                         {% endif %}
 
-                                    {% endfor %}
+                                        {% for day in day_range %}
 
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                        {% endfor %}
+                                            {% check_absences absence_dates|get_key:member.user.username year month_num day as check_absence %}
+                                            {% check_absences recurring_absence_dates|get_key:member.user.username year month_num day as check_recurring_absence %}
+                                            {% check_half_day half_days_data|get_key:member.user.username year month_num day as check_half_day %}
+                                            {% if check_recurring_absence %}
+                                            <td style="background-color: #ffaa00;" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="R"></td>
+                                            {% elif check_absence %}
+                                            <td style="background-color: #ff0000;" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="S"></td>
+                                            {% elif check_half_day == "A" %}
+                                            <td style="background: linear-gradient(to right, #ffffff 50%, #ff0000 50% );" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="A"></td>
+                                            {% elif check_half_day == "M" %}
+                                            <td style="background: linear-gradient(to right, #ff0000 50%, #ffffff 50%);" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="M"></td>
+                                            {% else %}
+                                                {% if day in bank_hol and bank_holidays.enabled %}
+                                                    <td style = "background-color: {{ bank_holidays.colour }};" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                                {% elif day in weekend_list and weekends.enabled %}
+                                                    <td style = "background-color: {{ weekends.colour }};" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                                {% elif day in weekend_list and not weekends.enabled %}
+                                                    <th style="display:none"> </th>
+                                                {% else %}
+                                                    <td class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                                {% endif %}
+                                            {% endif %}
+
+                                        {% endfor %}
+
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% endfor %}
+                        </div>
                     {% else %}
                     <div class="container has-background-light box">
                         <div class="is-size-5 mb-3">
