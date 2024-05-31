@@ -103,3 +103,10 @@ function filterTeams(input) {
         }
     }
 }
+
+function sortTeams(e) {
+    var url = new URL(window.location.href)
+    url.searchParams.set("sortBy", e.value)
+
+    window.location.replace(url)
+}
