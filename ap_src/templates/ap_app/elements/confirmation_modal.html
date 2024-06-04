@@ -1,0 +1,24 @@
+{% load static %}
+<div class="modal" style="z-index: 50!important;">
+    <div class="modal-card">
+        {% if PRODUCTION_UI %}
+        <header class="modal-card-head rr-primary">
+        {% else %}
+        <header class="modal-card-head rr-dev-primary">
+        {% endif %}
+            <p class="modal-card-title rr-white">{{ title }}</p>
+            <button class="delete" aria-label="close"></button>
+        </header>
+        <section class="modal-card-body">
+            <p>Are you sure you want to remove this absence?</p>
+        </section>
+        {% if PRODUCTION_UI %}
+        <div class="modal-card-foot rr-secondary is-justify-content-flex-end">
+        {% else %}
+        <div class="modal-card-foot rr-dev-secondary is-justify-content-flex-end">
+        {% endif %}
+            <button class="button is-info">Confirm</button>
+            <button class="button is-light">Cancel</button>
+        </div>
+    </div>
+</div>

@@ -10,6 +10,7 @@ import datetime
 import requests
 import hashlib
 import environ
+from dateutil.relativedelta import relativedelta
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
@@ -21,24 +22,14 @@ from .models import ( Relationship, Role, Team,
 from .absences import *
 from .teams import *
 
-def check_calendar_date(year, month) -> datetime.datetime:
-    """ This function will determine if the requested date is acceptable - (NOT before current date - 12 months) """
-    # Current year * 12     + current month as num      = amount of months been  
-    # requested year * 12   + requested month as num    = 
+def check_calendar_date(year, month) -> bool:
+    date = datetime.datetime(year, datetime.datetime.strptime(month, "%B").month, 1)
+    current = datetime.datetime.now()
     
-    # If requested date is before "current date - 12 months" than will not accept date
-    todays_date = datetime.datetime.now()
-    requested_months_amount = (int(year) * 12) + datetime.datetime.strptime(month, "%B").month
-    current_months_amount   = (todays_date.year * 12) + todays_date.month 
-    months_difference = current_months_amount - requested_months_amount
-
-
- #   if months_difference > 12:
-  #      # Return the most earliest date acceptable - (now - 12 months)
-   #     return datetime.datetime(todays_date.year - 1, todays_date.month, 1)  
-    #else:
-     #   return None
+    if date < (current - relativedelta(years=1)) or date > (current + relativedelta(years=1)):
+        return False
     
+    return True
 
 @login_required
 def set_calendar_month(request):
@@ -62,7 +53,6 @@ def color_variant(hex_color, brightness_offset=1):
     new_rgb_int = [int(hex_value, 16) + brightness_offset for hex_value in rgb_hex]
     new_rgb_int = [min([255, max([0, i])]) for i in new_rgb_int] # make sure new values are between 0 and 255
     return "rgb" + str(new_rgb_int).replace("[", "(").replace("]", ")")
-    #return "#" + "".join([hex(i)[2:] for i in new_rgb_int])
 
 def get_colour_data(request:HttpRequest):
     colour_data = {}
@@ -81,190 +71,6 @@ def get_colour_data(request:HttpRequest):
         colour_data[scheme.name.replace(" ", "_").lower()] = scheme_data
     
     return colour_data
-
-@login_required
-def all_calendar(
-    request,
-    month=datetime.datetime.now().strftime("%B"),
-    year=datetime.datetime.now().year,
-):
-    # Get acceptable date - (NOTHING BELOW now - 12months)
-    date = check_calendar_date(year, month)
-    if date:
-        month = date.strftime("%B")
-        year = date.year
-    
-    try:
-        userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
-    except IndexError:
-        return redirect("/")
-    
-    if userprofile.external_teams:
-        try:
-            token = (str(request.user) + "AbsencePlanner").encode()
-            encryption = hashlib.sha256(token).hexdigest()
-            if requests.get(env("TEAM_DATA_URL") + "api/user/teams/?format=json&username={}".format(request.user.username), headers={"TEAMS-TOKEN": encryption}).status_code == 200:
-                return redirect("/calendar/1")
-        except:
-            print("Failed to load api")
-
-
-    data_1 = get_date_data(userprofile.region, month, year)
-    
-    current_month = data_1["current_month"]
-    current_year = data_1["current_year"]
-    current_day = datetime.datetime.now().day
-    date = f"{current_day} {current_month} {current_year}"
-    date = datetime.datetime.strptime(date, "%d %B %Y")
-
-
-    all_users = []
-    all_users.append(request.user)
-
-    user_relations = Relationship.objects.filter(
-        user=request.user, status=Status.objects.get(status="Active")
-    )
-    hiding_users = False
-
-
-    for index, relation in enumerate(user_relations):
-        rels = Relationship.objects.filter(
-            team=relation.team, status=Status.objects.get(status="Active")
-        )
-
-        # Finds the viewers role in the team
-        for user in rels:
-            if user.user == request.user:
-                viewers_role = Role.objects.get(id=user.role_id)
-
-        for rel in rels:
-            if rel.user not in all_users:
-                if viewers_role.role == "Follower":
-                    # Than hide users data who have privacy on
-
-                    user_profile = UserProfile.objects.get(user=rel.user)
-                    if not user_profile.privacy:
-                        # If user hasn't got their data privacy on
-                        all_users.append(rel.user)
-                    else:
-                        # Used to inform user on calendar page if there are hiden users
-                        hiding_users = True
-
-                else:
-                    # Only followers cannot view those who have privacy set for their data. - (Members & Owners can see the data)
-                    all_users.append(rel.user)
-
-    # Filtering
-    filtered_users = get_filter_users(request, all_users)
-
-    data_2 = get_absence_data(all_users, 2)
-
-    data_3 = {"Sa": "Sa", "Su": "Su", "users_filter": filtered_users}
-
-  
-    grid_calendar_month_values = list(data_1["day_range"])
-    # NOTE: This will select which value to use to fill in how many blank cells where previous month overrides prevailing months days. 
-    # This is done by finding the weekday value for the 1st day of the month. Example: "Tu" will require 1 blank space/cell.
-    for i in range({"Mo":0, "Tu":1, "We":2, "Th":3, "Fr":4, "Sa":5, "Su":6}[data_1["days_name"][0]]):
-        grid_calendar_month_values.insert(0, -1)
-
-
-    context = {
-        **data_1,
-        **data_2,
-        **data_3,
-        "users_hidden": hiding_users,
-        "home_active": True,
-        
-        # Grid-Calendars day values  
-        "detailed_calendar_day_range":grid_calendar_month_values,
-     
-        
-    }
-   
-
-    return render(request, "ap_app/calendar.html", context)
-
-@login_required
-def team_calendar(
-    request,
-    id,
-    month=datetime.datetime.now().strftime("%B"),
-    year=datetime.datetime.now().year,
-):
-    if is_member(request.user, id):
-
-        # Get acceptable date - (NOTHING BELOW now - 12months)
-        date = check_calendar_date(year, month)
-        if date:
-            month = date.strftime("%B")
-            year = date.year
-
-        try:
-            userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
-        except IndexError:
-            return redirect("/")
-
-        data_1 = get_date_data(userprofile.region, month, year)
-
-        users = Relationship.objects.all().filter(
-            team=id, status=Status.objects.get(status="Active")
-        )
-
-        data_2 = get_absence_data(users, 1)
-
-        team = Team.objects.get(id=id)
-
-        # Filtering users by privacy
-        filtered_users = []
-        viewer = data_2["users"].get(user=request.user)
-        if str(viewer.role) == "Follower":
-            # Than hide data of users with privacy on
-            for user in data_2["users"]:
-                user_profile = UserProfile.objects.get(user=user.user)
-                if not user_profile.privacy:
-                    filtered_users.append(user)
-
-                else:
-                    # For pop-up to inform viewer that there are hidden users
-                    data_2.update({"hiding_users": True})
-
-            data_2["users"] = filtered_users
-
-        # Gets filtered users by filtering system on page
-        filtered_users = get_filter_users(
-            request, [user.user for user in data_2["users"]]
-        )
-
-        actual_filtered_users = []
-        for user in data_2["users"]:
-            if user.user in filtered_users:
-                actual_filtered_users.append(user)
-
-        # Reconstructs users list to be in desired form for template - (QuerySet of relationships)
-        data_2["users"] = actual_filtered_users
-
-        user_in_teams = []
-        for rel in Relationship.objects.filter(team=team):
-            user_in_teams.append(rel.user.id)
-
-        data_3 = {
-            "owner": Role.objects.all()[0],
-            "Sa": "Sa",
-            "Su": "Su",
-            "current_user": Relationship.objects.get(user=request.user, team=team),
-            "team": team,
-            "all_users": User.objects.all().exclude(id__in=user_in_teams),
-            "team_count": Relationship.objects.filter(
-                team=team.id, status=Status.objects.get(status="Active")
-            ).count(),
-        }
-
-        context = {**data_1, **data_2, **data_3}
-
-        return render(request, "teams/calendar.html", context)
-
-    return redirect("dashboard")
 
 def team_calendar_data(id):
     data = None
@@ -291,9 +97,8 @@ def api_team_calendar(
 ):
     
     date = check_calendar_date(year, month)
-    if date:
-        month = date.strftime("%B")
-        year = date.year
+    if not date:
+        return redirect("api_team_calendar")
 
     try:
         userprofile: UserProfile = UserProfile.objects.get(user=request.user)
@@ -328,97 +133,6 @@ def api_team_calendar(
     }
 
     return render(request, "api_pages/team_calendar.html", data)
-
-
-#JC - Calendar view using the API
-@login_required
-def api_calendar_view(
-    request:HttpRequest,
-    #JC - These are the default values for the calendar.
-    month=datetime.datetime.now().strftime("%B"),
-    year=datetime.datetime.now().year
-):
-    
-    try:
-        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
-    except IndexError:
-        return redirect("/")
-    
-    if not userprofile.external_teams:
-        return redirect("/calendar/0")
-    
-    #JC - Get API data
-    api_data = None
-    sortValue = None
-    if request.method == "GET":
-        if request.GET.get("sortBy") is not None:
-            sortValue = request.GET.get("sortBy")
-        try:
-            token = (str(request.user) + "AbsencePlanner").encode()
-            encryption = hashlib.sha256(token).hexdigest()
-            r = requests.get(env("TEAM_DATA_URL") + "api/user/teams/?format=json&username={}&sort={}".format(request.user.username, sortValue), headers={"TEAMS-TOKEN": encryption})
-        except:
-            print("API failed to connect")
-            return redirect("/")
-        if r.status_code == 200:
-            api_data = r.json()
-        else:
-            if r:
-                result = r.json()
-                if result["code"] == "I":
-                    print("Username not found in Team App database.")
-                elif result["code"] == "N":
-                    print("A username was not provided with the request.")
-            else:
-                print("Fatal Error")
-
-    date = check_calendar_date(year, month)
-    if date:
-        month = date.strftime("%B")
-        year = date.year
-
-    data_1 = get_date_data(userprofile.region, month, year)
-    
-    current_month = data_1["current_month"]
-    current_year = data_1["current_year"]
-    current_day = datetime.datetime.now().day
-    date = f"{current_day} {current_month} {current_year}"
-    date = datetime.datetime.strptime(date, "%d %B %Y")
-
-
-    all_users = []
-    all_users.append(request.user)
-
-    if api_data:
-        for team in api_data:
-            for member in team["team"]["members"]:
-                retrieved_user = User.objects.filter(username=member["user"]["username"])
-                if retrieved_user.exists() and retrieved_user not in all_users:
-                    all_users.append(retrieved_user[0])
-
-    data_2 = get_absence_data(all_users, 2)
-
-    data_3 = {"Sa": "Sa", "Su": "Su"}
-
-    grid_calendar_month_values = list(data_1["day_range"])
-    # NOTE: This will select which value to use to fill in how many blank cells where previous month overrides prevailing months days. 
-    # This is done by finding the weekday value for the 1st day of the month. Example: "Tu" will require 1 blank space/cell.
-    for i in range({"Mo":0, "Tu":1, "We":2, "Th":3, "Fr":4, "Sa":5, "Su":6}[data_1["days_name"][0]]):
-        grid_calendar_month_values.insert(0, -1)
-
-    colour_data = get_colour_data(request)
-
-    context = {
-        **data_1,
-        **data_2,
-        **data_3,
-        **colour_data,
-        "home_active": True,
-        "sort_value": sortValue,
-        "api_data": api_data,
-    }
-
-    return render(request, "api_pages/calendar.html", context)
                     
 def get_date_data(
     region,
@@ -436,6 +150,8 @@ def get_date_data(
     data["month"] = month
     data["next_current_year"] = datetime.datetime.now().year + 1
     data["next_second_year"] = datetime.datetime.now().year + 2
+
+    data["previous_current_year"] = datetime.datetime.now().year - 1
 
     last_year = datetime.datetime.today().year - 1
     next_year = datetime.datetime.today().year + 1
@@ -553,3 +269,80 @@ def get_filter_users(request, users) -> list:
         filtered_users = users
 
     return filtered_users
+
+def retrieve_calendar_data(request:HttpRequest, sortValue):
+    data = None
+    r = None
+
+    try:
+        token = (str(request.user) + "AbsencePlanner").encode()
+        encryption = hashlib.sha256(token).hexdigest()
+        r = requests.get(env("TEAM_DATA_URL") + "api/user/teams/?format=json&username={}&sort={}".format(request.user.username, sortValue), headers={"TEAMS-TOKEN": encryption})
+    except:
+        print("API Failed to connect")
+    
+    if r is not None and r.status_code == 200:
+        data = r.json()
+    
+    return data
+
+def retrieve_all_users(request:HttpRequest, data):
+    users = []
+    users.append(request.user)
+    if data is not None:
+        for team in data:
+            for member in team["team"]["members"]:
+                user = User.objects.filter(username=member["user"]["username"])
+                if user.exists() and user not in users:
+                    users.append(user[0])
+    
+    return users
+
+#JC - Main calendar using API data.
+@login_required
+def main_calendar(
+    request:HttpRequest,
+    month = datetime.datetime.now().strftime("%B"),
+    year = datetime.datetime.now().year
+):
+
+    #JC - Retrieve users profile
+    try:
+        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
+    except:
+        # TODO Create an error page if the userprofile is not found.
+        raise NotImplementedError("Invalid Userprofile (No error page)")
+
+    #JC - Retrieve sort value of calendars.    
+    sortValue = None
+    if request.GET.get("sortBy") is not None:
+        sortValue = request.GET.get("sortBy")
+
+    #JC - Get names of teams and members in the team.
+    teams_data = retrieve_calendar_data(request, sortValue)
+
+    #JC - If a month has been selected by the user check if its valid.
+    date = check_calendar_date(year, month)
+    if not date:
+        return redirect('main_calendar')
+
+    date_data = get_date_data(userprofile.region, month, year)
+
+    users = retrieve_all_users(request, teams_data)
+
+    absence_data = get_absence_data(users, 2)
+
+    colour_data = get_colour_data(request)
+
+    weekends = {"Sa": "Sa", "Su": "Su"}
+
+    context = {
+        **date_data,
+        **absence_data,
+        **weekends,
+        **colour_data,
+        "team_data": teams_data,
+        "sort_value": sortValue
+    }
+
+    return render(request, "calendars/calendar.html", context)

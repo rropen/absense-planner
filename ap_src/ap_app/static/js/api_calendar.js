@@ -74,7 +74,7 @@ document.addEventListener('click', function(e) {
 }, false)
 
 //Toggle clickable calendar on/off
-var calendarClickButton = document.getElementById("ClickToggle")
+var calendarClickButton = document.getElementById("CalendarClick-Toggle")
 calendarClickButton.onclick = function() {
     if (calendarClickToggle == false) {
         calendarClickButton.style.borderColor = "green";
@@ -95,7 +95,6 @@ function filterTeams(input) {
     for (cal in calendars) {
         var calendarID = calendars[cal].id.toString()
         calendarID = calendarID.replace("title-", "")
-        console.log(calendarID," is the output id")
         if (!calendarID.toUpperCase().includes(input.value.toString().toUpperCase())) {
             calendars[cal].style.display = "none";
         } else {
@@ -109,4 +108,15 @@ function sortTeams(e) {
     url.searchParams.set("sortBy", e.value)
 
     window.location.replace(url)
+}
+
+function setDate(e, id) {
+    data = e.value.split(" ")
+    month = data[0]
+    year = data[1]
+    if (id == 0) {
+        window.location.replace(window.location.origin + `/calendar/${month}/${year}`)
+    } else {
+        window.location.replace(window.location.origin + `/teams/api-calendar/${id}/${month}/${year}`)
+    }
 }

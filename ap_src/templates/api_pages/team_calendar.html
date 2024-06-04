@@ -8,6 +8,9 @@
 {% load static %}
 
 {% block content %}
+
+<link rel="stylesheet" href="{% static 'css/calendar.css' %}">
+
 <div class="modal" id="confirmationBox">
     <div class="modal-background"></div>
     <article class="message is-danger modal-card" style="width: 25%;">
@@ -59,176 +62,9 @@
     </div>
 </section>
 <section class="section" style="padding-left: 7.5vw!important; padding-right: 7.5vw!important;">
-    <div class="level mb-3">
+    <div class="level">
         <div class="level-left">
-            <a class="mr-2 button" href="/teams/api-calendar/{{id}}/{{current_month}}/{{current_year}}" title="Refresh"><i class="fas fa-sync"></i></a>
-            {% if current_year == year %}
-                    
-            {% if current_month_num == month_num %}
-
-               <a id="previous" title = "Go To Previous Month" href="/teams/api-calendar/{{id}}/{{previous_month}}/{{year}}" class="button">
-                   <span class="icon">
-                       <i class="fas fa-arrow-left"></i>
-                   </span>
-               </a>
-                
-               <a id="next" title = "Go To Next Month" href="/teams/api-calendar/{{id}}/{{next_month}}/{{year}}" class="button">
-                   <span class="icon ">
-                       <i class="fas fa-arrow-right"></i>
-                   </span>
-               </a>
-
-               {% elif month_num == 1 %}
-
-               <a id="previous" "Go To Previous Month" href="/teams/api-calendar/{{id}}/{{previous_month}}/{{previous_year}}" class="button">
-                   <span class="icon ">
-                       <i class="fas fa-arrow-left"></i>
-                   </span>
-               </a>
-               <a id="next" "Go To Next Month" href="/teams/api-calendar/{{id}}/February/{{year}}" class="button">
-                   <span class="icon ">
-                       <i class="fas fa-arrow-right"></i>
-                   </span>
-               </a>
-
-               {% elif month_num == 12 %}
-
-                   <a id="previous" title = "Go To Previous Month" href="/teams/api-calendar/{{id}}/{{previous_month}}/{{year}}" class="button">
-                       <span class="icon ">
-                           <i class="fas fa-arrow-left"></i>
-                       </span>
-                   </a>
-                   <a id="next" title = "Go To Next Month" href="/teams/api-calendar/{{id}}/January/{{next_year}}" class="button">
-                       <span class="icon ">
-                           <i class="fas fa-arrow-right"></i>
-                       </span>
-                   </a>
-
-                   {% else %}
-
-                   <a id="previous" "Go To Previous Month" href="/teams/api-calendar/{{id}}/{{previous_month}}/{{year}}" class="button">
-                       <span class="icon ">
-                           <i class="fas fa-arrow-left"></i>
-                       </span>
-                   </a>
-                   <a id="next" title = "Go To Next Month" href="/teams/api-calendar/{{id}}/{{next_month}}/{{year}}" class="button">
-                       <span class="icon ">
-                           <i class="fas fa-arrow-right"></i>
-                       </span>
-                   </a>
-
-                   {% endif %}
-
-           {% elif current_year|add:"2" == next_year %}
-               {% if month_num == 1 %}
-
-                   <a id="previous" title = "Go To Previous Month" href="/teams/api-calendar/{{id}}/December/{{previous_year}}" class="button">
-                       <span class="icon ">
-                           <i class="fas fa-arrow-left"></i>
-                       </span>
-                   </a>
-                   <a id="next" title = "Go To Next Month" href="/teams/api-calendar/{{id}}/{{next_month}}/{{year}}" class="button">
-                       <span class="icon ">
-                           <i class="fas fa-arrow-right"></i>
-                       </span>
-                   </a>
-
-                   {% elif current_month_num == month_num %}
-
-                       <a id="previous" title = "Go To Previous Month" href="/teams/api-calendar/{{id}}/{{previous_month}}/{{year}}" class="button">
-                           <span class="icon ">
-                               <i class="fas fa-arrow-left"></i>
-                           </span>
-                       </a>
-                       <a id="next" title = "Go To Next Month" href="" class="noHover button" aria-disabled="true" disabled>
-                           <span class="icon ">
-                               <i class="fas fa-arrow-right"></i>
-                           </span>
-                       </a>
-                       
-
-
-                   {% else %}
-
-                       <a id="previous" title = "Go To Previous Month" href="/teams/api-calendar/{{id}}/{{previous_month}}/{{year}}" class="button">
-                           <span class="icon ">
-                               <i class="fas fa-arrow-left"></i>
-                           </span>
-                       </a>
-                       <a id="next" title = "Go To Next Month" href="/teams/api-calendar/{{id}}/{{next_month}}/{{year}}" class="button">
-                           <span class="icon ">
-                               <i class="fas fa-arrow-right"></i>
-                           </span>
-                       </a>
-
-                   {% endif %}
-
-           {% elif current_year|add:"-2" == previous_year %}
-
-               {% if month_num == 12 %}
-
-
-               <a id="previous" title = "Go To Previous Month" href="/teams/api-calendar/{{id}}/{{previous_month}}/{{year}}" class="button">
-                   <span class="icon ">
-                       <i class="fas fa-arrow-left"></i>
-                   </span>
-               </a>
-               <a id="next" title = "Go To Next Month" href="/teams/api-calendar/{{id}}/January/{{next_year}}" class="button">
-                   <span class="icon ">
-                       <i class="fas fa-arrow-right"></i>
-                   </span>
-               </a>
-
-               {% elif current_month_num == month_num %}
-
-               <a id="previous" title = "Go To Previous Month" href="" class="noHover button" aria-disabled="true" disabled>
-                   <span class="icon">
-                       <i class="fas fa-arrow-left"></i>
-                   </span>
-               </a>
-
-               <a id="next" title = "Go To Next Month" href="/teams/api-calendar/{{id}}/{{next_month}}/{{year}}" class="button">
-                   <span class="icon ">
-                       <i class="fas fa-arrow-right"></i>
-                   </span>
-               </a>
-
-
-               {% else %}
-
-               <a id="previous" title = "Go To Previous Month" href="/teams/api-calendar/{{id}}/{{previous_month}}/{{year}}" class="button">
-                   <span class="icon ">
-                       <i class="fas fa-arrow-left"></i>
-                   </span>
-               </a>
-               <a id="next" title = "Go To Next Month" href="/teams/api-calendar/{{id}}/{{next_month}}/{{year}}" class="button">
-                   <span class="icon ">
-                       <i class="fas fa-arrow-right"></i>
-                   </span>
-               </a>
-           {% endif %}
-           {% endif %}
-           <form method="POST"id="month_form" class="mx-2">
-            {% csrf_token %}
-                <div class="select">
-                    <select name="month_names" id="month_names">
-                        {% for month in month_list %}
-                            {% if month == selected_date %}
-                                <option value="{{ month }}" selected>{{ month }}</option>
-                            {% else %}
-                                <option value="{{ month }}">{{ month }}</option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
-                </div>
-            </form>
-            <a class="button" title="Toggle Clickable Calendar" style="border-width:2px; border-color:green" id="ClickToggle">
-                <i class="fas fa-mouse-pointer"></i>
-            </a>
-            <span class="is-block is-size-5 has-text-weight-semibold pl-3">{{ month }} {{ year }}</span>
-        </div>
-        <div class="level-right">
-    
+            {% include 'calendars/calendar_nav.html' with name='api_team_calendar' %}
         </div>
     </div>
     <div class="table-container" style="overflow: auto">
