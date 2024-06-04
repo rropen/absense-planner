@@ -83,6 +83,8 @@
 
                     <form method="POST"id="month_form" class="mx-2">
                         {% csrf_token %}
+                        <div class="tooltipabove">
+                            <span class="tooltiptext">Jump to Month</span>
                             <div class="select">
                                 <select name="month_names" id="month_names">
                                     {% for month in month_list %}
@@ -94,6 +96,7 @@
                                     {% endfor %}
                                 </select>
                             </div>
+                        </div>
                         </form>
 
                     <!-- If the user is in the current year then they cannot go back a year or month and view historical data -->
@@ -362,6 +365,8 @@
                 </div>
                 <div class="level-right">
                     <div class="control has-icons-left px-1">
+                    <div class="tooltip">
+                        <span class="tooltiptext">Sort By</span>
                         <div class="select">
                             <select id="SortBy" onchange="sortTeams(this)">
                                 {% if sort_value == 'team__name' %}
@@ -391,6 +396,7 @@
                                 {% endif %}
                             </select>
                         </div>
+                    </div>
                         <span class="icon is-left">
                             <i class="fas fa-filter"></i>
                         </span>

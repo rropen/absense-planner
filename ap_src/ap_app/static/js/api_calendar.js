@@ -95,13 +95,14 @@ function filterTeams(input) {
     for (cal in calendars) {
         var calendarID = calendars[cal].id.toString()
         calendarID = calendarID.replace("title-", "")
-        console.log(calendarID)
+        console.log(calendarID," is the output id")
         if (!calendarID.toUpperCase().includes(input.value.toString().toUpperCase())) {
             calendars[cal].style.display = "none";
         } else {
             calendars[cal].style.display = "";
         }
     }
+<<<<<<< Updated upstream
 }
 
 function sortTeams(e) {
@@ -109,4 +110,6 @@ function sortTeams(e) {
     url.searchParams.set("sortBy", e.value)
 
     window.location.replace(url)
+=======
+>>>>>>> Stashed changes
 }
