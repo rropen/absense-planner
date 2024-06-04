@@ -120,3 +120,10 @@ function openModal(id) {
 function closeModal(id) {
     document.getElementById(id).classList.remove("is-active")
 }
+
+window.onclick = function(event) {
+    if (event.target.id == 'modalBackground') {
+        var modalId = event.target.dataset.modalId;
+        document.getElementById(modalId).classList.remove("is-active")
+    }
+}

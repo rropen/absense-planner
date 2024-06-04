@@ -1,6 +1,6 @@
 {% load static %}
 <div class="modal" style="z-index: 50!important;" id="{{ type }}">
-    <div class="modal-background"></div>
+    <div class="modal-background" id="modalBackground" data-modal-id="{{ type }}"></div>
     <div class="modal-card">
         {% if PRODUCTION_UI %}
         <header class="modal-card-head rr-primary">
