@@ -102,7 +102,6 @@ function filterTeams(input) {
             calendars[cal].style.display = "";
         }
     }
-<<<<<<< Updated upstream
 }
 
 function sortTeams(e) {
@@ -110,6 +109,4 @@ function sortTeams(e) {
     url.searchParams.set("sortBy", e.value)
 
     window.location.replace(url)
-=======
->>>>>>> Stashed changes
 }
