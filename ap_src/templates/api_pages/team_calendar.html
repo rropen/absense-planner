@@ -11,21 +11,10 @@
 
 <link rel="stylesheet" href="{% static 'css/calendar.css' %}">
 
-<div class="modal" id="confirmationBox">
-    <div class="modal-background"></div>
-    <article class="message is-danger modal-card" style="width: 25%;">
-        <div class="message-header">
-            <p>Absence Removal</p>
-            <button class="delete" aria-label="delete" id="deleteButton"></button>
-        </div>
-        <div class="message-body" style="text-align: center;">
-            <h1><b>This will make you Remove an Absence</b></h1>
-            <p>Are you sure you want to remove this Absence?</p>
-            <button class="button is-danger", id="removeAbsence"><b>Remove Absence</b></button>
-            <button class="button button1", id="cancelAbsece"><b>Cancel</b></button>
-        </div>
-    </article>
-</div>
+{% include 'ap_app/elements/confirmation_modal.html' with title='Absence Calendar Information' type='info' %}
+{% include 'ap_app/elements/confirmation_modal.html' with title='Remove Absence' type='remove' %}
+{% include 'ap_app/elements/confirmation_modal.html' with title='Half Day Absence' type='half' %}
+
 <section class="section" style="padding-left: 7.5vw!important; padding-right: 7.5vw!important;">
     <div class="columns">
         <div class="column">

@@ -34,18 +34,16 @@ document.addEventListener('click', function(e) {
             if (absent == "FALSE") {
                 //This is a half day
                 if (e.shiftKey) {
-                    document.getElementById("halfDayConfirmation").style.display = "block";
+                    var confirmationPage = document.getElementById("half")
+                    confirmationPage.classList.add("is-active")
                     //Morning Clicked
-                    document.getElementById("halfDayMorning").onclick = function() {
+                    document.getElementById("morningBTN").onclick = function() {
                         sendData(username, date, true, "M", "add", "E")
-                        document.getElementById("halfDayConfirmation").style.display = "none";
+                        confirmationPage.classList.remove("is-active")
                     }
-                    document.getElementById("halfDayAfternoon").onclick = function() {
+                    document.getElementById("afternoonBTN").onclick = function() {
                         sendData(username, date, true, "A", "add", "E")
-                        document.getElementById("halfDayConfirmation").style.display = "none";
-                    }
-                    document.getElementById("halfDayClose").onclick = function() {
-                        document.getElementById("halfDayConfirmation").style.display = "none";
+                        confirmationPage.classList.remove("is-active")
                     }
                 }
                 //Full day absence
@@ -56,15 +54,9 @@ document.addEventListener('click', function(e) {
             //Remove an absnece
             else {
                 var absence_type = e.target.dataset.absenceType;
-                var confirmationPage = document.getElementById("confirmationBox")
+                var confirmationPage = document.getElementById("remove")
                 confirmationPage.classList.add("is-active")
-                document.getElementById("cancelAbsece").onclick = function() {
-                    confirmationPage.classList.remove("is-active")
-                }
-                document.getElementById("deleteButton").onclick = function() {
-                    confirmationPage.classList.remove("is-active")
-                }
-                document.getElementById("removeAbsence").onclick = function() {
+                document.getElementById("removeBTN").onclick = function() {
                     sendData(username, date, false, "N", "remove", absence_type)
                     confirmationPage.classList.remove("is-active")
                 }
@@ -119,4 +111,12 @@ function setDate(e, id) {
     } else {
         window.location.replace(window.location.origin + `/teams/api-calendar/${id}/${month}/${year}`)
     }
+}
+
+function openModal(id) {
+    document.getElementById(id).classList.add("is-active");
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove("is-active")
 }

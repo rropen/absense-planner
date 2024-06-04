@@ -9,6 +9,10 @@
 
 <link rel="stylesheet" href="{% static 'css/calendar.css' %}">
 
+{% include 'ap_app/elements/confirmation_modal.html' with title='Absence Calendar Information' type='info' %}
+{% include 'ap_app/elements/confirmation_modal.html' with title='Remove Absence' type='remove' %}
+{% include 'ap_app/elements/confirmation_modal.html' with title='Half Day Absence' type='half' %}
+
 <section class="section" id="calendarTitle">
     <div class="nav-bar-padding">
         <h1 class="title is-3">Absence Calendar</h1>

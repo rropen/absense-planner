@@ -342,7 +342,8 @@ def main_calendar(
         **weekends,
         **colour_data,
         "team_data": teams_data,
-        "sort_value": sortValue
+        "sort_value": sortValue,
+        "home_active": True
     }
 
     return render(request, "calendars/calendar.html", context)
