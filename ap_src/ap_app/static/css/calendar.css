@@ -47,6 +47,10 @@
     visibility: visible;
 }
 
+.tooltip:active .tooltiptext {
+    visibility: hidden;
+}
+
 .button-active {
     border: green solid 2px;
 }

@@ -14,20 +14,23 @@
 
 <form method="POST" id="month_form" class="mx-2">
     {% csrf_token %}
-    <div class="select">
-        {% if name == 'api_team_calendar' %}
-        <select name="month_names" id="month_names" onchange="setDate(this, {{ id }})">
-        {% else %}
-        <select name="month_names" id="month_names" onchange="setDate(this, 0)">
-        {% endif %}
-            {% for month in month_list %}
-                {% if month == selected_date %}
-                    <option value="{{ month }}" selected>{{ month }}</option>
-                {% else %}
-                    <option value="{{ month }}">{{ month }}</option>
-                {% endif %}
-            {% endfor %}
-        </select>
+    <div class="tooltip">
+        <span class="tooltiptext">Jump To Month</span>
+        <div class="select">
+            {% if name == 'api_team_calendar' %}
+            <select name="month_names" id="month_names" onchange="setDate(this, {{ id }})">
+            {% else %}
+            <select name="month_names" id="month_names" onchange="setDate(this, 0)">
+            {% endif %}
+                {% for month in month_list %}
+                    {% if month == selected_date %}
+                        <option value="{{ month }}" selected>{{ month }}</option>
+                    {% else %}
+                        <option value="{{ month }}">{{ month }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
     </div>
 </form>
 

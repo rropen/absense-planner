@@ -32,6 +32,8 @@
             </div>
             <div class="level-right">
                 <div class="control has-icons-left px-1">
+                    <div class="tooltip">
+                        <span class="tooltiptext">Sort By</span>
                     <div class="select">
                         <select id="SortBy" onchange="sortTeams(this)">
                             {% if sort_value == 'team__name' %}
@@ -61,6 +63,7 @@
                             {% endif %}
                         </select>
                     </div>
+                </div>
                     <span class="icon is-left">
                         <i class="fas fa-filter"></i>
                     </span>
