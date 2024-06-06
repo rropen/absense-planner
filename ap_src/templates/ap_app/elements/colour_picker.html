@@ -15,7 +15,18 @@
               </select>
             </div>
         </div>
-        <div class="control">
+        <div class="select is-rounded">
+            <select name="enabled">
+              {% if enabled %}
+              <option value="True" selected>Show</option>
+              <option value="False">Hide</option>
+              {% else %}
+              <option value="False" selected>Show</option>
+              <option value="True">Hide</option>
+              {% endif %}
+            </select>
+          </div>
+          <div class="control">
             <input type="color" class="input is-rounded" style="width: 10vw;" value="{{ colour_value }}" name="colour" />
         </div>
         <div class="control">

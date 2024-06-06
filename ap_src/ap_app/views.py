@@ -64,7 +64,7 @@ def index(request) -> render:
     if request.user.is_authenticated:
         user = UserProfile.objects.get(user=request.user)
         user.edit_whitelist.add(request.user)
-        return all_calendar(request)
+        return main_calendar(request)
     return render(request, "ap_app/index.html")
 
 
@@ -83,7 +83,7 @@ def privacy_page(request, to_accept=False) -> render:
     else:
         # Viewing general policy page - (Without the acceptancy form)
         return render(request, "ap_app/privacy.html")
-    return all_calendar(request)
+    return main_calendar(request)
 
 class SignUpView(CreateView):
     form_class = UserCreationForm

@@ -13,8 +13,8 @@ from django.conf import settings
 urlpatterns = [
     path("", views.index, name="index"),
     path('signup/', views.SignUpView.as_view(), name='signup'),
-    path("calendar/0/", views.all_calendar, name="all_Calendar"),
-    path("calendar/0/<str:month>/<int:year>", views.all_calendar, name="all_calendar"),
+    path("calendar/", views.main_calendar, name="all_Calendar"),
+    path("calendar/<str:month>/<int:year>", views.main_calendar, name="all_calendar"),
     path("teams/", views.teams_dashboard, name="dashboard"),
     path("teams/create", views.create_team, name="create_team"),
     path("teams/invite/", views.view_invites, name="view_invites"),
@@ -24,8 +24,6 @@ urlpatterns = [
     path("teams/join/apply/<int:id>/<str:response>", views.joining_team_request, name="joining_team_request"),
     path("teams/leave/<int:id>", views.leave_team, name="leave_team"),
     path("teams/settings/<int:id>/", views.team_settings, name="team_settings"),
-    path("teams/calendar/<int:id>", views.team_calendar, name="Calendar"),
-    path("teams/calendar/<int:id>/<str:month>/<int:year>", views.team_calendar, name="calendar"),
     path("teams/api-calendar/<int:id>", views.api_team_calendar, name="api_team_calendar"),
     path("teams/api-calendar/<int:id>/<str:month>/<int:year>", views.api_team_calendar, name="api_team_calendar"),
     path("teams/settings/<int:id>/<int:user_id>", views.edit_team_member_absence, name="edit_team_member_absence"),
@@ -52,8 +50,8 @@ urlpatterns = [
     path("profile/settings/set-region", views.set_region, name="set-region"),
     path("profile/settings/update-colour", views.update_colour, name="update-colour"),
     path("calendar/set_month",views.set_calendar_month, name="set_month"),
-    path("calendar/1/", views.api_calendar_view, name="api_calendar"),
-    path("calendar/1/<str:month>/<int:year>", views.api_calendar_view, name="api_calendar"),
+    path("main_calendar", views.main_calendar, name="main_calendar"),
+    path("main_calendar/<str:month>/<int:year>", views.main_calendar, name="main_calendar"),
     re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}) #This lets Django find the CSS files when debug is set to false
 
 ] 
