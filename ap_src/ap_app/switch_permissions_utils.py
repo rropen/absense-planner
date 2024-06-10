@@ -1,29 +1,10 @@
-import calendar
-import datetime
-import json
-import holidays
-import pycountry
-import pandas as pd
 import requests
 import environ
-from datetime import timedelta
 
-from django.contrib import messages
-from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
-from django.db.models.functions import Lower
-from django.http import HttpResponse, JsonResponse, HttpRequest
-from django.shortcuts import redirect, render
-from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, UpdateView
 from django.contrib.auth.models import User
 
-from collections import namedtuple
-
-from .forms import *
-from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
-                     UserProfile, Status)
+from .models import (UserProfile)
 
 env = environ.Env()
 environ.Env.read_env()
