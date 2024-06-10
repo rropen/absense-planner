@@ -1,0 +1,99 @@
+.active {
+    color: green;
+    
+}
+
+* {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  min-height: 100%;
+  display: inside;
+  flex-direction: column;
+}
+
+.main {
+    padding: 10px 10px;
+    min-height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.logo {
+    margin-left: 1700px;
+    padding: 20px 10px;
+}
+
+.text {
+    font-weight: bold;
+    size: 10rem;
+}
+.right {
+    float: right;
+    padding:100px;
+}
+
+.attending {
+    color: green;
+}
+
+.not_attending {
+    color: red;
+}
+
+.rr-primary {
+    background-color: #10069f;
+    color: #fff;
+}
+
+.rr-secondary {
+    background-color: #271EA8;
+    color: #fff;
+}
+
+.rr-dev-primary {
+    background-color: #9f0606;
+    color: #fff;
+}
+
+.rr-dev-secondary {
+    background-color: #a81e1e;
+    color: #fff;
+}
+
+
+.rr-white {
+    color: #fff;
+}
+
+.navbar a {
+    color: white;
+}
+
+.navbar .active {
+    color: #10069f;
+    background-color: white;
+}
+
+.navbar .dev-active {
+    color: #9f0606;
+    background-color: white;
+}
+
+.noHover{
+  pointer-events: none;
+}
+
+
+
+footer {
+  margin-top: auto;
+  height: 150px;
+  width: 100%;
+}
