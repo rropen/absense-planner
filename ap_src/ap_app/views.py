@@ -29,8 +29,6 @@ from .forms import *
 from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
                      UserProfile, Status, RecurringException)
 
-from .utils import check_for_teams_in_common
-
 env = environ.Env()
 environ.Env.read_env()
 
@@ -1270,11 +1268,6 @@ def add_user(request) -> render:
         try:
             user = User.objects.get(username=username)
         except:
-            # TODO Create error page
-            return redirect("/")
-        
-        team_member = check_for_teams_in_common(request, user)
-        if not team_member:
             # TODO Create error page
             return redirect("/")
 
