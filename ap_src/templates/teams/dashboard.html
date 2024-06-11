@@ -18,7 +18,6 @@
         </div>
     </div>
 
-    {% if not external_teams %} 
     <div class="level">
         <div class="level-left">
             <h3 class="has-text-weight-bold is-size-5 my-3">Local Teams ({{rels.count}})</h3>
@@ -48,7 +47,7 @@
     {% for rel in rels %}
         <div class="container has-background-light box">
             <div class="is-size-5 mb-3">
-                <span class="is-block is-size-5	has-text-weight-bold">{{rel.team.name}} <i class="fas fa-users mx-1"></i>{{rel.team.count}}</span>
+                <span class="is-block is-size-5	has-text-weight-bold">{{rel.team.name}} <i class="fas fa-user-alt mx-1"></i>{{rel.team.count}}</span>
                 {% if rel.team.private %}
                     <span class="tag is-dark">Private</span>
                 {% elif not rel.team.private %}
@@ -64,64 +63,35 @@
             </div>
         </div>
     {% endfor %}
-    {% endif %}
 
     <div class="level">
         <div class="level-left">
-            <h3 class="has-text-weight-bold is-size-5 my-3">Teams ({{external_teams|length}})</h3>
+            <h3 class="has-text-weight-bold is-size-5 my-3">External Teams ({{external_teams|length}})</h3>
         </div>
     </div>
 
     {% if not external_teams %}
     <div class="container has-background-light box">
         <div class="is-size-5 mb-3">
-            <span class="is-block is-size-5">No teams found.</span>
+            <span class="is-block is-size-5">No external teams found.</span>
         </div>
     </div>
     {% else %}
     {% for team in external_teams %}
     <div class="container has-background-light box">
         <div class="is-size-5 mb-3">
-            <span class="is-block is-size-5	has-text-weight-bold">{{ team.team.name }} <i class="fas fa-users mx-1"></i>{{ team.team.members|length }}
-                {% if team.favourite %}
-                <button class="button is-ghost" style="color: gold !important; padding-top: 0px!important; padding-bottom: 10px!important;" onclick="favouriteTeam(this, '{{ request.user.username }}', {{ team.team.id }})" onmouseover="starHover(this)" onmouseout="removeHover(this)" data-star="True"><i class="fas fa-star"></i></button>
-                {% else %}
-                <button class="button is-ghost" style="color: gold !important; padding-top: 0px!important; padding-bottom: 10px!important;" onclick="favouriteTeam(this, '{{ request.user.username }}', {{ team.team.id }})" onmouseover="starHover(this)" onmouseout="removeHover(this)" data-star="false"><i class="far fa-star"></i></button>
-                {% endif %}
-            </span>
+            <span class="is-block is-size-5	has-text-weight-bold">{{ team.team.name }} <i class="fas fa-user-alt mx-1"></i>{{rel.team.count}}</span>
             {% if team.team.private %}
-                <span class="tag is-info is-rounded">
-                    <i class="fas fa-lock"></i>&nbsp;Private
-                </span>
+                <span class="tag is-dark">Private</span>
             {% else %}
-                <span class="tag is-info is-rounded">
-                    <i class="fas fa-unlock"></i>&nbsp;Public
-                </span>
+                <span class="tag is-dark">Public</span>
             {% endif %}
-            {% if team.role.role == "Owner" or team.role.role == "Co-Owner" %}
-                <span class="tag is-dark is-rounded">
-                    <i class="fas fa-user-edit"></i>
-                    &nbsp;{{ team.role.role }}
-                </span>
-            {% else %}
-                <span class="tag is-dark is-rounded">
-                    <i class="fas fa-user"></i>
-                    &nbsp;{{ team.role.role }}
-                </span>
-            {% endif %}
+            <span class="tag is-info">{{ team.team.members|length }}</span>
         </div>
         <span class="is-block is-size-6">{{team.team.description}}</span>
-        <div class="level-right mt-3">
-            <a class="button is-link mx-1" href={% url 'api_team_calendar' id=team.team.id %}>View</a>
-            {% if team.role.role == "Owner" or team.role.role == "Co-Owner"%}
-            <a class="button is-info mx-1" href={% url 'edit_team' id=team.team.id %}>Edit</a>
-            {% endif %}
-            <button class="button is-danger mx-1" id="{{ team.team.id }}" onclick="LeaveTeam(this, '{{ request.user.username }}', false)">Leave</button>
-        </div>
     </div>
     {% endfor %}
     {% endif %}
     
 </div>
-<script src="{% static 'js/teams.js' %}" apiURL="{{ url }}"></script>
 {% endblock %}

@@ -7,24 +7,24 @@
       }
     },
     {
-      "model": "ap_app.role",
-      "pk": 3,
-      "fields": {
-        "role": "Member"
+        "model": "ap_app.role",
+        "pk": 2,
+        "fields": {
+          "role": "Member"
+        }
+      },
+      {
+        "model": "ap_app.role",
+        "pk": 3,
+        "fields": {
+          "role": "Follower"
+        }
+      },
+      {
+        "model": "ap_app.role",
+        "pk": 4,
+        "fields": {
+          "role": "Co-Owner"
+        }
       }
-    },
-    {
-      "model": "ap_app.role",
-      "pk": 4,
-      "fields": {
-        "role": "Follower"
-      }
-    },
-    {
-      "model": "ap_app.role",
-      "pk": 2,
-      "fields": {
-        "role": "Co-Owner"
-      }
-    }
   ]

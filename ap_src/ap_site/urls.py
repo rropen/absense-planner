@@ -24,4 +24,4 @@ urlpatterns = [
     path("accounts/login", auth_views.LoginView.as_view(redirect_authenticated_user=True), name="login"),
     path("", include("ap_app.urls")),
     
-] 
+]

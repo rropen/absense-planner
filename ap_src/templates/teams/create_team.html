@@ -13,28 +13,27 @@
 <div class="main container">
     
     <h1 class="title">Create a Team</h1>
-    {% if api_enabled %}
-    <form method="post" class="text-center" id="teamForm">
-    {% else %}
     <form method="post" class="text-center">
-    {% endif %}
         {% if message %}
         {% include "messages.html" %}
         {% endif %}
         {% csrf_token %}
       
 
-        {% comment %} <p id="namePromt"></p> {% endcomment %}
+        <p id="namePromt"></p>
         
 
         {{ form | bulma }}
+        
+        
+
 
     <h2 class="description"><b>Please avoid using personal information in the description as it will be seen by non team members.<b></h2>
-    <input type="hidden" name="username" value="{{ request.user.username }}">
-    <input id="submit" class="button is-link" value="Submit" type="submit">
+    <input id="submit" class="button is-link" type="submit" value="Submit" onclick="makeAlert()">
     </form>
 </div>
-{% comment %} <script>
+
+<script>
     
     const existingTeams = "{{ existing_teams|safe }}".split(",");
     const existingTeamIds = "{{ existing_teams_ids|safe }}".split(",")
@@ -93,6 +92,6 @@
 
 
 
- {% endcomment %}
+
 
 {% endblock %}

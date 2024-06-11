@@ -8,9 +8,6 @@ function addUserPermission(token) {
         },
         body: data
     })
-    .then(() => {
-        location.reload()
-    })
 }
 
 function deleteInputtedValue(element) {

@@ -202,8 +202,7 @@
                         <th style="color: black;"></th>
                         {% for day in days_name %}
                         {% if day == Sa or day == Su%}
-                        {%comment%}<th class="is-primary">{{day}}</th>{%endcomment%}
-                        <th style="display:none"></th>
+                        <th class="is-primary">{{day}}</th>
                         {% else %}
                         <th style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);">{{day}}</th>
                         {% endif %}

@@ -1,20 +1,17 @@
 from django.urls import path
-from . import views, teams, absences, calendarview
+from . import views
 
 js_info_dict = {
     'packages' : ('recurrence', ),
 }
 
 from django.conf.urls import handler404, handler500
-from django.urls import re_path
-from django.views.static import serve
-from django.conf import settings
 
 urlpatterns = [
     path("", views.index, name="index"),
     path('signup/', views.SignUpView.as_view(), name='signup'),
-    path("calendar/", views.main_calendar, name="all_Calendar"),
-    path("calendar/<str:month>/<int:year>", views.main_calendar, name="all_calendar"),
+    path("calendar/0/", views.all_calendar, name="all_Calendar"),
+    path("calendar/0/<str:month>/<int:year>", views.all_calendar, name="all_calendar"),
     path("teams/", views.teams_dashboard, name="dashboard"),
     path("teams/create", views.create_team, name="create_team"),
     path("teams/invite/", views.view_invites, name="view_invites"),
@@ -25,15 +22,14 @@ urlpatterns = [
     path("teams/leave/<int:id>", views.leave_team, name="leave_team"),
     path("teams/join_requests/<int:id>/", views.join_requests, name="join_requests"),
     path("teams/settings/<int:id>/", views.team_settings, name="team_settings"),
-    path("teams/api-calendar/<int:id>", views.api_team_calendar, name="api_team_calendar"),
-    path("teams/api-calendar/<int:id>/<str:month>/<int:year>", views.api_team_calendar, name="api_team_calendar"),
+    path("teams/calendar/<int:id>", views.team_calendar, name="Calendar"),
+    path("teams/calendar/<int:id>/<str:month>/<int:year>", views.team_calendar, name="calendar"),
     path("teams/settings/<int:id>/<int:user_id>", views.edit_team_member_absence, name="edit_team_member_absence"),
     path("teams/settings/promote/<int:id>/<int:user_id>", views.promote_team_member, name="promote_team_member"),
     path("teams/settings/demote/<int:id>/<int:user_id>", views.demote_team_member, name="demote_team_member"),
     path("teams/settings/remove/<int:id>/<int:user_id>", views.remove_team_member, name="remove_team_member"),
     path("teams/misc/<int:id>", views.team_misc, name="misc"),
-    path("teams/edit/<int:id>", views.edit_team, name="edit_team"),
-    path("absence/add", teams.manual_add, name="add"),
+    path("absence/add", views.manual_add, name="add"),
     path("absence/add_recurring", views.add_recurring, name="add_recurring"),
     path("profile/", views.profile_page, name="profile"),
     path("privacy/", views.privacy_page, name="privacy"),
@@ -46,17 +42,14 @@ urlpatterns = [
     path("absence/edit_recurring/<int:pk>", views.edit_recurring_absences, name="recurring_absence_edit"),
     path("absence/click_add", views.click_add, name="absence_click_add"),
     path("absence/click_remove", views.click_remove, name="absence_click_remove"),
-    path("profile/settings", views.profile_settings, name="profile_settings"),
+    path("profile/settings", views.profile_settings, name="profile settings"),
     path("profile/settings/add-user", views.add_user, name="add-user"),
     path("profile/settings/set-region", views.set_region, name="set-region"),
-    path("profile/settings/update-colour", views.update_colour, name="update-colour"),
     path("calendar/set_month",views.set_calendar_month, name="set_month"),
-    path("main_calendar", views.main_calendar, name="main_calendar"),
-    path("main_calendar/<str:month>/<int:year>", views.main_calendar, name="main_calendar"),
-    re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}) #This lets Django find the CSS files when debug is set to false
+    path("calendar/1/", views.api_calendar_view, name="api_calendar"),
+    path("calendar/1/<str:month>/<int:year>", views.api_calendar_view, name="api_calendar")
+]
 
-] 
-
-handler404 = 'ap_app.errors.handler404'
-handler500 = 'ap_app.errors.handler500'
-handler400 = 'ap_app.errors.handler400'
+handler404 = 'ap_app.views.handler404'
+handler500 = 'ap_app.views.handler500'
+handler400 = 'ap_app.views.handler400'

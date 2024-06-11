@@ -6,31 +6,49 @@
 {% block title %}Calendar{% endblock %}
 {% load static %}
 {% block content %}
+<style>
+    .RefreshBox {
+        pointer-events: none;
+        text-align: right;
+        background-color: ghostwhite;
+        border: 0px;
+        font-size: 11pt;
+        width: 24px;
+        height: 12px;
+    }
+    .AbsenceBox {
+        background-color: #ff0000;
+        border: 1px solid #ff0000;
+        border-radius: 12px
+    }
+    .button1 {background-color: #f44336;} /* Red */ 
+    .button2 {background-color: #32cd32;} /* Green */
+    .button3 {background-color: #black;} /* Black */ 
+</style>
 
-<link rel="stylesheet" href="{% static 'css/calendar.css' %}">
   
 <div class="main">
     <div class="container">
         <div class="columns is-centered">
             <div class="column is-one-quarter">
-                <article class="message is-confirmation" style="display: none; position: fixed; z-index: 5;", id="halfDayConfirmation">
+                <article class="message is-" style="display: none; position: fixed; z-index: 5;", id="halfDayConfirmation">
                     <div class="message-header">
                         <h1><b>You are creating a half-day booking</b></h1>                   
                         <button class="delete" aria-label="delete" id="halfDayClose"></button>
                     </div>
-                    <div class="message-body" style="text-align:center; color: white;">
+                    <div class="message-body" style="text-align:center;">
                         <p><b>Select Time</b></p>
                         <p>Morning or Afternoon?</p>
-                        <button class="button button4" id="halfDayMorning"style="color: white;"><b>Morning</b></button>
-                        <button class="button button4" id="halfDayAfternoon"style="color: white;"><b>Afternoon</b></button>
+                        <button class="button button3" id="halfDayMorning"><b>Morning</b></button>
+                        <button class="button button3" id="halfDayAfternoon"><b>Afternoon</b></button>
                     </div>
                 </article>
-                <article class="message is-confirmation" style="display:none;" id="confirmationBox">
+                <article class="message is-" style="display: none; position: fixed; z-index: 5;" id="confirmationBox">
                     <div class="message-header">
                         <p>Absence Removal</p>
-                        <button class="delete" aria-label="delete" id="deleteButton"></button>
+                        <button class="delete" aria-label="delete" id="absenceClose"></button>
                     </div>
-                    <div class="message-body" style="text-align: center; color: white;">
+                    <div class="message-body" style="text-align: center;">
                         <h1><b>This will make you Remove an Absence</b></h1>
                         <p>Are you sure you want to remove this Absence?</p>
                         <button class="button button2", id="removeAbsence"><b>Remove Absence</b></button>
@@ -62,9 +80,6 @@
                     </form>
                     
                 </span>
-
-
-
                 
                 {% if users_hidden %}
                 <span class="tag">
@@ -88,7 +103,7 @@
                     </div>
                 </div> -->
                 
-
+                
             </div>
             <div class="level mb-0">
                 <div class="level-left">
@@ -172,7 +187,7 @@
                                </span>
                            </a>
 
-                           {% elif current_month_num == month_num %}
+                           {% elif month_num == 12 %}
 
                                <a id="previous" title = "Go To Previous Month" href="/calendar/0/{{previous_month}}/{{year}}" class="button">
                                    <span class="icon ">
@@ -184,7 +199,6 @@
                                        <i class="fas fa-arrow-right"></i>
                                    </span>
                                </a>
-                               
 
 
                            {% else %}
@@ -252,7 +266,7 @@
                    {% endif %}
                    {% endif %}
 
-                   <form method="POST" action="/calendar/set_month" id="month_form">
+                   <form method="POST" action="/calendar/set_month">
                     {% csrf_token %}
                     <div class="select">
                         <select name="month_names" id="month_names">
@@ -270,13 +284,16 @@
                                 
                             {% endfor %}
                         </select>
-                        <input type="submit" value="Submit" class="Submit" id="confirmbtn"/>
                     </div>
-                    
+                    <button class="button" type="submit" title = "Submit">
+                        <span class="icon">
+                            <i class="fas fa-check" aria-hidden="true"></i>
+                        </span>
+                    </button>
                 </form>
 
 
-                <!--   <a id="CalendarFormatAlternate-Grid" title="Alternate Calendar View">
+                    <a id="CalendarFormatAlternate-Grid" title="Alternate Calendar View">
                         <p class="buttons">
                             <button class="button " style="border-width:2px;" id="GridSelect">
                                 <span class="icon ">
@@ -285,7 +302,6 @@
                             </button>
                         </p>
                     </a>
-                   
                     <a id="CalendarFormatAlternate-Linear" title="Main Calendar View">
                         <p class="buttons">
                             <button class="button " style="border-width:2px; border-color:green;" id="LinearSelect">
@@ -295,39 +311,39 @@
                             </button>
                         </p>
                     </a>
-                     --> 
-
-                    <div class="tooltip">
-                        <span class="tooltiptext">Toggle Clickable Calendar</span>
                     <a id="CalendarClick-Toggle" title="Toggle Clickable Calendar">
                         <p class="buttons">
-                            <button class="button " style="border-width:2px; border-color:green">
-                                <span class="icon">
+                            <button class="button " style="border-width:2px; border-color:green" id="ClickToggle">
+                                <span class="icon ">
                                     <i class="fas fa-mouse-pointer"></i>
                                 </span>
                             </button>
                         </p>
                     </a>
-                </div>
-                    {% comment %} <a id="CalendarClick-Toggle" title="Calendar Booking Functions">
+                    <a id="CalendarClick-Toggle" title="Calendar Booking Functions">
                         <p class="buttons">
-                            <button class="button" style="border-width:2px; border-color:red" id="question-mark" onclick="toggleInfoBox()">
-                                <span class="icon">
+                            <button class="button " style="border-width:2px; border-color:green" id="question-mark">
+                                <span class="icon ">
                                     <i class="fas fa-question"></i>
                                 </span>
                             </button>
                         </p>
-                    </a> {% endcomment %}
-                    
-<html lang="en">
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tool Box</title>
-    <link rel="stylesheet" href={%static 'css/styles.css'%}>
+                    </a>
+                    <article class="message is-" style="display: none; position: fixed; z-index: 5;" id="confirmationBox" >
+                        <div class="message-header">
+                            <p>Absence Removal</p>
+                            <button class="delete" aria-label="delete" id="question-mark"></button>
+                        </div>
+                        <div class="message-body" style="text-align: center;">
+                            <h1><b>This will make you Remove an Absence</b></h1>
+                            <p>Are you sure you want to remove this Absence?</p>
+                            <button class="button button2", id="removeAbsence"><b>Remove Absence</b></button>
+                            <button class="button button1", id="cancelAbsece"><b>Cancel</b></button>
+                        </div>
+                    </article>
+  
   
                 </div>
-
 
                     
 
@@ -355,12 +371,12 @@
 
                 </div>
             </div>
-            <!--
+            <!--DIO CHANGES--> <!--This add a text explaining how each colour works, for example half day and full day-->
         <p style="color:red">Use Left Click to select a full day</p>
         <p style="color:red">Use Shift Left Click to select a half-day</p>
         <p style="color:black">If half-day booked, top half of the box means Afternoon has been marked as absence, bottom half means Morning has been marked as absence</p>
-             Prototype Grid-Based Calendar -->
-            {% comment %} <div id="Grid-Calendar">
+            <!-- Prototype Grid-Based Calendar -->
+            <div id="Grid-Calendar">
 
                 <table class="table is-bordered is-striped" style="width:auto; display:inline-block;">
                     <!-- Thread has constant values - (day headings) which is the very top row -->
@@ -406,7 +422,7 @@
                     {% endfor %}
                 </table>
             </div>
- {% endcomment %}
+
 
 
             <!-- Calendar starts here . . . -->
@@ -417,8 +433,7 @@
                             <th style="color: black;"></th>
                             {% for day in days_name %}
                             {% if day == Sa or day == Su %}
-                            {%comment%}<th style="background-color: #055496; color: white;">{{day}}</th>{%endcomment%}
-                            <th style="display:none"></th>
+                            <th style="background-color: #055496; color: white;">{{day}}</th>
                             {% elif forloop.counter in bank_hol%}
                             <th style="background-color: #01661f; color: white;">{{day}}</th>
                             {% else %}
@@ -432,10 +447,9 @@
                             {% if day == today and month == current_month and year == current_year %}
                             <th style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255);">{{day}}</th>
                             {% elif day in bank_hol %}
-                            <td style = "background-color: #28663a; color: rgb(255, 255, 255);">{{day}}</td>
+                            <td style = "background-color: #28663a; color: rgb(255, 255, 255);" onmouseover="Test">{{day}}</td>
                             {% elif day in weekend_list%}
-                            {%comment%}<td style = "background-color: #206cab; color: rgb(255, 255, 255);">{{day}}</td>{%endcomment%}
-                            <td style="display:none"></td>
+                            <td style = "background-color: #206cab; color: rgb(255, 255, 255);">{{day}}</td>
                             {% else %}
                             <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);">{{day}}</th>
                             {% endif %}
@@ -447,8 +461,7 @@
                                 {% if user.id == users.0.id %}
                                 <td style="background-color: #0e00d6;color: white;">{{user.username}}</td>
                                 {% else %}
-                                    {% check_permissions user request.user as editable %}
-                                    {% if editable %}
+                                    {% if user|check_permissions:users.0 %}
                                         <td>{{user.username}}*</td>
                                     {% else %}
                                         <td>{{user.username}}</td>
@@ -472,8 +485,7 @@
                                         {% if day in bank_hol %}
                                             <td style = "background-color: #28663a;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                         {% elif day in weekend_list %}
-                                            {%comment%}<td style = "background-color: #206cab;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>{%endcomment%}
-                                            <td style="display:none"></td>
+                                            <td style = "background-color: #206cab;", id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                         {% else %}
                                             <td id="{{user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                         {% endif %}
@@ -488,26 +500,9 @@
         </div>
     </section>
 </div>
-    
-
-<script>
-    var visible_root = document.getElementById("month_form");
-    while (visible_root.length < 1) {
-        continue;
-    }
-    visible_root = visible_root[0];
-    document.getElementById('confirmbtn').style.visibility = "hidden"
-    visible_root.id = "jsOn";
-    document.getElementById("month_names").onchange = function() {
-        document.getElementById("month_form").submit();
-    };
-</script>
-
-
 
 <script src="{% static "js/api_calendar.js" %}" token="{{ csrf_token }}"></script>
 <script>
-
     // Colour Key Prototype 
     // $(document).ready(function()
     // {
@@ -522,7 +517,7 @@
     //     )
     // });
 
-    {% comment %} $("#Grid-Calendar").hide();
+    $("#Grid-Calendar").hide();
     
     $("#CalendarFormatAlternate-Grid").click(function() {
           
@@ -542,7 +537,7 @@
         $("#LinearSelect").css("border-color", "green");
         $("#GridSelect").css("border-color", "");
 
-    }); {% endcomment %}
+    });
     {% comment %} var calendarCickToggle = true;
     //This is a script to detect what id has been clicked on then add that day to be absence
     var csrftoken = '{{ csrf_token }}';
@@ -656,51 +651,6 @@
     } {% endcomment %}
 
 </script>
-
-<style>
-    .tooltip {
-      position: relative;
-      display: inline-block;
-    }
-    
-    .tooltip .tooltiptext {
-      visibility: hidden;
-      width: 120px;
-      top: 100%;
-      left: 50%;
-      margin-left: -60px;
-      background-color: black;
-      color: #fff;
-      text-align: center;
-      border-radius: 6px;
-      padding: 5px 0;
-    
-      /* Position the tooltip */
-      position: absolute;
-      z-index: 1;
-    }
-    
-    .tooltipabove .tooltiptext {
-        visibility: hidden;
-        width: 120px;
-        bottom: 100%;
-        left: 50%;
-        margin-left: -60px;
-        background-color: black;
-        color: #fff;
-        text-align: center;
-        border-radius: 6px;
-        padding: 5px 0;
-      
-        /* Position the tooltip */
-        position: absolute;
-        z-index: 1;
-      }
-
-    .tooltip:hover .tooltiptext {
-      visibility: visible;
-    }
-    </style>
 
 <!--This add a text explaining how each colour works, for example half day and full day-->
 

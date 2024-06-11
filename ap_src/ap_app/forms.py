@@ -32,7 +32,7 @@ class CreateTeamForm(forms.ModelForm):
     #The description of the team. Can be up to 512 characters long. Is optional.
     description = forms.CharField(
         max_length=512,
-        required=True,
+        required=False,
         widget=forms.Textarea(attrs={"class": "", "placeholder": "Team Description","rows":4, "cols":15}),
     )
 

@@ -13,9 +13,10 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 import environ
 from pathlib import Path
-from dotenv import load_dotenv
 
-load_dotenv()
+# Retrieve Environment Variables
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,11 +29,7 @@ FIXTURE_DIRS = (os.path.join("fixtures"),)
 SECRET_KEY = "django-insecure-duam^e#bui)v&(*6!z5j1_9!mm55v#o(b_ni77ttxm#55bzs=1"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG_ENV = os.getenv("DEBUG")
-DEBUG = DEBUG_ENV is not None and DEBUG_ENV.lower() == "true"
-
-#Location of the CSS files
-STATIC_ROOT = BASE_DIR / 'static/css'
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -105,17 +102,6 @@ DATABASES = {
     }
 }
 
-if not DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': os.environ["DB_NAME"],
-            'USER': os.environ["DB_USER"],
-            "PASSWORD": os.environ["DB_PASSWORD"],
-            "HOST": os.environ["DB_HOST"],
-        }
-    }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -155,9 +141,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR) + "/static"
+STATIC_ROOT = str(BASE_DIR) + "/static_root"
 
-#STATICFILES_DIRS = [str(BASE_DIR) + "/ap_app/static"]
+STATICFILES_DIRS = [str(BASE_DIR) + "/ap_app/static"]
 
 
 # Default primary key field type
@@ -173,6 +159,5 @@ DATE_INPUT_FORMATS = ["%d/%m/%Y"]
 SHORT_DATE_FORMAT = "dd/mm/YYYY"
 
 # Info retrieved from environment variables
-PRODUCTION_UI_ENV = os.getenv("PRODUCTION_UI")
-PRODUCTION_UI = PRODUCTION_UI_ENV is not None and PRODUCTION_UI_ENV.lower() == "true"
+PRODUCTION_UI = False
 VERSION = "1.3.0"

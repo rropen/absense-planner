@@ -1,7 +1,1 @@
 TEAM_DATA_URL=http://localhost:8000/
-DEBUG=False
-PRODUCTION_UI=False
-DB_NAME = ""
-DB_USER = ""
-DB_PASSWORD = ""
-DB_HOST = ""
