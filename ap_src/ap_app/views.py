@@ -40,6 +40,8 @@ from .forms import *
 from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
                      UserProfile, ColourScheme, ColorData)
 
+from .switch_permissions_utils import check_for_lingering_switch_perms
+
 User = get_user_model()
 
 
@@ -228,6 +230,11 @@ def profile_settings(request:HttpRequest) -> render:
     teams_status = userprofile.external_teams
     context = {"userprofile": userprofile, "data_privacy_mode": privacy_status, "external_teams": teams_status,
                "current_country": country_name, **country_data, "colours": colour_data}
+    
+    # DEBUG CODE #
+    check_for_lingering_switch_perms(request)
+    # DEBUG CODE #
+
     return render(request, "ap_app/settings.html", context)
 
 def update_colour(request:HttpRequest):

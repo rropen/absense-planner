@@ -18,6 +18,10 @@ def check_for_lingering_switch_perms(request): # stops users from having switch 
     user_edited = request.user.username
     users_with_perms = grab_users_with_perms(request)
     users_sharing_teams = grab_users_sharing_teams(request)
+    # DEBUG CODE #
+    print("DEBUG: Users with permissions:", users_with_perms)
+    print("DEBUG: Users sharing teams:", users_with_perms)
+    # DEBUG CODE #
 
     for user_with_perms in users_with_perms:
         if user_with_perms not in users_sharing_teams:
@@ -81,6 +85,10 @@ def grab_users_with_perms(request):
 def remove_switch_permissions(request, selected_username): # selected here meaning the user we want to remove perms from, current meaning the one sending the request
     current_username = request.user.username
     current_user_id = get_user_id_from_username(current_username)
+    # DEBUG CODE #
+    print("DEBUG: This is the username of the current user: ", current_username)
+    print("DEBUG: This is the user id of the current user: ", current_user_id)
+    # DEBUG CODE #
     current_userprofile = UserProfile.objects.get(user_id=current_user_id)
 
     # selected_username
