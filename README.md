@@ -10,7 +10,7 @@
  <a href="http://commitizen.github.io/cz-cli/"><img src="https://img.shields.io/badge/commitizen-friendly-brightgreen?style=flat"></a>
 </p>
 
----
+---h
 
 ## Overview
 
@@ -37,3 +37,7 @@ To contribute changes to the original respository, the following commands can be
 - git merge upstream/master
 
 - git push origin master
+
+## Colour Schemes
+
+- Options for modifying colour schemes can be found in the profile settings page, under the "App Information" category.  Different colours can be picked for altering Bank Holidays and Weekends. A dropdown list within the same container can be modified to choose whether these specific dates are shown on the calendar. The rectangular bar can be selected to show a colour picker where a specific colour can be chosen, after these changes have been made they can be confirmed by clicking on the "Submit" button to apply them.
