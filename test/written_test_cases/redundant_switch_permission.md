@@ -43,3 +43,31 @@ Tests will be run in two different stages:
 - Creator: "Brian"
 - Members:
     - "Brian"
+
+# Test 1 (without fix implemented)
+
+## Description
+
+Test the behaviour of what the 
+
+## Expected Behaviour
+
+### In Bob's Account
+
+#### Stage 1
+
+- "Users with permissions: Bob, Billy"
+- "Users sharing teams: Bob, Billy"
+- No mention of redundant permissions
+
+#### Stage 2 (Billy Leaves and Joins Brian's Team (Team 2))
+
+- "Users with permissions: Bob, Billy"
+- "Users sharing teams: Bob"
+- "Redundant permissions found for Billy!"
+
+## Actual Behaviour
+
+#### Stage 1
+
+#### Stage 2 (Billy Leaves and Joins Brian's Team (Team 2))
