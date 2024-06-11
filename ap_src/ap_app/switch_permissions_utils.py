@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 
 from .models import (UserProfile)
 
+from .calendarview import retrieve_calendar_data
+
 env = environ.Env()
 environ.Env.read_env()
 
@@ -20,7 +22,9 @@ def check_for_lingering_switch_perms(request): # stops users from having switch 
     for user_with_perms in users_with_perms:
         if user_with_perms not in users_sharing_teams:
             print("Redundant permissions found for", user_with_perms + "!")
-            remove_switch_permissions(request, user_with_perms)
+            #remove_switch_permissions(request, user_with_perms)
+
+    # Example pseudocode implementation
     """
     SET user ID whose absences are being edited AS (int) user_ID_edited
     SET user IDs with permission to edit absences AS (list of int) user_IDs_with_perms
@@ -44,10 +48,10 @@ def check_for_teams_in_common(request, user_being_given_perms): # this stops use
 
 @login_required
 def grab_users_sharing_teams(request):
-    response = requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username))
-    teams = response.json()
+    teams = retrieve_calendar_data(request, None)
 
     users_sharing_teams = []
+    print(teams)
     for team_index in teams:
         for member in team_index["team"]["members"]:
             username = member["user"]["username"]
