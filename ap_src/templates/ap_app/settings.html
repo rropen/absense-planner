@@ -3,170 +3,144 @@
 {% load static %}
 {% block title %}Settings{% endblock %}
 {% block content %}
-<style>
-    .collapsible {
-        /* background-color: #271EA8; */
-        color: white;
-        cursor: pointer;
-        padding: 18px;
-        width: 100%;
-        border: none;
-        text-align: left;
-        outline: none;
-        font-size: 15px;
-    }
 
-    .active,
-    .collapsible:hover {
-        /* background-color: #555; */
-    }
-
-    .collapsible:after {
-        content: '\002B';
-        color: white;
-        font-weight: bold;
-        float: right;
-        margin-left: 5px;
-    }
-
-    .active:after {
-        content: "\2212";
-    }
-
-
-    .content {
-        padding: 0 18px;
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.2s ease-out;
-        background-color: #f1f1f1;
-    }
-</style>
+<link rel="stylesheet" href="{% static 'css/calendar.csssettings.css' %}">
 
 <body>
 
-    <form method="POST">
-        {% csrf_token %}
-        <div class="columns is-centered">
-            <div class="column is-one-third">
-                <div class="field">
-                    <label class="label">First Name</label>
-                    <div class="control">
-                        {% if user.first_name %}
-                            <input class="input is-rounded is-success" type="text" placeholder="First Name" value="{{ user.first_name }}" name="firstName">
-                        {% else %}
-                            <input class="input is-rounded is-warning" type="text" placeholder="First Name" name="firstName">
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Last Name</label>
-                    <div class="control">
-                        {% if user.last_name %}
-                            <input class="input is-rounded is-success" type="text" placeholder="Last Name" value="{{ user.last_name }}" name="lastName">
-                        {% else %}
-                            <input class="input is-rounded is-warning" type="text" placeholder="Last Name" name="lastName">
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Email</label>
-                    <div class="control has-icons-right">
-                        {% if user.email %}
-                            <input class="input is-rounded is-success" type="email" placeholder="Email Address" name="email" id="email-input" value="{{ user.email }}">
-                            <span class="icon is-small is-right">
-                                <button class="delete" aria-label="delete" onclick="deleteInputtedValue('email-input')"></button>
-                            </span>
-                        {% else %}
-                            <input class="input is-rounded is-warning" type="email" placeholder="Email Address" name="email">
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Region</label>
-                    <div class="control">
-                        <div class="select is-rounded">
-                            <select name="region">
-                                {% for country in countries %}
-                                    {% if country == current_country %}
-                                        <option value="{{country}}" selected="selected">{{country}}</option>
-                                    {% else %}
-                                        <option value="{{country}}">{{country}}</option>
-                                    {% endif %}
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <!-- New field for timezone selection -->
-                <div class="field">
-                    <label class="label">Timezone</label>
-                    <div class="control">
-                        <div class="select is-rounded">
-                            <select name="timezone">
-                                {% for tz in timezones %}
-                                    {% if tz == user_timezone %}
-                                        <option value="{{ tz }}" selected="selected">{{ tz }}</option>
-                                    {% else %}
-                                        <option value="{{ tz }}">{{ tz }}</option>
-                                    {% endif %}
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Permission Settings</label>
-                    <nav class="navbar">
+    <div class="columns is-centered">
+        <div class="column is-one-third">
+            <div class="box">
+                <h3 class="title is-4">User Information</h3>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="field">
+                        <label class="label">First Name</label>
                         <div class="control">
-                            <input class="input is-rounded" placeholder="Add a user" type="text" size="50" id="user_permission_input">
+                            {% if user.first_name %}
+                                <input class="input is-rounded is-success" type="text" placeholder="First Name" value="{{ user.first_name }}" name="firstName">
+                            {% else %}
+                                <input class="input is-rounded is-warning" type="text" placeholder="First Name" name="firstName">
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Last Name</label>
+                        <div class="control">
+                            {% if user.last_name %}
+                                <input class="input is-rounded is-success" type="text" placeholder="Last Name" value="{{ user.last_name }}" name="lastName">
+                            {% else %}
+                                <input class="input is-rounded is-warning" type="text" placeholder="Last Name" name="lastName">
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Email</label>
+                        <div class="control has-icons-right">
+                            {% if user.email %}
+                                <input class="input is-rounded is-success" type="email" placeholder="Email Address" name="email" id="email-input" value="{{ user.email }}">
+                                <span class="icon is-small is-right">
+                                    <button class="delete" aria-label="delete" onclick="deleteInputtedValue('email-input')"></button>
+                                </span>
+                            {% else %}
+                                <input class="input is-rounded is-warning" type="email" placeholder="Email Address" name="email">
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Region</label>
+                        <div class="control">
+                            <div class="select is-rounded">
+                                <select name="region">
+                                    {% for country in countries %}
+                                        {% if country == current_country %}
+                                            <option value="{{country}}" selected="selected">{{country}}</option>
+                                        {% else %}
+                                            <option value="{{country}}">{{country}}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- New field for timezone selection -->
+                    <div class="field">
+                        <label class="label">Timezone</label>
+                        <div class="control">
+                            <div class="select is-rounded">
+                                <select name="timezone">
+                                    {% for tz in timezones %}
+                                        {% if tz == user_timezone %}
+                                            <option value="{{ tz }}" selected="selected">{{ tz }}</option>
+                                        {% else %}
+                                            <option value="{{ tz }}">{{ tz }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Permission Settings</label>
+                        <nav class="navbar">
+                            <div class="control">
+                                <input class="input is-rounded" placeholder="Add a user" type="text" size="50" id="user_permission_input">
+                            </div>
+                            <div class="control">
+                                {% csrf_token %}
+                                <button class="button is-rounded" onclick="addUserPermission('{{ csrf_token }}')">Submit</button>
+                            </div>
+                        </nav>
+                        <p>Users with permission to edit your absences:</p>
+                        <div class="tags">
+                            {% for user in userprofile.edit_whitelist.all %}
+                                <span class="tag is-dark">{{user}}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Data Settings</label>
+                        <div class="control">
+                            <label>
+                                {% if data_privacy_mode %}
+                                    <input type="checkbox" checked="checked" name="privacy"></input>
+                                {% else %}
+                                    <input type="checkbox" name="privacy"></input>
+                                {% endif %}
+                                Keep data private (Hide data from non team members)
+                            </label>
                         </div>
                         <div class="control">
-                            {% csrf_token %}
-                            <button class="button is-rounded" onclick="addUserPermission( '{{ csrf_token }}' )">Submit</button>
+                            <label>
+                                {% if external_teams %}
+                                    <input type="checkbox" checked="checked" name="teams"></input>
+                                {% else %}
+                                    <input type="checkbox" name="teams"></input>
+                                {% endif %}
+                                Use the team app data instead of local data
+                            </label>
                         </div>
-                    </nav>
-                    <p>Users with permission to edit your absences:</p>
-                    <div class="tags">
-                        {% for user in userprofile.edit_whitelist.all %}
-                            <span class="tag is-dark">{{user}}</span>
-                        {% endfor %}
                     </div>
-                </div>
-                <div class="field">
-                    <label class="label">Data Settings</label>
-                    <div class="control">
-                        <label>
-                            {% if data_privacy_mode %}
-                                <input type="checkbox" checked="checked" name="privacy"></input>
-                            {% else %}
-                                <input type="checkbox" name="privacy"></input>
-                            {% endif %}
-                            Keep data private (Hide data from non team members)
-                        </label>
+                    <div class="field is-grouped my-4">
+                        <div class="control">
+                            <button class="button is-link">Submit</button>
+                        </div>
+                        <div class="control">
+                            <button class="button is-link">Cancel</button>
+                        </div>
                     </div>
-                    <div class="control">
-                        <label>
-                            {% if external_teams %}
-                                <input type="checkbox" checked="checked" name="teams"></input>
-                            {% else %}
-                                <input type="checkbox" name="teams"></input>
-                            {% endif %}
-                            Use the team app data instead of local data
-                        </label>
-                    </div>
-                </div>
-                <div class="field is-grouped my-4">
-                    <div class="control">
-                        <button class="button is-link">Submit</button>
-                    </div>
-                    <div class="control">
-                        <button class="button is-link">Cancel</button>
-                    </div>
-                </div>
+                </form>
+            </div>
+            <div class="box">
+                <h3 class="title is-4">App Information</h3>
+                <label class="label">Calendar Settings</label>
+                {% for colour in colours %}
+                    <h6>{{ colour.name }}</h6>
+                    {% include 'ap_app/elements/colour_picker.html' with colour_value=colour.colour name=colour.name enabled=colour.enabled %}
+                {% endfor %}
             </div>
         </div>
-    </form>
+    </div>
 
     <script>
         var coll = document.getElementsByClassName("collapsible");

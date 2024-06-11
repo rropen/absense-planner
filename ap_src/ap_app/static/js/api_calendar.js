@@ -34,18 +34,16 @@ document.addEventListener('click', function(e) {
             if (absent == "FALSE") {
                 //This is a half day
                 if (e.shiftKey) {
-                    document.getElementById("halfDayConfirmation").style.display = "block";
+                    var confirmationPage = document.getElementById("half")
+                    confirmationPage.classList.add("is-active")
                     //Morning Clicked
-                    document.getElementById("halfDayMorning").onclick = function() {
+                    document.getElementById("morningBTN").onclick = function() {
                         sendData(username, date, true, "M", "add", "E")
-                        document.getElementById("halfDayConfirmation").style.display = "none";
+                        confirmationPage.classList.remove("is-active")
                     }
-                    document.getElementById("halfDayAfternoon").onclick = function() {
+                    document.getElementById("afternoonBTN").onclick = function() {
                         sendData(username, date, true, "A", "add", "E")
-                        document.getElementById("halfDayConfirmation").style.display = "none";
-                    }
-                    document.getElementById("halfDayClose").onclick = function() {
-                        document.getElementById("halfDayConfirmation").style.display = "none";
+                        confirmationPage.classList.remove("is-active")
                     }
                 }
                 //Full day absence
@@ -56,17 +54,11 @@ document.addEventListener('click', function(e) {
             //Remove an absnece
             else {
                 var absence_type = e.target.dataset.absenceType;
-                var confirmationPage = document.getElementById("confirmationBox")
-                confirmationPage.style.display = "block";
-                document.getElementById("cancelAbsece").onclick = function() {
-                    document.getElementById("confirmationBox").style.display = "none";
-                }
-                document.getElementById("absenceClose").onclick = function() {
-                    document.getElementById("confirmationBox").style.display = "none";
-                }
-                document.getElementById("removeAbsence").onclick = function() {
+                var confirmationPage = document.getElementById("remove")
+                confirmationPage.classList.add("is-active")
+                document.getElementById("removeBTN").onclick = function() {
                     sendData(username, date, false, "N", "remove", absence_type)
-                    confirmationPage.style.display = "none";
+                    confirmationPage.classList.remove("is-active")
                 }
             }
         }
@@ -74,7 +66,7 @@ document.addEventListener('click', function(e) {
 }, false)
 
 //Toggle clickable calendar on/off
-var calendarClickButton = document.getElementById("ClickToggle")
+var calendarClickButton = document.getElementById("CalendarClick-Toggle")
 calendarClickButton.onclick = function() {
     if (calendarClickToggle == false) {
         calendarClickButton.style.borderColor = "green";
@@ -95,11 +87,43 @@ function filterTeams(input) {
     for (cal in calendars) {
         var calendarID = calendars[cal].id.toString()
         calendarID = calendarID.replace("title-", "")
-        console.log(calendarID)
         if (!calendarID.toUpperCase().includes(input.value.toString().toUpperCase())) {
             calendars[cal].style.display = "none";
         } else {
             calendars[cal].style.display = "";
         }
+    }
+}
+
+function sortTeams(e) {
+    var url = new URL(window.location.href)
+    url.searchParams.set("sortBy", e.value)
+
+    window.location.replace(url)
+}
+
+function setDate(e, id) {
+    data = e.value.split(" ")
+    month = data[0]
+    year = data[1]
+    if (id == 0) {
+        window.location.replace(window.location.origin + `/calendar/${month}/${year}`)
+    } else {
+        window.location.replace(window.location.origin + `/teams/api-calendar/${id}/${month}/${year}`)
+    }
+}
+
+function openModal(id) {
+    document.getElementById(id).classList.add("is-active");
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove("is-active")
+}
+
+window.onclick = function(event) {
+    if (event.target.id == 'modalBackground') {
+        var modalId = event.target.dataset.modalId;
+        document.getElementById(modalId).classList.remove("is-active")
     }
 }

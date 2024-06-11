@@ -165,6 +165,21 @@ class UserProfile(models.Model):
 
     external_teams = models.BooleanField(default=False)
 
+class UserProfile(models.Model):
+    """Extension of fields for User class"""
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    edit_whitelist = models.ManyToManyField(
+        User,
+        related_name="permissions",
+    )
+    # Extra Fields
+    accepted_policy = models.BooleanField()
+    privacy = models.BooleanField(default=False)
+    region = models.CharField(max_length=200, default="GB")
+    external_teams = models.BooleanField(default=False)
+
     # New field for storing the timezone
     timezone = models.CharField(max_length=100, default='UTC')
 
@@ -177,3 +192,21 @@ class RecurringException(models.Model):
     User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="recurringexception")
     Exception_Start = models.DateField(_("Date"), max_length=200, default=now)
     Exception_End = models.DateField(_("Date"), max_length=200, default=now)
+
+class ColourScheme(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=200, unique=True)
+    default = models.CharField(max_length=100)
+
+class ColorData(models.Model):
+    id = models.AutoField(primary_key=True)
+    scheme = models.ForeignKey(ColourScheme, on_delete=models.CASCADE, related_name="colorscheme")
+    color = models.CharField(max_length=20)
+    enabled = models.BooleanField(default=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (
+            "user",
+            "scheme",
+        )

@@ -1,7 +1,3 @@
-# TODO: Review functions and variables names and ensure that they
-#   ..  have meaningful names that represent what they do.
-
-
 import calendar
 import datetime
 import json
@@ -10,7 +6,8 @@ import pycountry
 import pandas as pd
 import requests
 import environ
-import pytz
+import pytz  # from the 'timezone' section
+import hashlib  # from the 'develop' section
 from datetime import timedelta
 
 from django.contrib import messages
@@ -22,16 +19,17 @@ from django.http import HttpResponse, JsonResponse, HttpRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, UpdateView
-from django.contrib.auth.models import User
 
-from collections import namedtuple
+from .teams import *
+from .objects import *
+from .calendarview import *
 
 from .forms import *
 from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
-                     UserProfile, Status)
+                     UserProfile, Status, ColourScheme, ColorData)  # combined imports
 
-env = environ.Env()
-environ.Env.read_env()
+User = get_user_model()
+
 
 def index(request) -> render:
     """Branched view.                       \n
@@ -54,7 +52,7 @@ def index(request) -> render:
     if request.user.is_authenticated:
         user = UserProfile.objects.get(user=request.user)
         user.edit_whitelist.add(request.user)
-        return all_calendar(request)
+        return main_calendar(request)
     return render(request, "ap_app/index.html")
 
 
@@ -73,406 +71,237 @@ def privacy_page(request, to_accept=False) -> render:
     else:
         # Viewing general policy page - (Without the acceptancy form)
         return render(request, "ap_app/privacy.html")
-    return all_calendar(request)
-
+    return main_calendar(request)
 
 class SignUpView(CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy("login")
     template_name = "registration/signup.html"
 
-
 @login_required
-def teams_dashboard(request) -> render:
-    rels = Relationship.objects.order_by(Lower("team__name")).filter(
-        user=request.user, status=Status.objects.get(status="Active")
-    )
-    invite_rel_count = Relationship.objects.filter(
-        user=request.user, status=Status.objects.get(status="Invited")
-    ).count()
-    
-    try:
-        r = requests.get("http://localhost:8000/api/teams/?username={}".format(request.user.username))
-    except:
-        return render(
-        request,
-        "teams/dashboard.html",
-        {"rels": rels, "invite_count": invite_rel_count, "external_teams": False, "teamspage_active": True})
-    if r.status_code == 200:
-        if len(r.json()) == 0 :
-            external_teams_data = False
-        else:
-            external_teams_data = r.json()
-    else:
-        external_teams_data = False
-    return render(
-        request,
-        "teams/dashboard.html",
-        {"rels": rels, "invite_count": invite_rel_count, "external_teams": external_teams_data, "teamspage_active": True},
-    )
-
-
-@login_required
-def create_team(request) -> render:
-    if request.method == "POST":
-        form = CreateTeamForm(request.POST)
-        if form.name_similarity():
-            # TODO: write code to tell the user that their team name is similar and to give them
-            # options to change the team name.
-            return HttpResponse(
-                "Debug: Did not create form because the name is too similar to another team name"
-            )
-
-        if form.is_valid():
-            form.save()
-            # Gets the created team and "Owner" Role and creates a Link between
-            # the user and their team
-            created_team = Team.objects.get(name=form.cleaned_data["name"])
-            assign_role = Role.objects.get(role="Owner")
-            Relationship.objects.create(
-                user=request.user,
-                team=created_team,
-                role=assign_role,
-                status=Status.objects.get(status="Active"),
-            )
-            return redirect("/teams/", {"message": "Team successfully created."})
-    else:
-        form = CreateTeamForm()
-    teams = Team.objects.all()
-    existing_teams = ""
-    existing_teams_ids = ""
-    for i, team in enumerate(teams):
-        existing_teams += team.name
-        existing_teams_ids += str(team.id)
-        if i != len(teams) - 1:
-            existing_teams += ","
-            existing_teams_ids += ","
-
-    return render(
-        request,
-        "teams/create_team.html",
-        {
-            "form": form,
-            "existing_teams": existing_teams,
-            "existing_teams_ids": existing_teams_ids,
-        },
-    )
-
-
-@login_required
-def join_team(request) -> render:
-    """Renders page with all teams the user is not currently in"""
-    user_teams = []
-    all_user_teams = Relationship.objects.filter(
-        user=request.user, status=Status.objects.get(status="Active")
-    )
-    for teams in all_user_teams:
-        user_teams.append(teams.team)
-    all_teams = Team.objects.all().exclude(relationship__user=request.user.id)
-    all_teams_filtered = []
-
-    # Filtering by team name
-    if "teamName" in request.GET:
-        for team in all_teams:
-            if request.GET["teamName"].lower() in team.name.lower():
-                all_teams_filtered.append(team)
-    else:
-        all_teams_filtered = all_teams
-
-    return render(
-        request,
-        "teams/join_team.html",
-        {"all_teams": all_teams_filtered, "joined_teams": user_teams},
-    )
-
-
-@login_required
-def joining_team_process(request, id, role):
-    find_team = Team.objects.get(id=id)
-    find_role = Role.objects.get(role=role)
-    rels = Relationship.objects.filter(
-        user=request.user,
-        role=Role.objects.get(role="Member"),
-        status=Status.objects.get(status="Active"),
-    )
-    rels2 = Relationship.objects.filter(
-        user=request.user,
-        role=Role.objects.get(role="Owner"),
-        status=Status.objects.get(status="Active"),
-    )
-    existing_rels = Relationship.objects.order_by(Lower("team__name")).filter(
-        user=request.user, status=Status.objects.get(status="Active")
-    )
-    invite_rel_count = Relationship.objects.filter(
-        user=request.user, status=Status.objects.get(status="Invited")
-    ).count()
-    
-    if (rels or rels2) and role == "Member":
-        return render(
-        request,
-        "teams/dashboard.html",
-        {"rels": existing_rels, "invite_count": invite_rel_count, "teamspage_active": True, "message" : "You are already part of one team", "message_type":"is-danger"},
-    )
-    new_rel = Relationship.objects.create(
-        user=request.user,
-        team=find_team,
-        role=find_role,
-        status=Status.objects.get(status="Pending"),
-    )
-    if not find_team.private:
-        Relationship.objects.filter(id=new_rel.id).update(
-            status=Status.objects.get(status="Active")
-        )
-        #leader = Relationship.objects.get(team=id, role=Role.objects.get(role="Owner"))
-        #userprofile = UserProfile.objects.get(user=request.user)
-        #userprofile.edit_whitelist.add(leader.user)
-        #userprofile.save()
-    return redirect("dashboard")
-
-
-def team_invite(request, team_id, user_id, role):
-    find_team = Team.objects.get(id=team_id)
-    find_user = User.objects.get(id=user_id)
-    find_role = Role.objects.get(role=role)
-
-    test = Relationship.objects.filter(team=find_team)
-
-    # Boolean determines if viewer is in this team trying to invite others
-    user_acceptable = False
-    for rel in test:
-        if rel.user == request.user and str(rel.role) == "Owner":
-            user_acceptable = True
-            break
-
-    if str(request.user.id) != str(user_id) and user_acceptable:
-        Relationship.objects.create(
-            user=find_user,
-            team=find_team,
-            role=find_role,
-            status=Status.objects.get(status="Invited"),
-        )
-        return redirect(f"/teams/calendar/{find_team.id}")
-    # Else user is manipulating the URL making non-allowed invites - (Therefore doesn't create a relationship)
-
-    return redirect("dashboard")
-
-
-@login_required
-def view_invites(request):
-    all_invites = Relationship.objects.filter(
-        user=request.user, status=Status.objects.get(status="Invited")
-    )
-    return render(request, "teams/invites.html", {"invites": all_invites})
-
-
-@login_required
-def leave_team(request, id):
-    find_relationship = Relationship.objects.get(id=id)
-    find_relationship.custom_delete()
-    team_cleaner(find_relationship)
-    return redirect("dashboard")
-
-
-def team_cleaner(rel):
-    """Detects if a team is empty and deletes it if it is."""
-    team = Team.objects.get(id=rel.team.id)
-    all_team_relationships = Relationship.objects.filter(team=team)
-    if all_team_relationships.count() == 0:
-        team.delete()
-
-
-@login_required
-def team_misc(request, id):
-    """Teams Miscellaneous/Notes page"""
-    if is_member(user=request.user, team_id=id):
-        team = Team.objects.get(id=id)
-
-        notes = CreateTeamForm(instance=team)
-
-        # TODO: Add a field to each team with a notes section - (for now it's just the teams description)
-
-        if "value" in request.GET:
-            team.notes = request.GET["value"]
-            team.save()
-
-        desc = team.description
-        notes = team.notes
-
-        return render(
-            request, "teams/misc.html", {"team": team, "desc": desc, "notes": notes}
-        )
-    return redirect("dashboard")
-
-
-@login_required
-def team_settings(request, id):
-    """Checks to see if user is the owner and renders the Setting page"""
-    team = Team.objects.get(id=id)
-    
-    if is_owner(user=request.user, team_id=id): 
-        all_pending_relations = Relationship.objects.filter(
-            team=id, status=Status.objects.get(status="Pending")
-        )
-        return render(
-            request,
-            "teams/settings.html",
-            {
-                "user": request.user,
-                "team": team,
-                "pending_rels": all_pending_relations,
-                "Team_users": team.users,
-                "member": Role.objects.get(role="Member"),
-                "coowner": Role.objects.get(role="Co-Owner"),
-                "follower": Role.objects.get(role="Follower"),
-                "owner": Role.objects.get(role="Owner"),
-            },
-        )
-    return redirect("dashboard")
-
-def edit_team_member_absence(request, id, user_id) -> render:
-    """Checks to see if user is the owner and renders the Edit absences page for that user"""
-    team = Team.objects.get(id=id)
-        
-    if is_owner(user=request.user, team_id=id):    
-        all_pending_relations = Relationship.objects.filter(
-            team=id, status=Status.objects.get(status="Pending")
-        )
-        target_user = User.objects.get(id=user_id)
-        absences = Absence.objects.filter(Target_User_ID=target_user.id)
-        rec_absences = text_rules(target_user)
-        return render(
-            request,
-            "teams/edit_absences.html",
-            {
-                "team": team,
-                "user": target_user,
-                "absences": absences,
-                "recurring_absences": rec_absences,
-            },
-        )
-    return redirect("dashboard")
-
-
-@login_required
-def promote_team_member(request, id, user_id):
-    """Checks to see if user is the owner and renders the Setting page"""
-    team = Team.objects.get(id=id)
-    user_relation = Relationship.objects.get(team=id, user=request.user)
-    if user_relation.role.role != "Owner":
-        return redirect("dashboard")
-    target_user = User.objects.get(id=user_id)
-    all_pending_relations = Relationship.objects.filter(
-        team=id, status=Status.objects.get(status="Pending")
-    )
-    current_relationship = Relationship.objects.get(team=team, user=target_user)
-    if current_relationship.role == Role.objects.get(role="Member"):
-        current_relationship.role = Role.objects.get(role="Co-Owner")
-        current_relationship.save()
-
-    return redirect(team_settings, team.id)
-
-
-@login_required
-def demote_team_member(request, id, user_id):
-    """Checks to see if user is the owner and renders the Setting page"""
-    team = Team.objects.get(id=id)
-    user_relation = Relationship.objects.get(team=id, user=request.user)
-    if user_relation.role.role != "Owner":
-        return redirect("dashboard")
-    target_user = User.objects.get(id=user_id)
-    all_pending_relations = Relationship.objects.filter(
-        team=id, status=Status.objects.get(status="Pending")
-    )
-    current_relationship = Relationship.objects.get(team=team, user=target_user)
-    if current_relationship.role == Role.objects.get(role="Co-Owner"):
-        current_relationship.role = Role.objects.get(role="Member")
-        current_relationship.save()
-
-    return redirect(team_settings, team.id)
-
-@login_required
-def remove_team_member(request, id, user_id):
-    """Removes a member from a team."""
-    team = Team.objects.get(id=id)
-    user_relation = Relationship.objects.get(team=id, user=request.user)
-    if user_relation.role.role != "Owner":
-        return redirect("dashboard") #Checks if the user is the owner and redirects to the dashboard if they aren't
-    target_user = User.objects.get(id=user_id) #Gets the user to be removed
-    target_relation = Relationship.objects.get(team=team, user=target_user) #Gets the target's relationship to the team
-    target_relation.custom_delete() #Deletes the relationship from the team, removing the user
-
-    return redirect(team_settings, team.id) #Redirects user back to the settings page
-
-
-def joining_team_request(request, id, response):
-
-    find_rel = Relationship.objects.get(id=id)
-    
-
-    if response == "accepted":
-        state_response = Status.objects.get(status="Active")
-        Relationship.objects.filter(id=find_rel.id).update(status=state_response)
-        return redirect("team_settings", find_rel.team.id)
-    elif response == "nonactive":
-        return redirect("leave_team", id)
-    return redirect("dashboard")
-
-#JC - Add an absence via the form
-@login_required
-def manual_add(request:HttpRequest) -> render:
-    #JC - POST request
+def example(request):
     if request.method == "POST":
         form = AbsenceForm(
-            request.POST, 
+            request.POST,
             user=request.user,
             initial={
                 "start_date": datetime.datetime.now(),
-                "end_date": lambda: datetime.datetime.now().date() + datetime.timedelta(days=1)
-            }
+                "end_date": lambda: datetime.datetime.now().date()
+                + datetime.timedelta(days=1),
+            },
         )
         form.fields["user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
         )
 
-        #JC - Create absence
         if form.is_valid():
-            absence = Absence()
-            absence.absence_date_start = form.cleaned_data["start_date"]
-            absence.absence_date_end = form.cleaned_data["end_date"]
-            absence.User_ID = request.user
-            absence.Target_User_ID = form.cleaned_data["user"].user
-
-            #JC - Check if the dates overlap with an existing absence. 
-            valid = True
-            Range = namedtuple('Range', ['start', 'end'])
-            r1 = Range(start=absence.absence_date_start, end=absence.absence_date_end)
-            for x in Absence.objects.filter(Target_User_ID=form.cleaned_data["user"].user.id):
-                r2 = Range(start=x.absence_date_start, end=x.absence_date_end)
-                delta = (min(r1.end, r2.end) -max(r1.start, r2.start)).days + 1
-                overlapp = max(0, delta)
-                if overlapp == 1:
-                    valid = False
-            
-            if valid:
-                absence.save()
-                return redirect("/")
-            else:
-                return render(request, "ap_app/add_absence.html", {
+            obj = Absence()
+            obj.absence_date_start = request.POST.get("start_date")
+            obj.absence_date_end = request.POST.get("end_date")
+            obj.absence_date_start = form.cleaned_data["start_date"]
+            obj.absence_date_end = form.cleaned_data["end_date"]
+            obj.request_accepted = False  # TODO
+            obj.User_ID = request.user
+            obj.Target_User_ID = form.cleaned_data["user"].user
+            message = "Absence successfully created"
+            msg_type = "is-success"
+            absence_valid = True
+            for x in Absence.objects.filter(User_ID=request.user.id):
+                if (obj.absence_date_start >= x.absence_date_start and obj.absence_date_end <= x.absence_date_end) \
+                    or x.absence_date_start == obj.absence_date_end or x.absence_date_end == x.absence_date_start:
+                        message = "Absence already created"
+                        msg_type = "is-danger"
+                        absence_valid = False
+            if absence_valid:
+                obj.save()
+            return render(
+                request,
+                "ap_app/add_absence.html",
+                {
                     "form": form,
-                    "message": "The absence conflicts with an existing absence",
-                    "message_type": "is-danger"
-                })
-
-    #JC - GET request
+                    "message": message,
+                    "message_type": msg_type,
+                    "add_absence_active": True,
+                },
+            )
+            # redirect to success page
     else:
         form = AbsenceForm(user=request.user)
-        #JC - Allow users to edit others absence if they have permission
         form.fields["user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
         )
-    
-    content = {"form": form}
+
+    content = {"form": form, "add_absence_active": True}
     return render(request, "ap_app/add_absence.html", content)
+
+@login_required
+def details_page(request) -> render:
+    """returns details web page"""
+    # TODO: get employee details and add them to context
+    context = {"employee_dicts": ""}
+    return render(request, "ap_app/Details.html", context)
+
+@login_required
+def deleteuser(request):
+    """delete a user account"""
+    if request.method == "POST":
+        delete_form = DeleteUserForm(request.POST, instance=request.user)
+        user = request.user
+        user.delete()
+        messages.info(request, "Your account has been deleted.")
+        return redirect("index")
+    else:
+        delete_form = DeleteUserForm(instance=request.user)
+
+    context = {"delete_form": delete_form}
+
+    return render(request, "registration/delete_account.html", context)
+
+@login_required
+def profile_settings(request:HttpRequest) -> render:
+    """returns the settings page"""
+
+    if len(request.POST) > 0:
+        if request.POST.get("firstName") != "" and request.POST.get("firstName") != request.user.first_name:
+            request.user.first_name = request.POST.get("firstName")
+            request.user.save()
+        if request.POST.get("lastName") != "" and request.POST.get("lastName") != request.user.last_name:
+            request.user.last_name = request.POST.get("lastName")
+            request.user.save()
+        if request.POST.get("email") != request.user.email:
+            request.user.email = request.POST.get("email")
+            request.user.save()
+
+    try:
+        userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
+    except IndexError:
+        # TODO Create error page
+        return redirect("/")
+    
+    if len(request.POST) > 0:
+        region = request.POST.get("region")
+        region_code = pycountry.countries.get(name=region).alpha_2
+        if region_code != userprofile.region:
+            userprofile.region = region_code
+        if request.POST.get("privacy") == None:
+            userprofile.privacy = False
+        elif request.POST.get("privacy") == "on":
+            userprofile.privacy = True
+
+        if request.POST.get("teams") == None:
+            userprofile.external_teams = False
+        elif request.POST.get("teams") == "on":
+            userprofile.external_teams = True
+        
+        userprofile.save()
+    
+    country_data = get_region_data()
+    country_name = pycountry.countries.get(alpha_2=userprofile.region).name
+
+    colour_data = []
+    for scheme in ColourScheme.objects.all():
+        colour = {}
+        data = ColorData.objects.filter(user=request.user, scheme=scheme)
+        colour["name"] = scheme.name
+        if data.exists():
+            colour["colour"] = data[0].color
+            colour["enabled"] = data[0].enabled
+        else:
+            colour["colour"] = scheme.default
+            colour["enabled"] = True
+
+        colour_data.append(colour)
+
+    privacy_status = userprofile.privacy
+    teams_status = userprofile.external_teams
+    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status, "external_teams": teams_status,
+               "current_country": country_name, **country_data, "colours": colour_data}
+    return render(request, "ap_app/settings.html", context)
+
+def update_colour(request:HttpRequest):
+    if request.method == "POST":
+        default = ColourScheme.objects.get(name=request.POST["name"])
+        data = ColorData.objects.filter(user=request.user, scheme__name=request.POST["name"])
+        if data.exists():
+            update_data = ColorData.objects.get(id=data[0].id)
+            if request.POST["enabled"] == 'True':
+                update_data.enabled = True
+            else:
+                update_data.enabled = False
+            update_data.color = request.POST["colour"]
+            update_data.save()
+        else:
+            print(request.POST)
+            if request.POST["colour"] != default.default or request.POST["enabled"] != 'True':
+                print("Created colour data")
+                newData = ColorData()
+                if request.POST["enabled"] == 'True':
+                    newData.enabled = True
+                else:
+                    newData.enabled = False
+                newData.scheme = default
+                newData.color = request.POST["colour"]
+                newData.user = request.user
+                newData.save()
+    
+    return redirect('profile_settings')
+
+@login_required
+def add_user(request) -> render:
+    data=json.loads(request.body)
+    try:
+        userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
+    except IndexError:
+        # TODO Create error page
+        return redirect("/")
+
+    if request.method == "POST":
+        username = data["username"]
+
+        try:
+            user = User.objects.get(username=username)
+        except:
+            # TODO Create error page
+            return redirect("/")
+
+        userprofile.edit_whitelist.add(user)
+        user.save()
+
+    return redirect("/profile/settings")
+
+def get_region_data():
+    data = {}
+    data["countries"] = []
+    for country in list(pycountry.countries):
+        try:
+            holidays.country_holidays(country.alpha_2)
+            data["countries"].append(country.name)
+        except:
+            pass
+    
+    data["countries"] = sorted(data["countries"])
+
+    return data
+
+@login_required
+def set_region(request):
+
+    try:
+        userporfile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
+    except IndexError:
+        # TODO Create error page
+        return redirect("/")
+
+    if request.method == "POST":
+        region = request.POST.get("regions")
+        region_code = pycountry.countries.get(name=region).alpha_2
+        if (region_code != userporfile.region):
+            userporfile.region = region_code
+            userporfile.save()
+
+    return redirect("/profile/settings")
+
+#JC - Calendar view using the API
 
 #Add an absence when clicking on the calendar
 @login_required
@@ -524,7 +353,7 @@ def click_add(request):
                         absence.save()
                     else:
                         absence = non_connected()
-                    
+
                 elif date - timedelta(days=1) in Absence.objects.filter(Target_User_ID__username=json_data["username"]).values_list("absence_date_start", flat=True):
                     a = Absence.objects.filter(Target_User_ID__username=json_data["username"], absence_date_start=date-timedelta(days=1))[0]
                     if a.half_day == "NORMAL":
@@ -565,6 +394,7 @@ def click_add(request):
             return JsonResponse({})
     else:
         return HttpResponse('404')
+
 @login_required
 def click_remove(request):
     if request.method == "POST":
