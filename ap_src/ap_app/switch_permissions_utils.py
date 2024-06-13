@@ -20,7 +20,7 @@ def check_for_lingering_switch_perms(request): # stops users from having switch 
     users_sharing_teams = grab_users_sharing_teams(request)
     # DEBUG CODE #
     print("DEBUG: Users with permissions:", users_with_perms)
-    print("DEBUG: Users sharing teams:", users_with_perms)
+    print("DEBUG: Users sharing teams:", users_sharing_teams)
     # DEBUG CODE #
 
     for user_with_perms in users_with_perms:
@@ -53,15 +53,18 @@ def check_for_teams_in_common(request, user_being_given_perms): # this stops use
 @login_required
 def grab_users_sharing_teams(request):
     teams = retrieve_calendar_data(request, None)
+    print(teams)
 
     users_sharing_teams = []
-    print(teams)
-    for team_index in teams:
-        for member in team_index["team"]["members"]:
+    for team in teams:
+        team = team["team"]
+        print("Team name:", team["name"])
+        print("Team members:", team["members"])
+        for member in team["members"]:
             username = member["user"]["username"]
-            #username = "yes"
+            print(member)
             users_sharing_teams.append(username)
-    users_sharing_teams = set(users_sharing_teams)
+    print(users_sharing_teams)
 
     return users_sharing_teams
 
@@ -78,6 +81,8 @@ def grab_users_with_perms(request):
         username_matching_user_id = user_matching_user_id.values_list("username", flat=True)
         username_matching_user_id = str(username_matching_user_id[0])
         usernames_with_perms.append(username_matching_user_id)
+    
+    usernames_with_perms = set(usernames_with_perms)
     
     return usernames_with_perms
 
