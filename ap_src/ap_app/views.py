@@ -232,7 +232,7 @@ def profile_settings(request:HttpRequest) -> render:
                "current_country": country_name, **country_data, "colours": colour_data}
     
     # DEBUG CODE #
-    check_for_lingering_switch_perms(request)
+    check_for_lingering_switch_perms("Bob")
     # DEBUG CODE #
 
     return render(request, "ap_app/settings.html", context)

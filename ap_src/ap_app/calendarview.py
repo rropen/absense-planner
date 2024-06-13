@@ -270,11 +270,12 @@ def get_filter_users(request, users) -> list:
 
     return filtered_users
 
-def retrieve_calendar_data(request:HttpRequest, sortValue):
+def retrieve_calendar_data(request:HttpRequest, sortValue, username=None):
     data = None
     r = None
 
     try:
+        print(request.user)
         token = (str(request.user) + "AbsencePlanner").encode()
         encryption = hashlib.sha256(token).hexdigest()
         r = requests.get(env("TEAM_DATA_URL") + "api/user/teams/?format=json&username={}&sort={}".format(request.user.username, sortValue), headers={"TEAMS-TOKEN": encryption})
