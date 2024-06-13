@@ -15,8 +15,11 @@ environ.Env.read_env()
 # this check should be activated when the user leaves a team
 def check_for_lingering_switch_perms(username): # stops users from having switch perms when they don't share any teams
     user_id = get_user_id_from_username(username)
-    user_profile_id = get_userprofile_id_from_user_id(user_id)
-    permissions = get_associated_permissions(user_profile_id, user_id)
+    print("user_id:", user_id)
+    userprofile_id = get_userprofile_id_from_user_id(user_id)
+    print("userprofile_id:", userprofile_id)
+    permissions = get_associated_permissions(userprofile_id, user_id)
+    print("permissions:", permissions)
 
     print(permissions)
 
@@ -116,12 +119,17 @@ def get_userprofile_id_from_user_id(user_id):
 
     return userprofile_id_matching_user_id
 
-def get_associated_permissions(userprofile_id, user_id):
-    permissions1 = UserProfile.objects.filter(edit_whitelist=userprofile_id)
-    print("Permissions 1:", permissions1)
+def get_associated_permissions(selected_userprofile_id, selected_user_id):
+    usernames_given_permissions = list(User.objects.filter(permissions=selected_userprofile_id).values_list("username", flat=True))
+    print("User usernames given permissions:", usernames_given_permissions)
 
-    #permissions2 = UserProfile.objects.filter(edit_whitelist__user_id=user_id)
-    #print(permissions2)
+    userprofile_ids_who_give_permissions = UserProfile.objects.filter(edit_whitelist=selected_user_id).values_list(flat=False)
+    userprofile_usernames_who_give_permissions = []
+    for userprofile_id in userprofile_ids_who_give_permissions:
+        current_user = User.objects.get(userprofile=userprofile_id)
+        current_username = current_user.get_username()
+        userprofile_usernames_who_give_permissions.append(current_username)
+    print("UserProfile usernames who give permissions:", userprofile_usernames_who_give_permissions)
 
     #permissions = permissions1 + permissions2
 
