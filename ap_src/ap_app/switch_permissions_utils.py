@@ -23,6 +23,10 @@ def check_for_lingering_switch_perms(username): # stops users from having switch
 
     print(permissions)
 
+    user = User.objects.get(id=user_id)
+    users_sharing_teams = get_users_sharing_teams(username, user)
+    print("users_sharing_teams:", users_sharing_teams)
+    
     #current_username = username
     #users_with_perms = grab_users_with_perms(current_username)
     #users_sharing_teams = grab_users_sharing_teams(current_username)
@@ -57,23 +61,23 @@ def check_for_lingering_switch_perms(username): # stops users from having switch
 #
 #    return True
 #
-#def grab_users_sharing_teams(current_user):
-#    teams = retrieve_calendar_data(current_user, None)
-#    print(teams)
-#
-#    users_sharing_teams = []
-#    for team in teams:
-#        team = team["team"]
-#        print("Team name:", team["name"])
-#        print("Team members:", team["members"])
-#        for member in team["members"]:
-#            username = member["user"]["username"]
-#            print(member)
-#            users_sharing_teams.append(username)
-#    print(users_sharing_teams)
-#
-#    return users_sharing_teams
-#
+def get_users_sharing_teams(current_user, user_model):
+    teams = retrieve_calendar_data(user_model, None)
+    if teams is None: # The current_user is not in any teams
+        return {} # Avoid error from iterating through None type
+
+    users_sharing_teams = []
+    for team in teams:
+        team = team["team"]
+        #print("Team name:", team["name"])
+        #print("Team members:", team["members"])
+        for member in team["members"]:
+            username = member["user"]["username"]
+            users_sharing_teams.append(username)
+    users_sharing_teams = set(users_sharing_teams)
+
+    return users_sharing_teams
+
 #def grab_users_with_perms(username):
 #    user_profiles_with_perms = UserProfile.objects.filter(edit_whitelist__username=username)
 #    user_ids_with_perms = user_profiles_with_perms.values_list("user_id", flat=True)
