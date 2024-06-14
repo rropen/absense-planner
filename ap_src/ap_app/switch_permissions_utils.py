@@ -25,6 +25,8 @@ def check_for_lingering_switch_perms(username): # stops users from having switch
     users_sharing_teams = get_users_sharing_teams(username, user)
     print("users_sharing_teams:", users_sharing_teams)
     
+    process_user_usernames(username, usernames_given_permissions, users_sharing_teams)
+    
     #current_username = username
     #users_with_perms = grab_users_with_perms(current_username)
     #users_sharing_teams = grab_users_sharing_teams(current_username)
@@ -135,3 +137,11 @@ def get_associated_permissions(selected_userprofile_id, selected_user_id):
 
     return usernames_given_permissions, userprofile_usernames_who_give_permissions
 
+def process_user_usernames(selected_username, usernames_given_permissions, users_sharing_teams): # User here is referring to the "User Model"
+    selected_user_id = get_user_id_from_username(selected_username)
+    selected_userprofile_id = get_userprofile_id_from_user_id(selected_user_id)
+    for username in usernames_given_permissions:
+        user_id_sharing_teams = get_user_id_from_username(username)
+        if username not in users_sharing_teams:
+            print("Redundant permissions found from", selected_userprofile_id, "given to", selected_user_id)
+        
