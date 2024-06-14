@@ -270,15 +270,14 @@ def get_filter_users(request, users) -> list:
 
     return filtered_users
 
-def retrieve_calendar_data(request:HttpRequest, sortValue, username=None):
+def retrieve_calendar_data(user, sortValue, username=None):
     data = None
     r = None
 
     try:
-        print(request.user)
-        token = (str(request.user) + "AbsencePlanner").encode()
+        token = (str(user) + "AbsencePlanner").encode()
         encryption = hashlib.sha256(token).hexdigest()
-        r = requests.get(env("TEAM_DATA_URL") + "api/user/teams/?format=json&username={}&sort={}".format(request.user.username, sortValue), headers={"TEAMS-TOKEN": encryption})
+        r = requests.get(env("TEAM_DATA_URL") + "api/user/teams/?format=json&username={}&sort={}".format(user.username, sortValue), headers={"TEAMS-TOKEN": encryption})
     except:
         print("API Failed to connect")
     
@@ -319,8 +318,9 @@ def main_calendar(
     if request.GET.get("sortBy") is not None:
         sortValue = request.GET.get("sortBy")
 
+    user = request.user
     #JC - Get names of teams and members in the team.
-    teams_data = retrieve_calendar_data(request, sortValue)
+    teams_data = retrieve_calendar_data(user, sortValue)
 
     #JC - If a month has been selected by the user check if its valid.
     date = check_calendar_date(year, month)
