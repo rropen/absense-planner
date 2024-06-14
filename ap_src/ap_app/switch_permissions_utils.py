@@ -19,9 +19,7 @@ def check_for_lingering_switch_perms(username): # stops users from having switch
     userprofile_id = get_userprofile_id_from_user_id(user_id)
     print("userprofile_id:", userprofile_id)
     permissions = get_associated_permissions(userprofile_id, user_id)
-    print("permissions:", permissions)
 
-    print(permissions)
 
     user = User.objects.get(id=user_id)
     users_sharing_teams = get_users_sharing_teams(username, user)
