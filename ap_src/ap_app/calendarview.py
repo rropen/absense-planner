@@ -21,6 +21,7 @@ from .models import ( Relationship, Role, Team,
 
 from .absences import *
 from .teams import *
+from .utils.teams_utils import retrieve_calendar_data
 
 def check_calendar_date(year, month) -> bool:
     date = datetime.datetime(year, datetime.datetime.strptime(month, "%B").month, 1)
