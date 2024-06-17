@@ -10,15 +10,12 @@ from user_profile import get_userprofile_id_from_user_id
 # this check should be activated when the user leaves a team
 def check_for_lingering_switch_perms(username): # stops users from having switch perms when they don't share any teams
     user_id = get_user_id_from_username(username)
-    print("user_id:", user_id)
     userprofile_id = get_userprofile_id_from_user_id(user_id)
-    print("userprofile_id:", userprofile_id)
 
     usernames_given_permissions, userprofile_usernames_who_give_permissions = get_associated_permissions(username, userprofile_id, user_id)
 
     user = User.objects.get(id=user_id)
     users_sharing_teams = get_users_sharing_teams(username, user)
-    print("users_sharing_teams:", users_sharing_teams)
     
     process_user_usernames(username, usernames_given_permissions, users_sharing_teams)
     process_userprofile_usernames(username, userprofile_usernames_who_give_permissions, users_sharing_teams)
@@ -38,7 +35,6 @@ def check_for_lingering_switch_perms(username): # stops users from having switch
 def get_associated_permissions(current_user, selected_userprofile_id, selected_user_id):
     usernames_given_permissions = set(User.objects.filter(permissions=selected_userprofile_id).values_list("username", flat=True))
     usernames_given_permissions.remove(current_user)
-    print("User usernames given permissions:", usernames_given_permissions)
 
     userprofile_ids_who_give_permissions = UserProfile.objects.filter(edit_whitelist=selected_user_id).values_list(flat=False)
     userprofile_usernames_who_give_permissions = []
@@ -48,7 +44,6 @@ def get_associated_permissions(current_user, selected_userprofile_id, selected_u
         userprofile_usernames_who_give_permissions.append(current_username)
     userprofile_usernames_who_give_permissions = set(userprofile_usernames_who_give_permissions)
     userprofile_usernames_who_give_permissions.remove(current_user)
-    print("UserProfile usernames who give permissions:", userprofile_usernames_who_give_permissions)
 
     return usernames_given_permissions, userprofile_usernames_who_give_permissions
 
@@ -57,13 +52,17 @@ def process_user_usernames(selected_username, usernames_given_permissions, users
     selected_userprofile_id = get_userprofile_id_from_user_id(selected_user_id)
     for username in usernames_given_permissions:
         user_id = get_user_id_from_username(username)
-        if username not in users_sharing_teams:
-            print("Redundant permissions found from", selected_userprofile_id, "given to", user_id)
+        #if username not in users_sharing_teams:
+            # This has been left here, commented out for when the algorithm is actually implemented
+            # for removing permissions using the data printed
+            #print("Redundant permissions found from", selected_userprofile_id, "given to", user_id)
 
 def process_userprofile_usernames(selected_username, userprofile_usernames_who_give_permissions, users_sharing_teams): # User here is referring to the "User Model"
     selected_user_id = get_user_id_from_username(selected_username)
     for username in userprofile_usernames_who_give_permissions:
         user_id = get_user_id_from_username(username)
         userprofile_id = get_userprofile_id_from_user_id(user_id)
-        if username not in users_sharing_teams:
-            print("Redundant permissions found from", userprofile_id, "given to", selected_user_id)
+        #if username not in users_sharing_teams:
+            # This has been left here, commented out for when the algorithm is actually implemented
+            # for removing permissions using the data printed
+            #print("Redundant permissions found from", userprofile_id, "given to", selected_user_id)

@@ -33,8 +33,6 @@ def get_users_sharing_teams(current_user, user_model):
     users_sharing_teams = []
     for team in teams:
         team = team["team"]
-        #print("Team name:", team["name"])
-        #print("Team members:", team["members"])
         for member in team["members"]:
             username = member["user"]["username"]
             users_sharing_teams.append(username)
