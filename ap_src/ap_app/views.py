@@ -230,15 +230,6 @@ def profile_settings(request:HttpRequest) -> render:
     teams_status = userprofile.external_teams
     context = {"userprofile": userprofile, "data_privacy_mode": privacy_status, "external_teams": teams_status,
                "current_country": country_name, **country_data, "colours": colour_data}
-    
-    # DEBUG CODE #
-    print("Bob:")
-    check_for_lingering_switch_perms("Bob")
-    print("Billy:")
-    check_for_lingering_switch_perms("Billy")
-    print("Brian:")
-    check_for_lingering_switch_perms("Brian")
-    # DEBUG CODE #
 
     return render(request, "ap_app/settings.html", context)
 
