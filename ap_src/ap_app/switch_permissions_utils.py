@@ -126,8 +126,8 @@ def get_userprofile_id_from_user_id(user_id):
 
     return userprofile_id_matching_user_id
 
-    usernames_given_permissions = list(User.objects.filter(permissions=selected_userprofile_id).values_list("username", flat=True))
 def get_associated_permissions(current_user, selected_userprofile_id, selected_user_id):
+    usernames_given_permissions = set(User.objects.filter(permissions=selected_userprofile_id).values_list("username", flat=True))
     usernames_given_permissions.remove(current_user)
     print("User usernames given permissions:", usernames_given_permissions)
 
@@ -137,6 +137,7 @@ def get_associated_permissions(current_user, selected_userprofile_id, selected_u
         user = User.objects.get(userprofile=userprofile_id)
         current_username = user.get_username()
         userprofile_usernames_who_give_permissions.append(current_username)
+    userprofile_usernames_who_give_permissions = set(userprofile_usernames_who_give_permissions)
     userprofile_usernames_who_give_permissions.remove(current_user)
     print("UserProfile usernames who give permissions:", userprofile_usernames_who_give_permissions)
 
