@@ -44,30 +44,184 @@ Tests will be run in two different stages:
 - Members:
     - "Brian"
 
-# Test 1 (without fix implemented)
+# Tests
 
-## Description
+## Test 1 - No switch permissions given nor any teams joined
 
-Test the behaviour of what the 
+### Expected Behaviour
 
-## Expected Behaviour
+#### Bob
 
-### In Bob's Account
+- user_id: 5
+- userprofile_id: 2
+- User usernames given permissions: None
+- UserProfile usernames who give permissions: None
+- users_sharing_teams: None
+- Redundant switch permissions: None
 
-#### Stage 1
+#### Billy
 
-- "Users with permissions: Bob, Billy"
-- "Users sharing teams: Bob, Billy"
-- No mention of redundant permissions
+- user_id: 6
+- userprofile_id: 3
+- User usernames given permissions: None
+- UserProfile usernames who give permissions: None
+- users_sharing_teams: None
+- Redundant switch permissions: None
 
-#### Stage 2 (Billy Leaves and Joins Brian's Team (Team 2))
+#### Brian:
 
-- "Users with permissions: Bob, Billy"
-- "Users sharing teams: Bob"
-- "Redundant permissions found for Billy!"
+- user_id: 7
+- userprofile_id: 4
+- User usernames given permissions: None
+- UserProfile usernames who give permissions: None
+- users_sharing_teams: None
+- Redundant switch permissions: None
 
-## Actual Behaviour
+### Actual Behaviour
 
-#### Stage 1
+#### Bob
 
-#### Stage 2 (Billy Leaves and Joins Brian's Team (Team 2))
+- user_id: 5
+- userprofile_id: 2
+- User usernames given permissions: set()
+- UserProfile usernames who give permissions: set()
+- users_sharing_teams: {}
+- Redundant switch permissions: None
+
+#### Billy
+
+- user_id: 6
+- userprofile_id: 3
+- User usernames given permissions: set()
+- UserProfile usernames who give permissions: set()
+- users_sharing_teams: {}
+- Redundant switch permissions: None
+
+#### Brian:
+
+- user_id: 7
+- userprofile_id: 4
+- User usernames given permissions: set()
+- UserProfile usernames who give permissions: set()
+- users_sharing_teams: {}
+- Redundant switch permissions: None
+
+## Test 2 - Switch permissions given from Bob to Billy without sharing any teams
+
+### Expected Behaviour
+
+#### Bob
+
+- user_id: 5
+- userprofile_id: 2
+- User usernames given permissions: Billy
+- UserProfile usernames who give permissions: None
+- users_sharing_teams: None
+- Redundant switch permissions: 2 to 6
+
+#### Billy
+
+- user_id: 6
+- userprofile_id: 3
+- User usernames given permissions: None
+- UserProfile usernames who give permissions: Bob
+- users_sharing_teams: None
+- Redundant switch permissions: 2 to 6
+
+#### Brian:
+
+- user_id: 7
+- userprofile_id: 4
+- User usernames given permissions: None
+- UserProfile usernames who give permissions: None
+- users_sharing_teams: None
+- Redundant switch permissions: None
+
+### Actual Behaviour
+
+#### Bob
+
+- user_id: 5
+- userprofile_id: 2
+- User usernames given permissions: Billy
+- UserProfile usernames who give permissions: None
+- users_sharing_teams: None
+- Redundant switch permissions: 2 to 6
+
+#### Billy
+
+- user_id: 6
+- userprofile_id: 3
+- User usernames given permissions: None
+- UserProfile usernames who give permissions: Bob
+- users_sharing_team: None
+- Redundant switch permissions: 2 to 6
+
+#### Brian:
+
+- user_id: 7
+- userprofile_id: 4
+- User usernames given permissions: None
+- UserProfile usernames who give permissions: None
+- users_sharing_teams: None
+- Redundant switch permissions: None
+
+## Test 3 - Switch permissions given from Bob to Billy but Billy and Bob are in the same team
+
+### Expected Behaviour
+
+#### Bob
+
+- user_id: 5
+- userprofile_id: 2
+- User usernames given permissions: Billy
+- UserProfile usernames who give permissions: None
+- users_sharing_teams: Billy
+- Redundant switch permissions: None
+
+#### Billy
+
+- user_id: 6
+- userprofile_id: 3
+- User usernames given permissions: None
+- UserProfile usernames who give permissions: Bob
+- users_sharing_teams: Bob
+- Redundant switch permissions: None
+
+#### Brian:
+
+- user_id: 7
+- userprofile_id: 4
+- User usernames given permissions: None
+- UserProfile usernames who give permissions: None
+- users_sharing_teams: None
+- Redundant switch permissions: None
+
+### Actual Behaviour
+
+#### Bob
+
+- user_id: 5
+- userprofile_id: 2
+- User usernames given permissions: Billy
+- UserProfile usernames who give permissions: None
+- users_sharing_teams: Billy
+- Redundant switch permissions: None
+
+#### Billy
+
+- user_id: 6
+- userprofile_id: 3
+- User usernames given permissions: None
+- UserProfile usernames who give permissions: Bob
+- users_sharing_team: Bob
+- Redundant switch permissions: None
+
+#### Brian:
+
+- user_id: 7
+- userprofile_id: 4
+- User usernames given permissions: None
+- UserProfile usernames who give permissions: None
+- users_sharing_teams: None
+- Redundant switch permissions: None
