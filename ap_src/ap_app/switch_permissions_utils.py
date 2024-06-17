@@ -63,7 +63,7 @@ def check_for_lingering_switch_perms(username): # stops users from having switch
 #
 def get_users_sharing_teams(current_user, user_model):
     teams = retrieve_calendar_data(user_model, None)
-    if teams is None: # The current_user is not in any teams
+    if teams is None or teams == []: # The current_user is not in any teams
         return {} # Avoid error from iterating through None type
 
     users_sharing_teams = []
