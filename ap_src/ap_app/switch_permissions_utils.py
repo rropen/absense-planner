@@ -147,7 +147,6 @@ def process_user_usernames(selected_username, usernames_given_permissions, users
     selected_user_id = get_user_id_from_username(selected_username)
     selected_userprofile_id = get_userprofile_id_from_user_id(selected_user_id)
     for username in usernames_given_permissions:
-        user_id_sharing_teams = get_user_id_from_username(username)
+        user_id = get_user_id_from_username(username)
         if username not in users_sharing_teams:
-            print("Redundant permissions found from", selected_userprofile_id, "given to", selected_user_id)
-        
+            print("Redundant permissions found from", selected_userprofile_id, "given to", user_id)
