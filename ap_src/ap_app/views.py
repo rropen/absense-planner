@@ -40,8 +40,6 @@ from .forms import *
 from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
                      UserProfile, ColourScheme, ColorData)
 
-from .switch_permissions_utils import check_for_lingering_switch_perms
-
 User = get_user_model()
 
 
