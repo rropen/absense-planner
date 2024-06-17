@@ -9,7 +9,7 @@ env = environ.Env()
 environ.Env.read_env()
 
 
-def retrieve_calendar_data(user, sortValue, username=None):
+def retrieve_calendar_data(user, sortValue):
     data = None
     r = None
 
