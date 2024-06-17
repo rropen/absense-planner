@@ -9,8 +9,7 @@ def get_user_id_from_username(selected_username):
     return user_id_of_user
 
 def get_userprofile_id_from_user_id(user_id):
-    userprofile_matching_user_id = UserProfile.objects.filter(user_id=user_id)
-    userprofile_id_matching_user_id = userprofile_matching_user_id.values_list("id", flat=True)
-    userprofile_id_matching_user_id = int(userprofile_id_matching_user_id[0])
+    userprofile_matching_user_id = UserProfile.objects.get(user_id=user_id)
+    userprofile_id = int(userprofile_matching_user_id.id)
 
-    return userprofile_id_matching_user_id
+    return userprofile_id
