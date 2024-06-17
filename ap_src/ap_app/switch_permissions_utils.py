@@ -19,7 +19,7 @@ def check_for_lingering_switch_perms(username): # stops users from having switch
     userprofile_id = get_userprofile_id_from_user_id(user_id)
     print("userprofile_id:", userprofile_id)
 
-    usernames_given_permissions, userprofile_usernames_who_give_permissions = get_associated_permissions(userprofile_id, user_id)
+    usernames_given_permissions, userprofile_usernames_who_give_permissions = get_associated_permissions(username, userprofile_id, user_id)
 
     user = User.objects.get(id=user_id)
     users_sharing_teams = get_users_sharing_teams(username, user)
@@ -75,6 +75,9 @@ def get_users_sharing_teams(current_user, user_model):
             username = member["user"]["username"]
             users_sharing_teams.append(username)
     users_sharing_teams = set(users_sharing_teams)
+    users_sharing_teams.remove(current_user)
+    # ^^^ Remove the user whos teams are being queried
+    # as this will avoid conflicts.
 
     return users_sharing_teams
 
@@ -123,16 +126,18 @@ def get_userprofile_id_from_user_id(user_id):
 
     return userprofile_id_matching_user_id
 
-def get_associated_permissions(selected_userprofile_id, selected_user_id):
     usernames_given_permissions = list(User.objects.filter(permissions=selected_userprofile_id).values_list("username", flat=True))
+def get_associated_permissions(current_user, selected_userprofile_id, selected_user_id):
+    usernames_given_permissions.remove(current_user)
     print("User usernames given permissions:", usernames_given_permissions)
 
     userprofile_ids_who_give_permissions = UserProfile.objects.filter(edit_whitelist=selected_user_id).values_list(flat=False)
     userprofile_usernames_who_give_permissions = []
     for userprofile_id in userprofile_ids_who_give_permissions:
-        current_user = User.objects.get(userprofile=userprofile_id)
-        current_username = current_user.get_username()
+        user = User.objects.get(userprofile=userprofile_id)
+        current_username = user.get_username()
         userprofile_usernames_who_give_permissions.append(current_username)
+    userprofile_usernames_who_give_permissions.remove(current_user)
     print("UserProfile usernames who give permissions:", userprofile_usernames_who_give_permissions)
 
     return usernames_given_permissions, userprofile_usernames_who_give_permissions
