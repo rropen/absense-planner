@@ -26,6 +26,7 @@ def check_for_lingering_switch_perms(username): # stops users from having switch
     print("users_sharing_teams:", users_sharing_teams)
     
     process_user_usernames(username, usernames_given_permissions, users_sharing_teams)
+    process_userprofile_usernames(username, userprofile_usernames_who_give_permissions, users_sharing_teams)
     
     #current_username = username
     #users_with_perms = grab_users_with_perms(current_username)
