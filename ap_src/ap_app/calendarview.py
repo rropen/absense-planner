@@ -270,22 +270,6 @@ def get_filter_users(request, users) -> list:
 
     return filtered_users
 
-def retrieve_calendar_data(user, sortValue, username=None):
-    data = None
-    r = None
-
-    try:
-        token = (str(user) + "AbsencePlanner").encode()
-        encryption = hashlib.sha256(token).hexdigest()
-        r = requests.get(env("TEAM_DATA_URL") + "api/user/teams/?format=json&username={}&sort={}".format(user.username, sortValue), headers={"TEAMS-TOKEN": encryption})
-    except:
-        print("API Failed to connect")
-    
-    if r is not None and r.status_code == 200:
-        data = r.json()
-    
-    return data
-
 def retrieve_all_users(request:HttpRequest, data):
     users = []
     users.append(request.user)
