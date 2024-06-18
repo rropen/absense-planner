@@ -1,13 +1,10 @@
-# Third-party Libraries
 import hashlib
 import requests
 
-# Environment
 import environ
 
 env = environ.Env()
 environ.Env.read_env()
-
 
 def retrieve_calendar_data(user, sortValue):
     data = None

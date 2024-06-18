@@ -1,11 +1,8 @@
-# Models
-from ..models import (UserProfile)
+from ..models import UserProfile
 from django.contrib.auth.models import User
 
-# Utils
-from teams_utils import get_users_sharing_teams
-from user_profile import get_user_id_from_username
-from user_profile import get_userprofile_id_from_user_id
+from .teams_utils import get_users_sharing_teams
+from .user_profile import get_user_id_from_username, get_userprofile_id_from_user_id
 
 # this check should be activated when the user leaves a team
 def check_for_lingering_switch_perms(username): # stops users from having switch perms when they don't share any teams
@@ -25,18 +22,6 @@ def check_for_lingering_switch_perms(username): # stops users from having switch
     
     process_user_usernames(username, usernames_given_permissions, users_sharing_teams)
     process_userprofile_usernames(username, userprofile_usernames_who_give_permissions, users_sharing_teams)
-    
-    """
-    SET user ID whose absences are being edited AS (int) user_ID_edited
-    SET user IDs with permission to edit absences AS (list of int) user_IDs_with_perms
-    SET user IDs who are in the same team as user_ID_edited AS (list of int) user_IDs_sharing_teams
-
-    IF user_ID_edited_leave_team THEN
-    FOR EACH (int) user_ID_with_perms FROM (list) user_IDs_with_perms DO
-        IF user_ID_with_perms NOT IN user_IDs_sharing_teams THEN remove_permissions
-    END FOREACH
-    END IF
-    """
 
 def get_associated_permissions(current_user, selected_userprofile_id, selected_user_id):
     usernames_given_permissions = set(User.objects.filter(permissions=selected_userprofile_id).values_list("username", flat=True))

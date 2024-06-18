@@ -1,5 +1,4 @@
-# Models
-from ..models import (UserProfile)
+from ..models import UserProfile
 from django.contrib.auth.models import User
 
 def get_user_id_from_username(selected_username):
