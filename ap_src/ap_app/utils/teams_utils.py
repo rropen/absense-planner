@@ -25,7 +25,7 @@ def retrieve_calendar_data(user, sortValue):
     
     return data
 
-def get_users_sharing_teams(current_user, user_model):
+def get_users_sharing_teams(username, user_model):
     teams = retrieve_calendar_data(user_model, None)
     if teams is None or teams == []: # The current_user is not in any teams
         return {} # Avoid error from iterating through None type
@@ -34,10 +34,10 @@ def get_users_sharing_teams(current_user, user_model):
     for team in teams:
         team = team["team"]
         for member in team["members"]:
-            username = member["user"]["username"]
-            users_sharing_teams.append(username)
+            member_username = member["user"]["username"]
+            users_sharing_teams.append(member_username)
     users_sharing_teams = set(users_sharing_teams)
-    users_sharing_teams.remove(current_user)
+    users_sharing_teams.remove(username)
     # ^^^ Remove the user whos teams are being queried
     # as this will avoid conflicts.
 
