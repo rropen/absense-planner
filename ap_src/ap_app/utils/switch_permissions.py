@@ -4,8 +4,16 @@ from django.contrib.auth.models import User
 from .teams_utils import get_users_sharing_teams
 from .user_profile import get_user_id_from_username, get_userprofile_id_from_user_id
 
-# this check should be activated when the user leaves a team
-def check_for_lingering_switch_perms(username): # stops users from having switch perms when they don't share any teams
+def check_for_lingering_switch_perms(username):
+    """
+    Stops users from having switch perms when they don't share any teams.
+
+    This check should be activated when the user leaves a team.
+
+    Args:
+        username (str): The username of the user who left the team.
+    """
+
     user_id = get_user_id_from_username(username)
     userprofile_id = get_userprofile_id_from_user_id(user_id)
     if (user_id is None) or (userprofile_id is None):
