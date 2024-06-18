@@ -19,6 +19,7 @@ def retrieve_calendar_data(user, sortValue):
         r = requests.get(env("TEAM_DATA_URL") + "api/user/teams/?format=json&username={}&sort={}".format(user.username, sortValue), headers={"TEAMS-TOKEN": encryption})
     except:
         print("API Failed to connect")
+        return # Caller should handle the API error
     
     if r is not None and r.status_code == 200:
         data = r.json()
@@ -27,17 +28,26 @@ def retrieve_calendar_data(user, sortValue):
 
 def get_users_sharing_teams(username, user_model):
     teams = retrieve_calendar_data(user_model, None)
-    if teams is None or teams == []: # The current_user is not in any teams
-        return {} # Avoid error from iterating through None type
+    users_sharing_teams = set()
 
-    users_sharing_teams = []
+    if teams is None:
+        return # Caller should handle the API error
+        # Avoid error from iterating through None type
+    elif teams == []: # The current_user is not in any teams
+        return users_sharing_teams # Avoid error from iterating
+                                   # through empty set
+
     for team in teams:
         team = team["team"]
         for member in team["members"]:
             member_username = member["user"]["username"]
-            users_sharing_teams.append(member_username)
-    users_sharing_teams = set(users_sharing_teams)
-    users_sharing_teams.remove(username)
+            users_sharing_teams.add(member_username)
+
+    try:
+        users_sharing_teams.remove(username)
+    except:
+        print("User does not exist in team app database")
+        return # Caller should handle error
     # ^^^ Remove the user whos teams are being queried
     # as this will avoid conflicts.
 
