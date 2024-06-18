@@ -89,3 +89,28 @@ def process_userprofile_usernames(selected_username, userprofile_usernames_who_g
             # This has been left here, commented out for when the algorithm is actually implemented
             # for removing permissions using the data printed
             #print("Redundant permissions found from", userprofile_id, "given to", selected_user_id)
+
+def remove_switch_permissions(userprofile_id, user_id):
+    """
+    Removes the switch permissions of a user from a user's profile settings.
+
+    Args:
+    - `userprofile_id`: The ID of the user who has given permissions.
+    - `user_id`: The ID of the user whose permissions will be removed.
+    """
+
+    # Get instance of UserProfile that matches given ID
+    try:
+        userprofile = UserProfile.objects.get(id=userprofile_id)
+    except:
+        print("UserProfile not found in absence planner database using given ID")
+        return
+
+    # Get instance of User that matches given ID
+    try:
+        selected_user = User.objects.get(id=user_id)
+    except:
+        print("User not found in absence planner database using given ID")
+        return
+
+    userprofile.edit_whitelist.remove(selected_user)
