@@ -127,9 +127,9 @@
                         {% else %}
                             {% check_permissions member request.user as editable %}
                             {% if editable %}
-                            <td>{{member.user.username}}*</td>
+                            <td>{{member.user.username}}*{{ editable }}</td>
                             {% else %}
-                            <td>{{member.user.username}}</td>
+                            <td>{{member.user.username}}*{{ editable }}</td>
                             {% endif %}
                         {% endif %}
 

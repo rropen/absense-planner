@@ -21,6 +21,7 @@ from .models import ( Relationship, Role, Team,
 
 from .absences import *
 from .teams import *
+from .templatetags import check_permissions
 
 def check_calendar_date(year, month) -> bool:
     date = datetime.datetime(year, datetime.datetime.strptime(month, "%B").month, 1)
@@ -298,6 +299,20 @@ def retrieve_all_users(request:HttpRequest, data):
     
     return users
 
+def check_switch_permissions(request:HttpRequest):
+    #active_user will get the user ID of the signed in account -KJ
+    active_user = UserProfile.objects.get(user=request.user.id)
+    print(active_user)
+
+    #user will get the user ID of the other account(s) in your team -KJ
+    user = UserProfile.objects.get(user=request.user.id)
+    print(user)
+    
+    #Returns True/False -KJ
+    switch_permissions = check_permissions.check_permissions(user,active_user)
+
+    return switch_permissions
+
 #JC - Main calendar using API data.
 @login_required
 def main_calendar(
@@ -334,6 +349,8 @@ def main_calendar(
 
     colour_data = get_colour_data(request)
 
+    switch_permissions = check_switch_permissions(request)
+
     weekends = {"Sa": "Sa", "Su": "Su"}
 
     context = {
@@ -341,9 +358,10 @@ def main_calendar(
         **absence_data,
         **weekends,
         **colour_data,
+        "switch_permissions": switch_permissions,
         "team_data": teams_data,
         "sort_value": sortValue,
         "home_active": True
     }
-
+    # print(context)
     return render(request, "calendars/calendar.html", context)

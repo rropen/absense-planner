@@ -30,11 +30,20 @@ document.addEventListener('click', function(e) {
     if (calendarClickToggle == true) {
         if (e.target.id.includes("/")) {
             var data = e.target.id.split("/"); var username = data[0]; var date = data[1]; var absent = data[2];
+            console.log(data)
             //Add an absence
             if (absent == "FALSE") {
                 //This is a half day
                 if (e.shiftKey) {
                     var confirmationPage = document.getElementById("half")
+
+                    // {% check_permissions member request.user as editable %}
+                    //         {% if editable %}
+                    //         <td>{{member.user.username}}*</td>
+                    //         {% else %}
+                    //         <td>{{member.user.username}}</td>
+                    //         {% endif %}
+
                     confirmationPage.classList.add("is-active")
                     //Morning Clicked
                     document.getElementById("morningBTN").onclick = function() {
