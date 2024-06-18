@@ -165,11 +165,26 @@ class UserProfile(models.Model):
 
     external_teams = models.BooleanField(default=False)
 
+class UserProfile(models.Model):
+    """Extension of fields for User class"""
 
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    edit_whitelist = models.ManyToManyField(
+        User,
+        related_name="permissions",
+    )
+    # Extra Fields
+    accepted_policy = models.BooleanField()
+    privacy = models.BooleanField(default=False)
+    region = models.CharField(max_length=200, default="GB")
+    external_teams = models.BooleanField(default=False)
+
+    # New field for storing the timezone
+    timezone = models.CharField(max_length=100, default='UTC')
 
     def __str__(self):
-        return f"{self.user.username}"
-
+        return self.user.username
 
 class RecurringException(models.Model):
     ID = models.AutoField(primary_key=True)

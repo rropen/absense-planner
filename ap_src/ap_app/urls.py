@@ -2,7 +2,7 @@ from django.urls import path
 from . import views, teams, absences, calendarview
 
 js_info_dict = {
-    'packages' : ('recurrence', ),
+    'packages': ('recurrence', ),
 }
 
 from django.conf.urls import handler404, handler500
@@ -49,12 +49,13 @@ urlpatterns = [
     path("profile/settings/add-user", views.add_user, name="add-user"),
     path("profile/settings/set-region", views.set_region, name="set-region"),
     path("profile/settings/update-colour", views.update_colour, name="update-colour"),
-    path("calendar/set_month",views.set_calendar_month, name="set_month"),
+    path("calendar/set_month", views.set_calendar_month, name="set_month"),
+    path("calendar/1/", views.api_calendar_view, name="api_calendar"),
+    path("calendar/1/<str:month>/<int:year>", views.api_calendar_view, name="api_calendar"),
     path("main_calendar", views.main_calendar, name="main_calendar"),
     path("main_calendar/<str:month>/<int:year>", views.main_calendar, name="main_calendar"),
-    re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}) #This lets Django find the CSS files when debug is set to false
-
-] 
+    re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT})  # This lets Django find the CSS files when debug is set to false
+]
 
 handler404 = 'ap_app.errors.handler404'
 handler500 = 'ap_app.errors.handler500'

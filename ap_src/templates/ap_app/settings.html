@@ -16,21 +16,21 @@
                     {% csrf_token %}
                     <div class="field">
                         <label class="label">First Name</label>
-                        <div class ="control">
+                        <div class="control">
                             {% if user.first_name %}
-                            <input class="input is-rounded is-success" type="text" placeholder="First Name" value="{{ user.first_name }}" name="firstName">
+                                <input class="input is-rounded is-success" type="text" placeholder="First Name" value="{{ user.first_name }}" name="firstName">
                             {% else %}
-                            <input class="input is-rounded is-warning" type="text" placeholder="First Name" name="firstName">
+                                <input class="input is-rounded is-warning" type="text" placeholder="First Name" name="firstName">
                             {% endif %}
                         </div>
                     </div>
                     <div class="field">
                         <label class="label">Last Name</label>
-                        <div class ="control">
+                        <div class="control">
                             {% if user.last_name %}
-                            <input class="input is-rounded is-success" type="text" placeholder="Last Name" value="{{ user.last_name }}" name="lastName">
+                                <input class="input is-rounded is-success" type="text" placeholder="Last Name" value="{{ user.last_name }}" name="lastName">
                             {% else %}
-                            <input class="input is-rounded is-warning" type="text" placeholder="Last Name" name="lastName">
+                                <input class="input is-rounded is-warning" type="text" placeholder="Last Name" name="lastName">
                             {% endif %}
                         </div>
                     </div>
@@ -38,12 +38,12 @@
                         <label class="label">Email</label>
                         <div class="control has-icons-right">
                             {% if user.email %}
-                            <input class="input is-rounded is-success" type="email" placeholder="Email Address" name="email" id="email-input" value="{{ user.email }}">
-                            <span class="icon is-small is-right">
-                                <button class="delete" aria-label="delete" onclick="deleteInputtedValue('email-input')"></button>
-                            </span>
+                                <input class="input is-rounded is-success" type="email" placeholder="Email Address" name="email" id="email-input" value="{{ user.email }}">
+                                <span class="icon is-small is-right">
+                                    <button class="delete" aria-label="delete" onclick="deleteInputtedValue('email-input')"></button>
+                                </span>
                             {% else %}
-                            <input class="input is-rounded is-warning" type="email" placeholder="Email Address" name="email">
+                                <input class="input is-rounded is-warning" type="email" placeholder="Email Address" name="email">
                             {% endif %}
                         </div>
                     </div>
@@ -63,14 +63,49 @@
                             </div>
                         </div>
                     </div>
+                    <!-- New field for timezone selection -->
+                    <div class="field">
+                        <label class="label">Timezone</label>
+                        <div class="control">
+                            <div class="select is-rounded">
+                                <select name="timezone">
+                                    {% for tz in timezones %}
+                                        {% if tz == user_timezone %}
+                                            <option value="{{ tz }}" selected="selected">{{ tz }}</option>
+                                        {% else %}
+                                            <option value="{{ tz }}">{{ tz }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Permission Settings</label>
+                        <nav class="navbar">
+                            <div class="control">
+                                <input class="input is-rounded" placeholder="Add a user" type="text" size="50" id="user_permission_input">
+                            </div>
+                            <div class="control">
+                                {% csrf_token %}
+                                <button class="button is-rounded" onclick="addUserPermission('{{ csrf_token }}')">Submit</button>
+                            </div>
+                        </nav>
+                        <p>Users with permission to edit your absences:</p>
+                        <div class="tags">
+                            {% for user in userprofile.edit_whitelist.all %}
+                                <span class="tag is-dark">{{user}}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
                     <div class="field">
                         <label class="label">Data Settings</label>
                         <div class="control">
                             <label>
                                 {% if data_privacy_mode %}
-                                <input type="checkbox" checked="checked" name="privacy"></input>
+                                    <input type="checkbox" checked="checked" name="privacy"></input>
                                 {% else %}
-                                <input type="checkbox" name="privacy"></input>
+                                    <input type="checkbox" name="privacy"></input>
                                 {% endif %}
                                 Keep data private (Hide data from non team members)
                             </label>
@@ -78,9 +113,9 @@
                         <div class="control">
                             <label>
                                 {% if external_teams %}
-                                <input type="checkbox" checked="checked" name="teams"></input>
+                                    <input type="checkbox" checked="checked" name="teams"></input>
                                 {% else %}
-                                <input type="checkbox" name="teams"></input>
+                                    <input type="checkbox" name="teams"></input>
                                 {% endif %}
                                 Use the team app data instead of local data
                             </label>
@@ -98,26 +133,10 @@
             </div>
             <div class="box">
                 <h3 class="title is-4">App Information</h3>
-                <label class="label">Permission Settings</label>
-                <nav class="navbar">
-                    <div class="control">
-                        <input class="input is-rounded" placeholder="Add a user" type="text" size="50" id="user_permission_input">
-                    </div>
-                    <div class="control">
-                        {% csrf_token %}
-                        <button class="button is-rounded" onclick="addUserPermission( '{{ csrf_token }}' )">Submit</button>
-                    </div>
-                </nav>
-                <p>Users with permission to edit your absences:</p>
-                <div class="tags">
-                    {% for user in userprofile.edit_whitelist.all %}
-                        <span class="tag is-dark">{{user}}</span>
-                    {% endfor %}
-                </div>
                 <label class="label">Calendar Settings</label>
                 {% for colour in colours %}
-                <h6>{{ colour.name }}</h6>
-                {% include 'ap_app/elements/colour_picker.html' with colour_value=colour.colour name=colour.name enabled=colour.enabled %}
+                    <h6>{{ colour.name }}</h6>
+                    {% include 'ap_app/elements/colour_picker.html' with colour_value=colour.colour name=colour.name enabled=colour.enabled %}
                 {% endfor %}
             </div>
         </div>
@@ -139,9 +158,7 @@
             });
         }
     </script>
-    <script src="{% static "js/profile_update.js" %}">
-
-    </script>
+    <script src="{% static "js/profile_update.js" %}"></script>
 
 </body>
 {% endblock %}
