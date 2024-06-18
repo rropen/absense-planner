@@ -4,14 +4,17 @@ from django.contrib.auth.models import User
 from .teams_utils import get_users_sharing_teams
 from .user_profile import get_user_id_from_username, get_userprofile_id_from_user_id
 
-def check_for_lingering_switch_perms(username):
+def check_for_lingering_switch_perms(username, action):
     """
-    Stops users from having switch perms when they don't share any teams.
+    Check that discovers lingering switch permissions in the database and determines what to do with them.
+
+    Mainly used to stop users from having switch perms when they don't share any teams.
 
     This check should be activated when the user leaves a team.
 
     Args:
-        username (str): The username of the user who left the team.
+    - `username` (`str`): Username of the user who left the team.
+    - `action`: Function that is executed when redundant permissions (lingering switch perms) are discovered.
     """
 
     user_id = get_user_id_from_username(username)
@@ -28,8 +31,8 @@ def check_for_lingering_switch_perms(username):
     if users_sharing_teams is None:
         return # Caller should handle error
     
-    process_user_usernames(username, usernames_given_permissions, users_sharing_teams)
-    process_userprofile_usernames(username, userprofile_usernames_who_give_permissions, users_sharing_teams)
+    process_user_usernames(username, usernames_given_permissions, users_sharing_teams, action)
+    process_userprofile_usernames(username, userprofile_usernames_who_give_permissions, users_sharing_teams, action)
 
 def get_associated_permissions(current_user, selected_userprofile_id, selected_user_id):
     usernames_given_permissions = set(User.objects.filter(permissions=selected_userprofile_id).values_list("username", flat=True))
@@ -58,7 +61,16 @@ def get_associated_permissions(current_user, selected_userprofile_id, selected_u
 
     return usernames_given_permissions, userprofile_usernames_who_give_permissions
 
-def process_user_usernames(selected_username, usernames_given_permissions, users_sharing_teams): # User here is referring to the "User Model"
+def process_user_usernames(selected_username, usernames_given_permissions, users_sharing_teams, action):
+    """
+    Looks through a list of usernames given permissions and users sharing teams and determines if they are redundant.
+
+    Args:
+    - `selected_username`: Username that is used to get the User ID and UserProfile ID of the user who triggered this function (the selected user).
+    - `usernames_given_permissions`: List of usernames who have been given permission to switch with the selected user.
+    - `users_sharing_teams`: List of unique usernames sharing teams with the user.
+    - `action`: Function that is executed when redundant permissions are found in the list.
+    """
     selected_user_id = get_user_id_from_username(selected_username)
     selected_userprofile_id = get_userprofile_id_from_user_id(selected_user_id)
     if (selected_user_id is None) or (selected_userprofile_id is None):
@@ -69,12 +81,19 @@ def process_user_usernames(selected_username, usernames_given_permissions, users
         if user_id is None:
             print("Referenced User ID does not exist in absence planner database")
             return
-        #elif username not in users_sharing_teams:
-            # This has been left here, commented out for when the algorithm is actually implemented
-            # for removing permissions using the data printed
-            #print("Redundant permissions found from", selected_userprofile_id, "given to", user_id)
+        elif username not in users_sharing_teams:
+            action(selected_userprofile_id, user_id)
 
-def process_userprofile_usernames(selected_username, userprofile_usernames_who_give_permissions, users_sharing_teams): # User here is referring to the "User Model"
+def process_userprofile_usernames(selected_username, userprofile_usernames_who_give_permissions, users_sharing_teams, action):
+    """
+    Looks through a list of usernames who have given permissions and users sharing teams and determines if they are redundant.
+
+    Args:
+    - `selected_username`: Username that is used to get the User ID of the user who triggered this function (the selected user).
+    - `userprofile_usernames_who_give_permissions`: List of usernames who have given permission for the selected user to switch with them.
+    - `users_sharing_teams`: List of unique usernames sharing teams with the user.
+    - `action`: Function that is executed when redundant permissions are found in the list.
+    """
     selected_user_id = get_user_id_from_username(selected_username)
     if selected_user_id is None:
         print("User ID does not exist in absence planner database")
@@ -85,10 +104,8 @@ def process_userprofile_usernames(selected_username, userprofile_usernames_who_g
         if (user_id is None) or (userprofile_id is None):
             print("UserProfile ID does not exist in absence planner database")
             return
-        #elif username not in users_sharing_teams:
-            # This has been left here, commented out for when the algorithm is actually implemented
-            # for removing permissions using the data printed
-            #print("Redundant permissions found from", userprofile_id, "given to", selected_user_id)
+        elif username not in users_sharing_teams:
+            action(userprofile_id, selected_user_id)
 
 def remove_switch_permissions(userprofile_id, user_id):
     """
