@@ -21,6 +21,7 @@ from .models import ( Relationship, Role, Team,
 
 from .absences import *
 from .teams import *
+from .utils.teams_utils import retrieve_calendar_data
 
 def check_calendar_date(year, month) -> bool:
     date = datetime.datetime(year, datetime.datetime.strptime(month, "%B").month, 1)
@@ -270,22 +271,6 @@ def get_filter_users(request, users) -> list:
 
     return filtered_users
 
-def retrieve_calendar_data(request:HttpRequest, sortValue):
-    data = None
-    r = None
-
-    try:
-        token = (str(request.user) + "AbsencePlanner").encode()
-        encryption = hashlib.sha256(token).hexdigest()
-        r = requests.get(env("TEAM_DATA_URL") + "api/user/teams/?format=json&username={}&sort={}".format(request.user.username, sortValue), headers={"TEAMS-TOKEN": encryption})
-    except:
-        print("API Failed to connect")
-    
-    if r is not None and r.status_code == 200:
-        data = r.json()
-    
-    return data
-
 def retrieve_all_users(request:HttpRequest, data):
     users = []
     users.append(request.user)
@@ -318,8 +303,9 @@ def main_calendar(
     if request.GET.get("sortBy") is not None:
         sortValue = request.GET.get("sortBy")
 
+    user = request.user
     #JC - Get names of teams and members in the team.
-    teams_data = retrieve_calendar_data(request, sortValue)
+    teams_data = retrieve_calendar_data(user, sortValue)
 
     #JC - If a month has been selected by the user check if its valid.
     date = check_calendar_date(year, month)
