@@ -87,6 +87,7 @@ if EXIST ap_src/manage.py (
     "venv\Scripts\python" ap_src/manage.py collectstatic --noinput
 
     ECHO Done
+    ECHO Don't forget to activate virtual environment before running manage.py
 )
 
 PAUSE
