@@ -38,8 +38,7 @@ IF NOT EXIST venv\Scripts\activate.bat (
 
 @REM Create the .env file
 
-COPY "example_env.txt" "ap_src/ap_site"
-RENAME "ap_src\ap_site\example_env.txt" ".env"
+COPY "example_env.txt" ".env"
 
 @REM Install requirements if they are not already installed
 @REM If they are, skip this step
@@ -88,6 +87,7 @@ if EXIST ap_src/manage.py (
     "venv\Scripts\python" ap_src/manage.py collectstatic --noinput
 
     ECHO Done
+    ECHO Don't forget to activate virtual environment before running manage.py
 )
 
 PAUSE

@@ -1,5 +1,5 @@
 TEAM_DATA_URL=http://localhost:8002/
-DEBUG=False
+DEBUG=True
 PRODUCTION_UI=False
 DB_NAME = ""
 DB_USER = ""
