@@ -1,4 +1,4 @@
-TEAM_DATA_URL=http://localhost:8000/
+TEAM_DATA_URL=http://localhost:8002/
 DEBUG=False
 PRODUCTION_UI=False
 DB_NAME = ""
