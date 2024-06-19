@@ -128,7 +128,7 @@ workspace.code-workspace
 db.sqlite3
 
 venv
-static_root
+ap_src/static
 *.sqlite3
 *.pyc
 ap_src/db.sqlite3

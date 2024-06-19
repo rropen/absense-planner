@@ -2,7 +2,6 @@ ECHO OFF
 ECHO ============================================================
 ECHO Setting Up Django Project Enviroment
 ECHO This script will make a new venv and install the requirements, then start the Django Project
-ECHO please make sure python is installed and the command to execute it is 'py -3.8'
 ECHO This project is tested on Python 3.8. It may not work on other versions
 ECHO If this script does not work, you will need to start django manually. This script is only a helper to make it easier to start the project.
 ECHO Please follow the instructions in the README.txt file to start the project if you need to.
@@ -10,7 +9,7 @@ ECHO ============================================================
 
 SET PYTHON_EXECUTABLE=notfound
 @REM LOOP through the list of python commands  to find the correct one by execute the --version of the command and set it to the variable PYTHON_EXECUTABLE of the one which does not throw an error
-FOR %%P IN ("python", "python3.8", "py") DO (
+FOR %%P IN ("python") DO (
     %%~P --version
     IF NOT ERRORLEVEL 1 (
         SET PYTHON_EXECUTABLE=%%~P
@@ -48,7 +47,7 @@ RENAME "ap_src\ap_site\example_env.txt" ".env"
 IF NOT EXIST venv\req_installed  (
     ECHO Installing requirements
 	"venv\Scripts\python" -m pip install --upgrade pip
-	"venv\Scripts\pip" install -r requirements.txt
+	"venv\Scripts\python" -m pip install -r requirements.txt
     COPY NUL venv\req_installed
 ) ELSE (
     ECHO Requirements already installed
