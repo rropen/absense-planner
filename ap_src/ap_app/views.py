@@ -40,6 +40,8 @@ from .forms import *
 from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
                      UserProfile, ColourScheme, ColorData)
 
+from .utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
+
 User = get_user_model()
 
 
@@ -467,3 +469,14 @@ def click_remove(request):
         return JsonResponse({"start_date": data["date"]})
     else:
         return HttpResponse("404")
+
+@login_required
+def lingering_perms_check(request):
+    print("Request for lingering_perms_check:", request)
+    if request.method == "POST":
+        username = request.POST.get("id")
+        print("Username of user leaving team:", username)
+        result = check_for_lingering_switch_perms(username, remove_switch_permissions)
+        if result is not None:
+            return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'fail', 'message': 'Invalid request'})
