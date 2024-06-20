@@ -55,7 +55,7 @@ function favouriteTeam(e, user, id) {
 
 function LeaveTeam(e, user, redirect) {
     var data = JSON.stringify({"username": user, "team": e.id})
-    fetch(apiURL + 'api/manage/?method=leave', {
+    var response = fetch(apiURL + 'api/manage/?method=leave', {
         method: "post",
         body: data,
         headers: {
@@ -63,6 +63,26 @@ function LeaveTeam(e, user, redirect) {
         },
     })
     .then(() => {
+        if (response.ok) {
+            console.log("Response is OK. jksaodklasjdk")
+            $.ajax({
+                url: '/lingering_perms_check/',
+                type: 'POST',
+                data: {
+                    'id': itemId,
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        alert('Lingering permissions removed!');
+                    } else {
+                        alert('Failed to remove lingering permissions: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('An error occurred: ' + error);
+                }
+            });
+        }
         if (redirect) {
             location.replace(location.origin + "/teams")
         } else {
