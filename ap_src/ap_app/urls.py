@@ -50,6 +50,7 @@ urlpatterns = [
     path("profile/settings/set-region", views.set_region, name="set-region"),
     path("profile/settings/update-colour", views.update_colour, name="update-colour"),
     path("calendar/set_month",views.set_calendar_month, name="set_month"),
+    path("calendar/check_permissions",views.check_permissions, name="check_permissions"),
     path("main_calendar", views.main_calendar, name="main_calendar"),
     path("main_calendar/<str:month>/<int:year>", views.main_calendar, name="main_calendar"),
     re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}) #This lets Django find the CSS files when debug is set to false
