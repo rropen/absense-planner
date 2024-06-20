@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from .teams_utils import get_users_sharing_teams
 from .user_profile import get_user_id_from_username, get_userprofile_id_from_user_id
 
+NO_ERRORS = True
+
 def check_for_lingering_switch_perms(username, action):
     """
     Check that discovers lingering switch permissions in the database and determines what to do with them.
@@ -31,8 +33,14 @@ def check_for_lingering_switch_perms(username, action):
     if users_sharing_teams is None:
         return # Caller should handle error
     
-    process_user_usernames(username, usernames_given_permissions, users_sharing_teams, action)
-    process_userprofile_usernames(username, userprofile_usernames_who_give_permissions, users_sharing_teams, action)
+    result = process_user_usernames(username, usernames_given_permissions, users_sharing_teams, action)
+    if result is None:
+        return
+    result = process_userprofile_usernames(username, userprofile_usernames_who_give_permissions, users_sharing_teams, action)
+    if result is None:
+        return
+    
+    return NO_ERRORS
 
 def get_associated_permissions(current_user, selected_userprofile_id, selected_user_id):
     usernames_given_permissions = set(User.objects.filter(permissions=selected_userprofile_id).values_list("username", flat=True))
@@ -83,6 +91,9 @@ def process_user_usernames(selected_username, usernames_given_permissions, users
             return
         elif username not in users_sharing_teams:
             action(selected_userprofile_id, user_id)
+            if action is None:
+                return
+            return NO_ERRORS
 
 def process_userprofile_usernames(selected_username, userprofile_usernames_who_give_permissions, users_sharing_teams, action):
     """
@@ -106,6 +117,9 @@ def process_userprofile_usernames(selected_username, userprofile_usernames_who_g
             return
         elif username not in users_sharing_teams:
             action(userprofile_id, selected_user_id)
+            if action is None:
+                return
+            return NO_ERRORS
 
 def remove_switch_permissions(userprofile_id, user_id):
     """
@@ -131,3 +145,4 @@ def remove_switch_permissions(userprofile_id, user_id):
         return
 
     userprofile.edit_whitelist.remove(selected_user)
+    return NO_ERRORS
