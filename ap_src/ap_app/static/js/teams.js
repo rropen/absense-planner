@@ -53,39 +53,33 @@ function favouriteTeam(e, user, id) {
     })
 }
 
-function LeaveTeam(e, user, redirect) {
+function LeaveTeam(e, user, redirect, token) {
     var data = JSON.stringify({"username": user, "team": e.id})
-    var response = fetch(apiURL + 'api/manage/?method=leave', {
+    console.log("Fetching leave response... jksaodklasjdk")
+    fetch(apiURL + 'api/manage/?method=leave', {
         method: "post",
         body: data,
         headers: {
             "Content-Type": "application/json",
+            "X-CSRFToken": token
         },
     })
     .then(() => {
-        if (response.ok) {
-            console.log("Response is OK. jksaodklasjdk")
-            $.ajax({
-                url: '/lingering_perms_check/',
-                type: 'POST',
-                data: {
-                    'id': itemId,
-                },
-                success: function(response) {
-                    if (response.status === 'success') {
-                        alert('Lingering permissions removed!');
-                    } else {
-                        alert('Failed to remove lingering permissions: ' + response.message);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    alert('An error occurred: ' + error);
-                }
-            });
-        }
+        console.log("Response is OK. jksaodklasjdk")
         if (redirect) {
+            console.log("Response is OK. jksaodklasjdk Redirecting")
+            var response = fetch(window.location.origin + "/lingering_perms_check", {
+                method: "post",
+                body: data,
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": token
+                },
+            })
+            .then(() => {console.log(response)})
             location.replace(location.origin + "/teams")
         } else {
+            console.log("Response is OK. jksaodklasjdk Reloading")
             location.reload()
         }
     })
