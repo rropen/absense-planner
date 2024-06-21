@@ -471,7 +471,7 @@ def click_remove(request):
         return HttpResponse("404")
 
 @login_required
-def lingering_perms_check(request):
+def remove_lingering_perms(request):
     if request.method == "POST":
         username = request.user.get_username()
         result = check_for_lingering_switch_perms(username, remove_switch_permissions)

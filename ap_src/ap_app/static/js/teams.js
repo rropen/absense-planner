@@ -74,7 +74,7 @@ async function LeaveTeam(e, user, token) {
   
     if (leaveData.message === "success") {
       const permissionsResponse = await fetch(
-        window.location.origin + "/lingering_perms_check",
+        window.location.origin + "/remove_lingering_perms",
         {
           method: "post",
           body: data,

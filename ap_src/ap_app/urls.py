@@ -52,7 +52,7 @@ urlpatterns = [
     path("calendar/set_month",views.set_calendar_month, name="set_month"),
     path("main_calendar", views.main_calendar, name="main_calendar"),
     path("main_calendar/<str:month>/<int:year>", views.main_calendar, name="main_calendar"),
-    path("lingering_perms_check", views.lingering_perms_check, name="lingering_perms_check"),
+    path("remove_lingering_perms", views.remove_lingering_perms, name="remove_lingering_perms"),
     re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}) #This lets Django find the CSS files when debug is set to false
 
 ] 
