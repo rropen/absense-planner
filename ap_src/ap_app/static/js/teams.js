@@ -80,7 +80,6 @@ async function LeaveTeamAndRemovePermissions(e, user, token) {
         window.location.origin + "/remove_lingering_perms",
         {
           method: "post",
-          body: data,
           headers: headers,
         },
       );
