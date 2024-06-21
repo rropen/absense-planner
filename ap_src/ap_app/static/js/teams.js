@@ -53,6 +53,9 @@ function favouriteTeam(e, user, id) {
     })
 }
 
+/*
+Leaves team but also checks for lingering permissions and removes them
+*/
 async function LeaveTeam(e, user, token) {
     const headers = {
       "Content-Type": "application/json",
