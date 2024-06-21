@@ -94,6 +94,7 @@ def process_user_usernames(selected_username, usernames_given_permissions, users
             if action is None:
                 return
             return NO_ERRORS
+    return NO_ERRORS
 
 def process_userprofile_usernames(selected_username, userprofile_usernames_who_give_permissions, users_sharing_teams, action):
     """
@@ -120,6 +121,7 @@ def process_userprofile_usernames(selected_username, userprofile_usernames_who_g
             if action is None:
                 return
             return NO_ERRORS
+    return NO_ERRORS
 
 def remove_switch_permissions(userprofile_id, user_id):
     """
