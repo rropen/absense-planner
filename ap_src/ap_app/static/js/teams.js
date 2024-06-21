@@ -53,26 +53,46 @@ function favouriteTeam(e, user, id) {
     })
 }
 
-function LeaveTeam(e, user, redirect) {
-    var data = JSON.stringify({"username": user, "team": e.id})
-    fetch(apiURL + 'api/manage/?method=leave', {
-        method: "post",
-        body: data,
-        headers: {
-            "Content-Type": "application/json",
+/*
+Leaves team but also checks for lingering permissions and removes them
+*/
+async function LeaveTeamAndRemovePermissions(e, username, token) {
+    const headers = {
+      "Content-Type": "application/json",
+      "X-CSRFToken": token,
+    };
+  
+    var data = JSON.stringify({ username: username, team: e.id });
+  
+    const leaveResponse = await fetch(apiURL + "api/manage/?method=leave", {
+      method: "post",
+      body: data,
+      headers: headers,
+    });
+  
+    if (!leaveResponse.ok)
+      throw new Error(`Leave request failed with status ${leaveResponse.status}`);
+  
+    const leaveData = await leaveResponse.json();
+  
+    if (leaveData.message === "success") {
+      const permissionsResponse = await fetch(
+        window.location.origin + "/remove_lingering_perms",
+        {
+          method: "get",
+          headers: headers,
         },
-    })
-    .then(() => {
-        if (redirect) {
-            location.replace(location.origin + "/teams")
-        } else {
-            location.reload()
-        }
-    })
-    .catch(err => {
-        console.log(err)
-    })
-}
+      );
+  
+      if (!permissionsResponse.ok)
+        throw new Error(
+          `Permissions check request failed with status ${permissionsResponse.status}`,
+        );
+  
+      const permissionsData = await permissionsResponse.json();
+      location.replace(location.origin + "/teams")
+    }
+  }
 
 function DeleteTeam(e) {
     var data = JSON.stringify({"id": e.id})

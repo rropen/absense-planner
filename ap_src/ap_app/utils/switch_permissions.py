@@ -17,6 +17,8 @@ def check_for_lingering_switch_perms(username, action):
     - `action`: Function that is executed when redundant permissions (lingering switch perms) are discovered.
     """
 
+    NO_ERRORS = True
+
     user_id = get_user_id_from_username(username)
     userprofile_id = get_userprofile_id_from_user_id(user_id)
     if (user_id is None) or (userprofile_id is None):
@@ -31,8 +33,14 @@ def check_for_lingering_switch_perms(username, action):
     if users_sharing_teams is None:
         return # Caller should handle error
     
-    process_user_usernames(username, usernames_given_permissions, users_sharing_teams, action)
-    process_userprofile_usernames(username, userprofile_usernames_who_give_permissions, users_sharing_teams, action)
+    result = process_user_usernames(username, usernames_given_permissions, users_sharing_teams, action)
+    if result is None:
+        return
+    result = process_userprofile_usernames(username, userprofile_usernames_who_give_permissions, users_sharing_teams, action)
+    if result is None:
+        return
+    
+    return NO_ERRORS
 
 def get_associated_permissions(current_user, selected_userprofile_id, selected_user_id):
     usernames_given_permissions = set(User.objects.filter(permissions=selected_userprofile_id).values_list("username", flat=True))
@@ -71,6 +79,9 @@ def process_user_usernames(selected_username, usernames_given_permissions, users
     - `users_sharing_teams`: List of unique usernames sharing teams with the user.
     - `action`: Function that is executed when redundant permissions are found in the list.
     """
+
+    NO_ERRORS = True
+
     selected_user_id = get_user_id_from_username(selected_username)
     selected_userprofile_id = get_userprofile_id_from_user_id(selected_user_id)
     if (selected_user_id is None) or (selected_userprofile_id is None):
@@ -83,6 +94,10 @@ def process_user_usernames(selected_username, usernames_given_permissions, users
             return
         elif username not in users_sharing_teams:
             action(selected_userprofile_id, user_id)
+            if action is None:
+                return
+            return NO_ERRORS
+    return NO_ERRORS
 
 def process_userprofile_usernames(selected_username, userprofile_usernames_who_give_permissions, users_sharing_teams, action):
     """
@@ -94,6 +109,9 @@ def process_userprofile_usernames(selected_username, userprofile_usernames_who_g
     - `users_sharing_teams`: List of unique usernames sharing teams with the user.
     - `action`: Function that is executed when redundant permissions are found in the list.
     """
+
+    NO_ERRORS = True
+
     selected_user_id = get_user_id_from_username(selected_username)
     if selected_user_id is None:
         print("User ID does not exist in absence planner database")
@@ -106,6 +124,10 @@ def process_userprofile_usernames(selected_username, userprofile_usernames_who_g
             return
         elif username not in users_sharing_teams:
             action(userprofile_id, selected_user_id)
+            if action is None:
+                return
+            return NO_ERRORS
+    return NO_ERRORS
 
 def remove_switch_permissions(userprofile_id, user_id):
     """
@@ -115,6 +137,8 @@ def remove_switch_permissions(userprofile_id, user_id):
     - `userprofile_id`: The ID of the user who has given permissions.
     - `user_id`: The ID of the user whose permissions will be removed.
     """
+
+    NO_ERRORS = True
 
     # Get instance of UserProfile that matches given ID
     try:
@@ -131,3 +155,4 @@ def remove_switch_permissions(userprofile_id, user_id):
         return
 
     userprofile.edit_whitelist.remove(selected_user)
+    return NO_ERRORS

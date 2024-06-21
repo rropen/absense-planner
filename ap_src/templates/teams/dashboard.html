@@ -116,7 +116,7 @@
             {% if team.role.role == "Owner" or team.role.role == "Co-Owner"%}
             <a class="button is-info mx-1" href={% url 'edit_team' id=team.team.id %}>Edit</a>
             {% endif %}
-            <button class="button is-danger mx-1" id="{{ team.team.id }}" onclick="LeaveTeam(this, '{{ request.user.username }}', false)">Leave</button>
+            <button class="button is-danger mx-1" title="Leave" id="{{ team.team.id }}" onclick="LeaveTeamAndRemovePermissions(this, '{{ request.user.username }}', '{{ csrf_token }}')">Leave</button>
         </div>
     </div>
     {% endfor %}
