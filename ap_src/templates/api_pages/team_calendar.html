@@ -105,16 +105,16 @@
                         {% check_absences recurring_absence_dates|get_key:user.user.username year month_num day as check_recurring_absence %}
                         {% check_half_day half_days_data|get_key:user.user.username year month_num day as check_half_day %}
                         {% if check_recurring_absence %}
-                            <td data-editable="{{editable}}" style="background-color: #ffaa00",  id="{{user.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="R"></td>
+                            <td data-editable="{{editable}}" style="background-color: #ffaa00" id="{{user.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="R"></td>
                         {% elif check_absence %}
-                            <td data-editable="{{editable}}" style="background-color: #ff0000;", id="{{user.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="S"></td>
+                            <td data-editable="{{editable}}" style="background-color: #ff0000;" id="{{user.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="S"></td>
                         {% elif check_half_day == "A" %}
-                            <td data-editable="{{editable}}"style="background: linear-gradient(to right, #ffffff 50%, #ff0000 50% );", id="{{user.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="A"></td>
+                            <td data-editable="{{editable}}" style="background: linear-gradient(to right, #ffffff 50%, #ff0000 50% );" id="{{user.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="A"></td>
                         {% elif check_half_day == "M" %}
-                            <td data-editable="{{editable}}" style="background: linear-gradient(to right, #ff0000 50%, #ffffff 50%);", id="{{user.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="M"></td>
+                            <td data-editable="{{editable}}" style="background: linear-gradient(to right, #ff0000 50%, #ffffff 50%);" id="{{user.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="M"></td>
                         {% else %} 
                             {% if day in bank_hol %}
-                                <td data-editable="{{editable}}" style = "background-color: #28663a;", id="{{user.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                <td data-editable="{{editable}}" style="background-color: #28663a;" id="{{user.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                             {% elif day in weekend_list %}
                                 {%comment%}<td style = "background-color: #206cab;", id="{{user.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>{%endcomment%}
                                 <td data-editable="{{editable}}" style="display:none"></td>

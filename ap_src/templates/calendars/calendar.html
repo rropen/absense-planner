@@ -129,7 +129,7 @@
                             {% if editable %}
                             <td>{{member.user.username}}*</td>
                             {% else %}
-                            <td>{{member.user.username}}*</td>
+                            <td>{{member.user.username}}</td>
                             {% endif %}
                         {% endif %}
 
@@ -148,9 +148,9 @@
                             <td data-editable="{{editable}}" style="background: linear-gradient(to right, #ff0000 50%, #ffffff 50%);" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="M"></td>
                             {% else %}
                                 {% if day in bank_hol and bank_holidays.enabled %}
-                                    <td data-editable="{{editable}}"style = "background-color: {{ bank_holidays.colour }};" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                    <td data-editable="{{editable}}" style="background-color: {{ bank_holidays.colour }};" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                 {% elif day in weekend_list and weekends.enabled %}
-                                    <td data-editable="{{editable}}" style = "background-color: {{ weekends.colour }};" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                    <td data-editable="{{editable}}" style="background-color: {{ weekends.colour }};" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                 {% elif day in weekend_list and not weekends.enabled %}
                                     <th style="display:none"> </th>
                                 {% else %}
