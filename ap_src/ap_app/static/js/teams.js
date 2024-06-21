@@ -56,13 +56,13 @@ function favouriteTeam(e, user, id) {
 /*
 Leaves team but also checks for lingering permissions and removes them
 */
-async function LeaveTeamAndRemovePermissions(e, user, token) {
+async function LeaveTeamAndRemovePermissions(e, username, token) {
     const headers = {
       "Content-Type": "application/json",
       "X-CSRFToken": token,
     };
   
-    var data = JSON.stringify({ username: user, team: e.id });
+    var data = JSON.stringify({ username: username, team: e.id });
   
     const leaveResponse = await fetch(apiURL + "api/manage/?method=leave", {
       method: "post",
