@@ -79,7 +79,7 @@ async function LeaveTeamAndRemovePermissions(e, username, token) {
       const permissionsResponse = await fetch(
         window.location.origin + "/remove_lingering_perms",
         {
-          method: "post",
+          method: "get",
           headers: headers,
         },
       );
