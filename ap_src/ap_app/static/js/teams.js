@@ -53,40 +53,44 @@ function favouriteTeam(e, user, id) {
     })
 }
 
-function LeaveTeam(e, user, redirect, token) {
-    var data = JSON.stringify({"username": user, "team": e.id})
-    console.log("Fetching leave response... jksaodklasjdk")
-    fetch(apiURL + 'api/manage/?method=leave', {
-        method: "post",
-        body: data,
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": token
+async function LeaveTeam(e, user, token) {
+    const headers = {
+      "Content-Type": "application/json",
+      "X-CSRFToken": token,
+    };
+  
+    var data = JSON.stringify({ username: user, team: e.id });
+  
+    const leaveResponse = await fetch(apiURL + "api/manage/?method=leave", {
+      method: "post",
+      body: data,
+      headers: headers,
+    });
+  
+    if (!leaveResponse.ok)
+      throw new Error(`Leave request failed with status ${leaveResponse.status}`);
+  
+    const leaveData = await leaveResponse.json();
+  
+    if (leaveData.message === "success") {
+      const permissionsResponse = await fetch(
+        window.location.origin + "/lingering_perms_check",
+        {
+          method: "post",
+          body: data,
+          headers: headers,
         },
-    })
-    .then(() => {
-        console.log("Response is OK. jksaodklasjdk")
-        if (redirect) {
-            console.log("Response is OK. jksaodklasjdk Redirecting")
-            var response = fetch(window.location.origin + "/lingering_perms_check", {
-                method: "post",
-                body: data,
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": token
-                },
-            })
-            .then(() => {console.log(response)})
-            location.replace(location.origin + "/teams")
-        } else {
-            console.log("Response is OK. jksaodklasjdk Reloading")
-            location.reload()
-        }
-    })
-    .catch(err => {
-        console.log(err)
-    })
-}
+      );
+  
+      if (!permissionsResponse.ok)
+        throw new Error(
+          `Permissions check request failed with status ${permissionsResponse.status}`,
+        );
+  
+      const permissionsData = await permissionsResponse.json();
+      location.replace(location.origin + "/teams")
+    }
+  }
 
 function DeleteTeam(e) {
     var data = JSON.stringify({"id": e.id})
