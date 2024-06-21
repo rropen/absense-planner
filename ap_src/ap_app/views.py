@@ -472,10 +472,8 @@ def click_remove(request):
 
 @login_required
 def lingering_perms_check(request):
-    print("Request for lingering_perms_check:", request)
     if request.method == "POST":
         username = request.POST.get("id")
-        print("Username of user leaving team:", username)
         result = check_for_lingering_switch_perms(username, remove_switch_permissions)
         if result is not None:
             return JsonResponse({'status': 'success'})
