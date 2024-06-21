@@ -331,5 +331,4 @@ def main_calendar(
         "sort_value": sortValue,
         "home_active": True
     }
-
     return render(request, "calendars/calendar.html", context)
