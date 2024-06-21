@@ -35,25 +35,7 @@ document.addEventListener('click', function(e) {
             if (absent == "FALSE") {
                 //This is a half day
                 if (e.shiftKey) {
-                    fetch("calendar/check_permissions", {
-                        method: "post",
-                        headers: {
-                            "X-CSRFToken": token
-                        },
-                        body: data
-                    })
-                    .then(() => {
-                        location.reload()
-                    })
                     var confirmationPage = document.getElementById("half")
-
-                    // {% check_permissions member request.user as editable %}
-                    //         {% if editable %}
-                    //         <td>{{member.user.username}}*</td>
-                    //         {% else %}
-                    //         <td>{{member.user.username}}</td>
-                    //         {% endif %}
-
                     confirmationPage.classList.add("is-active")
                     //Morning Clicked
                     document.getElementById("morningBTN").onclick = function() {
