@@ -30,7 +30,6 @@ document.addEventListener('click', function(e) {
     if (calendarClickToggle == true && e.target.dataset.editable == "True") {
         if (e.target.id.includes("/")) {
             var data = e.target.id.split("/"); var username = data[0]; var date = data[1]; var absent = data[2];
-            console.log(data)
             //Add an absence
             if (absent == "FALSE") {
                 //This is a half day
