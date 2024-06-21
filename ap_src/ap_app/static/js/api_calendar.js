@@ -27,7 +27,7 @@ function sendData(username, date, half_day, half_day_time, type, absence_type) {
 
 //Clickable Calendar
 document.addEventListener('click', function(e) {
-    if (calendarClickToggle == true) {
+    if (calendarClickToggle == true && e.target.dataset.editable == "True") {
         if (e.target.id.includes("/")) {
             var data = e.target.id.split("/"); var username = data[0]; var date = data[1]; var absent = data[2];
             console.log(data)
