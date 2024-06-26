@@ -477,7 +477,7 @@ def remove_lingering_perms(request):
 
     Generally ran when a user leaves a team and we wish to remove any lingering permissions.
     """
-    if request.method == "POST":
+    if request.method == "GET":
         username = request.user.get_username()
         result = check_for_lingering_switch_perms(username, remove_switch_permissions)
         if result is not None:
