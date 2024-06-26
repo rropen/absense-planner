@@ -1,6 +1,18 @@
 var calendarClickToggle = true;
 var token = document.currentScript.getAttribute("token");
 
+/* Display the spinner while webpage is being refreshed -KJ*/
+document.addEventListener('DOMContentLoaded', function() {
+    const loader = document.querySelector('.loader');
+    window.addEventListener('load', function() {
+      loader.classList.add('loader--hidden');
+    });
+
+    window.addEventListener('beforeunload', function() {
+      loader.classList.remove('loader--hidden');
+    });
+  });
+
 //Send the data to the backend
 function sendData(username, date, half_day, half_day_time, type, absence_type) {
     var data = JSON.stringify({"username": username, "date": date, "half_day": half_day, "half_day_time": half_day_time, "type": type, "absence_type": absence_type})
