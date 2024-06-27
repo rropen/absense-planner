@@ -10,10 +10,9 @@ from .models import Absence, RecurringAbsences, UserProfile
 User = get_user_model()
 
 #The form for creating a team
-class CreateTeamForm(forms.ModelForm):
+class CreateTeamForm(forms.Form):
     #details the model the form uses as well as the field names
     class Meta:
-        model = Team
         fields = ["name", "description", "private"]
 
     #The name of the team. Has to be between 3 and 64 characters, and is required.
@@ -35,18 +34,6 @@ class CreateTeamForm(forms.ModelForm):
     private = forms.BooleanField(
         required=False, widget=forms.CheckboxInput(attrs={"class": ""})
     )
-
-    def name_similarity(self) -> float:
-        """Returns float between 0 and 1 depending on the similarity
-        of the current name compared to existing team names. Returns
-        NoneType if there are no similarities."""
-
-        teams = Team.objects.all()
-        for team in teams:
-            similarity = SequenceMatcher(None, self["name"].value(), team.name).ratio()
-            if similarity >= 0.9:
-                return similarity
-
 
 class login(forms.Form):
     name = forms.CharField(
