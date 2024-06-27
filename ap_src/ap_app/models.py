@@ -86,30 +86,6 @@ class RecurringAbsences(models.Model):
         return f"Recurring Absence No.{self.ID} for {self.Target_User_ID} by {self.User_ID}"
 
 
-class Team(models.Model):
-    """This includes all the attributes of a Team"""
-
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=128, unique=True, null=False)
-    description = models.CharField(max_length=512)
-    notes = RichTextField()  # models.CharField(max_length=512, null=False, default="")
-
-    private = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    @property
-    def count(self):
-        return Relationship.objects.filter(
-            team=self, status=Status.objects.get(status="Active")
-        ).count()
-
-    @property
-    def users(self):
-        return Relationship.objects.filter(
-            team=self, status=Status.objects.get(status="Active")
-        )
 
 
 class Role(models.Model):
