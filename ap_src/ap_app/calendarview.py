@@ -8,16 +8,13 @@
 
 import datetime
 import requests
-import hashlib
-import environ
 from dateutil.relativedelta import relativedelta
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
 from .forms import *
-from .models import ( Relationship, Role, Team,
-                     UserProfile, Status, ColorData, ColourScheme)
+from .models import (UserProfile, ColorData, ColourScheme)
 
 from .absences import *
 from .teams import *

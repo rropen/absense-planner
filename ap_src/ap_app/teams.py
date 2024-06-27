@@ -20,10 +20,7 @@ import hashlib
 import requests
 import environ
 
-from django.contrib import messages
-from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 from django.db.models.functions import Lower
 from django.http import HttpResponse, JsonResponse, HttpRequest
 from django.shortcuts import redirect, render

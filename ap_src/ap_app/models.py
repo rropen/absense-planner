@@ -4,7 +4,6 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from recurrence.fields import RecurrenceField
-from ckeditor.fields import RichTextField
 
 User = get_user_model()
 

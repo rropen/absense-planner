@@ -1,19 +1,5 @@
-import pandas as pd
-from datetime import timedelta
-
-from django.contrib import messages
-from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
-from django.db.models.functions import Lower
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import redirect, render
-from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, UpdateView
-
 from .forms import *
-from .models import (
-                     UserProfile)
+from .models import UserProfile
 
 def find_user_obj(user_to_find):
     """Finds & Returns object of 'UserProfile' for a user

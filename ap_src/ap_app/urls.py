@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views, teams, absences, calendarview
+from . import views, teams
 
 js_info_dict = {
     'packages' : ('recurrence', ),

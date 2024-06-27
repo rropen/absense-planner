@@ -3,16 +3,11 @@ from difflib import SequenceMatcher
 
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import User
-from django.db.models.base import Model
-from django.forms import models
 from django.utils.timezone import now
 
-from .models import Absence, RecurringAbsences, Team, UserProfile
+from .models import Absence, RecurringAbsences, UserProfile
 
 User = get_user_model()
-from recurrence.forms import RecurrenceField, RecurrenceWidget
-
 
 #The form for creating a team
 class CreateTeamForm(forms.ModelForm):

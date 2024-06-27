@@ -10,26 +10,20 @@
 #click_add
 #click_remove
 
-import calendar
 import datetime
 import json
 import holidays
 import pycountry
-import pandas as pd
-import requests
-import environ
-import hashlib
 from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from django.db.models.functions import Lower
 from django.http import HttpResponse, JsonResponse, HttpRequest
 from django.shortcuts import redirect, render
-from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, UpdateView
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
 
 from .teams import *
 from .objects import *
@@ -37,8 +31,7 @@ from .teams import *
 from .calendarview import *
 
 from .forms import *
-from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
-                     UserProfile, ColourScheme, ColorData)
+from .models import (Absence, UserProfile, ColourScheme, ColorData)
 
 from .utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
 
