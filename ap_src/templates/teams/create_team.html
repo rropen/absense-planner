@@ -31,7 +31,12 @@
 
     <h2 class="description"><b>Please avoid using personal information in the description as it will be seen by non team members.<b></h2>
     <input type="hidden" name="username" value="{{ request.user.username }}">
-    <input id="submit" class="button is-link" value="Submit" type="submit">
+    <input type="hidden" name="origin_application" value="Absence Planner">
+    <button class="btn-process">
+        Submit
+        <span class="btn-ring"></span>
+      </button>
+
     </form>
 </div>
 {% comment %} <script>
@@ -94,5 +99,5 @@
 
 
  {% endcomment %}
-
+  
 {% endblock %}

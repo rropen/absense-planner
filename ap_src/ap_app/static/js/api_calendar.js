@@ -1,17 +1,34 @@
 var calendarClickToggle = true;
 var token = document.currentScript.getAttribute("token");
 
-/* Display the spinner while webpage is being refreshed -KJ*/
-document.addEventListener('DOMContentLoaded', function() {
-    const loader = document.querySelector('.loader');
-    window.addEventListener('load', function() {
-      loader.classList.add('loader--hidden');
-    });
 
-    window.addEventListener('beforeunload', function() {
-      loader.classList.remove('loader--hidden');
+/* Display the spinner while webpage is being refreshed -KJ*/
+// document.addEventListener('DOMContentLoaded', function() {
+//     const loader = document.querySelector('.loader');
+//     window.addEventListener('load', function() {
+//       loader.classList.add('loader--hidden');
+//     });
+
+//     window.addEventListener('beforeunload', function() {
+//       loader.classList.remove('loader--hidden');
+//     });
+//   });
+
+/* Display the spinner on a button while webpage is being refreshed -KJ */
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('.btn-process').addEventListener('click', function() {
+        document.querySelector('.btn-ring').style.display = 'block';
+        var btnProcess = document.querySelector('.btn-process');
+        btnProcess.disabled = true;
+        btnProcess.value = 'disabled';
+        
+        setTimeout(function() {
+            document.querySelector('.btn-ring').style.display = 'none';
+            btnProcess.disabled = false;
+            btnProcess.value = 'enabled'; // Reset the button value if needed
+        }, 3000);
     });
-  });
+});
 
 //Send the data to the backend
 function sendData(username, date, half_day, half_day_time, type, absence_type) {
@@ -22,6 +39,7 @@ function sendData(username, date, half_day, half_day_time, type, absence_type) {
         var link = window.location.origin + "/absence/click_remove"
     }
     console.log(link)
+
     fetch(link, {
         method: "post",
         headers: {
