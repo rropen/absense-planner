@@ -1,14 +1,14 @@
 from django.urls import path
 from . import views, teams
 
-js_info_dict = {
-    'packages' : ('recurrence', ),
-}
-
 from django.conf.urls import handler404, handler500
 from django.urls import re_path
 from django.views.static import serve
 from django.conf import settings
+
+js_info_dict = {
+    'packages' : ('recurrence', ),
+}
 
 urlpatterns = [
     path("", views.index, name="index"),
