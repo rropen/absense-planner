@@ -190,12 +190,12 @@ def profile_settings(request:HttpRequest) -> render:
         region_code = pycountry.countries.get(name=region).alpha_2
         if region_code != userprofile.region:
             userprofile.region = region_code
-        if request.POST.get("privacy") == None:
+        if request.POST.get("privacy") is None:
             userprofile.privacy = False
         elif request.POST.get("privacy") == "on":
             userprofile.privacy = True
 
-        if request.POST.get("teams") == None:
+        if request.POST.get("teams") is None:
             userprofile.external_teams = False
         elif request.POST.get("teams") == "on":
             userprofile.external_teams = True
@@ -323,7 +323,7 @@ def click_add(request):
         if request.user in perm_list:
             date = datetime.datetime.strptime(json_data["date"], "%Y-%m-%d").date()
             #This will add a half
-            if json_data["half_day"] == True:
+            if json_data["half_day"]:
                 absence = Absence()
                 absence.absence_date_start = json_data['date']
                 absence.absence_date_end = json_data['date']

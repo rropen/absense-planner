@@ -118,7 +118,7 @@ def join_team(request) -> render:
             r = requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username))
         except:
             print("Api failed to load")
-        if r != None and r.status_code == 200:
+        if r is not None and r.status_code == 200:
             data = r.json()
             api_enabled = True
 
