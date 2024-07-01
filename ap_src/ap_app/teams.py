@@ -142,43 +142,5 @@ def edit_api_data(userprofile, id):
             raise NotImplementedError("Invalid team name (No error page)")
     else:
         raise NotImplementedError("The API setting is not enabled in your profile. (No error page)")
-    
+
     return data
-
-
-#@login_required
-#def team_misc(request, id):
-#    """Teams Miscellaneous/Notes page"""
-#    if is_member(user=request.user, team_id=id):
-#        team = Team.objects.get(id=id)
-#
-#        notes = CreateTeamForm(instance=team)
-#
-#        # TODO: Add a field to each team with a notes section - (for now it's just the teams description)
-#
-#        if "value" in request.GET:
-#            team.notes = request.GET["value"]
-#            team.save()
-#
-#        desc = team.description
-#        notes = team.notes
-#
-#        return render(
-#            request, "teams/misc.html", {"team": team, "desc": desc, "notes": notes}
-#        )
-#    return redirect("dashboard")
-
-
-#def team_cleaner(rel):
-#    """Detects if a team is empty and deletes it if it is."""
-#    team = Team.objects.get(id=rel.team.id)
-#    all_team_relationships = Relationship.objects.filter(team=team)
-#    if all_team_relationships.count() == 0:
-#        team.delete()
-
-
-#def is_owner(user, team_id) -> bool:
-#    """ Determines if the user is an owner of the team """
-#    
-#    user_relation = Relationship.objects.get(team=team_id, user=user)
-#    return (user_relation.role.role == "Owner")
