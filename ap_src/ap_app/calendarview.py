@@ -1,11 +1,3 @@
-#check_calendar_date
-#set_calendar_month
-#all_calendar
-#team_calendar
-#api_calendar_view
-#get_date_data
-#get_filter_users
-
 import datetime
 import requests
 from dateutil.relativedelta import relativedelta

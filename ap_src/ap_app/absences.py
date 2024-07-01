@@ -1,11 +1,3 @@
-#get_absence_data
-#text_rules
-#profile_page
-#absence_delete
-#absence_recurring_delete
-#edit_recurring_absences
-#add_recurring
-
 import datetime
 from datetime import timedelta
 

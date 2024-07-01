@@ -1,15 +1,3 @@
-#index
-#privacy_page
-#add
-#details_page
-#deleteuser
-#profile_settings
-#add_user
-#get_region_data
-#set_region
-#click_add
-#click_remove
-
 import datetime
 import json
 import holidays

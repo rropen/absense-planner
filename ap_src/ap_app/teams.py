@@ -1,21 +1,3 @@
-#teams_dashboard
-#create_team
-#join_team
-#joining_team_process
-#team_invite
-#view_invites
-#leave_team
-#team_cleaner
-#team_misc
-#team_settings
-#edit_team_member_absence
-#promote_team_member
-#demote_team_member
-#remove_team_member
-#joining_team_request
-#is_member
-#is_owner
-
 import hashlib
 import requests
 import environ
@@ -67,7 +49,6 @@ def create_team(request:HttpRequest) -> render:
             )
 
         if form.is_valid():
-            # form.save()
             # # Gets the created team and "Owner" Role and creates a Link between
             # # the user and their team
             response = requests.post(env("TEAM_DATA_URL") + "api/teams/?format=json", data=request.POST)
