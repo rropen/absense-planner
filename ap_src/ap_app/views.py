@@ -25,13 +25,11 @@ from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
-from .teams import *
-from .objects import *
-from .teams import *
-from .calendarview import *
+from .objects import obj_exists, find_user_obj
+from .calendarview import main_calendar
 
-from .forms import *
-from .models import (Absence, UserProfile, ColourScheme, ColorData)
+from .forms import AcceptPolicyForm, AbsenceForm, DeleteUserForm
+from .models import Absence, UserProfile, ColourScheme, ColorData, RecurringException
 
 from .utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
 

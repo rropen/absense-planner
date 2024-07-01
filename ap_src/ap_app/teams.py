@@ -19,18 +19,13 @@
 import hashlib
 import requests
 import environ
-import datetime
 
 from django.contrib.auth.decorators import login_required
-from django.db.models.functions import Lower
 from django.http import HttpResponse, JsonResponse, HttpRequest
 from django.shortcuts import redirect, render
-from collections import namedtuple
 
-from .forms import *
-from .models import (Absence, Role, Status)
-
-from .absences import *
+from .forms import CreateTeamForm
+from .models import Role, UserProfile
 
 env = environ.Env()
 environ.Env.read_env()
