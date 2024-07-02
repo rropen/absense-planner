@@ -1,62 +1,6 @@
 var calendarClickToggle = true;
 var token = document.currentScript.getAttribute("token");
 
-
-/* Display the spinner while webpage is being refreshed -KJ*/
-// document.addEventListener('DOMContentLoaded', function() {
-//     const loader = document.querySelector('.loader');
-//     window.addEventListener('load', function() {
-//       loader.classList.add('loader--hidden');
-//     });
-
-//     window.addEventListener('beforeunload', function() {
-//       loader.classList.remove('loader--hidden');
-//     });
-//   });
-
-/* Display the spinner on a button while webpage is being refreshed -KJ */
-/*DOM - Document Object Model must be loaded before */
-
-//     document.getElementById('submit').addEventListener('click', function() {
-//         var element = document.getElementById("submit")
-//         console.log(element);
-//         element.classList.add("block");
-//         element.classList.add("is-loading");
-//         var btnProcess = document.querySelector('.btn-process');
-//         btnProcess.disabled = true;
-//         btnProcess.value = 'disabled';
-        
-//         setTimeout(function() {
-//             document.querySelector('.btn-ring').style.display = 'none';
-//             btnProcess.disabled = false;
-//             btnProcess.value = 'enabled'; // Reset the button value if needed
-//         }, 3000);
-//     });
-// });
-
-/*Logic to run loading animation for spinner button on create team page -KJ*/
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById("nameInput").addEventListener("keyup", function() {
-        document.getElementById("id_description").addEventListener("keyup", function() {
-        var nameInput = document.getElementById('nameInput').value;
-        var descriptionInput = document.getElementById('id_description').value;
-        if (nameInput !="" && descriptionInput !="")  {
-            document.getElementById('submit').removeAttribute("disabled");
-            document.getElementById('button1').removeAttribute("disabled");
-        } else {
-            document.getElementById('submit').setAttribute("disabled", null);
-            document.getElementById('button1').setAttribute("disabled", null);
-        }
-    const button1 = document.getElementById('button1');
-    if(document.getElementById('button1').getAttribute("disabled") ==true
-    && document.getElementById('submit').getAttribute("disabled")==true);
-	button1.addEventListener('click', () => {
-		button1.classList.add('is-loading');
-    button1.setAttribute('disabled', true);
-	});
-})});
-});
-
 //Send the data to the backend
 function sendData(username, date, half_day, half_day_time, type, absence_type) {
     var data = JSON.stringify({"username": username, "date": date, "half_day": half_day, "half_day_time": half_day_time, "type": type, "absence_type": absence_type})
