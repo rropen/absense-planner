@@ -85,8 +85,6 @@ class RecurringAbsences(models.Model):
         return f"Recurring Absence No.{self.ID} for {self.Target_User_ID} by {self.User_ID}"
 
 
-
-
 class Role(models.Model):
     """This includes all the attributes of a Role"""
 

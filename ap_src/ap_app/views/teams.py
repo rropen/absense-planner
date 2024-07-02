@@ -6,8 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse, HttpRequest
 from django.shortcuts import redirect, render
 
-from .forms import CreateTeamForm
-from .models import Role, UserProfile
+from ..forms import CreateTeamForm
+from ..models import Role, UserProfile
 
 env = environ.Env()
 environ.Env.read_env()

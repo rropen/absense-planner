@@ -1,5 +1,4 @@
 import datetime
-from difflib import SequenceMatcher
 
 from django import forms
 from django.contrib.auth import get_user_model

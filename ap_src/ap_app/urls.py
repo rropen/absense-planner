@@ -1,5 +1,6 @@
 from django.urls import path
-from . import views, teams, calendarview, absences
+
+from .views import calendarview, views, absences, teams
 
 from django.conf.urls import handler404, handler500
 from django.urls import re_path
@@ -46,6 +47,6 @@ urlpatterns = [
 
 ] 
 
-handler404 = 'ap_app.errors.handler404'
-handler500 = 'ap_app.errors.handler500'
-handler400 = 'ap_app.errors.handler400'
+handler404 = 'ap_app.utils.errors.handler404'
+handler500 = 'ap_app.utils.errors.handler500'
+handler400 = 'ap_app.utils.errors.handler400'
