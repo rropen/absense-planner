@@ -3,7 +3,7 @@ import requests
 import environ
 
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, JsonResponse, HttpRequest
+from django.http import JsonResponse, HttpRequest
 from django.shortcuts import redirect, render
 
 from ..forms import CreateTeamForm
