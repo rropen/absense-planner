@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load get_key %}
+{% load check_absences %}
+{% load check_half_day %}
+{% load check_permissions %}
+{% block title %}Calendar{% endblock %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/calendar.css' %}">
+
+{% include 'ap_app/elements/confirmation_modal.html' with title='Absence Calendar Information' type='info' %}
+{% include 'ap_app/elements/confirmation_modal.html' with title='Remove Absence' type='remove' %}
+{% include 'ap_app/elements/confirmation_modal.html' with title='Half Day Absence' type='half' %}
+
+<section class="section" id="calendarTitle">
+    <div class="nav-bar-padding">
+        <h1 class="title is-3">Absence Calendar</h1>
+        <span class="tag">
+            <form class="level-right" name="LastRefreshFrm">
+                Last refreshed
+                <input style="font-size: small; padding-bottom:4px ;" type="text" name="refreshSecBox" size="1" class="RefreshBox" />
+                <script language="javascript">
+                    SecondsSinceLastRefresh();
+                    </script>
+                minute(s) ago.
+            </form>
+        </span>
+        <div class="level mt-5">
+            <div class="level-left">
+                {% include 'calendars/calendar_nav.html' with name='all_calendar' %}
+            </div>
+            <div class="level-right">
+                <div class="control has-icons-left px-1">
+                    <div class="tooltip">
+                        <span class="tooltiptext">Sort By</span>
+                    <div class="select">
+                        <select id="SortBy" onchange="sortTeams(this)">
+                            {% if sort_value == 'team__name' %}
+                            <option value="team__name" selected>Name (A - Z)</option>
+                            {% else %}
+                            <option value="team__name">Name (A - Z)</option>
+                            {% endif %}
+                            {% if sort_value == '-team__name' %}
+                            <option value="-team__name" selected>Name (Z - A)</option>
+                            {% else %}
+                            <option value="-team__name">Name (Z - A)</option>
+                            {% endif %}
+                            {% if sort_value == 'role__id' %}
+                            <option value="role__id" selected>Role (High to Low)</option>
+                            {% else %}
+                            <option value="role__id">Role (High to Low)</option>
+                            {% endif %}
+                            {% if sort_value == '-role__id' %}
+                            <option value="-role__id" selected>Role (Low to High)</option>
+                            {% else %}
+                            <option value="-role__id">Role (Low to High)</option>
+                            {% endif %}
+                            {% if sort_value == '-favourite' or sort_value == None %}
+                            <option value="-favourite" selected>Favourited</option>
+                            {% else %}
+                            <option value="-favourite">Favourited</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+                    <span class="icon is-left">
+                        <i class="fas fa-filter"></i>
+                    </span>
+                </div>
+                <div class="control has-icons-left px-1">
+                    <input class="input" type="text" name="username" placeholder="Search" onkeyup="filterTeams(this)">
+                    <span class="icon is-left">
+                        <i class="fas fa-search"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% include 'calendars/calendar_element.html'%}
+{% endblock %}
