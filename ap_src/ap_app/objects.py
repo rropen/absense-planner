@@ -1,4 +1,3 @@
-from .forms import *
 from .models import UserProfile
 
 def find_user_obj(user_to_find):

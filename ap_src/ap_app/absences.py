@@ -5,14 +5,13 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.generic import UpdateView
+from django.http import HttpRequest
 
-from .teams import *
-from .objects import *
-from .teams import *
-
-from .forms import *
+from .forms import SwitchUser, RecurringAbsencesForm, TargetUserForm, AbsenceForm
 from .models import (Absence, RecurringAbsences,
-                     UserProfile, RecurringException)
+                     UserProfile, RecurringException, User)
+
+from collections import namedtuple
 
 def get_absence_data(users, user_type):
     data = {}

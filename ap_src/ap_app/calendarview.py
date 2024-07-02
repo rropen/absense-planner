@@ -4,15 +4,15 @@ from dateutil.relativedelta import relativedelta
 import pandas as pd
 import calendar
 import holidays
+import env
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from django.http import HttpRequest
 
-from .forms import *
-from .models import (UserProfile, ColorData, ColourScheme)
+from .models import (UserProfile, ColorData, ColourScheme, User, Absence)
 
-from .absences import *
-from .teams import *
+from .absences import get_absence_data
 from .utils.teams_utils import retrieve_calendar_data
 
 def check_calendar_date(year, month) -> bool:
