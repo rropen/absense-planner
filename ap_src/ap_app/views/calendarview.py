@@ -50,11 +50,11 @@ def color_variant(hex_color, brightness_offset=1):
     new_rgb_int = [min([255, max([0, i])]) for i in new_rgb_int] # make sure new values are between 0 and 255
     return "rgb" + str(new_rgb_int).replace("[", "(").replace("]", ")")
 
-def get_colour_data(request:HttpRequest):
+def get_colour_data(user):
     colour_data = {}
     for scheme in ColourScheme.objects.all():
         scheme_data = {}
-        data = ColorData.objects.filter(user=request.user, scheme=scheme)
+        data = ColorData.objects.filter(user=user, scheme=scheme)
         if data.exists():
             scheme_data["enabled"] = data[0].enabled
             scheme_data["colour"] = data[0].color
