@@ -79,4 +79,5 @@
     </div>
 </section>
 {% include 'calendars/calendar_element.html'%}
+<script src="{% static "js/api_calendar.js" %}" token="{{ csrf_token }}"></script>
 {% endblock %}

@@ -11,10 +11,6 @@
 
 <link rel="stylesheet" href="{% static 'css/calendar.css' %}">
 
-{% include 'ap_app/elements/confirmation_modal.html' with title='Absence Calendar Information' type='info' %}
-{% include 'ap_app/elements/confirmation_modal.html' with title='Remove Absence' type='remove' %}
-{% include 'ap_app/elements/confirmation_modal.html' with title='Half Day Absence' type='half' %}
-
 <section class="section" style="padding-left: 7.5vw!important; padding-right: 7.5vw!important;">
     <div class="columns">
         <div class="column">
@@ -129,7 +125,7 @@
         </table>
     </div>
 </section>
+{% include 'calendars/calendar_element.html'%}
 <script src="{% static "js/api_calendar.js" %}" token="{{ csrf_token }}"></script>
 <script src="{% static 'js/teams.js' %}" apiURL="{{ url }}"></script>
-{% include 'calendars/calendar_element.html'%}
 {% endblock %}
