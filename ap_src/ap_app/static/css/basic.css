@@ -1,3 +1,7 @@
+:root {
+  --user-cell-width: 120px;
+}
+
 .active {
     color: green;
     
