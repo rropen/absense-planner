@@ -163,7 +163,7 @@ class UserProfile(models.Model):
 
     region = models.CharField(max_length=200, default="GB")
 
-    external_teams = models.BooleanField(default=False)
+    external_teams = models.BooleanField(default=True)
 
 
 

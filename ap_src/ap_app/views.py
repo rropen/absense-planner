@@ -40,6 +40,8 @@ from .forms import *
 from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
                      UserProfile, ColourScheme, ColorData)
 
+from .utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
+
 User = get_user_model()
 
 
@@ -228,6 +230,7 @@ def profile_settings(request:HttpRequest) -> render:
     teams_status = userprofile.external_teams
     context = {"userprofile": userprofile, "data_privacy_mode": privacy_status, "external_teams": teams_status,
                "current_country": country_name, **country_data, "colours": colour_data}
+
     return render(request, "ap_app/settings.html", context)
 
 def update_colour(request:HttpRequest):
@@ -466,3 +469,18 @@ def click_remove(request):
         return JsonResponse({"start_date": data["date"]})
     else:
         return HttpResponse("404")
+
+@login_required
+def remove_lingering_perms(request):
+    """
+    Removes lingering switch permissions associated with the user who made the `request`.
+
+    Generally ran when a user leaves a team and we wish to remove any lingering permissions.
+    """
+    if request.method == "GET":
+        username = request.user.get_username()
+        result = check_for_lingering_switch_perms(username, remove_switch_permissions)
+        if result is not None:
+            return JsonResponse({'status': 'success'})
+    # Something failed in the logic for checking and removing switch permissions
+    return JsonResponse({'status': 'fail', 'message': 'Invalid request'})
