@@ -83,53 +83,6 @@ def team_calendar_data(id):
     
     return data
 
-#JC - Specific team calendar using the API
-@login_required
-def api_team_calendar(
-    request:HttpRequest,
-    id,
-    month=datetime.datetime.now().strftime("%B"),
-    year=datetime.datetime.now().year
-):
-    
-    date = check_calendar_date(year, month)
-    if not date:
-        return redirect("api_team_calendar")
-
-    try:
-        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
-    except IndexError:
-        # TODO Create an error page if a userprofile is not found.
-        raise NotImplementedError("Invalid User profile (No error page)")
-    
-    dates = get_date_data(userprofile.region, month, year)
-
-    team_data = team_calendar_data(id)[0]
-
-    #Get absence data
-    team_users = []
-    user_data = None
-    for user in team_data["members"]:
-        user_instance = User.objects.filter(username=user["user"]["username"])
-        if user_instance.exists() and user_instance not in team_users:
-            team_users.append(user_instance[0])
-
-        if user["user"]["username"] == request.user.username:
-            user_data = user["user"]
-
-    absence_data = get_absence_data(team_users, 2)
-    
-    data = {
-        **dates,
-        **absence_data,
-        "team": team_data,
-        "user_data": user_data,
-        "id": id,
-        "url": env("TEAM_DATA_URL")
-    }
-
-    return render(request, "calendars/specific_team_calendar.html", data)
-                    
 def get_date_data(
     region,
     month=datetime.datetime.now().strftime("%B"),
@@ -327,3 +280,51 @@ def main_calendar(
         "home_active": True
     }
     return render(request, "calendars/all_teams_calendar.html", context)
+
+#JC - Specific team calendar using the API
+@login_required
+def api_team_calendar(
+    request:HttpRequest,
+    id,
+    month=datetime.datetime.now().strftime("%B"),
+    year=datetime.datetime.now().year
+):
+    
+    date = check_calendar_date(year, month)
+    if not date:
+        return redirect("api_team_calendar")
+
+    try:
+        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
+    except IndexError:
+        # TODO Create an error page if a userprofile is not found.
+        raise NotImplementedError("Invalid User profile (No error page)")
+    
+    dates = get_date_data(userprofile.region, month, year)
+
+    team_data = team_calendar_data(id)[0]
+
+    #Get absence data
+    team_users = []
+    user_data = None
+    for user in team_data["members"]:
+        user_instance = User.objects.filter(username=user["user"]["username"])
+        if user_instance.exists() and user_instance not in team_users:
+            team_users.append(user_instance[0])
+
+        if user["user"]["username"] == request.user.username:
+            user_data = user["user"]
+
+    absence_data = get_absence_data(team_users, 2)
+    
+    data = {
+        **dates,
+        **absence_data,
+        "team": team_data,
+        "user_data": user_data,
+        "id": id,
+        "url": env("TEAM_DATA_URL")
+    }
+
+    return render(request, "calendars/specific_team_calendar.html", data)
+                    
