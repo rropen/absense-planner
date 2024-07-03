@@ -128,7 +128,7 @@ def api_team_calendar(
         "url": env("TEAM_DATA_URL")
     }
 
-    return render(request, "api_pages/team_calendar.html", data)
+    return render(request, "calendars/specific_team_calendar.html", data)
                     
 def get_date_data(
     region,
@@ -326,4 +326,4 @@ def main_calendar(
         "sort_value": sortValue,
         "home_active": True
     }
-    return render(request, "calendars/calendar.html", context)
+    return render(request, "calendars/all_teams_calendar.html", context)
