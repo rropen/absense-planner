@@ -10,6 +10,7 @@ function sendData(username, date, half_day, half_day_time, type, absence_type) {
         var link = window.location.origin + "/absence/click_remove"
     }
     console.log(link)
+
     fetch(link, {
         method: "post",
         headers: {

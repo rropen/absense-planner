@@ -8,6 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/bulma.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/basic.css' %}">
+    <link rel="stylesheet" href="{% static 'css/calendar.css' %}">
+    <script src="{%static 'js/api_calendar.js' %}"></script>
+    <script src="{%static 'js/button_spinner.js' %}"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <script
       src="https://code.jquery.com/jquery-3.6.0.min.js"
@@ -35,7 +38,7 @@
 </head>
 
 <body>
-  {% if PRODUCTION_UI == True %} 
+  {% if PRODUCTION_UI == True %}
   <section class="hero rr-primary">
       <div class="hero-body ">
         <p class="title rr-primary">          
@@ -55,7 +58,6 @@
         <span></span>
       </div>
     </div>
-  
     <div id="navbarExampleTransparentExample" class="navbar-menu rr-secondary" >
     <div class="navbar-start" style="margin-left: 48px">
 
@@ -98,7 +100,6 @@
         </span>
         <span>Home/Calendar</span>
       </a>
-
       {% if add_absence_active %}
       <a id="absence" class="navbar-item icon-text active" href="/absence/add">
       {% else %}
@@ -157,7 +158,6 @@
   </div>
 </div>
 </nav>
-
 <container>
   <div id="content" , name="content" , class="main">
       {% block content %}
