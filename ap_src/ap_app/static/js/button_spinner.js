@@ -1,31 +1,41 @@
-/*Logic for spinner for create team button -KJ*/
+/*Logic for spinner for create team button */
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById("nameInput").addEventListener("keyup", function() {
-        document.getElementById("id_description").addEventListener("keyup", function() {
-        var nameInput = document.getElementById('nameInput').value;
-        var descriptionInput = document.getElementById('id_description').value;
-        if (nameInput !="" && descriptionInput !="")  {
-            document.getElementById('submit').removeAttribute("disabled");
-            document.getElementById('label_button').removeAttribute("disabled");
+    var nameInput = document.getElementById('nameInput');
+    var descriptionInput = document.getElementById('id_description');
+    var submitButton = document.getElementById('submit');
+    var labelButton = document.getElementById('label_button');
+
+    function updateButtonState() {
+        const nameValue = nameInput.value.trim();
+        const descriptionValue = descriptionInput.value.trim();
+        const shouldEnable = nameValue !== "" && descriptionValue !== "";
+
+        if (shouldEnable) {
+            submitButton.removeAttribute("disabled");
+            labelButton.removeAttribute("disabled");
         } else {
-            document.getElementById('submit').setAttribute("disabled", null);
-            document.getElementById('label_button').setAttribute("disabled", null);
+            submitButton.setAttribute("disabled", true);
+            labelButton.setAttribute("disabled", true);
         }
-    const label_button = document.getElementById('label_button');
-    if(document.getElementById('label_button').getAttribute("disabled") ==true
-    && document.getElementById('submit').getAttribute("disabled")==true);
-	label_button.addEventListener('click', () => {
-		label_button.classList.add('is-loading');
-        label_button.setAttribute('disabled', true);
-	});
-})});
+    }
+
+    nameInput.addEventListener("keyup", updateButtonState);
+    descriptionInput.addEventListener("keyup", updateButtonState);
+
+    labelButton.addEventListener('click', () => {
+        if (!labelButton.hasAttribute("disabled")) {
+            labelButton.classList.add('is-loading');
+            labelButton.setAttribute('disabled', true);
+        }
+    });
 });
 
-/*Function will add spinner to buttons, inputs will not work -KJ */
+/*Function will add spinner to button element, input element will not work */
+/*Main use is buttons with no required entry field - Use above example otherwise */
 function add_spinner_to_button(button_class_name) {
     document.addEventListener('DOMContentLoaded', function() {
         var buttons = document.querySelectorAll(button_class_name);
-        /* Must loop through all occurrences of button is-success as querySelector only targets the first occurrence -KJ */
+        /* Must loop through all occurrences of button is-success as querySelector only targets the first occurrence */
         buttons.forEach(function(button) {
             button.addEventListener('click', function(e) {
                 button.classList.add("is-loading");
@@ -34,9 +44,10 @@ function add_spinner_to_button(button_class_name) {
     });
 }
 
-add_spinner_to_button('.button.is-success'); /*Join Team Button -KJ */
-add_spinner_to_button('.button.is-danger'); /*Leave Team Button -KJ */
-add_spinner_to_button('.button.is-info'); /*Edit Button -KJ */
-add_spinner_to_button('.button.is-fullwidth.is-info'); /*Update Button -KJ */
-add_spinner_to_button('.button.is-link'); /*View Team Button -KJ */
-add_spinner_to_button('.mr-4.button'); /*Refresh Calendar Button -KJ */
+/* Re-use these naming conventions for elements where they apply, for consistency */
+add_spinner_to_button('.join-team-button');
+add_spinner_to_button('.leave-team-button');
+add_spinner_to_button('.edit-team-button');
+add_spinner_to_button('.settings-submit-button');
+add_spinner_to_button('.view-team-button');
+add_spinner_to_button('.refresh-calendar-button');
