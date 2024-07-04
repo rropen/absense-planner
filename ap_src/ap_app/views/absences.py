@@ -180,7 +180,7 @@ def manual_add(request:HttpRequest) -> render:
             user=request.user,
             initial={
                 "start_date": datetime.now(),
-                "end_date": lambda: datetime.now().date() + timedelta(days=1)
+                "end_date": datetime.now().date() + timedelta(days=1)
             }
         )
         form.fields["user"].queryset = UserProfile.objects.filter(
