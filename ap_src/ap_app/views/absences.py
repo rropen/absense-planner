@@ -202,8 +202,8 @@ def manual_add(request:HttpRequest) -> render:
             for x in Absence.objects.filter(Target_User_ID=form.cleaned_data["user"].user.id):
                 r2 = Range(start=x.absence_date_start, end=x.absence_date_end)
                 delta = (min(r1.end, r2.end) -max(r1.start, r2.start)).days + 1
-                overlapp = max(0, delta)
-                if overlapp == 1:
+                overlap = max(0, delta)
+                if overlap == 1:
                     valid = False
                     break
             
