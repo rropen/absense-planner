@@ -41,7 +41,7 @@
                 {% if user_data.role_info.role == "Owner" or user_data.role_info.role == "Co-Owner" %}
                 <a class="button is-link is-outlined mx-1" title="Settings" href={% url 'edit_team' id %}><i class="fas fa-cog"></i></a>
                 {% endif %}
-                <button class="button is-danger mx-1" title="Leave" id="{{ id }}" onclick="LeaveTeamAndRemovePermissions(this, '{{ request.user.username }}', '{{ csrf_token }}')">Leave</button>
+                <button class="button is-danger is-outlined mx-1 leave-team-button" title="Leave" id="{{ id }}" onclick = "LeaveTeamAndRemovePermissions(this, '{{ request.user.username }}', '{{ csrf_token }}')">Leave</button>
             </div>
         </div>
     </div>
