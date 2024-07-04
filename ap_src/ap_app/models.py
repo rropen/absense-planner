@@ -4,7 +4,6 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from recurrence.fields import RecurrenceField
-from ckeditor.fields import RichTextField
 
 User = get_user_model()
 
@@ -86,32 +85,6 @@ class RecurringAbsences(models.Model):
         return f"Recurring Absence No.{self.ID} for {self.Target_User_ID} by {self.User_ID}"
 
 
-class Team(models.Model):
-    """This includes all the attributes of a Team"""
-
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=128, unique=True, null=False)
-    description = models.CharField(max_length=512)
-    notes = RichTextField()  # models.CharField(max_length=512, null=False, default="")
-
-    private = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    @property
-    def count(self):
-        return Relationship.objects.filter(
-            team=self, status=Status.objects.get(status="Active")
-        ).count()
-
-    @property
-    def users(self):
-        return Relationship.objects.filter(
-            team=self, status=Status.objects.get(status="Active")
-        )
-
-
 class Role(models.Model):
     """This includes all the attributes of a Role"""
 
@@ -120,31 +93,6 @@ class Role(models.Model):
 
     def __str__(self):
         return f"{self.role}"
-
-
-class Relationship(models.Model):
-    """This includes all the attributes of a Relationship"""
-
-    id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE)
-    role = models.ForeignKey(Role, on_delete=models.CASCADE)
-    status = models.ForeignKey(Status, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = (
-            "user",
-            "team",
-        )
-
-    def __str__(self):
-        return f"User: {self.user.username}({self.user.id}) --> {self.team.name}({self.team.id}) as {self.role} ({self.status})"
-
-    def custom_delete(self):
-        # to_delete = TransitionApproval.objects.filter(object_id=self.pk)
-        # for obj in to_delete:
-        #     obj.delete()
-        self.delete()
 
 
 class UserProfile(models.Model):

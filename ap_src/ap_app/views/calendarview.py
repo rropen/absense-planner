@@ -1,27 +1,22 @@
-#check_calendar_date
-#set_calendar_month
-#all_calendar
-#team_calendar
-#api_calendar_view
-#get_date_data
-#get_filter_users
-
 import datetime
 import requests
-import hashlib
-import environ
 from dateutil.relativedelta import relativedelta
+import pandas as pd
+import calendar
+import holidays
+import environ
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from django.http import HttpRequest
 
-from .forms import *
-from .models import ( Relationship, Role, Team,
-                     UserProfile, Status, ColorData, ColourScheme)
+from ..models import (UserProfile, ColorData, ColourScheme, User, Absence)
 
-from .absences import *
-from .teams import *
-from .utils.teams_utils import retrieve_calendar_data
+from ..utils.absence_utils import get_absence_data
+from ..utils.teams_utils import retrieve_calendar_data
+
+env = environ.Env()
+environ.Env.read_env()
 
 def check_calendar_date(year, month) -> bool:
     date = datetime.datetime(year, datetime.datetime.strptime(month, "%B").month, 1)
@@ -55,11 +50,11 @@ def color_variant(hex_color, brightness_offset=1):
     new_rgb_int = [min([255, max([0, i])]) for i in new_rgb_int] # make sure new values are between 0 and 255
     return "rgb" + str(new_rgb_int).replace("[", "(").replace("]", ")")
 
-def get_colour_data(request:HttpRequest):
+def get_colour_data(user):
     colour_data = {}
     for scheme in ColourScheme.objects.all():
         scheme_data = {}
-        data = ColorData.objects.filter(user=request.user, scheme=scheme)
+        data = ColorData.objects.filter(user=user, scheme=scheme)
         if data.exists():
             scheme_data["enabled"] = data[0].enabled
             scheme_data["colour"] = data[0].color
@@ -88,53 +83,6 @@ def team_calendar_data(id):
     
     return data
 
-#JC - Specific team calendar using the API
-@login_required
-def api_team_calendar(
-    request:HttpRequest,
-    id,
-    month=datetime.datetime.now().strftime("%B"),
-    year=datetime.datetime.now().year
-):
-    
-    date = check_calendar_date(year, month)
-    if not date:
-        return redirect("api_team_calendar")
-
-    try:
-        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
-    except IndexError:
-        # TODO Create an error page if a userprofile is not found.
-        raise NotImplementedError("Invalid User profile (No error page)")
-    
-    dates = get_date_data(userprofile.region, month, year)
-
-    team_data = team_calendar_data(id)[0]
-
-    #Get absence data
-    team_users = []
-    user_data = None
-    for user in team_data["members"]:
-        user_instance = User.objects.filter(username=user["user"]["username"])
-        if user_instance.exists() and user_instance not in team_users:
-            team_users.append(user_instance[0])
-
-        if user["user"]["username"] == request.user.username:
-            user_data = user["user"]
-
-    absence_data = get_absence_data(team_users, 2)
-    
-    data = {
-        **dates,
-        **absence_data,
-        "team": team_data,
-        "user_data": user_data,
-        "id": id,
-        "url": env("TEAM_DATA_URL")
-    }
-
-    return render(request, "api_pages/team_calendar.html", data)
-                    
 def get_date_data(
     region,
     month=datetime.datetime.now().strftime("%B"),
@@ -283,52 +231,106 @@ def retrieve_all_users(request:HttpRequest, data):
     
     return users
 
-#JC - Main calendar using API data.
 @login_required
 def main_calendar(
     request:HttpRequest,
     month = datetime.datetime.now().strftime("%B"),
     year = datetime.datetime.now().year
 ):
+    """
+    Main calendar using API data.
+    """
 
-    #JC - Retrieve users profile
-    try:
-        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
-    except:
-        # TODO Create an error page if the userprofile is not found.
-        raise NotImplementedError("Invalid Userprofile (No error page)")
-
-    #JC - Retrieve sort value of calendars.    
+    # Retrieve sort value of calendars.    
     sortValue = None
     if request.GET.get("sortBy") is not None:
         sortValue = request.GET.get("sortBy")
 
     user = request.user
-    #JC - Get names of teams and members in the team.
+    # Get names of teams and members in the team.
     teams_data = retrieve_calendar_data(user, sortValue)
-
-    #JC - If a month has been selected by the user check if its valid.
-    date = check_calendar_date(year, month)
-    if not date:
-        return redirect('main_calendar')
-
-    date_data = get_date_data(userprofile.region, month, year)
 
     users = retrieve_all_users(request, teams_data)
 
-    absence_data = get_absence_data(users, 2)
-
-    colour_data = get_colour_data(request)
-
-    weekends = {"Sa": "Sa", "Su": "Su"}
+    calendar_data = retrieve_common_calendar_data(user, year, month, users, page = "main_calendar")
 
     context = {
-        **date_data,
-        **absence_data,
-        **weekends,
-        **colour_data,
+        **calendar_data,
         "team_data": teams_data,
         "sort_value": sortValue,
         "home_active": True
     }
-    return render(request, "calendars/calendar.html", context)
+    return render(request, "calendars/all_teams_calendar.html", context)
+
+@login_required
+def api_team_calendar(
+    request:HttpRequest,
+    id,
+    month=datetime.datetime.now().strftime("%B"),
+    year=datetime.datetime.now().year
+):
+    """
+    Specific team calendar using the API
+    """
+
+    user = request.user
+
+    team_data = team_calendar_data(id)[0]
+
+    team_data = [{"team": team_data}]
+
+    # Get absence data
+    team_users = []
+    user_data = None
+    for user in team_data[0]["team"]["members"]:
+        user_instance = User.objects.filter(username=user["user"]["username"])
+        if user_instance.exists() and user_instance not in team_users:
+            team_users.append(user_instance[0])
+
+        if user["user"]["username"] == request.user.username:
+            user_data = user["user"]
+
+    calendar_data = retrieve_common_calendar_data(request.user, year, month, team_users, page = "api_team_calendar")
+    
+    data = {
+        **calendar_data,
+        "team_data": team_data,
+        "user_data": user_data,
+        "id": id,
+        "url": env("TEAM_DATA_URL")
+    }
+
+    return render(request, "calendars/specific_team_calendar.html", data)
+                    
+def retrieve_common_calendar_data(user, year, month, team_users, page):
+    """
+    Retrieves common calendar data for use with the reusable calendar_element.html
+    """
+
+    # Retrieve user's profile
+    try:
+        userprofile: UserProfile = UserProfile.objects.get(user=user)
+    except:
+        # TODO Create an error page if the userprofile is not found.
+        raise NotImplementedError("Invalid Userprofile (No error page)")
+
+    # If a month has been selected by the user check if its valid.
+    date = check_calendar_date(year, month)
+    if not date:
+        return redirect(page)
+
+    date_data = get_date_data(userprofile.region, month, year)
+    absence_data = get_absence_data(team_users, 2)
+
+    colour_data = get_colour_data(user)
+
+    weekends = {"Sa": "Sa", "Su": "Su"}
+
+    common_calendar_data = {
+        **date_data,
+        **absence_data,
+        **weekends,
+        **colour_data
+    }
+
+    return common_calendar_data

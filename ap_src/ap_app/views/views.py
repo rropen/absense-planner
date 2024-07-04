@@ -1,46 +1,25 @@
-#index
-#privacy_page
-#add
-#details_page
-#deleteuser
-#profile_settings
-#add_user
-#get_region_data
-#set_region
-#click_add
-#click_remove
-
-import calendar
 import datetime
 import json
 import holidays
 import pycountry
-import pandas as pd
-import requests
-import environ
-import hashlib
 from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from django.db.models.functions import Lower
 from django.http import HttpResponse, JsonResponse, HttpRequest
 from django.shortcuts import redirect, render
-from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, UpdateView
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
 
-from .teams import *
-from .objects import *
-from .teams import *
-from .calendarview import *
+from ..utils.objects import obj_exists, find_user_obj
+from .calendarview import main_calendar
 
-from .forms import *
-from .models import (Absence, RecurringAbsences, Relationship, Role, Team,
-                     UserProfile, ColourScheme, ColorData)
+from ..forms import AcceptPolicyForm, AbsenceForm, DeleteUserForm
+from ..models import Absence, UserProfile, ColourScheme, ColorData, RecurringException
 
-from .utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
+from ..utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
 
 User = get_user_model()
 
@@ -197,12 +176,12 @@ def profile_settings(request:HttpRequest) -> render:
         region_code = pycountry.countries.get(name=region).alpha_2
         if region_code != userprofile.region:
             userprofile.region = region_code
-        if request.POST.get("privacy") == None:
+        if request.POST.get("privacy") is None:
             userprofile.privacy = False
         elif request.POST.get("privacy") == "on":
             userprofile.privacy = True
 
-        if request.POST.get("teams") == None:
+        if request.POST.get("teams") is None:
             userprofile.external_teams = False
         elif request.POST.get("teams") == "on":
             userprofile.external_teams = True
@@ -316,8 +295,6 @@ def set_region(request):
 
     return redirect("/profile/settings")
 
-#JC - Calendar view using the API
-
 #Add an absence when clicking on the calendar
 @login_required
 def click_add(request):
@@ -330,7 +307,7 @@ def click_add(request):
         if request.user in perm_list:
             date = datetime.datetime.strptime(json_data["date"], "%Y-%m-%d").date()
             #This will add a half
-            if json_data["half_day"] == True:
+            if json_data["half_day"]:
                 absence = Absence()
                 absence.absence_date_start = json_data['date']
                 absence.absence_date_end = json_data['date']

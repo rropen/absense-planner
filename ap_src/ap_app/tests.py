@@ -1,6 +1,5 @@
 import names
 import pytest
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import LiveServerTestCase
 from parameterized import parameterized
 from seleniumbase import BaseCase

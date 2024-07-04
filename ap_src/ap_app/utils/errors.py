@@ -1,3 +1,5 @@
+from django.shortcuts import render
+
 def handler404(request, exception):
     context = {}
     response = render(request, "404.html", context=context)
@@ -15,8 +17,6 @@ def handler400(request, exception):
     response = render(request, "400.html", context=context)
     response.status_code = 400
     return response
-
-from django.shortcuts import render
 
 def my_view(request):
     return render(request, "base.html")
