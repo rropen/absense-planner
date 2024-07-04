@@ -295,8 +295,6 @@ def set_region(request):
 
     return redirect("/profile/settings")
 
-#JC - Calendar view using the API
-
 #Add an absence when clicking on the calendar
 @login_required
 def click_add(request):

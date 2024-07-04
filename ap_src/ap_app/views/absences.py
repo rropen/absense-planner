@@ -170,9 +170,10 @@ def add_recurring(request) -> render:
     content = {"form": form, "form2": form2}
     return render(request, "ap_app/add_recurring_absence.html", content)
 
-#JC - Add an absence via the form
 def manual_add(request:HttpRequest) -> render:
-    #JC - POST request
+    """
+    Add an absence via the form
+    """
     if request.method == "POST":
         form = AbsenceForm(
             request.POST, 
@@ -186,7 +187,7 @@ def manual_add(request:HttpRequest) -> render:
             edit_whitelist__in=[request.user]
         )
 
-        #JC - Create absence
+        # Create absence
         if form.is_valid():
             absence = Absence()
             absence.absence_date_start = form.cleaned_data["start_date"]
@@ -194,7 +195,7 @@ def manual_add(request:HttpRequest) -> render:
             absence.User_ID = request.user
             absence.Target_User_ID = form.cleaned_data["user"].user
 
-            #JC - Check if the dates overlap with an existing absence. 
+            # Check if the dates overlap with an existing absence. 
             valid = True
             Range = namedtuple('Range', ['start', 'end'])
             r1 = Range(start=absence.absence_date_start, end=absence.absence_date_end)
@@ -215,10 +216,9 @@ def manual_add(request:HttpRequest) -> render:
                     "message_type": "is-danger"
                 })
 
-    #JC - GET request
-    else:
+    else: # GET request
         form = AbsenceForm(user=request.user)
-        #JC - Allow users to edit others absence if they have permission
+        # Allow users to edit others absence if they have permission
         form.fields["user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
         )
