@@ -205,6 +205,7 @@ def manual_add(request:HttpRequest) -> render:
                 overlapp = max(0, delta)
                 if overlapp == 1:
                     valid = False
+                    break
             
             if valid:
                 absence.save()
