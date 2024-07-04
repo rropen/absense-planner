@@ -7,7 +7,6 @@
 <container>
 <div class="main">
     {% if user.is_authenticated %}
-
         <p>Logged in as <span class="tag is-info">{{user.username}}</span></p>
         <a href="{% url 'logout' %}" id="LINK-logout">Log Out</a>
     {% else %}
