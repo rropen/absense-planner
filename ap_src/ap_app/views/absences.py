@@ -203,7 +203,7 @@ def manual_add(request:HttpRequest) -> render:
                 r2 = Range(start=x.absence_date_start, end=x.absence_date_end)
                 delta = (min(r1.end, r2.end) -max(r1.start, r2.start)).days + 1
                 overlap = max(0, delta)
-                if overlap == 1:
+                if overlap > 0:
                     valid = False
                     break
             
