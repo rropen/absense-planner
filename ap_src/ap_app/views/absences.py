@@ -189,6 +189,7 @@ def manual_add(request:HttpRequest) -> render:
 
         # Create absence
         if form.is_valid():
+            NO_ABSENCES = 0
             absence = Absence()
             absence.absence_date_start = form.cleaned_data["start_date"]
             absence.absence_date_end = form.cleaned_data["end_date"]
@@ -196,14 +197,19 @@ def manual_add(request:HttpRequest) -> render:
             absence.Target_User_ID = form.cleaned_data["user"].user
 
             # Check if the dates overlap with an existing absence. 
-            valid = True
-            Range = namedtuple('Range', ['start', 'end'])
-            r1 = Range(start=absence.absence_date_start, end=absence.absence_date_end)
-            for x in Absence.objects.filter(Target_User_ID=form.cleaned_data["user"].user.id):
-                r2 = Range(start=x.absence_date_start, end=x.absence_date_end)
-                delta = (min(r1.end, r2.end) -max(r1.start, r2.start)).days + 1
-                overlap = max(0, delta)
-                if overlap > 0:
+            valid = True # Assume absence is valid
+            DateRange = namedtuple('Range', ['start', 'end'])
+            absence_period = DateRange(start=absence.absence_date_start, end=absence.absence_date_end)
+            existing_absences = Absence.objects.filter(Target_User_ID=form.cleaned_data["user"].user.id)
+            for existing_absence in existing_absences:
+                existing_absence_period = DateRange(start=existing_absence.absence_date_start, end=existing_absence.absence_date_end)
+
+                # Calculate overlap between new absence and existing absence
+                delta = (min(absence_period.end, existing_absence_period.end) -max(absence_period.start, existing_absence_period.start)).days + 1
+
+                overlap = max(0, delta) # Ensure overlap is not negative
+
+                if overlap > NO_ABSENCES:
                     valid = False
                     break
             
