@@ -83,8 +83,16 @@
     width: 6vw; 
     min-width: var(--user-cell-width); 
     max-width: var(--user-cell-width); 
-    background-color: #0e00d6; 
-    color: white; 
     overflow-x: hidden;
     text-overflow: ellipsis;
+}
+
+.unselected-user-cell {
+    background-color: white; 
+    color: black; 
+}
+
+.selected-user-cell {
+    background-color: #0e00d6; 
+    color: white; 
 }
