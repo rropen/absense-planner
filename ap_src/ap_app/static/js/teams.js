@@ -1,5 +1,71 @@
 var apiURL = document.currentScript.getAttribute("apiURL");
 
+function openLeaveTeamModal(teamId, csrfToken, username) {
+    const modal = document.getElementById('leaveTeamModal');
+    const confirmButton = document.getElementById('confirmLeaveButton');
+    const cancelButton = document.getElementById('cancelLeaveButton');
+    const modalCloseButton = document.querySelector('#leaveTeamModal .modal-close');
+
+    modal.classList.add('is-active');
+
+    confirmButton.addEventListener('click', () => {
+        LeaveTeamAndRemovePermissions(teamId, username, csrfToken);
+        modal.classList.remove('is-active');
+    });
+
+    cancelButton.addEventListener('click', () => {
+        modal.classList.remove('is-active');
+    });
+
+    modalCloseButton.addEventListener('click', () => {
+        modal.classList.remove('is-active');
+    });
+}
+
+async function LeaveTeamAndRemovePermissions(teamId, username, token) {
+    const headers = {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+    };
+
+    var data = JSON.stringify({ username: username, team: teamId });
+
+    try {
+        const leaveResponse = await fetch(apiURL + "api/manage/?method=leave", {
+            method: "post",
+            body: data,
+            headers: headers,
+        });
+
+        if (!leaveResponse.ok) {
+            throw new Error(`Leave request failed with status ${leaveResponse.status}`);
+        }
+
+        const leaveData = await leaveResponse.json();
+
+        if (leaveData.message === "success") {
+            const permissionsResponse = await fetch(
+                window.location.origin + "/remove_lingering_perms",
+                {
+                    method: "get",
+                    headers: headers,
+                },
+            );
+
+            if (!permissionsResponse.ok) {
+                throw new Error(
+                    `Permissions check request failed with status ${permissionsResponse.status}`,
+                );
+            }
+
+            const permissionsData = await permissionsResponse.json();
+            location.replace(location.origin + "/teams")
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 function JoinTeam(e, user, redirect) {
     var data = JSON.stringify({"username": user, "team": e.id})
     fetch(apiURL + 'api/manage/?method=join', {
@@ -25,7 +91,6 @@ function starHover(e) {
     if (e.dataset.star == 'false'){
         e.innerHTML="<i class='fas fa-star'></i>"
         e.dataset.star = 'true'
-
     }
 }
 
@@ -52,47 +117,6 @@ function favouriteTeam(e, user, id) {
         console.log(err)
     })
 }
-
-/*
-Leaves team but also checks for lingering permissions and removes them
-*/
-async function LeaveTeamAndRemovePermissions(e, username, token) {
-    const headers = {
-      "Content-Type": "application/json",
-      "X-CSRFToken": token,
-    };
-  
-    var data = JSON.stringify({ username: username, team: e.id });
-  
-    const leaveResponse = await fetch(apiURL + "api/manage/?method=leave", {
-      method: "post",
-      body: data,
-      headers: headers,
-    });
-  
-    if (!leaveResponse.ok)
-      throw new Error(`Leave request failed with status ${leaveResponse.status}`);
-  
-    const leaveData = await leaveResponse.json();
-  
-    if (leaveData.message === "success") {
-      const permissionsResponse = await fetch(
-        window.location.origin + "/remove_lingering_perms",
-        {
-          method: "get",
-          headers: headers,
-        },
-      );
-  
-      if (!permissionsResponse.ok)
-        throw new Error(
-          `Permissions check request failed with status ${permissionsResponse.status}`,
-        );
-  
-      const permissionsData = await permissionsResponse.json();
-      location.replace(location.origin + "/teams")
-    }
-  }
 
 function DeleteTeam(e) {
     var data = JSON.stringify({"id": e.id})
