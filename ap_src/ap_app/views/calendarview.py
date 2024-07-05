@@ -231,21 +231,23 @@ def retrieve_all_users(request:HttpRequest, data):
     
     return users
 
-#JC - Main calendar using API data.
 @login_required
 def main_calendar(
     request:HttpRequest,
     month = datetime.datetime.now().strftime("%B"),
     year = datetime.datetime.now().year
 ):
+    """
+    Main calendar using API data.
+    """
 
-    #JC - Retrieve sort value of calendars.    
+    # Retrieve sort value of calendars.    
     sortValue = None
     if request.GET.get("sortBy") is not None:
         sortValue = request.GET.get("sortBy")
 
     user = request.user
-    #JC - Get names of teams and members in the team.
+    # Get names of teams and members in the team.
     teams_data = retrieve_calendar_data(user, sortValue)
 
     users = retrieve_all_users(request, teams_data)
@@ -260,7 +262,6 @@ def main_calendar(
     }
     return render(request, "calendars/all_teams_calendar.html", context)
 
-#JC - Specific team calendar using the API
 @login_required
 def api_team_calendar(
     request:HttpRequest,
@@ -268,7 +269,9 @@ def api_team_calendar(
     month=datetime.datetime.now().strftime("%B"),
     year=datetime.datetime.now().year
 ):
-    
+    """
+    Specific team calendar using the API
+    """
 
     user = request.user
 
@@ -276,7 +279,7 @@ def api_team_calendar(
 
     team_data = [{"team": team_data}]
 
-    #Get absence data
+    # Get absence data
     team_users = []
     user_data = None
     for user in team_data[0]["team"]["members"]:
@@ -300,14 +303,18 @@ def api_team_calendar(
     return render(request, "calendars/specific_team_calendar.html", data)
                     
 def retrieve_common_calendar_data(user, year, month, team_users, page):
-    #JC - Retrieve users profile
+    """
+    Retrieves common calendar data for use with the reusable calendar_element.html
+    """
+
+    # Retrieve user's profile
     try:
         userprofile: UserProfile = UserProfile.objects.get(user=user)
     except:
         # TODO Create an error page if the userprofile is not found.
         raise NotImplementedError("Invalid Userprofile (No error page)")
 
-    #JC - If a month has been selected by the user check if its valid.
+    # If a month has been selected by the user check if its valid.
     date = check_calendar_date(year, month)
     if not date:
         return redirect(page)

@@ -57,7 +57,7 @@
         <span class="is-block is-size-6">{{team.description}}</span>
         <div class="is-block mt-3">
             <span class="is-block is-size-6">You are already a member of this team.</span>
-            <a class="button is-success" href="{% url 'Calendar' team.id %}">View Team</a>
+            <a class="button is-success" href="/teams/calendar/{{team.id}}/{{current_month}}/{{year}}" >View Team</a>
         </div>
     </div>
     {% endfor %}

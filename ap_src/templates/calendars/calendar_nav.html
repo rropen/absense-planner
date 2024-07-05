@@ -2,9 +2,9 @@
 <div class="tooltip">
     <span class="tooltiptext">Refresh Calendar</span>
     {% if name == 'api_team_calendar' %}
-    <a href="{% url name id=id month=current_month year=current_year %}" class="mr-4 button">
+    <a href="{% url name id=id month=current_month year=current_year %}" class="mr-4 button refresh-calendar-button">
     {% else %}
-    <a href="{% url name month=current_month year=current_year %}" class="mr-4 button">
+    <a href="{% url name month=current_month year=current_year %}" class="mr-4 button refresh-calendar-button">
     {% endif %}
         <span class="icon ">
             <i class="fas fa-sync"></i>
