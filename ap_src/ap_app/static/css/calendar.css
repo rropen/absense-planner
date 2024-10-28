@@ -30,7 +30,6 @@
 
 .tooltip .tooltiptext {
     visibility: hidden;
-    width: fit-content;
     top: 100%;
     left: 50%;
     margin-left: -60px;
@@ -41,6 +40,10 @@
     padding: 5px 0;
     position: absolute;
     z-index: 5;
+}
+
+.tooltiptext {
+    white-space: nowrap;
 }
   
 .tooltip:hover .tooltiptext {
