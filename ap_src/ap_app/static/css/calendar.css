@@ -30,7 +30,7 @@
 
 .tooltip .tooltiptext {
     visibility: hidden;
-    width: 120px;
+    width: fit-content;
     top: 100%;
     left: 50%;
     margin-left: -60px;
@@ -83,6 +83,9 @@
     width: 6vw; 
     min-width: var(--user-cell-width); 
     max-width: var(--user-cell-width); 
+}
+
+.username {
     overflow-x: hidden;
     text-overflow: ellipsis;
 }
