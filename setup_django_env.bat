@@ -83,8 +83,8 @@ if EXIST ap_src/manage.py (
         ECHO Super User already created
     )
 
-    ECHO Collecting static files
-    "venv\Scripts\python" ap_src/manage.py collectstatic --noinput
+    @REM ECHO Collecting static files
+    @REM "venv\Scripts\python" ap_src/manage.py collectstatic --noinput
 
     ECHO Done
     ECHO Don't forget to activate virtual environment before running manage.py
