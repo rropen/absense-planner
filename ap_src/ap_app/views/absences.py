@@ -167,7 +167,7 @@ def add_recurring(request) -> render:
             edit_whitelist__in=[request.user]
         )
 
-    content = {"form": form, "form2": form2}
+    content = {"form": form, "form2": form2, "recurring_absence_active":True}
     return render(request, "ap_app/add_recurring_absence.html", content)
 
 def manual_add(request:HttpRequest) -> render:
@@ -230,5 +230,5 @@ def manual_add(request:HttpRequest) -> render:
             edit_whitelist__in=[request.user]
         )
     
-    content = {"form": form}
+    content = {"form": form, "add_absence_active":True}
     return render(request, "ap_app/add_absence.html", content)

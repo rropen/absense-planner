@@ -67,7 +67,8 @@ def create_team(request:HttpRequest) -> render:
         {
             "form": form,
             "api_enabled": userprofile.external_teams,
-            "api_url": env("TEAM_DATA_URL") + "api/teams/?format=json"
+            "api_url": env("TEAM_DATA_URL") + "api/teams/?format=json",
+            "teams_create_active":True
         },
     )
 
@@ -95,7 +96,10 @@ def join_team(request) -> render:
     return render(
         request,
         "teams/join_team.html",
-        {"api_enabled": api_enabled, "team_data": data, "url": env("TEAM_DATA_URL")},
+        {
+            "api_enabled": api_enabled, "team_data": data, "url": env("TEAM_DATA_URL"),
+            "teams_join_active":True,
+        },
     )
 
 

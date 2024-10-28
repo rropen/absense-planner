@@ -99,7 +99,7 @@
         </span>
         <span>Home/Calendar</span>
       </a>
-      {% if add_absence_active %}
+      {% if add_absence_active or recurring_absence_active %}
       <a id="absence" class="navbar-item icon-text active" href="/absence/add">
       {% else %}
       <a id="absence" class="navbar-item icon-text" href="/absence/add">
@@ -111,7 +111,7 @@
         <span>Add Absence</span>
       </a>
       
-      {% if teamspage_active %}
+      {% if teamspage_active or teams_create_active or teams_join_active %}
       <a id="teams" class="navbar-item icon-text active" href="/teams">
       {% else %}
       <a id="teams" class="navbar-item icon-text" href="/teams">
