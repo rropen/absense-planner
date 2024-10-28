@@ -55,12 +55,23 @@
                     {% check_permissions member request.user as editable %}
                     <tr id="{{ member.user.username }}">
                         {% if member.user.username == user.username %}
-                        <td class="user-cell selected-user-cell">{{user.username}}</td>
+                        <td class="tooltip user-cell">
+                            <span class="tooltiptext">Jump To Month</span>
+                            <div class="selected-user-cell username">
+                                {{user.username}}
+                            </div>
+                        </td>
                         {% else %}
                             {% if editable %}
-                            <td class="user-cell unselected-user-cell">{{member.user.username}}*</td>
+                            <td class="user-cell unselected-user-cell">
+                                <span class="tooltiptext">Jump To Month</span>
+                                {{member.user.username}}*
+                            </td>
                             {% else %}
-                            <td class="user-cell unselected-user-cell">{{member.user.username}}</td>
+                            <td class="user-cell unselected-user-cell">
+                                <span class="tooltiptext">Jump To Month</span>
+                                {{member.user.username}}
+                            </td>
                             {% endif %}
                         {% endif %}
 
