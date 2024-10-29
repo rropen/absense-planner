@@ -56,76 +56,15 @@
                     <tr id="{{ member.user.username }}">
                         {% if member.user.username == user.username %}
                         <td class="user-cell selected-user-cell tooltip">
-                            <div class="username">
-                                <span class="tooltiptext">
-                                    {% if user.first_name == "" and user.last_name == "" %}
-                                        Name: N/A<br>
-                                    {% else %}
-                                        Name: {{user.first_name}} {{user.last_name}}<br>
-                                    {% endif %}
-                                    Username: {{user.username}}<br>
-                                    {% if user.first_name == "" and user.last_name == "" %}
-                                        Email: N/A
-                                    {% else %}
-                                        Email: {{user.email}}
-                                    {% endif %}
-                                </span>
-                                {% if user.first_name != "" and user.last_name != "" %}
-                                    {{user.first_name}} {{user.last_name}}
-                                {% else %}
-                                    {{user.username}}
-                                {% endif %}
-                            </div>
-                        </td>
+                            {% include 'calendars/user_info_tooltip.html' %}
                         {% else %}
-                            {% if editable %}
                             <td class="user-cell unselected-user-cell tooltip">
-                                <div class="username">
-                                    <span class="tooltiptext">
-                                        {% if member.user.first_name == "" and member.user.last_name == "" %}
-                                            Name: N/A<br>
-                                        {% else %}
-                                            Name: {{user.first_name}} {{user.last_name}}<br>
-                                        {% endif %}
-                                        Username: {{member.user.username}}<br>
-                                        {% if member.user.first_name == "" and member.user.last_name == "" %}
-                                            Email: N/A
-                                        {% else %}
-                                            Email: {{member.user.email}}
-                                        {% endif %}
-                                    </span>
-                                    {% if member.user.first_name != "" and member.user.last_name != "" %}
-                                        {{member.user.first_name}} {{member.user.last_name}}*
-                                    {% else %}
-                                        {{member.user.username}}*
-                                    {% endif %}
-                                </div>
+                                {% with user=member.user %}
+                                    {% include 'calendars/user_info_tooltip.html' %}
+                                {% endwith %}
                             </td>
-                            {% else %}
-                            <td class="user-cell unselected-user-cell tooltip">
-                                <div class="username">
-                                    <span class="tooltiptext">
-                                        {% if member.user.first_name == "" and member.user.last_name == "" %}
-                                            Name: N/A<br>
-                                        {% else %}
-                                            Name: {{user.first_name}} {{user.last_name}}<br>
-                                        {% endif %}
-                                        Username: {{member.user.username}}<br>
-                                        {% if member.user.first_name == "" and member.user.last_name == "" %}
-                                            Email: N/A
-                                        {% else %}
-                                            Email: {{member.user.email}}
-                                        {% endif %}
-                                    </span>
-                                    {% if member.user.first_name != "" and member.user.last_name != "" %}
-                                        {{member.user.first_name}} {{member.user.last_name}}
-                                    {% else %}
-                                        {{member.user.username}}
-                                    {% endif %}
-                                </div>
-                            </td>
-                            {% endif %}
                         {% endif %}
+                        </td>
 
                         {% for day in day_range %}
 
