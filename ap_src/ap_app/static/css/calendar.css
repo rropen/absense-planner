@@ -30,7 +30,6 @@
 
 .tooltip .tooltiptext {
     visibility: hidden;
-    width: 120px;
     top: 100%;
     left: 50%;
     margin-left: -60px;
@@ -38,9 +37,13 @@
     color: #fff;
     text-align: center;
     border-radius: 6px;
-    padding: 5px 0;
+    padding: 5px 5px;
     position: absolute;
     z-index: 5;
+}
+
+.tooltiptext {
+    white-space: nowrap;
 }
   
 .tooltip:hover .tooltiptext {
@@ -83,6 +86,9 @@
     width: 6vw; 
     min-width: var(--user-cell-width); 
     max-width: var(--user-cell-width); 
+}
+
+.username {
     overflow-x: hidden;
     text-overflow: ellipsis;
 }
