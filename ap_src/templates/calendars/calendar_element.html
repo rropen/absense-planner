@@ -58,11 +58,23 @@
                         <td class="user-cell selected-user-cell tooltip">
                             <div class="username">
                                 <span class="tooltiptext">
-                                    {{user.first_name}} {{user.last_name}}<br>
+                                    {% if user.first_name == "" and user.last_name == "" %}
+                                        Name: N/A<br>
+                                    {% else %}
+                                        Name: {{user.first_name}} {{user.last_name}}<br>
+                                    {% endif %}
                                     Username: {{user.username}}<br>
-                                    Email: {{user.email}}
+                                    {% if user.first_name == "" and user.last_name == "" %}
+                                        Email: N/A
+                                    {% else %}
+                                        Email: {{user.email}}
+                                    {% endif %}
                                 </span>
-                                {{user.first_name}} {{user.last_name}}
+                                {% if user.first_name != "" and user.last_name != "" %}
+                                    {{user.first_name}} {{user.last_name}}
+                                {% else %}
+                                    {{user.username}}
+                                {% endif %}
                             </div>
                         </td>
                         {% else %}
@@ -70,22 +82,46 @@
                             <td class="user-cell unselected-user-cell tooltip">
                                 <div class="username">
                                     <span class="tooltiptext">
-                                        {{member.user.first_name}} {{member.user.last_name}}*<br>
+                                        {% if member.user.first_name == "" and member.user.last_name == "" %}
+                                            Name: N/A<br>
+                                        {% else %}
+                                            Name: {{user.first_name}} {{user.last_name}}<br>
+                                        {% endif %}
                                         Username: {{member.user.username}}<br>
-                                        Email: {{member.user.email}}
+                                        {% if member.user.first_name == "" and member.user.last_name == "" %}
+                                            Email: N/A
+                                        {% else %}
+                                            Email: {{member.user.email}}
+                                        {% endif %}
                                     </span>
-                                    {{member.user.first_name}} {{member.user.last_name}}*
+                                    {% if member.user.first_name != "" and member.user.last_name != "" %}
+                                        {{member.user.first_name}} {{member.user.last_name}}*
+                                    {% else %}
+                                        {{member.user.username}}*
+                                    {% endif %}
                                 </div>
                             </td>
                             {% else %}
                             <td class="user-cell unselected-user-cell tooltip">
                                 <div class="username">
                                     <span class="tooltiptext">
-                                        {{member.user.first_name}} {{member.user.last_name}}<br>
+                                        {% if member.user.first_name == "" and member.user.last_name == "" %}
+                                            Name: N/A<br>
+                                        {% else %}
+                                            Name: {{user.first_name}} {{user.last_name}}<br>
+                                        {% endif %}
                                         Username: {{member.user.username}}<br>
-                                        Email: {{member.user.email}}
+                                        {% if member.user.first_name == "" and member.user.last_name == "" %}
+                                            Email: N/A
+                                        {% else %}
+                                            Email: {{member.user.email}}
+                                        {% endif %}
                                     </span>
-                                    {{member.user.first_name}} {{member.user.last_name}}
+                                    {% if member.user.first_name != "" and member.user.last_name != "" %}
+                                        {{member.user.first_name}} {{member.user.last_name}}
+                                    {% else %}
+                                        {{member.user.username}}
+                                    {% endif %}
                                 </div>
                             </td>
                             {% endif %}
