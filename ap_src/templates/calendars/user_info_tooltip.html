@@ -1,15 +1,11 @@
 <div class="username">
     <span class="tooltiptext">
-        {% if user.first_name == "" and user.last_name == "" %}
-            Name: N/A<br>
-        {% else %}
-            Name: {{user.first_name}} {{user.last_name}}<br>
+        {% if user.first_name and user.last_name %}
+            {{user.first_name}} {{user.last_name}}<br>
         {% endif %}
-        Username: {{user.username}}<br>
+        {{user.username}}
         {% if user.email %}
-            Email: N/A
-        {% else %}
-            Email: {{user.email}}
+            <br>{{user.email}}
         {% endif %}
     </span>
     {% if editable %}
