@@ -24,7 +24,7 @@
                 {% elif forloop.counter in bank_hol and bank_holidays.enabled %}
                 <th style="background-color: {{ bank_holidays.offset }}; color: white;" class="CalendarCell">{{day}}</th>
                 {% else %}
-                <th style="background-color: rgb(255, 255, 255); color: black;" class="CalendarCell">{{day}}</th>
+                <th align="center" style="background-color: rgb(255, 255, 255); color: black;" class="CalendarCell">{{day}}</th>
                 {% endif %}
                 {% endfor %}
             </thead>
@@ -40,7 +40,7 @@
                 {% elif day in weekend_list and not weekends.enabled %}
                 <th style="display:none"> </th>
                 {% else %}
-                <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);" class="CalendarCell">{{day}}</th>
+                <th align="center" style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);" class="CalendarCell">{{day}}</th>
                 {% endif %}
                 {% endfor %}
             </thead>
