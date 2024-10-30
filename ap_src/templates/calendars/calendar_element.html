@@ -55,14 +55,16 @@
                     {% check_permissions member request.user as editable %}
                     <tr id="{{ member.user.username }}">
                         {% if member.user.username == user.username %}
-                        <td class="user-cell selected-user-cell">{{user.username}}</td>
+                        <td class="user-cell selected-user-cell tooltip">
+                            {% include 'calendars/user_info_tooltip.html' %}
                         {% else %}
-                            {% if editable %}
-                            <td class="user-cell unselected-user-cell">{{member.user.username}}*</td>
-                            {% else %}
-                            <td class="user-cell unselected-user-cell">{{member.user.username}}</td>
-                            {% endif %}
+                            <td class="user-cell unselected-user-cell tooltip">
+                                {% with user=member.user %}
+                                    {% include 'calendars/user_info_tooltip.html' %}
+                                {% endwith %}
+                            </td>
                         {% endif %}
+                        </td>
 
                         {% for day in day_range %}
 

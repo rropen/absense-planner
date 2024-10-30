@@ -1,0 +1,19 @@
+<div class="username">
+    <span class="tooltiptext">
+        {% if user.first_name and user.last_name %}
+            {{user.first_name}} {{user.last_name}}<br>
+        {% endif %}
+        {{user.username}}
+        {% if user.email %}
+            <br>{{user.email}}
+        {% endif %}
+    </span>
+    {% if editable %}
+    *
+    {% endif %}
+    {% if user.first_name and user.last_name %}
+        {{user.first_name}} {{user.last_name}}
+    {% else %}
+        {{user.username}}
+    {% endif %}
+</div>

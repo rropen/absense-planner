@@ -1,3 +1,7 @@
+:root {
+    --cell-size: 47px;
+}
+
 .RefreshBox {
     pointer-events: none;
     text-align: right;
@@ -14,8 +18,10 @@
 }
 
 .CalendarCell {
-    min-width: 47px;
-    max-width: 47px;
+    min-width: var(--cell-size);
+    max-width: var(--cell-size);
+    height: var(--cell-size);
+    max-height: var(--cell-size);
 }
 
 .nav-bar-padding {
@@ -30,7 +36,6 @@
 
 .tooltip .tooltiptext {
     visibility: hidden;
-    width: 120px;
     top: 100%;
     left: 50%;
     margin-left: -60px;
@@ -38,9 +43,13 @@
     color: #fff;
     text-align: center;
     border-radius: 6px;
-    padding: 5px 0;
+    padding: 5px 5px;
     position: absolute;
     z-index: 5;
+}
+
+.tooltiptext {
+    white-space: nowrap;
 }
   
 .tooltip:hover .tooltiptext {
@@ -82,7 +91,12 @@
 .user-cell {
     width: 6vw; 
     min-width: var(--user-cell-width); 
-    max-width: var(--user-cell-width); 
+    max-width: var(--user-cell-width);
+    height: var(--cell-size);
+    white-space: nowrap;
+}
+
+.username {
     overflow-x: hidden;
     text-overflow: ellipsis;
 }
