@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{% static 'css/bulma.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/basic.css' %}">
     <link rel="stylesheet" href="{% static 'css/calendar.css' %}">
-    <script src="{%static 'js/button_spinner.js' %}"></script>
+    <script src="{% static 'js/button_spinner.js' %}"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <script
       src="https://code.jquery.com/jquery-3.6.0.min.js"
@@ -87,19 +87,20 @@
 
 
 {% if user.is_authenticated %}
-  
-      {% if home_active %}
+
+      {% if subdirectory_name == "" %}
       <a id="home" class="navbar-item icon-text active" href="/">
       {% else %}
       <a id="home" class="navbar-item icon-text" href="/">
       {% endif %}
-          
+
         <span class="icon is-size-5">
           <i class="fas fa-home"></i>
         </span>
         <span>Home/Calendar</span>
       </a>
-      {% if add_absence_active %}
+      
+      {% if subdirectory_name == "absence" %}
       <a id="absence" class="navbar-item icon-text active" href="/absence/add">
       {% else %}
       <a id="absence" class="navbar-item icon-text" href="/absence/add">
@@ -111,12 +112,11 @@
         <span>Add Absence</span>
       </a>
       
-      {% if teamspage_active %}
+      {% if subdirectory_name == "teams" %}
       <a id="teams" class="navbar-item icon-text active" href="/teams">
       {% else %}
       <a id="teams" class="navbar-item icon-text" href="/teams">
       {% endif %} 
-
         <span class="icon is-size-5">
           <i class="fas fa-users"></i>
         </span>
