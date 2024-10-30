@@ -17,4 +17,4 @@ def team_api_data(request):
 
 def url_splitter(request):
     url_parts = request.path.split("/")
-    return {"url_part_1": url_parts[1]}
+    return {"subdirectory_name": url_parts[1]}

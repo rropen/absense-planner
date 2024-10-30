@@ -88,7 +88,7 @@
 
 {% if user.is_authenticated %}
 
-      {% if url_part_1 == "" %}
+      {% if subdirectory_name == "" %}
       <a id="home" class="navbar-item icon-text active" href="/">
       {% else %}
       <a id="home" class="navbar-item icon-text" href="/">
@@ -100,7 +100,7 @@
         <span>Home/Calendar</span>
       </a>
       
-      {% if url_part_1 == "absence" %}
+      {% if subdirectory_name == "absence" %}
       <a id="absence" class="navbar-item icon-text active" href="/absence/add">
       {% else %}
       <a id="absence" class="navbar-item icon-text" href="/absence/add">
@@ -112,7 +112,7 @@
         <span>Add Absence</span>
       </a>
       
-      {% if url_part_1 == "teams" %}
+      {% if subdirectory_name == "teams" %}
       <a id="teams" class="navbar-item icon-text active" href="/teams">
       {% else %}
       <a id="teams" class="navbar-item icon-text" href="/teams">
