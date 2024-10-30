@@ -56,28 +56,15 @@
                     <tr id="{{ member.user.username }}">
                         {% if member.user.username == user.username %}
                         <td class="user-cell selected-user-cell tooltip">
-                            <div class="username">
-                                <span class="tooltiptext">{{user.username}}</span>
-                                {{user.username}}
-                            </div>
-                        </td>
+                            {% include 'calendars/user_info_tooltip.html' %}
                         {% else %}
-                            {% if editable %}
                             <td class="user-cell unselected-user-cell tooltip">
-                                <div class="username">
-                                    <span class="tooltiptext">{{member.user.username}}*</span>
-                                    {{member.user.username}}*
-                                </div>
+                                {% with user=member.user %}
+                                    {% include 'calendars/user_info_tooltip.html' %}
+                                {% endwith %}
                             </td>
-                            {% else %}
-                            <td class="user-cell unselected-user-cell tooltip">
-                                <div class="username">
-                                    <span class="tooltiptext">{{member.user.username}}</span>
-                                    {{member.user.username}}
-                                </div>
-                            </td>
-                            {% endif %}
                         {% endif %}
+                        </td>
 
                         {% for day in day_range %}
 

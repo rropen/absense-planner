@@ -1,3 +1,7 @@
+:root {
+    --cell-size: 47px;
+}
+
 .RefreshBox {
     pointer-events: none;
     text-align: right;
@@ -14,8 +18,10 @@
 }
 
 .CalendarCell {
-    min-width: 47px;
-    max-width: 47px;
+    min-width: var(--cell-size);
+    max-width: var(--cell-size);
+    height: var(--cell-size);
+    max-height: var(--cell-size);
 }
 
 .nav-bar-padding {
@@ -85,7 +91,9 @@
 .user-cell {
     width: 6vw; 
     min-width: var(--user-cell-width); 
-    max-width: var(--user-cell-width); 
+    max-width: var(--user-cell-width);
+    height: var(--cell-size);
+    white-space: nowrap;
 }
 
 .username {
