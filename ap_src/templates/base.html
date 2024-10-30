@@ -1,5 +1,4 @@
 {% load static %}
-{% load check_current_page %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -88,16 +87,24 @@
 
 
 {% if user.is_authenticated %}
-      <p>{{ url_part_1 }}</p>
-      <a id="home" class="navbar-item icon-text {% is_webpage_active request "index" %}" href="/">
-          
+
+      {% if url_part_1 == "" %}
+      <a id="home" class="navbar-item icon-text active" href="/">
+      {% else %}
+      <a id="home" class="navbar-item icon-text" href="/">
+      {% endif %}
+
         <span class="icon is-size-5">
           <i class="fas fa-home"></i>
         </span>
         <span>Home/Calendar</span>
       </a>
       
-      <a id="absence" class="navbar-item icon-text {% is_webpage_active request "add" %}" href="/absence/add">
+      {% if url_part_1 == "absence" %}
+      <a id="absence" class="navbar-item icon-text active" href="/absence/add">
+      {% else %}
+      <a id="absence" class="navbar-item icon-text" href="/absence/add">
+      {% endif %}
 
         <span class="icon is-size-5">
           <i class="fas fa-calendar-plus"></i>
@@ -105,8 +112,11 @@
         <span>Add Absence</span>
       </a>
       
-      <a id="teams" class="navbar-item icon-text {% is_webpage_active request "dashboard" %}" href="/teams">
-
+      {% if url_part_1 == "teams" %}
+      <a id="teams" class="navbar-item icon-text active" href="/teams">
+      {% else %}
+      <a id="teams" class="navbar-item icon-text" href="/teams">
+      {% endif %} 
         <span class="icon is-size-5">
           <i class="fas fa-users"></i>
         </span>
