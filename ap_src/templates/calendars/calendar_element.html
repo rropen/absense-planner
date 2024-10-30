@@ -18,13 +18,13 @@
                 <th class="blank-cell"></th>
                 {% for day in days_name %}
                 {% if day == Sa and weekends.enabled or day == Su and weekends.enabled %}
-                <th style="background-color: {{ weekends.offset}}; color: white;" class="CalendarCell">{{day}}</th>
+                <th style="background-color: {{ weekends.offset}}; color: white;" class="CalendarCell has-text-centered">{{day}}</th>
                 {% elif day == Sa and not weekends.enabled or day == Su and not weekends.enabled %}
                 <th style="display:none"> </th>
                 {% elif forloop.counter in bank_hol and bank_holidays.enabled %}
-                <th style="background-color: {{ bank_holidays.offset }}; color: white;" class="CalendarCell">{{day}}</th>
+                <th style="background-color: {{ bank_holidays.offset }}; color: white;" class="CalendarCell has-text-centered">{{day}}</th>
                 {% else %}
-                <th style="background-color: rgb(255, 255, 255); color: black;" class="CalendarCell">{{day}}</th>
+                <th style="background-color: rgb(255, 255, 255); color: black;" class="CalendarCell has-text-centered">{{day}}</th>
                 {% endif %}
                 {% endfor %}
             </thead>
@@ -32,15 +32,15 @@
                 <th class="blank-cell"></th>
                 {% for day in day_range %}
                 {% if day == today and month == current_month and year == current_year %}
-                <th style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255);" class="CalendarCell">{{day}}</th>
+                <th style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255);" class="CalendarCell has-text-centered">{{day}}</th>
                 {% elif day in bank_hol and bank_holidays.enabled %}
-                <td style = "background-color: {{ bank_holidays.colour }}; color: rgb(255, 255, 255);" class="CalendarCell">{{day}}</td>
+                <td style = "background-color: {{ bank_holidays.colour }}; color: rgb(255, 255, 255);" class="CalendarCell has-text-centered">{{day}}</td>
                 {% elif day in weekend_list and weekends.enabled %}
-                <td style = "background-color: {{ weekends.colour }}; color: rgb(255, 255, 255);" class="CalendarCell">{{day}}</td>
+                <td style = "background-color: {{ weekends.colour }}; color: rgb(255, 255, 255);" class="CalendarCell has-text-centered">{{day}}</td>
                 {% elif day in weekend_list and not weekends.enabled %}
                 <th style="display:none"> </th>
                 {% else %}
-                <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);" class="CalendarCell">{{day}}</th>
+                <th style="background-color: rgb(92, 92, 92); color: rgb(255, 255, 255);" class="CalendarCell has-text-centered">{{day}}</th>
                 {% endif %}
                 {% endfor %}
             </thead>
