@@ -110,3 +110,8 @@
     background-color: #0e00d6; 
     color: white; 
 }
+
+.external-link-title {
+    margin-bottom: 10px;
+    gap: 20px;
+}
