@@ -51,7 +51,7 @@
                 <div id="calendar-group">
                     {% for item in team_data %}
                         {% if number_of_teams > 1 %}
-                            <a style="margin-bottom: 10px; gap: 20px;" class="button mx-1" href={% url 'api_team_calendar' id=item.team.id %}>
+                            <a class="button mx-1 external-link-title" href={% url 'api_team_calendar' id=item.team.id %}>
                                 <h1 class="is-size-5 has-text-weight-bold" id="title-{{ item.team.name }}">
                                     {{ item.team.name }}
                                 </h1>
