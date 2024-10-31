@@ -50,8 +50,10 @@
             {% if number_of_teams > 0 %}
                 <div id="calendar-group">
                     {% for item in team_data %}
-                        <h1 class="is-size-5 has-text-weight-bold" id="title-{{ item.team.name }}">{{ item.team.name }}</h1>
-                        <a class="button is-link mx-1" href={% url 'api_team_calendar' id=item.team.id %}>View</a>
+                        {% if number_of_teams > 1 %}
+                            <h1 class="is-size-5 has-text-weight-bold" id="title-{{ item.team.name }}">{{ item.team.name }}</h1>
+                            <a class="button is-link mx-1" href={% url 'api_team_calendar' id=item.team.id %}>View</a>
+                        {% endif %}
                         <table class="table is-bordered is-striped" style="width: 100%" id="{{ item.team.name }}">
                             <tbody>
                                 {% for member in item.team.members %}
