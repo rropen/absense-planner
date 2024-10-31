@@ -22,7 +22,7 @@ def teams_dashboard(request) -> render:
         return render(
         request,
         "teams/dashboard.html",
-        {"external_teams": False, "teamspage_active": True})
+        {"external_teams": False})
     if r.status_code == 200:
         if len(r.json()) == 0 :
             external_teams_data = False
@@ -33,7 +33,7 @@ def teams_dashboard(request) -> render:
     return render(
         request,
         "teams/dashboard.html",
-        {"external_teams": external_teams_data, "teamspage_active": True, "url": env("TEAM_DATA_URL")},
+        {"external_teams": external_teams_data, "url": env("TEAM_DATA_URL")},
     )
 
 
@@ -67,7 +67,7 @@ def create_team(request:HttpRequest) -> render:
         {
             "form": form,
             "api_enabled": userprofile.external_teams,
-            "api_url": env("TEAM_DATA_URL") + "api/teams/?format=json"
+            "api_url": env("TEAM_DATA_URL") + "api/teams/?format=json",
         },
     )
 
@@ -95,7 +95,9 @@ def join_team(request) -> render:
     return render(
         request,
         "teams/join_team.html",
-        {"api_enabled": api_enabled, "team_data": data, "url": env("TEAM_DATA_URL")},
+        {
+            "api_enabled": api_enabled, "team_data": data, "url": env("TEAM_DATA_URL"),
+        },
     )
 
 

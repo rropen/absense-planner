@@ -128,6 +128,7 @@ footer {
     max-width: var(--cell-size);
     height: var(--cell-size);
     max-height: var(--cell-size);
+    background-color: white;
 }
 
 .nav-bar-padding {

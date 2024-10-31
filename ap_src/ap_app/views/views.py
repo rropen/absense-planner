@@ -72,62 +72,6 @@ class SignUpView(CreateView):
     template_name = "registration/signup.html"
 
 @login_required
-def example(request):
-    if request.method == "POST":
-        form = AbsenceForm(
-            request.POST,
-            user=request.user,
-            initial={
-                "start_date": datetime.datetime.now(),
-                "end_date": lambda: datetime.datetime.now().date()
-                + datetime.timedelta(days=1),
-            },
-        )
-        form.fields["user"].queryset = UserProfile.objects.filter(
-            edit_whitelist__in=[request.user]
-        )
-
-        if form.is_valid():
-            obj = Absence()
-            obj.absence_date_start = request.POST.get("start_date")
-            obj.absence_date_end = request.POST.get("end_date")
-            obj.absence_date_start = form.cleaned_data["start_date"]
-            obj.absence_date_end = form.cleaned_data["end_date"]
-            obj.request_accepted = False  # TODO
-            obj.User_ID = request.user
-            obj.Target_User_ID = form.cleaned_data["user"].user
-            message = "Absence successfully created"
-            msg_type = "is-success"
-            absence_valid = True
-            for x in Absence.objects.filter(User_ID=request.user.id):
-                if (obj.absence_date_start >= x.absence_date_start and obj.absence_date_end <= x.absence_date_end) \
-                    or x.absence_date_start == obj.absence_date_end or x.absence_date_end == x.absence_date_start:
-                        message = "Absence already created"
-                        msg_type = "is-danger"
-                        absence_valid = False
-            if absence_valid:
-                obj.save()
-            return render(
-                request,
-                "ap_app/add_absence.html",
-                {
-                    "form": form,
-                    "message": message,
-                    "message_type": msg_type,
-                    "add_absence_active": True,
-                },
-            )
-            # redirect to success page
-    else:
-        form = AbsenceForm(user=request.user)
-        form.fields["user"].queryset = UserProfile.objects.filter(
-            edit_whitelist__in=[request.user]
-        )
-
-    content = {"form": form, "add_absence_active": True}
-    return render(request, "ap_app/add_absence.html", content)
-
-@login_required
 def details_page(request) -> render:
     """returns details web page"""
     # TODO: get employee details and add them to context

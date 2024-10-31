@@ -86,20 +86,21 @@
 
 
 {% if user.is_authenticated %}
-  
-      {% if home_active %}
-      <a id="active-home" class="navbar-item icon-text active" href="/">
+
+      {% if subdirectory_name == ""  or subdirectory_name == "calendar" %}
+      <a id="home" class="navbar-item icon-text active nav_active" href="/">
       {% else %}
       <a id="home" class="navbar-item icon-text" href="/">
       {% endif %}
-          
+
         <span class="icon is-size-5">
           <i class="fas fa-home"></i>
         </span>
         <span>Home/Calendar</span>
       </a>
-      {% if add_absence_active %}
-      <a id="active-absence" class="navbar-item icon-text active" href="/absence/add">
+      
+      {% if subdirectory_name == "absence" %}
+      <a id="absence" class="navbar-item icon-text active nav_active" href="/absence/add">
       {% else %}
       <a id="absence" class="navbar-item icon-text" href="/absence/add">
       {% endif %}
@@ -110,12 +111,11 @@
         <span>Add Absence</span>
       </a>
       
-      {% if teamspage_active %}
-      <a id="active-teams" class="navbar-item icon-text active" href="/teams">
+      {% if subdirectory_name == "teams" %}
+      <a id="teams" class="navbar-item icon-text active nav_active" href="/teams">
       {% else %}
       <a id="teams" class="navbar-item icon-text" href="/teams">
       {% endif %} 
-
         <span class="icon is-size-5">
           <i class="fas fa-users"></i>
         </span>

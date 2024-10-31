@@ -24,21 +24,6 @@
     border: 1px solid #343b3f;
   }
 
-  #active-home {
-    background-color: #3e4549;
-    color: #ffffff;
-  }
-
-  #active-absence {
-    background-color: #3e4549;
-    color: #ffffff;
-  }
-
-  #active-teams {
-    background-color: #3e4549;
-    color: #ffffff;
-  }
-
   body {
     position: relative;
     margin: 0;
@@ -96,7 +81,11 @@
       color: #ffffff;
   }
   
-  
+  .nav_active {
+    background-color: #3e4549;
+    color: white;
+  }
+
   .rr-white {
       color: #ffffff;
   }

@@ -1,7 +1,8 @@
 {% load static %}
 <script src="{%static 'js/button_spinner.js' %}"></script>
 <div class="container">
-    <h1 class="title">Teams</h1>
+    <h3 class="has-text-weight-bold is-size-5 my-3">Teams</h3>
+    {% if team_data %}
     {% for team in team_data %}
     <div class="container has-background-light box darkInput">
         <div class="is-size-5 mb-3">
@@ -15,5 +16,15 @@
         </div>
     </div>
     {% endfor %}
+    {% else %}
+        <div class="container has-background-light box">
+            <div class="is-size-5 mb-3">
+                <span class="is-block is-size-5">You've joined all of the available teams.</span>
+            </div>
+        </div>
+    {% endif %}
+    <a id="teams/" class="column button is-medium is-info icon-text" href="{% url 'dashboard' %}">
+    <i class="fas fa-users fa-w-20"></i> Go back to joined teams</i>
+    </a>
 </div>
 <script src="{% static "js/teams.js" %}" apiURL="{{ url }}"></script>

@@ -77,7 +77,8 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "ap_site.context_processors.production", #This is the context processor that will communicate with the context processors .py file.
                 "ap_site.context_processors.info",
-                "ap_site.context_processors.team_api_data"
+                "ap_site.context_processors.team_api_data",
+                "ap_site.context_processors.url_splitter"
             ],
             "libraries": {
                 "get_key": "ap_app.templatetags.get_key",
