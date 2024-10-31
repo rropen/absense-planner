@@ -15,7 +15,7 @@
         {% if team_data %}
         <table class="table is-bordered is-striped dates-table" style="box-shadow: 5px 5px 5px" id="{{ item.team.name }}">
             <thead>
-                <th class="blank-cell" style="border: 0px solid !important;"></th>
+                <th class="blank-cell"></th>
                 {% for day in days_name %}
                 {% if day == Sa and weekends.enabled or day == Su and weekends.enabled %}
                 <th style="background-color: {{ weekends.offset}}; color: white;" class="CalendarCell has-text-centered">{{day}}</th>
