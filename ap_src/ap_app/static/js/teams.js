@@ -59,12 +59,32 @@ async function LeaveTeamAndRemovePermissions(teamId, username, token) {
             }
 
             const permissionsData = await permissionsResponse.json();
-            location.replace(location.origin + "/teams")
+            sessionStorage.setItem('showSuccessModal', 'true'); // Set flag to show success modal
+            location.reload(); // Reload the page to update the teams
         }
     } catch (err) {
         console.log(err);
     }
 }
+
+function showSuccessModal() {
+    const successModal = document.getElementById('successModal');
+    const closeSuccessButton = document.getElementById('closeSuccessButton');
+
+    successModal.classList.add('is-active');
+
+    closeSuccessButton.addEventListener('click', () => {
+        successModal.classList.remove('is-active');
+    });
+}
+
+// Check sessionStorage on page load to show success modal if necessary
+window.addEventListener('load', () => {
+    if (sessionStorage.getItem('showSuccessModal') === 'true') {
+        sessionStorage.removeItem('showSuccessModal'); // Clear the flag
+        showSuccessModal(); // Show the success modal
+    }
+});
 
 function JoinTeam(e, user, redirect) {
     var data = JSON.stringify({"username": user, "team": e.id})
