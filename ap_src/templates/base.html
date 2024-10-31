@@ -7,8 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/bulma.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/basic.css' %}">
-    <link rel="stylesheet" href="{% static 'css/calendar.css' %}">
+    <link rel="stylesheet" id="darkSwitch" href="{% static 'css/basic.css' %}">
     <script src="{%static 'js/button_spinner.js' %}"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <script
@@ -89,7 +88,7 @@
 {% if user.is_authenticated %}
   
       {% if home_active %}
-      <a id="home" class="navbar-item icon-text active" href="/">
+      <a id="active-home" class="navbar-item icon-text active" href="/">
       {% else %}
       <a id="home" class="navbar-item icon-text" href="/">
       {% endif %}
@@ -100,7 +99,7 @@
         <span>Home/Calendar</span>
       </a>
       {% if add_absence_active %}
-      <a id="absence" class="navbar-item icon-text active" href="/absence/add">
+      <a id="active-absence" class="navbar-item icon-text active" href="/absence/add">
       {% else %}
       <a id="absence" class="navbar-item icon-text" href="/absence/add">
       {% endif %}
@@ -112,7 +111,7 @@
       </a>
       
       {% if teamspage_active %}
-      <a id="teams" class="navbar-item icon-text active" href="/teams">
+      <a id="active-teams" class="navbar-item icon-text active" href="/teams">
       {% else %}
       <a id="teams" class="navbar-item icon-text" href="/teams">
       {% endif %} 
@@ -174,6 +173,7 @@
     </div>
   </footer>
 
+  <script src="{% static 'js/darkMode.js' %}"></script>
 </body>
 
 <script>
