@@ -6,13 +6,14 @@
 
 
 <div class="main container column is-4">
-    <h1 class="title has-text-centered"> Create Absence </h1>
+    <h1 class="title has-text-centered dText"> Create Absence </h1>
     <form method="POST">
-        {% csrf_token %}
-        {% if message %}
-        {% include "messages.html" %}
-        {% endif %}
-        {{form | bulma}}
+            {% csrf_token %}
+            {% if message %}
+            {% include "messages.html" %}
+            {% endif %}
+            {{form | bulma}}
+        
 
         <input id="submit" type="submit" class="button is-link is-fullwidth" value="Save">
 

@@ -4,7 +4,7 @@
 {% block title %}Settings{% endblock %}
 {% block content %}
 
-<link rel="stylesheet" href="{% static 'css/calendar.csssettings.css' %}">
+<link rel="stylesheet" href="../../../static/css/basic.css" id="darkSwitch">
 
 <body>
 
@@ -15,40 +15,40 @@
                 <form method="POST">
                     {% csrf_token %}
                     <div class="field">
-                        <label class="label">First Name</label>
+                        <label class="label"><div class="dText">First Name</div></label>
                         <div class ="control">
                             {% if user.first_name %}
-                            <input class="input is-rounded is-success" type="text" placeholder="First Name" value="{{ user.first_name }}" name="firstName">
+                            <input class="input is-rounded is-success darkInput" type="text" placeholder="First Name" value="{{ user.first_name }}" name="firstName">
                             {% else %}
-                            <input class="input is-rounded is-warning" type="text" placeholder="First Name" name="firstName">
+                            <input class="input is-rounded is-warning darkInput" type="text" placeholder="First Name" name="firstName">
                             {% endif %}
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label">Last Name</label>
+                        <label class="label"><div class="dText">Last Name</div></label>
                         <div class ="control">
                             {% if user.last_name %}
-                            <input class="input is-rounded is-success" type="text" placeholder="Last Name" value="{{ user.last_name }}" name="lastName">
+                            <input class="input is-rounded is-success darkInput" type="text" placeholder="Last Name" value="{{ user.last_name }}" name="lastName">
                             {% else %}
-                            <input class="input is-rounded is-warning" type="text" placeholder="Last Name" name="lastName">
+                            <input class="input is-rounded is-warning darkInput" type="text" placeholder="Last Name" name="lastName">
                             {% endif %}
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label">Email</label>
+                        <label class="label"><div class="dText">Email</div></label>
                         <div class="control has-icons-right">
                             {% if user.email %}
-                            <input class="input is-rounded is-success" type="email" placeholder="Email Address" name="email" id="email-input" value="{{ user.email }}">
+                            <input class="input is-rounded is-success darkInput" type="email" placeholder="Email Address" name="email" id="email-input" value="{{ user.email }}">
                             <span class="icon is-small is-right">
                                 <button class="delete" aria-label="delete" onclick="deleteInputtedValue('email-input')"></button>
                             </span>
                             {% else %}
-                            <input class="input is-rounded is-warning" type="email" placeholder="Email Address" name="email">
+                            <input class="input is-rounded is-warning darkInput" type="email" placeholder="Email Address" name="email">
                             {% endif %}
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label">Region</label>
+                        <label class="label"><div class="dText">Region</div></label>
                         <div class="control">
                             <div class="select is-rounded">
                                 <select name="region">
@@ -64,18 +64,20 @@
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label">Data Settings</label>
+                        <label class="label"><div class="dText">Data Settings</div></label>
                         <div class="control">
-                            <label>
+                            <label style="display: flex; gap: 10px;">
                                 {% if data_privacy_mode %}
-                                <input type="checkbox" checked="checked" name="privacy"></input>
+                                <input type="checkbox" checked="checked" name="privacy" title="Hide Data From Non Team Members"></input>
                                 {% else %}
-                                <input type="checkbox" name="privacy"></input>
+                                <input type="checkbox" name="privacy" title="Hide Data From Non Team Members"></input>
                                 {% endif %}
-                                Keep data private (Hide data from non team members)
+                                <div class="dText">
+                                    Keep Data Private
+                                </div>
                             </label>
                         </div>
-                        <div class="control">
+                        <!-- <div class="control">
                             <label>
                                 {% if external_teams %}
                                 <input type="checkbox" checked="checked" name="teams"></input>
@@ -83,6 +85,19 @@
                                 <input type="checkbox" name="teams"></input>
                                 {% endif %}
                                 Use the team app data instead of local data
+                            </label>
+                        </div>
+                        -->
+                        <div class="control">
+                            <label style="display: flex; gap: 10px;">
+                                {% if dark_mode %}
+                                <input type="checkbox" checked="checked" id="darkModeToggle" name="dark"></input>
+                                {% else %}
+                                <input type="checkbox" id="darkModeToggle" name="dark"></input>
+                                {% endif %}
+                                <div class="dText">
+                                    Toggle Dark Mode
+                                </div>
                             </label>
                         </div>
                     </div>
@@ -97,30 +112,34 @@
                 </form>
             </div>
             <div class="box">
-                <h3 class="title is-4">App Information</h3>
-                <label class="label">Permission Settings</label>
+                <h3 class="title is-4"><div class="dText">App Information</div></h3>
+                <label class="label"><div class="dText">Permission Settings</div></label>
                 <nav class="navbar">
                     <div class="control">
-                        <input class="input is-rounded" placeholder="Add a user" type="text" size="50" id="user_permission_input">
+                        <input class="input is-rounded darkInput" placeholder="Add a user" type="text" size="50" id="user_permission_input">
                     </div>
                     <div class="control">
                         {% csrf_token %}
                         <button class="button is-rounded" onclick="addUserPermission( '{{ csrf_token }}' )">Submit</button>
                     </div>
                 </nav>
-                <p>Users with permission to edit your absences:</p>
+                <h6><div class="dText">Users with permission to edit your absences:</div></h6>
                 <div class="tags">
                     {% for user in userprofile.edit_whitelist.all %}
                         <span class="tag is-dark">{{user}}</span>
                     {% endfor %}
                 </div>
-                <label class="label">Calendar Settings</label>
+                <label class="label"><div class="dText">Calendar Settings</div></label>
                 {% for colour in colours %}
-                <h6>{{ colour.name }}</h6>
+                <h6 class="dText"><div class="dText">{{ colour.name }}</div></h6>
                 {% include 'ap_app/elements/colour_picker.html' with colour_value=colour.colour name=colour.name enabled=colour.enabled %}
                 {% endfor %}
             </div>
         </div>
+    </div>
+    <div id="stylesheet-paths"
+        darkmode-location="{% static 'css/darkmode.css' %}"
+        lightmode-location="{% static 'css/basic.css' %}">
     </div>
 
     <script>
@@ -139,9 +158,8 @@
             });
         }
     </script>
-    <script src="{% static "js/profile_update.js" %}">
-
-    </script>
+    <script src="{% static 'js/profile_update.js' %}"></script>
+    <script src="{% static 'js/darkMode.js' %}"></script>
 
 </body>
 {% endblock %}

@@ -1,0 +1,372 @@
+:root {
+    --user-cell-width: 120px;
+  }
+  
+  .active {
+      color: green;
+  }
+  
+  * {
+      font-family: Arial, Helvetica, sans-serif;
+  }
+  
+  html, body {
+    height: 100%;
+  }
+  
+  h3 {
+    color: white;
+  }
+
+  .darkInput {
+    background-color: #ffffff;
+    border: 1px solid #343b3f;
+  }
+
+  body {
+    position: relative;
+    margin: 0;
+    min-height: 100%;
+    display: inside;
+    flex-direction: column;
+  }
+  
+  .main {
+      padding: 10px 10px;
+      min-height: 100%;
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #343b3f;
+  }
+  
+  .logo {
+      margin-left: 1700px;
+      padding: 20px 10px;
+  }
+  
+  .text {
+      font-weight: bold;
+      size: 10rem;
+  }
+  .right {
+      float: right;
+      padding:100px;
+  }
+  
+  .attending {
+      color: green;
+  }
+  
+  .not_attending {
+      color: red;
+  }
+  
+  .rr-primary {
+      background-color: #10069f;
+      color: #ffffff;
+  }
+  
+  .rr-secondary {
+      background-color: #271EA8;
+      color: #ffffff;
+  }
+  
+  .rr-dev-primary {
+      background-color: #9f0606;
+      color: #ffffff;
+  }
+  
+  .rr-dev-secondary {
+      background-color: #a81e1e;
+      color: #ffffff;
+  }
+  
+  .nav_active {
+    background-color: #3e4549;
+    color: white;
+  }
+
+  .rr-white {
+      color: #ffffff;
+  }
+  
+  .navbar {
+    background-color: #3e4549;
+  }
+
+  .navbar a {
+      color: #ffffff;
+  }
+  
+  .navbar .active {
+      color: #ffffff;
+      background-color: #3e4549;
+  }
+  
+  .navbar .dev-active {
+      color: #9f0606;
+      background-color: #3e4549;
+  }
+  
+  .noHover{
+    pointer-events: none;
+  }
+  
+  .footer {
+    margin-top: auto;
+    height: 150px;
+    width: 100%;
+    background-color: #292e33;
+  }
+
+  .box {
+    background-color: #3e4549;
+  }
+
+  .box h3 {
+    color: white;
+  }
+
+  .darkmode {
+    color: white;
+  }
+
+  .field > label {
+    color: white;
+  }
+
+ .dText {
+    color: white;
+  }
+
+  .control > .checkbox {
+    color: white;
+  }
+
+
+
+  /* End of basic */
+  
+  :root {
+      --cell-size: 47px;
+  }
+  
+  .RefreshBox {
+      pointer-events: none;
+      text-align: right;
+      background-color: #3e4549;
+      border: 0px;
+      font-size: 11pt;
+      width: 24px;
+      height: 12px;
+  }
+  .AbsenceBox {
+      background-color: #ff0000;
+      border: 1px solid #ff0000;
+      border-radius: 12px
+  }
+  
+  .CalendarCell {
+      min-width: var(--cell-size);
+      max-width: var(--cell-size);
+      height: var(--cell-size);
+      max-height: var(--cell-size);
+      background-color: #b1b1b1;
+  }
+  
+  .nav-bar-padding {
+      padding-left: 5%;
+      padding-right: 5%;
+  }
+  
+  .tooltip {
+      position: relative;
+      display: inline-block;
+  }
+  
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      top: 100%;
+      left: 50%;
+      margin-left: -60px;
+      background-color: black;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px 5px;
+      position: absolute;
+      z-index: 5;
+  }
+  
+  .tooltiptext {
+      white-space: nowrap;
+  }
+    
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+  }
+  
+  .tooltip:active .tooltiptext {
+      visibility: hidden;
+  }
+  
+  .button-active {
+      border: green solid 2px;
+  }
+  
+  .button-inactive {
+      border: red solid 2px;
+  }
+  
+  .calendar-group {
+      overflow: auto;
+      height: 75vh;
+  }
+  
+  .dates-table {
+      width: 100%;
+      position: sticky;
+      top: 0;
+      z-index: 4;
+  }
+  
+  .blank-cell {
+      color: black;
+      background-color: #343b3f;
+      width: 6vw; 
+      min-width: var(--user-cell-width); 
+      max-width: var(--user-cell-width); 
+      border: none !important;
+  }
+  
+  .user-cell {
+      width: 6vw; 
+      min-width: var(--user-cell-width); 
+      max-width: var(--user-cell-width);
+      height: var(--cell-size);
+      white-space: nowrap;
+  }
+  
+  .darkName {
+    background-color: #ff0000;
+  }
+
+  .username {
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+  }
+  
+  .unselected-user-cell {
+      background-color: #3e4549; 
+      color: black; 
+  }
+  
+  .selected-user-cell {
+      background-color: #0e00d6; 
+      color: #3e4549; 
+  }
+  
+  .darkBackground {
+    background-color: #3e4549;
+  }
+
+  /* End of calendar */
+  
+  .collapsible {
+      /* background-color: #271EA8; */
+      color: white;
+      cursor: pointer;
+      padding: 18px;
+      width: 100%;
+      border: none;
+      text-align: left;
+      outline: none;
+      font-size: 15px;
+  }
+  
+  /*.active,
+  .collapsible:hover {
+       background-color: #555;
+  }*/
+  
+  
+  .collapsible:after {
+      content: '\002B';
+      color: white;
+      font-weight: bold;
+      float: right;
+      margin-left: 5px;
+  }
+  
+  /*.active:after {
+      content: "\2212";
+  }*/
+  
+  
+  .content {
+      padding: 0 18px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.2s ease-out;
+      background-color: #3e4549;
+  }
+  
+  /* End of settings */
+  
+  /* styles.css */
+  
+  /* The Modal (background) */
+  .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 5; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+  
+  /* Modal Content */
+  .modal-content {
+      background-color: #3e4549;
+      margin: 15% auto; /* 15% from the top and centered */
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%; /* Could be more or less, depending on screen size */
+      text-align: left;
+  }
+  
+  /* The Close Button */
+  .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+  }
+  
+  /* OK Button */
+  #alert-ok-button {
+      background-color: green;
+      color: #3e4549;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+  }
+  
+  #alert-ok-button:hover {
+      background-color: darkgreen;
+  }
+
+  .external-link-title {
+    margin-bottom: 10px;
+    gap: 20px;
+    color: white;
+}
