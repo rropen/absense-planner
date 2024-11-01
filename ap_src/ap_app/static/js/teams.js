@@ -75,7 +75,6 @@ function showSuccessModal() {
     successModal.classList.add('is-active');
     var teamName = sessionStorage.getItem('teamName')
 
-    console.log(teamName);
     var successModalMessage = document.getElementById("success-modal-team-message");
     successModalMessage.innerHTML = "You have successfully left " + teamName;
 
