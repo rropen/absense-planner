@@ -1,0 +1,215 @@
+:root {
+    --user-cell-width: 120px;
+}
+
+.active {
+    color: green;
+}
+
+h3 {
+    color: white;
+}
+
+.darkInput {
+    background-color: #ffffff;
+    border-color: #343b3f;
+}
+
+.main {
+    background-color: #343b3f;
+}
+
+.attending {
+    color: green;
+}
+
+.not_attending {
+    color: red;
+}
+
+.rr-primary {
+    background-color: #10069f;
+    color: #ffffff;
+}
+
+.rr-secondary {
+    background-color: #271EA8;
+    color: #ffffff;
+}
+
+.rr-dev-primary {
+    background-color: #9f0606;
+    color: #ffffff;
+}
+
+.rr-dev-secondary {
+    background-color: #a81e1e;
+    color: #ffffff;
+}
+
+.nav_active {
+    background-color: #3e4549;
+    color: white;
+}
+
+.rr-white {
+    color: #ffffff;
+}
+
+.navbar {
+    background-color: #3e4549;
+}
+
+.navbar a {
+    color: #ffffff;
+}
+
+.navbar .active {
+    color: #ffffff;
+    background-color: #3e4549;
+}
+
+.navbar .dev-active {
+    color: #9f0606;
+    background-color: #3e4549;
+}
+
+.footer {
+    background-color: #292e33;
+}
+
+.box {
+    background-color: #3e4549;
+}
+
+.box h3 {
+    color: white;
+}
+
+.darkmode {
+    color: white;
+}
+
+.field > label {
+    color: white;
+}
+
+.dText {
+    color: white;
+}
+
+.control > .checkbox {
+    color: white;
+}
+
+
+
+/* End of basic */
+
+.RefreshBox {
+    background-color: #3e4549;
+}
+.AbsenceBox {
+    background-color: #ff0000;
+    border-color: #ff0000;
+}
+
+.CalendarCell {
+    background-color: #b1b1b1;
+}
+
+.tooltip .tooltiptext {
+    background-color: black;
+    color: #fff;
+}
+
+.button-active {
+    border-color: green;
+}
+
+.button-inactive {
+    border-color: red;
+}
+
+.blank-cell {
+    color: black;
+    background-color: #343b3f;
+}
+
+.darkName {
+    background-color: #ff0000;
+}
+
+.unselected-user-cell {
+    background-color: #3e4549; 
+    color: black; 
+}
+
+.selected-user-cell {
+    background-color: #0e00d6; 
+    color: #3e4549; 
+}
+
+.darkBackground {
+background-color: #3e4549;
+}
+
+/* End of calendar */
+
+.collapsible {
+    /* background-color: #271EA8; */
+    color: white;
+}
+
+/*.active,
+.collapsible:hover {
+    background-color: #555;
+}*/
+
+
+.collapsible:after {
+    color: white;
+}
+
+.content {
+    background-color: #3e4549;
+}
+
+/* End of settings */
+
+/* styles.css */
+
+/* The Modal (background) */
+.modal {
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #3e4549;
+    border-color: #888;
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+}
+
+/* OK Button */
+#alert-ok-button {
+    background-color: green;
+    color: #3e4549;
+}
+
+#alert-ok-button:hover {
+    background-color: darkgreen;
+}
+
+.external-link-title {
+    color: white;
+}
