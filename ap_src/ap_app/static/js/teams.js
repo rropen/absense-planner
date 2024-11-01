@@ -1,6 +1,6 @@
 var apiURL = document.currentScript.getAttribute("apiURL");
 
-function openLeaveTeamModal(teamId, csrfToken, username) {
+function openLeaveTeamModal(teamId, csrfToken, username, teamName) {
     const modal = document.getElementById('leaveTeamModal');
     const confirmButton = document.getElementById('confirmLeaveButton');
     const cancelButton = document.getElementById('cancelLeaveButton');
@@ -9,7 +9,7 @@ function openLeaveTeamModal(teamId, csrfToken, username) {
     modal.classList.add('is-active');
 
     confirmButton.addEventListener('click', () => {
-        LeaveTeamAndRemovePermissions(teamId, username, csrfToken);
+        LeaveTeamAndRemovePermissions(teamId, username, csrfToken, teamName);
         modal.classList.remove('is-active');
     });
 
@@ -22,7 +22,7 @@ function openLeaveTeamModal(teamId, csrfToken, username) {
     });
 }
 
-async function LeaveTeamAndRemovePermissions(teamId, username, token) {
+async function LeaveTeamAndRemovePermissions(teamId, username, token, teamName) {
     const headers = {
         "Content-Type": "application/json",
         "X-CSRFToken": token,
@@ -60,6 +60,7 @@ async function LeaveTeamAndRemovePermissions(teamId, username, token) {
 
             const permissionsData = await permissionsResponse.json();
             sessionStorage.setItem('showSuccessModal', 'true'); // Set flag to show success modal
+            sessionStorage.setItem('teamName', teamName)
             location.reload(); // Reload the page to update the teams
         }
     } catch (err) {
@@ -72,6 +73,11 @@ function showSuccessModal() {
     const closeSuccessButton = document.getElementById('closeSuccessButton');
 
     successModal.classList.add('is-active');
+    var teamName = sessionStorage.getItem('teamName')
+
+    console.log(teamName);
+    var successModalMessage = document.getElementById("success-modal-team-message");
+    successModalMessage.innerHTML = "You have successfully left " + teamName;
 
     closeSuccessButton.addEventListener('click', () => {
         successModal.classList.remove('is-active');
