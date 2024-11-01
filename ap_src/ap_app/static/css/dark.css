@@ -213,3 +213,15 @@ background-color: #3e4549;
 .external-link-title {
     color: white;
 }
+
+.CalendarCell[data-editable="True"]:hover {
+    background-color: #00000069; 
+}
+
+.CalendarCell[data-editable="True"] {
+    cursor: pointer;
+}
+
+.CalendarCell[data-editable="False"] {
+    cursor: not-allowed;
+}
