@@ -1,0 +1,150 @@
+:root {
+  --user-cell-width: 120px;
+}
+
+.active {
+    color: green;
+    
+}
+
+.attending {
+    color: green;
+}
+
+.not_attending {
+    color: red;
+}
+
+.rr-primary {
+    background-color: #10069f;
+    color: #fff;
+}
+
+.rr-secondary {
+    background-color: #271EA8;
+    color: #fff;
+}
+
+.rr-dev-primary {
+    background-color: #9f0606;
+    color: #fff;
+}
+
+.rr-dev-secondary {
+    background-color: #a81e1e;
+    color: #fff;
+}
+
+
+.rr-white {
+    color: #fff;
+}
+
+.navbar a {
+    color: white;
+}
+
+.navbar .active {
+    color: #10069f;
+    background-color: white;
+}
+
+.navbar .dev-active {
+    color: #9f0606;
+    background-color: white;
+}
+
+.RefreshBox {
+    background-color: ghostwhite;
+}
+.AbsenceBox {
+    background-color: #ff0000;
+    border-color: #ff0000;
+}
+
+.CalendarCell {
+    background-color: white;
+}
+
+.tooltip .tooltiptext {
+    background-color: black;
+    color: #fff;
+}
+
+.button-active {
+    border-color: green;
+}
+
+.button-inactive {
+    border-color: red;
+}
+
+.blank-cell {
+    color: black; 
+}
+
+.unselected-user-cell {
+    background-color: white; 
+    color: black; 
+}
+
+.selected-user-cell {
+    background-color: #0e00d6; 
+    color: white; 
+}
+
+/* End of calendar */
+
+.collapsible {
+    /* background-color: #271EA8; */
+    color: white;
+}
+
+/*.active,
+.collapsible:hover {
+     background-color: #555;
+}*/
+
+
+.collapsible:after {
+    color: white;
+}
+
+.content {
+    background-color: #f1f1f1;
+}
+
+/* End of settings */
+
+/* styles.css */
+
+/* The Modal (background) */
+.modal {
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    border: 1px solid #888;
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+}
+
+/* OK Button */
+#alert-ok-button {
+    background-color: green;
+    color: white;
+}
+
+#alert-ok-button:hover {
+    background-color: darkgreen;
+}
