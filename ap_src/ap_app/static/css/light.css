@@ -148,3 +148,15 @@
 #alert-ok-button:hover {
     background-color: darkgreen;
 }
+
+.CalendarCell[data-editable="True"]:hover {
+    background-color: #ff00001a; 
+}
+
+.CalendarCell[data-editable="True"] {
+    cursor: pointer;
+}
+
+.CalendarCell[data-editable="False"] {
+    cursor: not-allowed;
+}
