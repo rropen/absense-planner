@@ -364,3 +364,9 @@
   #alert-ok-button:hover {
       background-color: darkgreen;
   }
+
+  .external-link-title {
+    margin-bottom: 10px;
+    gap: 20px;
+    color: white;
+}
