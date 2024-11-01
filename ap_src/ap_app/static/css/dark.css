@@ -172,7 +172,11 @@ background-color: #3e4549;
 }
 
 .content {
-    background-color: #3e4549;
+    color: white;
+}
+
+.content > h4 {
+    color: white;
 }
 
 /* End of settings */
