@@ -143,8 +143,32 @@ function favouriteTeam(e, user, id) {
     })
 }
 
+function openDeleteTeamModal(button) {
+    const teamId = button.id;
+    const modal = document.getElementById('deleteTeamModal');
+    const confirmButton = document.getElementById('confirmDeleteButton');
+    const cancelButton = document.getElementById('cancelDeleteButton');
+    const modalCloseButton = document.querySelector('#deleteTeamModal .modal-close');
+
+    modal.classList.add('is-active');
+
+    confirmButton.onclick = () => {
+        DeleteTeam(teamId);
+        modal.classList.remove('is-active');
+    };
+
+    cancelButton.onclick = () => {
+        modal.classList.remove('is-active');
+    };
+
+    modalCloseButton.onclick = () => {
+        modal.classList.remove('is-active');
+    };
+}
+
 function DeleteTeam(e) {
     var data = JSON.stringify({"id": e.id})
+
     fetch(apiURL + 'api/teams/?method=delete&format=json', {
         method: "post",
         body: data,
@@ -153,9 +177,9 @@ function DeleteTeam(e) {
         },
     })
     .then(() => {
-        location.replace(location.origin + "/teams")
+        location.replace(location.origin + "/teams");
     })
     .catch(err => {
-        console.log(err)
-    })
+        console.log(err);
+    });
 }
