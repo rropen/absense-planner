@@ -111,7 +111,18 @@
         </span>
         <span>Add Absence</span>
       </a>
-      
+
+      {% if subdirectory_name == "profile" %}
+      <a id="teams" class="navbar-item icon-text active nav_active" href="/profile">
+      {% else %}
+      <a id="teams" class="navbar-item icon-text" href="/profile">
+      {% endif %}
+        <span class="icon is-size-5">
+          <i class="fas fa-calendar-alt"></i>
+        </span>
+        <span>My Absences</span>
+      </a>
+
       {% if subdirectory_name == "teams" %}
       <a id="teams" class="navbar-item icon-text active nav_active" href="/teams">
       {% else %}
@@ -122,7 +133,6 @@
         </span>
         <span>Teams</span>
       </a>
-
 
 {% else %}
     <a class="navbar-item icon-text" href="/">
@@ -139,7 +149,7 @@
       <div class="field is-grouped">
           <div class="buttons">
             {% if user.is_authenticated %}
-                <a id="profile" href="/profile/" class="button is-info">{{request.user.username}}
+                <a id="profile" href="/profile/settings" class="button is-info">{{request.user.username}}
                   <i class="fas fa-user-circle ml-2 is-size-5"></i>
                 </a>
                 <a id="logout" href="{% url 'logout' %}" class="button is-light">Log out</a>
