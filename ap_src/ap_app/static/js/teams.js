@@ -153,7 +153,7 @@ function openDeleteTeamModal(button) {
     modal.classList.add('is-active');
 
     confirmButton.onclick = () => {
-        DeleteTeam(teamId);
+        DeleteTeam(parseInt(teamId));
         modal.classList.remove('is-active');
     };
 
@@ -166,11 +166,11 @@ function openDeleteTeamModal(button) {
     };
 }
 
-function DeleteTeam(e) {
-    var data = JSON.stringify({"id": e.id})
+function DeleteTeam(teamId) {
+    var data = JSON.stringify({ "id": teamId });
 
     fetch(apiURL + 'api/teams/?method=delete&format=json', {
-        method: "post",
+        method: "POST",
         body: data,
         headers: {
             "Content-Type": "application/json",
