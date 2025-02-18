@@ -69,14 +69,26 @@ document.addEventListener('click', function(e) {
 //Toggle clickable calendar on/off
 var calendarClickButton = document.getElementById("CalendarClick-Toggle")
 calendarClickButton.onclick = function() {
+    const calendarCells = document.querySelectorAll('.CalendarCell');
     if (calendarClickToggle == false) {
         calendarClickButton.style.borderColor = "green";
-        calendarClickToggle = true
+        calendarClickToggle = true;
+        calendarCells.forEach(cell => {
+            if (cell.id.startsWith("{{ user.username }}/")) {  
+                cell.dataset.editable = "True";
+            } else {
+                cell.dataset.editable = "False";
+            }
+        });
+        location.reload();
     } else {
         calendarClickButton.style.borderColor = "red";
-        calendarClickToggle = false
+        calendarClickToggle = false;
+        calendarCells.forEach(cell => {
+            cell.dataset.editable = "False";
+        });
     }
-}
+};
 
 function closeElement(e) {
     e.style.display = "none";
