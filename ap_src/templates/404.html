@@ -1,2 +1,45 @@
-<h1>Oops! It appears that the requested page was not found</h1>
-<p style="color:red;">404 Error</p>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What went wrong?</title>
+    <link rel="stylesheet" href="{% static 'css/error_pages.css' %}">
+</head>
+<body>
+
+    <div class="container">
+        <div class="sad-face">:(</div>
+        <div class="title">404 PAGE_NOT_FOUND</div>
+        <div class="message">
+          Your website wasn't built very well, therefore this is on your screen.
+          <br><br>
+          You can search for the error online using the error code below.
+        </div>
+        <div class="details">
+          Error Code: HTTP_404_PAGE_NOT_FOUND_EXCEPTION
+          <br><br>
+          What failed: PAGE_LOAD_FAILED
+          <br>
+          Stop Code: 0x00000404
+          <br><br>
+          Go back to the home page and tell your developers to fix this:<br>
+          <a href="/">https://Absence-Planner.com/</a>
+        </div>
+      </div>
+
+</body>
+</html>
+
+<script>
+    function playAudio(){
+        audio.play().catch(error => console.log("Playback error:", error));
+    };
+
+    var audio = new Audio("{% static 'audio\death-sound.mp3' %}");
+    document.documentElement.addEventListener("click", playAudio);
+    document.documentElement.addEventListener("keypress", playAudio);
+</script>

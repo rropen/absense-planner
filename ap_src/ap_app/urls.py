@@ -43,6 +43,11 @@ urlpatterns = [
     path("main_calendar", views.main_calendar, name="main_calendar"),
     path("main_calendar/<str:month>/<int:year>", views.main_calendar, name="main_calendar"),
     path("remove_lingering_perms", views.remove_lingering_perms, name="remove_lingering_perms"),
+    #Errors
+    path("404", views.Custom404View, name="404"),
+    path("500", views.Custom500View, name="500"),
+    path("400", views.Custom400View, name="400"),
+
     re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}) #This lets Django find the CSS files when debug is set to false
 
 ] 
