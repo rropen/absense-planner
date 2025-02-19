@@ -40,7 +40,11 @@ Blue represents Production.
 
 If you set this to False, it will change the colour of the header in the Absence Planner like this:
 
+![image](https://github.com/user-attachments/assets/49ac875f-ab92-4cc5-bcff-4ae2dd089f67)
+
 If you set this to True, it will change the colour of the header in the Absence Planner like this:
+
+![image](https://github.com/user-attachments/assets/edfd9044-57d0-4e7a-9bc6-8e874df97bee)
 
 #### `DB_*` Options
 
