@@ -142,6 +142,8 @@ footer {
 .username {
     overflow-x: hidden;
     text-overflow: ellipsis;
+    vertical-align: middle;
+    height: 100%;
 }
 
 /* End of calendar */
