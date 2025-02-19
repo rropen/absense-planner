@@ -20,7 +20,16 @@ def retrieve_calendar_data(user, sortValue):
     
     if r is not None and r.status_code == 200:
         data = r.json()
-    
+        for teamA in range(len(data)):
+            def fetch_User(userIndex):
+                usersZ = data[teamA]['team']['members'][userIndex]['user']['id']
+                return usersZ
+            for userA in range(len(data[teamA]['team']['members'])):
+                if user.id == fetch_User(int(userA)):
+                    saved_user = data[teamA]['team']['members'][userA]
+                    data[teamA]['team']['members'].pop(userA)
+                    data[teamA]['team']['members'].insert(0,saved_user)
+                    break
     return data
 
 def get_users_sharing_teams(username, user_model):

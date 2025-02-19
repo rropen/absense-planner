@@ -5,6 +5,7 @@ import pandas as pd
 import calendar
 import holidays
 import environ
+import json
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
@@ -68,12 +69,23 @@ def get_colour_data(user):
     
     return colour_data
 
-def team_calendar_data(id):
+def team_calendar_data(id, request):
     data = None
 
     try:
         response = requests.get(env("TEAM_DATA_URL") + "api/members/?id={}".format(id))
+        user = request.user
+        user_id = user.id
         data = response.json()
+        def fetch_User(userIndex):
+            usersZ = data[0]['members'][userIndex]['user']['id']
+            return usersZ
+        for userA in range(len(data[0]['members'])):
+            if user_id == fetch_User(int(userA)):
+                saved_user = data[0]['members'][userA]
+                data[0]['members'].pop(userA)
+                data[0]['members'].insert(0,saved_user)
+                break
     except:
         # TODO Create error page for API failure
         raise NotImplementedError("Failed to retrieve API data (No error page)")
@@ -275,7 +287,7 @@ def api_team_calendar(
 
     user = request.user
 
-    team_data = team_calendar_data(id)[0]
+    team_data = team_calendar_data(id, request)[0]
 
     team_data = [{"team": team_data}]
 
