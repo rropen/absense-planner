@@ -1,5 +1,6 @@
 {% load get_key %}
 {% load check_absences %}
+{% load get_user_id %}
 {% load check_half_day %}
 {% load check_permissions %}
 {% load static %}
@@ -75,12 +76,13 @@
 
                                     {% for day in day_range %}
                                         {% check_absences absence_dates|get_key:member.user.username year month_num day as check_absence %}
+                                        {% get_user_id all_absences|get_key:member.user.username as got_user_id %}
                                         {% check_absences recurring_absence_dates|get_key:member.user.username year month_num day as check_recurring_absence %}
                                         {% check_half_day half_days_data|get_key:member.user.username year month_num day as check_half_day %}
                                         {% if check_recurring_absence %}
                                         <td data-editable="{{editable}}" style="background-color: #ffaa00;" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="R"></td>
                                         {% elif check_absence %}
-                                        <td data-editable="{{editable}}" style="background-color: #ff0000;" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="S"></td>
+                                        <td data-editable="{{editable}}" style="background-color: #ff0000;" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="S">{{got_user_id}}</td>
                                         {% elif check_half_day == "A"%}
                                             {% if day in bank_hol and bank_holidays.enabled %}
                                             <td data-editable="{{editable}}" style="background: linear-gradient(to right, rgba(0,0,0,0.2) 50%, #ff0000 50% ); background-color: {{ bank_holidays.colour }} !important;" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>

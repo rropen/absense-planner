@@ -29,6 +29,7 @@ def get_absence_data(users, user_type):
             # mapping the absence content to keys in dictionary
             for x in absence_info:
                 absence_id = x.ID
+                user_id = x.User_ID
                 absence_date_start = x.absence_date_start
                 absence_date_end = x.absence_date_end
                 dates = absence_date_start
@@ -47,6 +48,7 @@ def get_absence_data(users, user_type):
                 absence_content.append(
                     {
                         "ID": absence_id,
+                        "User_ID": user_id,
                         "absence_date_start": absence_date_start,
                         "absence_date_end": absence_date_end,
                         "dates": total_absence_dates[user_username],
