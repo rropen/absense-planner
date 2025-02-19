@@ -1,5 +1,6 @@
 :root {
-  --user-cell-width: 120px;
+    --user-cell-width: 120px;
+    --cell-size: 47px;
 }
 
 * {
@@ -49,10 +50,6 @@ footer {
 }
 
 /* End of basic */
-
-:root {
-    --cell-size: 47px;
-}
 
 .RefreshBox {
     pointer-events: none;
