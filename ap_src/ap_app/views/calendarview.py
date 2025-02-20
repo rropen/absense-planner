@@ -69,23 +69,25 @@ def get_colour_data(user):
     
     return colour_data
 
+def sort_team_absences_by_logged_in_user(data, request):
+    user_username = request.user.username
+    def fetch_username_from_json(userIndex):
+        json_user_id = data[0]['members'][userIndex]['user']['username']
+        return json_user_id
+    for userIndex in range(len(data[0]['members'])):
+        if user_username == fetch_username_from_json(userIndex):
+            saved_user = data[0]['members'][userIndex]
+            data[0]['members'].pop(userIndex)
+            data[0]['members'].insert(0,saved_user)
+            break
+
 def team_calendar_data(id, request):
     data = None
 
     try:
         response = requests.get(env("TEAM_DATA_URL") + "api/members/?id={}".format(id))
-        user = request.user
-        user_id = user.id
         data = response.json()
-        def fetch_User(userIndex):
-            usersZ = data[0]['members'][userIndex]['user']['id']
-            return usersZ
-        for userA in range(len(data[0]['members'])):
-            if user_id == fetch_User(int(userA)):
-                saved_user = data[0]['members'][userA]
-                data[0]['members'].pop(userA)
-                data[0]['members'].insert(0,saved_user)
-                break
+        sort_team_absences_by_logged_in_user(data, request)
     except:
         # TODO Create error page for API failure
         raise NotImplementedError("Failed to retrieve API data (No error page)")
