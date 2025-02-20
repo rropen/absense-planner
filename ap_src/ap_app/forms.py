@@ -73,7 +73,7 @@ class RecurringAbsencesForm(forms.ModelForm):
         cleaned_data = super().clean()
     
     class Media:
-        js = ('/admin/jsi18n', '/admin/js/core.js',)
+        js = ('/jsi18n', '/js/core.js',)
     
     
 class TargetUserForm(forms.ModelForm):
