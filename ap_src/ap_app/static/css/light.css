@@ -4,8 +4,22 @@
     --days-cell-background: rgb(32, 108, 171);
 }
 
+.navbar a {
+    color: white;
+}
+
 .navbar a:hover, .navbar a:active, .navbar a:focus {
     color: #10069f;
+}
+
+.navbar .active {
+    color: #10069f;
+    background-color: white;
+}
+
+.navbar .dev-active {
+    color: #9f0606;
+    background-color: white;
 }
 
 .active {
@@ -44,20 +58,6 @@
 
 .rr-white {
     color: #fff;
-}
-
-.navbar a {
-    color: white;
-}
-
-.navbar .active {
-    color: #10069f;
-    background-color: white;
-}
-
-.navbar .dev-active {
-    color: #9f0606;
-    background-color: white;
 }
 
 .RefreshBox {
