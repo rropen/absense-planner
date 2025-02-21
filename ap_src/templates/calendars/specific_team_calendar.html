@@ -32,6 +32,11 @@
             </h1>
             <p style="margin-top: -1.25rem;" class="dText">{{ team_index.team.description }}</p>
         </div>
+        {% if team.favourite %}
+                <button class="button is-ghost" style="color: gold !important; padding-top: 0px!important; padding-bottom: 10px!important;" onclick="favouriteTeam(this, '{{ request.user.username }}', {{ team.team.id }})" onmouseover="starHover(this)" onmouseout="removeHover(this)" data-star="True"><i class="fas fa-star"></i></button>
+                {% else %}
+                <button class="button is-ghost" style="color: gold !important; padding-top: 0px!important; padding-bottom: 10px!important;" onclick="favouriteTeam(this, '{{ request.user.username }}', {{ team.team.id }})" onmouseover="starHover(this)" onmouseout="removeHover(this)" data-star="false"><i class="far fa-star"></i></button>
+                {% endif %} 
         <div class="column">
             <div class="level-right">
                 <a class="button is-info is-outlined mx-1" title="Notes"><i class="fas fa-clipboard-list"></i></a>
