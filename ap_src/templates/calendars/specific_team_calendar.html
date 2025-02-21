@@ -34,12 +34,11 @@
         </div>
         <div class="column">
             <div class="level-right">
-                <a class="button is-info is-outlined mx-1" title="Notes"><i class="fas fa-clipboard-list"></i></a>
                 <a class="button is-success is-outlined mx-1" title="Add Members"><i class="fas fa-user-plus"></i></a>
                 {% if user_data.role_info.role == "Owner" or user_data.role_info.role == "Co-Owner" %}
                 <a class="button is-link is-outlined mx-1" title="Settings" href={% url 'edit_team' id %}><i class="fas fa-cog"></i></a>
                 {% endif %}
-                <button class="button is-danger is-outlined mx-1 leave-team-button" title="Leave" id="{{ id }}" onclick="openLeaveTeamModal('{{ id }}', '{{ csrf_token }}', '{{ request.user.username }}')">Leave</button>
+                <button class="button is-danger is-outlined mx-1 leave-team-button" title="" id="{{ id }}" onclick="openLeaveTeamModal('{{ id }}', '{{ csrf_token }}', '{{ request.user.username }}')">Leave</button>
             </div>
         </div>
     </div>
