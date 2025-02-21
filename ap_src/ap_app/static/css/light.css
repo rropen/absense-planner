@@ -4,20 +4,20 @@
     --days-cell-background: rgb(32, 108, 171);
 }
 
-.navbar a {
+.navbar-items a {
     color: white;
 }
 
-.navbar a:hover, .navbar a:active, .navbar a:focus {
+.navbar-items a:hover, .navbar a:active, .navbar a:focus {
     color: #10069f;
 }
 
-.navbar .active {
+.navbar-items .active {
     color: #10069f;
     background-color: white;
 }
 
-.navbar .dev-active {
+.navbar-items .dev-active {
     color: #9f0606;
     background-color: white;
 }
