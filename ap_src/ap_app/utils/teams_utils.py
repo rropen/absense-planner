@@ -3,6 +3,18 @@ import requests
 
 import environ
 
+def sort_global_absences_by_logged_in_user(data, user):
+    for teamIndex in range(len(data)):
+        def fetch_username_from_json(userIndex):
+            user_username = data[teamIndex]['team']['members'][userIndex]['user']['username']
+            return user_username
+        for userIndex in range(len(data[teamIndex]['team']['members'])):
+            if user.username == fetch_username_from_json(userIndex):
+                saved_user = data[teamIndex]['team']['members'][userIndex]
+                data[teamIndex]['team']['members'].pop(userIndex)
+                data[teamIndex]['team']['members'].insert(0,saved_user)
+                break
+
 env = environ.Env()
 environ.Env.read_env()
 
@@ -20,7 +32,7 @@ def retrieve_calendar_data(user, sortValue):
     
     if r is not None and r.status_code == 200:
         data = r.json()
-    
+        sort_global_absences_by_logged_in_user(data, user)
     return data
 
 def get_users_sharing_teams(username, user_model):
