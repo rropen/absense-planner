@@ -1,7 +1,7 @@
 {% load static %}
 <form method="post" action="{% url 'update-colour' %}">
     {% csrf_token %}
-    <nav class="navbar">
+    <nav class="navbar permission_input_select">
         <div class="control">
             <div class="select is-rounded">
               <select name="enabled">
@@ -27,7 +27,7 @@
             </select>
           </div>
           <div class="control">
-            <input type="color" class="input is-rounded" style="width: 10vw;" value="{{ colour_value }}" name="colour" />
+            <input type="color" class="input is-rounded colour-selector" value="{{ colour_value }}" name="colour" />
         </div>
         <div class="control">
             <button class="button is-rounded" type="submit">

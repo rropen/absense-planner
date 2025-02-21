@@ -236,3 +236,18 @@ footer {
     padding: 10px 20px;
     cursor: pointer;
 }
+
+.colour-selector{
+    width: 10vw; 
+}
+
+@media only screen and (max-device-width: 600px) { 
+    .permission_input_select {
+        display: flex;
+        flex-direction: row ;
+    }
+    .colour-selector{
+        min-width: 3.23rem;
+        padding: 0.5rem;
+    }
+ }
