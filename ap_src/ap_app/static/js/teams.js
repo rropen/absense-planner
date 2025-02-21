@@ -102,7 +102,7 @@ function JoinTeam(e, user, redirect) {
     })
     .then(() => {
         if (redirect) {
-            location.replace(location.origin + "/teams/api-calendar/" + e.id)
+            location.replace(location.origin + "/teams/join")
         } else {
             location.reload()
         }
