@@ -13,7 +13,7 @@
         {% if team_data %}
         <table class="table is-bordered is-striped dates-table" style="box-shadow: 5px 5px 5px" id="{{ item.team.name }}">
             <thead>
-                <th class="blank-cell"></th>
+                <th style="background-color:rgb(2, 78, 141); color: white;" class="CalendarCell has-text-centered">Days</th>
                 {% for day in days_name %}
                 {% if day == Sa and weekends.enabled or day == Su and weekends.enabled %}
                 <th style="background-color: {{ weekends.offset}}; color: white;" class="CalendarCell has-text-centered">{{day}}</th>
@@ -26,8 +26,9 @@
                 {% endif %}
                 {% endfor %}
             </thead>
+
             <thead>
-                <th class="blank-cell"></th>
+                <th style="background-color:rgb(32, 108, 171); color: white;" class="blank-cell has-text-centered">Dates</th>
                 {% for day in day_range %}
                 {% if day == today and month == current_month and year == current_year %}
                 <th style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255);" class="CalendarCell has-text-centered">{{day}}</th>
