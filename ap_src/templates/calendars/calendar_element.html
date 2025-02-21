@@ -82,9 +82,9 @@
                                         {% if check_recurring_absence %}
                                         <td data-editable="{{editable}}" style="background-color: #ffaa00;" class="CalendarCell" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="R"></td>
                                         {% elif check_absence %}
-                                        <td data-editable="{{editable}}" style="background-color: #ff0000; position: relative;" class="CalendarCell"
+                                        <td data-editable="{{editable}}" style="background-color: #ff0000; position: relative;" class="CalendarCell p-0"
                                             id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="S">
-                                            <div class="tooltip column">
+                                            <div class="tooltip" style="height: 100%; width: 100%;">
                                                 <span class="tooltiptext">{{ got_user_id }} set this absence.</span>
                                             </div>
                                         </td>
