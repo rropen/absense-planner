@@ -4,8 +4,6 @@
 {% load static %}
 {% block content %}
 <head>
-    <script type="text/javascript" src="/admin/jsi18n"></script>
-    <script type="text/javascript" src="/static/admin/js/core.js"></script>
     {{form.media}}
     <title>Recurring Absence</title>
 </head>
@@ -35,4 +33,6 @@
     </form>
 </div>
 
+<script type="text/javascript" src="{% static 'jsi18n' %}"></script>
+<script type="text/javascript" src="{% static 'js/core.js' %}"></script>
 {% endblock %}

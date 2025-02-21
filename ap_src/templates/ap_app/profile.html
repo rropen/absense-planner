@@ -27,8 +27,10 @@
   <div class="level-right submit" style="position: relative; padding-right: 10px;">
     <form method="POST" class="level">
       {% csrf_token %}
-      <input type="submit" class="button is-link level-item mt-2" value="Switch" id="button", href="{% url 'profile' %}">
-      
+      <div class="tooltip">
+        <input type="submit" class="button is-link level-item mt-2" value="Switch" id="button" href="{% url 'profile' %}">
+        <span class="tooltiptext">Filter Absences</span>
+      </div>
       <div class="level-item">
         {{form | bulma}}
       </div>
