@@ -4,6 +4,10 @@
     --days-cell-background: rgb(32, 108, 171);
 }
 
+.navbar a:hover, .navbar a:active, .navbar a:focus {
+    color: #10069f;
+}
+
 .active {
     color: green;
     
