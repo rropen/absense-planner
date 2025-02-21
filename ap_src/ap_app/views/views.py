@@ -405,3 +405,12 @@ def remove_lingering_perms(request):
             return JsonResponse({'status': 'success'})
     # Something failed in the logic for checking and removing switch permissions
     return JsonResponse({'status': 'fail', 'message': 'Invalid request'})
+
+def Custom404View(request):
+    return render(request, '404.html')
+
+def Custom500View(request):
+    return render(request, '500.html')
+
+def Custom400View(request):
+    return render(request, '400.html')
