@@ -87,14 +87,16 @@ footer {
 }
 
 .tooltip .tooltiptext {
+    opacity: 0;
+    transition: opacity 0.5s;
     visibility: hidden;
     top: 100%;
     left: 50%;
-    margin-left: -60px;
     text-align: center;
     border-radius: 6px;
     padding: 5px 5px;
     position: absolute;
+    transform: translate(-50%, 0);
     z-index: 5;
 }
 
@@ -104,6 +106,7 @@ footer {
   
 .tooltip:hover .tooltiptext {
     visibility: visible;
+    opacity: 1;
 }
 
 .tooltip:active .tooltiptext {
