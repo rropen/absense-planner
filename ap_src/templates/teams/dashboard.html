@@ -68,7 +68,7 @@
             {% if team.role.role == "Owner" or team.role.role == "Co-Owner"%}
             <a class="button is-info mx-1" href={% url 'edit_team' id=team.team.id %}>Edit</a>
             {% endif %}
-            <button class="button is-danger mx-1 leave-team-button" title="" id="{{ team.team.id }}" onclick="openLeaveTeamModal('{{ team.team.id }}', '{{ csrf_token }}', '{{ request.user.username }}', '{{team.team.name}}')">Leave</button>
+            <button class="button is-danger mx-1 leave-team-button" id="{{ team.team.id }}" onclick="openLeaveTeamModal('{{ team.team.id }}', '{{ csrf_token }}', '{{ request.user.username }}', '{{team.team.name}}')">Leave</button>
         </div>
     </div>
     {% endfor %}
