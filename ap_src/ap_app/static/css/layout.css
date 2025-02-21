@@ -1,5 +1,6 @@
 :root {
-  --user-cell-width: 120px;
+    --user-cell-width: 2rem;
+    --cell-size: 3.5rem;
 }
 
 * {
@@ -50,10 +51,6 @@ footer {
 
 /* End of basic */
 
-:root {
-    --cell-size: 47px;
-}
-
 .RefreshBox {
     pointer-events: none;
     text-align: right;
@@ -74,6 +71,9 @@ footer {
     max-width: var(--cell-size);
     height: var(--cell-size);
     max-height: var(--cell-size);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .nav-bar-padding {
@@ -140,11 +140,20 @@ footer {
     max-width: var(--user-cell-width);
     height: var(--cell-size);
     white-space: nowrap;
+    display: flex;
+    justify-content: start;
+    align-items: center;
 }
 
 .username {
     overflow-x: hidden;
     text-overflow: ellipsis;
+    vertical-align: middle;
+    height: 100%;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    margin-left: 10%;
 }
 
 /* End of calendar */
