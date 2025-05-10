@@ -1,6 +1,6 @@
 # Security Policies and Procedures
 
-This document outlines security procedures and general policies for the `ChangeMe`
+This document outlines security procedures and general policies for the `Absense-Planner`
 project.
 
 - [Private Software Policy](#private-software-policy)
@@ -8,12 +8,12 @@ project.
 
 ## Private Software Policy
 
-The `ChangeMe` repository and project are intended to be internally accessible to Rolls-Royce employees and active partners. This project should not public facing or used publicly without the express permission of Rolls-Royce. If you find this package in the public, please contact the lead maintainer at [Josh.Haines@Rolls-Royce.com](mailto:Josh.Haines@Rolls-Royce.com).
+The `Absense-Planner` repository and project are intended to be internally accessible to Rolls-Royce employees and active partners. This project should not public facing or used publicly without the express permission of Rolls-Royce. If you find this package in the public, please contact the lead maintainer at [Josh.Haines@Rolls-Royce.com](mailto:Josh.Haines@Rolls-Royce.com).
 
 ## Reporting a Bug
 
-The `ChangeMe` team and community take all security bugs in `ChangeMe` seriously.
-Thank you for improving the security of `ChangeMe`. We appreciate your efforts and
+The `Absense-Planner` team and community take all security bugs in `Absense-Planner` seriously.
+Thank you for improving the security of `Absense-Planner`. We appreciate your efforts and
 responsible disclosure and will make every effort to acknowledge your
 contributions.
 
