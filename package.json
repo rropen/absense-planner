@@ -1,28 +1,29 @@
 {
-  "name": "project_template",
-  "version": "0.1.0",
-  "description": "Base template for future app templates in the Software Factory",
+  "name": "absense-planner",
+  "version": "0.0.1",
+  "description": "Python based absense planner from the UK T-Level Students",
   "main": "index.js",
-  "repository": "https://github.com/rrglobal/project_template",
-  "author": "Josh Haines",
+  "repository": "https://github.com/rropen/absense-planner",
+  "author": {
+    "name": "Rolls-Royce Software Factory",
+    "email": "SoftwareFactory@Rolls-Royce.com"
+  },
   "license": "MIT",
-  "private": true,
   "devDependencies": {
+    "@commitlint/cli": "^17.6.6",
+    "@commitlint/config-conventional": "^12.1.4",
     "commitizen": "^1.0.3",
     "cz-conventional-changelog": "^1.0.1",
     "husky": "^7.0.0",
-    "prettier": "^2.3.2",
-    "pretty-quick": "^3.1.1"
+    "prettier": "^2.3.2"
   },
   "scripts": {
     "prepare": "husky install",
     "commit": "cz",
-    "test": ""
+    "lint:format:ci": "prettier --check . && cd ap_src && uv run ruff check",
+    "lint:format:fix": "prettier -w . && cd ap_src && uv run ruff check --fix --exclude .venv/** && uv run ruff format"
   },
-  "dependencies": {
-    "@commitlint/cli": "^17.6.6",
-    "@commitlint/config-conventional": "^12.1.4"
-  },
+  "dependencies": {},
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"

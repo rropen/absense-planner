@@ -5,12 +5,12 @@ from django.urls import reverse
 from django.views.generic import UpdateView
 
 from ..forms import SwitchUser, RecurringAbsencesForm, TargetUserForm, AbsenceForm
-from ..models import (Absence, RecurringAbsences,
-                     UserProfile, User)
+from ..models import Absence, RecurringAbsences, UserProfile, User
 from ..utils.absence_utils import text_rules
 from datetime import datetime, timedelta
 
 from collections import namedtuple
+
 
 # Profile page
 @login_required
@@ -61,15 +61,16 @@ def profile_page(request):
                 "recurring_absences": rec_absences,
             },
         )
-    
+
+
 @login_required
 def absence_delete(request, absence_id: int, user_id: int, team_id: int = 1):
     try:
         absence = Absence.objects.get(pk=absence_id)
         absence.delete()
-    except Absence.DoesNotExist: 
+    except Absence.DoesNotExist:
         pass
-    if request.user == User.objects.get(id = user_id):
+    if request.user == User.objects.get(id=user_id):
         return redirect("profile")
     return redirect("edit_team_member_absence", team_id, user_id)
 
@@ -124,7 +125,7 @@ def edit_recurring_absences(request, pk):
             return redirect("index")
     else:
         form = RecurringAbsencesForm(instance=absence)
-        
+
         form2 = TargetUserForm(target_user=absence.Target_User_ID)
         form2.fields["target_user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[absence.User_ID]
@@ -133,6 +134,7 @@ def edit_recurring_absences(request, pk):
     return render(
         request, "ap_app/edit_recurring_absence.html", {"form": form, "form2": form2}
     )
+
 
 @login_required
 def add_recurring(request) -> render:
@@ -143,7 +145,6 @@ def add_recurring(request) -> render:
             edit_whitelist__in=[request.user]
         )
         rule = str(form["Recurrences"].value())
-
 
         if not ("DAILY" in rule or "BY" in rule):
             content = {
@@ -170,18 +171,19 @@ def add_recurring(request) -> render:
     content = {"form": form, "form2": form2}
     return render(request, "ap_app/add_recurring_absence.html", content)
 
-def manual_add(request:HttpRequest) -> render:
+
+def manual_add(request: HttpRequest) -> render:
     """
     Add an absence via the form
     """
     if request.method == "POST":
         form = AbsenceForm(
-            request.POST, 
+            request.POST,
             user=request.user,
             initial={
                 "start_date": datetime.now(),
-                "end_date": datetime.now().date() + timedelta(days=1)
-            }
+                "end_date": datetime.now().date() + timedelta(days=1),
+            },
         )
         form.fields["user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
@@ -196,39 +198,53 @@ def manual_add(request:HttpRequest) -> render:
             absence.User_ID = request.user
             absence.Target_User_ID = form.cleaned_data["user"].user
 
-            # Check if the dates overlap with an existing absence. 
-            valid = True # Assume absence is valid
-            DateRange = namedtuple('Range', ['start', 'end'])
-            absence_period = DateRange(start=absence.absence_date_start, end=absence.absence_date_end)
-            existing_absences = Absence.objects.filter(Target_User_ID=form.cleaned_data["user"].user.id)
+            # Check if the dates overlap with an existing absence.
+            valid = True  # Assume absence is valid
+            DateRange = namedtuple("Range", ["start", "end"])
+            absence_period = DateRange(
+                start=absence.absence_date_start, end=absence.absence_date_end
+            )
+            existing_absences = Absence.objects.filter(
+                Target_User_ID=form.cleaned_data["user"].user.id
+            )
             for existing_absence in existing_absences:
-                existing_absence_period = DateRange(start=existing_absence.absence_date_start, end=existing_absence.absence_date_end)
+                existing_absence_period = DateRange(
+                    start=existing_absence.absence_date_start,
+                    end=existing_absence.absence_date_end,
+                )
 
                 # Calculate overlap between new absence and existing absence
-                delta = (min(absence_period.end, existing_absence_period.end) -max(absence_period.start, existing_absence_period.start)).days + 1
+                delta = (
+                    min(absence_period.end, existing_absence_period.end)
+                    - max(absence_period.start, existing_absence_period.start)
+                ).days + 1
 
-                overlap = max(0, delta) # Ensure overlap is not negative
+                overlap = max(0, delta)  # Ensure overlap is not negative
 
                 if overlap > NO_ABSENCES:
                     valid = False
                     break
-            
+
             if valid:
                 absence.save()
                 return redirect("/")
             else:
-                return render(request, "ap_app/add_absence.html", {
-                    "form": form,
-                    "message": "The absence conflicts with an existing absence",
-                    "message_type": "is-danger"
-                })
+                return render(
+                    request,
+                    "ap_app/add_absence.html",
+                    {
+                        "form": form,
+                        "message": "The absence conflicts with an existing absence",
+                        "message_type": "is-danger",
+                    },
+                )
 
-    else: # GET request
+    else:  # GET request
         form = AbsenceForm(user=request.user)
         # Allow users to edit others absence if they have permission
         form.fields["user"].queryset = UserProfile.objects.filter(
             edit_whitelist__in=[request.user]
         )
-    
+
     content = {"form": form}
     return render(request, "ap_app/add_absence.html", content)

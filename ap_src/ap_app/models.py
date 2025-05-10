@@ -9,12 +9,14 @@ User = get_user_model()
 
 # TODO: is the ID, id field needed. Django has this built in as part of the Model class
 
+
 class Status(models.Model):
     id = models.AutoField(primary_key=True)
     status = models.CharField(max_length=65, null=False, unique=True)
 
     def __str__(self):
         return f"{self.status}"
+
 
 class Absence(models.Model):
     ID = models.AutoField(primary_key=True)
@@ -24,24 +26,16 @@ class Absence(models.Model):
         on_delete=models.CASCADE,
         related_name="target_user",
     )
-    absence_date_start = models.DateField(
-        _("Date"), max_length=200, default=now
-    )
-    absence_date_end = models.DateField(
-        _("Date"), max_length=200, default=now
-    )
+    absence_date_start = models.DateField(_("Date"), max_length=200, default=now)
+    absence_date_end = models.DateField(_("Date"), max_length=200, default=now)
 
     DAYS_CHOICES = (
-    ("NORMAL", "Normal"),
-    ("AFTERNOON", "Afternoon"),
-    ("MORNING", "Morning"),
+        ("NORMAL", "Normal"),
+        ("AFTERNOON", "Afternoon"),
+        ("MORNING", "Morning"),
+    )
 
-)
-
-    half_day = models.CharField(max_length=200,
-                  choices= DAYS_CHOICES,
-                  default="NORMAL")
-
+    half_day = models.CharField(max_length=200, choices=DAYS_CHOICES, default="NORMAL")
 
     _equivalent_if_fields_equal = (
         "Target_User_ID",
@@ -61,7 +55,9 @@ class Absence(models.Model):
                 if getattr(self, field) != getattr(other, field):
                     return False
             except AttributeError:
-                raise AttributeError(f"All fields should be present on both instances. `{field}` is missing.")
+                raise AttributeError(
+                    f"All fields should be present on both instances. `{field}` is missing."
+                )
         return True
 
     def save(self, *args, **kwargs):
@@ -113,8 +109,6 @@ class UserProfile(models.Model):
 
     external_teams = models.BooleanField(default=True)
 
-
-
     def __str__(self):
         return f"{self.user.username}"
 
@@ -122,18 +116,24 @@ class UserProfile(models.Model):
 class RecurringException(models.Model):
     ID = models.AutoField(primary_key=True)
     Target_User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="+")
-    User_ID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="recurringexception")
+    User_ID = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="recurringexception"
+    )
     Exception_Start = models.DateField(_("Date"), max_length=200, default=now)
     Exception_End = models.DateField(_("Date"), max_length=200, default=now)
+
 
 class ColourScheme(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200, unique=True)
     default = models.CharField(max_length=100)
 
+
 class ColorData(models.Model):
     id = models.AutoField(primary_key=True)
-    scheme = models.ForeignKey(ColourScheme, on_delete=models.CASCADE, related_name="colorscheme")
+    scheme = models.ForeignKey(
+        ColourScheme, on_delete=models.CASCADE, related_name="colorscheme"
+    )
     color = models.CharField(max_length=20)
     enabled = models.BooleanField(default=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

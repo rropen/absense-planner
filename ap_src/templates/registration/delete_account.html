@@ -1,17 +1,22 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <form method="POST">
-    {% csrf_token %}
-    <fieldset class="form-group">
-        <legend class="border-bottom mb-4">Delete User Account</legend>
-            <p>Are you sure you want to delete your account?  This will permanently delete your
-               profile and any content you have generated.</p>
-            {{ form }}
-    </fieldset>
-    <div class="form-group">
-        <button class="btn btn-danger" type="submit">Delete Account</button>
-            <a class="btn btn-primary-custom" style="float:right;" 
-               href="{% url 'profile' %}">Cancel</a>
-    </div>
+  {% csrf_token %}
+  <fieldset class="form-group">
+    <legend class="border-bottom mb-4">Delete User Account</legend>
+    <p>
+      Are you sure you want to delete your account? This will permanently delete
+      your profile and any content you have generated.
+    </p>
+    {{ form }}
+  </fieldset>
+  <div class="form-group">
+    <button class="btn btn-danger" type="submit">Delete Account</button>
+    <a
+      class="btn btn-primary-custom"
+      style="float: right"
+      href="{% url 'profile' %}"
+      >Cancel</a
+    >
+  </div>
 </form>
 {% endblock %}

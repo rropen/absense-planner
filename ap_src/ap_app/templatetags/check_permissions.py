@@ -12,5 +12,5 @@ def check_permissions(user, active_user):
             return True
         else:
             return False
-    
+
     return False

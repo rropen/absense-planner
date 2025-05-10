@@ -1,60 +1,86 @@
-{% extends 'base.html' %}
-{% load bulma_tags %}
-{% block title %}Settings{% endblock %}
-{% load static %}
-{% block content %}
+{% extends 'base.html' %} {% load bulma_tags %} {% block title %}Settings{%
+endblock %} {% load static %} {% block content %}
 <div class="container darkBackground">
-    <table class="table is-striped" style="width:100%">
-        <thead>
-            <th class="is-light is-size-5 has-text-weight-bold">Joining Requests</th>
-        </thead>
-        <tbody>
-            {% for pending_rel in pending_rels %}
-            <tr>
-                <td class="columns">
-                    <div class="column">
-                        <span class="is-size-6 has-text-weight-bold">User: {{pending_rel.user.username}}</span>
-                    </div>
-                    <div class="column">
-                        <span class="is-size-6 has-text-weight-bold">Applied for: {{pending_rel.role.role}}</span>
-                    </div>
-                    <div class="column has-text-right">
-                        <a id="accept_{{pending_rel.user.username}}" href="{% url 'joining_team_request' pending_rel.id 'accepted' %}"
-                            class="button is-success is-size-9 mx-2">Accept</a>
-                        <a id="decline_{{pending_rel.user.username}}" href="{% url 'joining_team_request' pending_rel.id 'nonactive' %}"
-                            class="button is-danger is-size-9">Decline</a>
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <div class="content">
-        <h2>Users</h2>
-        <div class="columns is-multiline">
-            {% for User in Team_users %}
-            <div class="column is-4">
-                <div class="card has-background-light p-4 has-text-centered">
-                    <span class="is-block is-size-5 has-text-weight-bold">{{User.user.username}}({{User.role}})</span>
-                    <br>
-                    <div class="mx-auto">
-                        {% if User.role != follower %}
-                        <a class="button is-success" href="{% url 'edit_team_member_absence' team.id User.user.id%}">Edit
-                            Absences</a>
-                        {% endif %}
-                        {% if User.role == member %}
-                        <a class="button is-info" href="{% url 'promote_team_member' team.id User.user.id%}">Promote to Co-Owner</a>
-                        {% elif User.role == coowner %}
-                        <a id="promote_{{User.user.username}}" class="button is-info" href="{% url 'demote_team_member' team.id User.user.id%}">Demote to Member</a>
-                        {% endif %}
-                        {% if User.role != owner %}
-                        <a class="button is-danger" id="remove_{{User.user.username}}" href="{% url 'remove_team_member' team.id User.user.id %}">Remove</a>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
+  <table class="table is-striped" style="width: 100%">
+    <thead>
+      <th class="is-light is-size-5 has-text-weight-bold">Joining Requests</th>
+    </thead>
+    <tbody>
+      {% for pending_rel in pending_rels %}
+      <tr>
+        <td class="columns">
+          <div class="column">
+            <span class="is-size-6 has-text-weight-bold"
+              >User: {{pending_rel.user.username}}</span
+            >
+          </div>
+          <div class="column">
+            <span class="is-size-6 has-text-weight-bold"
+              >Applied for: {{pending_rel.role.role}}</span
+            >
+          </div>
+          <div class="column has-text-right">
+            <a
+              id="accept_{{pending_rel.user.username}}"
+              href="{% url 'joining_team_request' pending_rel.id 'accepted' %}"
+              class="button is-success is-size-9 mx-2"
+              >Accept</a
+            >
+            <a
+              id="decline_{{pending_rel.user.username}}"
+              href="{% url 'joining_team_request' pending_rel.id 'nonactive' %}"
+              class="button is-danger is-size-9"
+              >Decline</a
+            >
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="content">
+    <h2>Users</h2>
+    <div class="columns is-multiline">
+      {% for User in Team_users %}
+      <div class="column is-4">
+        <div class="card has-background-light p-4 has-text-centered">
+          <span class="is-block is-size-5 has-text-weight-bold"
+            >{{User.user.username}}({{User.role}})</span
+          >
+          <br />
+          <div class="mx-auto">
+            {% if User.role != follower %}
+            <a
+              class="button is-success"
+              href="{% url 'edit_team_member_absence' team.id User.user.id%}"
+              >Edit Absences</a
+            >
+            {% endif %} {% if User.role == member %}
+            <a
+              class="button is-info"
+              href="{% url 'promote_team_member' team.id User.user.id%}"
+              >Promote to Co-Owner</a
+            >
+            {% elif User.role == coowner %}
+            <a
+              id="promote_{{User.user.username}}"
+              class="button is-info"
+              href="{% url 'demote_team_member' team.id User.user.id%}"
+              >Demote to Member</a
+            >
+            {% endif %} {% if User.role != owner %}
+            <a
+              class="button is-danger"
+              id="remove_{{User.user.username}}"
+              href="{% url 'remove_team_member' team.id User.user.id %}"
+              >Remove</a
+            >
+            {% endif %}
+          </div>
         </div>
-    </div> 
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 </div>
 {% endblock %}

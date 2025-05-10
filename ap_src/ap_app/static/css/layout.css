@@ -1,13 +1,14 @@
 :root {
-    --user-cell-width: 2rem;
-    --cell-size: 3.5rem;
+  --user-cell-width: 2rem;
+  --cell-size: 3.5rem;
 }
 
 * {
-    font-family: Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -20,26 +21,26 @@ body {
 }
 
 .main {
-    padding: 10px 10px;
-    min-height: 100%;
-    font-family: Arial, Helvetica, sans-serif;
+  padding: 10px 10px;
+  min-height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .logo {
-    margin-left: 1700px;
-    padding: 20px 10px;
+  margin-left: 1700px;
+  padding: 20px 10px;
 }
 
 .text {
-    font-weight: bold;
-    size: 10rem;
+  font-weight: bold;
+  size: 10rem;
 }
 .right {
-    float: right;
-    padding:100px;
+  float: right;
+  padding: 100px;
 }
 
-.noHover{
+.noHover {
   pointer-events: none;
 }
 
@@ -52,124 +53,125 @@ footer {
 /* End of basic */
 
 .RefreshBox {
-    pointer-events: none;
-    text-align: right;
-    background-color: ghostwhite;
-    border: 0px;
-    font-size: 11pt;
-    width: 24px;
-    height: 12px;
+  pointer-events: none;
+  text-align: right;
+  background-color: ghostwhite;
+  border: 0px;
+  font-size: 11pt;
+  width: 24px;
+  height: 12px;
 }
 .AbsenceBox {
-    border-width: 1px;
-    border-style: solid;
-    border-radius: 12px
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 12px;
 }
 
 .CalendarCell {
-    min-width: var(--cell-size);
-    max-width: var(--cell-size);
-    height: var(--cell-size);
-    max-height: var(--cell-size);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  min-width: var(--cell-size);
+  max-width: var(--cell-size);
+  height: var(--cell-size);
+  max-height: var(--cell-size);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .nav-bar-padding {
-    padding-left: 5%;
-    padding-right: 5%;
+  padding-left: 5%;
+  padding-right: 5%;
 }
 
 .tooltip {
-    position: relative;
-    display: inline-block;
+  position: relative;
+  display: inline-block;
 }
 
 .tooltip .tooltiptext {
-    opacity: 0;
-    transition: opacity 0.5s;
-    visibility: hidden;
-    top: 100%;
-    left: 50%;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 5px;
-    position: absolute;
-    transform: translate(-50%, 0);
-    z-index: 5;
+  opacity: 0;
+  transition: opacity 0.5s;
+  visibility: hidden;
+  top: 100%;
+  left: 50%;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 5px;
+  position: absolute;
+  transform: translate(-50%, 0);
+  z-index: 5;
 }
 
 .tooltiptext {
-    white-space: nowrap;
+  white-space: nowrap;
 }
-  
+
 .tooltip:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
+  visibility: visible;
+  opacity: 1;
 }
 
 .tooltip:active .tooltiptext {
-    visibility: hidden;
+  visibility: hidden;
 }
 
-.button-active, .button-inactive {
-    border-style: solid;
-    border-width: 2px;
+.button-active,
+.button-inactive {
+  border-style: solid;
+  border-width: 2px;
 }
 
 .calendar-group {
-    overflow: auto;
-    height: 75vh;
+  overflow: auto;
+  height: 75vh;
 }
 
 .dates-table {
-    width: 100%;
-    position: sticky;
-    top: 0;
-    z-index: 4;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 4;
 }
 
 .blank-cell {
-    width: 6vw; 
-    min-width: var(--user-cell-width); 
-    max-width: var(--user-cell-width); 
-    border: none !important;
+  width: 6vw;
+  min-width: var(--user-cell-width);
+  max-width: var(--user-cell-width);
+  border: none !important;
 }
 
 .user-cell {
-    width: 6vw; 
-    min-width: var(--user-cell-width); 
-    max-width: var(--user-cell-width);
-    height: var(--cell-size);
-    white-space: nowrap;
-    display: flex;
-    justify-content: start;
-    align-items: center;
+  width: 6vw;
+  min-width: var(--user-cell-width);
+  max-width: var(--user-cell-width);
+  height: var(--cell-size);
+  white-space: nowrap;
+  display: flex;
+  justify-content: start;
+  align-items: center;
 }
 
 .username {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    vertical-align: middle;
-    height: 100%;
-    display: flex;
-    justify-content: start;
-    align-items: center;
-    margin-left: 10%;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  height: 100%;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  margin-left: 10%;
 }
 
 /* End of calendar */
 
 .collapsible {
-    /* background-color: #271EA8; */
-    cursor: pointer;
-    padding: 18px;
-    width: 100%;
-    border: none;
-    text-align: left;
-    outline: none;
-    font-size: 15px;
+  /* background-color: #271EA8; */
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
 }
 
 /*.active,
@@ -177,23 +179,21 @@ footer {
      background-color: #555;
 }*/
 
-
 .collapsible:after {
-    content: '\002B';
-    font-weight: bold;
-    float: right;
-    margin-left: 5px;
+  content: "\002B";
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
 }
 
 /*.active:after {
     content: "\2212";
 }*/
 
-
 .content {
-    padding: 0 18px;
-    overflow: hidden;
-    transition: max-height 0.2s ease-out;
+  padding: 0 18px;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
 }
 
 /* End of settings */
@@ -202,55 +202,55 @@ footer {
 
 /* The Modal (background) */
 .modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 5; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 5; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
 }
 
 /* Modal Content */
 .modal-content {
-    margin: 15% auto; /* 15% from the top and centered */
-    padding: 20px;
-    width: 80%; /* Could be more or less, depending on screen size */
-    text-align: left;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  width: 80%; /* Could be more or less, depending on screen size */
+  text-align: left;
 }
 
 /* The Close Button */
 .close {
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
 }
 
 .close:hover,
 .close:focus {
-    text-decoration: none;
-    cursor: pointer;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 /* OK Button */
 #alert-ok-button {
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
 }
 
-.colour-selector{
-    width: 10vw; 
+.colour-selector {
+  width: 10vw;
 }
 
-@media only screen and (max-device-width: 600px) { 
-    .permission_input_select {
-        display: flex;
-        flex-direction: row ;
-    }
-    .colour-selector{
-        min-width: 3.23rem;
-        padding: 0.5rem;
-    }
- }
+@media only screen and (max-device-width: 600px) {
+  .permission_input_select {
+    display: flex;
+    flex-direction: row;
+  }
+  .colour-selector {
+    min-width: 3.23rem;
+    padding: 0.5rem;
+  }
+}

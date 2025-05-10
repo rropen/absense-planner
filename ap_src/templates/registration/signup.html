@@ -1,19 +1,14 @@
-{% extends 'base.html' %}
-{% block title %}Sign Up{% endblock %}
-{% load static %}
-{% block content %}
-{% load bulma_tags %}
-<div class="main container column is-3 ">
-    <h1 class="title has-text-centered dText">Sign up</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form | bulma }}
-        
-            
-        
-        <button id="submit" type="submit" class="button mt-1 is-link">Sign Up</button>
-    </form>
-</div>
+{% extends 'base.html' %} {% block title %}Sign Up{% endblock %} {% load static
+%} {% block content %} {% load bulma_tags %}
+<div class="main container column is-3">
+  <h1 class="title has-text-centered dText">Sign up</h1>
+  <form method="post">
+    {% csrf_token %} {{ form | bulma }}
 
+    <button id="submit" type="submit" class="button mt-1 is-link">
+      Sign Up
+    </button>
+  </form>
+</div>
 
 {% endblock %}

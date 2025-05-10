@@ -2,6 +2,7 @@ from django import template
 
 register = template.Library()
 
+
 @register.simple_tag
 def check_half_day(all_absences, year, month, day):
     if len(all_absences) > 0:

@@ -1,5 +1,6 @@
 from ..models import UserProfile
 
+
 def find_user_obj(user_to_find):
     """Finds & Returns object of 'UserProfile' for a user
     \n-param (type)User user_to_find

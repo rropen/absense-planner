@@ -8,31 +8,42 @@ from .models import Absence, RecurringAbsences, UserProfile
 
 User = get_user_model()
 
-#The form for creating a team
+
+# The form for creating a team
 class CreateTeamForm(forms.Form):
-    #details the model the form uses as well as the field names
+    # details the model the form uses as well as the field names
     class Meta:
         fields = ["name", "description", "private"]
 
-    #The name of the team. Has to be between 3 and 64 characters, and is required.
+    # The name of the team. Has to be between 3 and 64 characters, and is required.
     name = forms.CharField(
         min_length=3,
         max_length=64,
         required=True,
-        widget=forms.TextInput(attrs={"class": "", "placeholder": "Team Name", "id":"nameInput"}),
+        widget=forms.TextInput(
+            attrs={"class": "", "placeholder": "Team Name", "id": "nameInput"}
+        ),
     )
 
-    #The description of the team. Can be up to 512 characters long. Is optional.
+    # The description of the team. Can be up to 512 characters long. Is optional.
     description = forms.CharField(
         max_length=512,
         required=True,
-        widget=forms.Textarea(attrs={"class": "", "placeholder": "Team Description","rows":4, "cols":15}),
+        widget=forms.Textarea(
+            attrs={
+                "class": "",
+                "placeholder": "Team Description",
+                "rows": 4,
+                "cols": 15,
+            }
+        ),
     )
 
-    #Whether or not the team is private
+    # Whether or not the team is private
     private = forms.BooleanField(
         required=False, widget=forms.CheckboxInput(attrs={"class": ""})
     )
+
 
 class login(forms.Form):
     name = forms.CharField(
@@ -64,35 +75,41 @@ class sign_up(forms.Form):
 class register(forms.Form):
     check = forms.BooleanField()
 
+
 # maybe add name field
 class RecurringAbsencesForm(forms.ModelForm):
     class Meta:
         model = RecurringAbsences
-        fields = ['ID','Recurrences']
+        fields = ["ID", "Recurrences"]
+
     def clean(self):
-        cleaned_data = super().clean()
-    
+        super().clean()
+
     class Media:
-        js = ('/jsi18n', '/js/core.js',)
-    
-    
+        js = (
+            "/jsi18n",
+            "/js/core.js",
+        )
+
+
 class TargetUserForm(forms.ModelForm):
     class Meta:
         model = RecurringAbsences
-        fields = ['target_user']
+        fields = ["target_user"]
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("target_user")
         super().__init__(*args, **kwargs)
         self.fields["target_user"].initial = UserProfile.objects.get(user=self.user)
 
-
     target_user = forms.ModelChoiceField(
-        label="User:", required=True, queryset=User.objects.all(), initial=None, 
+        label="User:",
+        required=True,
+        queryset=User.objects.all(),
+        initial=None,
     )
-    
 
-    
+
 class AbsenceForm(forms.ModelForm):
     class Meta:
         model = Absence
@@ -109,7 +126,6 @@ class AbsenceForm(forms.ModelForm):
                 return False
             return True
 
-        
         cleaned_data = super().clean()
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
@@ -122,29 +138,33 @@ class AbsenceForm(forms.ModelForm):
     start_date = forms.DateField(
         label="Starting Date:",
         required=True,
-        input_formats=['%d/%m/%Y', '%Y-%m-%d', '%d-%m-%Y'],
-        widget=forms.DateInput(attrs={"type": "date"},format='%d-%m-%Y'),
+        input_formats=["%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y"],
+        widget=forms.DateInput(attrs={"type": "date"}, format="%d-%m-%Y"),
     )
-    
+
     end_date = forms.DateField(
         label="Ending Date:",
         required=True,
-        input_formats=['%d/%m/%Y', '%Y-%m-%d', '%d-%m-%Y'],
-        widget=forms.DateInput(attrs={"type": "date"},format='%d-%m-%Y'),
+        input_formats=["%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y"],
+        widget=forms.DateInput(attrs={"type": "date"}, format="%d-%m-%Y"),
         initial=lambda: now().date() + datetime.timedelta(days=1),
     )
     user = forms.ModelChoiceField(
-        label="User:", required=True, queryset=User.objects.all(), initial=None, 
+        label="User:",
+        required=True,
+        queryset=User.objects.all(),
+        initial=None,
     )
+
 
 class SwitchUser(forms.Form):
     class Meta:
         fields = ["user"]
-    
+
     user = forms.ModelChoiceField(
-        label="", required = True, queryset=User.objects.all(), initial=None
+        label="", required=True, queryset=User.objects.all(), initial=None
     )
-    
+
 
 class DeleteUserForm(forms.ModelForm):
     class Meta:
