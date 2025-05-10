@@ -1,32 +1,23 @@
-{% extends 'base.html' %}
-{% load bulma_tags %}
-{% block title %}Edit Recurring Absence{% endblock %}
-{% load static %}
-{% block content %}
-
-
+{% extends 'base.html' %} {% load bulma_tags %} {% block title %}Edit Recurring
+Absence{% endblock %} {% load static %} {% block content %}
 
 <div class="main container column is-3">
-    <h1 class="title has-text-centered dText"> Edit Recurring Absence </h1>
-    <form method="POST" class="post-form">
-        {% csrf_token %}
-        {% if message %}
-            {% include "messages.html" %}
-            {% endif %}
-        {{ form }}
-        
-        {{ form.media }}
-        
-        <div class="pt-6 pb-3">
-            {{ form2 | bulma }}
-        </div>
-            {% for error in form.errors %}
-            <p>{{error}}</p>
-            {% endfor %}
-            <input id="submit" type="submit" class="button is-fullwidth is-info" value="Update">
+  <h1 class="title has-text-centered dText">Edit Recurring Absence</h1>
+  <form method="POST" class="post-form">
+    {% csrf_token %} {% if message %} {% include "messages.html" %} {% endif %}
+    {{ form }} {{ form.media }}
 
-
-    </form>
+    <div class="pt-6 pb-3">{{ form2 | bulma }}</div>
+    {% for error in form.errors %}
+    <p>{{error}}</p>
+    {% endfor %}
+    <input
+      id="submit"
+      type="submit"
+      class="button is-fullwidth is-info"
+      value="Update"
+    />
+  </form>
 </div>
 
 {% endblock %}

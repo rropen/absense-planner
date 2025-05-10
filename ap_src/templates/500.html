@@ -1,45 +1,43 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>What went wrong?</title>
-    <link rel="stylesheet" href="{% static 'css/error_pages.css' %}">
-</head>
-<body>
-
+    <link rel="stylesheet" href="{% static 'css/error_pages.css' %}" />
+  </head>
+  <body>
     <div class="container">
-        <div class="sad-face">:(</div>
-        <div class="title">500 INTERNAL_SERVER_ERROR</div>
-        <div class="message">
-          Your website wasn't built very well, therefore this is on your screen.
-          <br><br>
-          You can search for the error online using the error code below.
-        </div>
-        <div class="details">
-          Error Code: HTTP_500_INTERNAL_SERVER_ERROR
-          <br><br>
-          What failed: SERVER_PROCESS_CRASHED
-          <br>
-          Stop Code: 0x00000500
-          <br><br>
-          Go back to the home page and tell your developers to fix this:<br>
-          <a href="/">https://Absence-Planner.com/</a>
-        </div>
+      <div class="sad-face">:(</div>
+      <div class="title">500 INTERNAL_SERVER_ERROR</div>
+      <div class="message">
+        Your website wasn't built very well, therefore this is on your screen.
+        <br /><br />
+        You can search for the error online using the error code below.
       </div>
-
-</body>
+      <div class="details">
+        Error Code: HTTP_500_INTERNAL_SERVER_ERROR
+        <br /><br />
+        What failed: SERVER_PROCESS_CRASHED
+        <br />
+        Stop Code: 0x00000500
+        <br /><br />
+        Go back to the home page and tell your developers to fix this:<br />
+        <a href="/">https://Absence-Planner.com/</a>
+      </div>
+    </div>
+  </body>
 </html>
 
 <script>
-    function playAudio(){
-        audio.play().catch(error => console.log("Playback error:", error));
-    };
+  function playAudio() {
+    audio.play().catch((error) => console.log("Playback error:", error));
+  }
 
-    var audio = new Audio("{% static 'audio\death-sound.mp3' %}");
-    document.documentElement.addEventListener("click", playAudio);
-    document.documentElement.addEventListener("keypress", playAudio);
+  var audio = new Audio("{% static 'audio\death-sound.mp3' %}");
+  document.documentElement.addEventListener("click", playAudio);
+  document.documentElement.addEventListener("keypress", playAudio);
 </script>

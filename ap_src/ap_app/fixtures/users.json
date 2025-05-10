@@ -1,29 +1,29 @@
 [
-    {
-      "model": "auth.user",
-      "pk": 1,
-      "fields": {
-        "id": "1",
-        "username": "David",
-        "password": "pbkdf2_sha256$600000$85tXMY3XZvcThUd93C2B1H$73B3HwLiy6cUMEWSu8Vp6eeG1DLdjd8w9Y6nPmdoUdY="
-      }
-    },
-    {
-      "model": "auth.user",
-      "pk": 1,
-      "fields": {
-        "id": "2",
-        "username": "Sarah",
-        "password": "pbkdf2_sha256$600000$85tXMY3XZvcThUd93C2B1H$73B3HwLiy6cUMEWSu8Vp6eeG1DLdjd8w9Y6nPmdoUdY="
-      }
-    },
-    {
-      "model": "auth.user",
-      "pk": 1,
-      "fields": {
-        "id": "3",
-        "username": "John",
-        "password": "pbkdf2_sha256$600000$85tXMY3XZvcThUd93C2B1H$73B3HwLiy6cUMEWSu8Vp6eeG1DLdjd8w9Y6nPmdoUdY="
-      }
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "id": "1",
+      "username": "David",
+      "password": "pbkdf2_sha256$600000$85tXMY3XZvcThUd93C2B1H$73B3HwLiy6cUMEWSu8Vp6eeG1DLdjd8w9Y6nPmdoUdY="
     }
+  },
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "id": "2",
+      "username": "Sarah",
+      "password": "pbkdf2_sha256$600000$85tXMY3XZvcThUd93C2B1H$73B3HwLiy6cUMEWSu8Vp6eeG1DLdjd8w9Y6nPmdoUdY="
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "id": "3",
+      "username": "John",
+      "password": "pbkdf2_sha256$600000$85tXMY3XZvcThUd93C2B1H$73B3HwLiy6cUMEWSu8Vp6eeG1DLdjd8w9Y6nPmdoUdY="
+    }
+  }
 ]

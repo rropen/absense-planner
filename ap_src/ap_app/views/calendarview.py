@@ -5,13 +5,12 @@ import pandas as pd
 import calendar
 import holidays
 import environ
-import json
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.http import HttpRequest
 
-from ..models import (UserProfile, ColorData, ColourScheme, User, Absence)
+from ..models import UserProfile, ColorData, ColourScheme, User, Absence
 
 from ..utils.absence_utils import get_absence_data
 from ..utils.teams_utils import retrieve_calendar_data
@@ -19,20 +18,24 @@ from ..utils.teams_utils import retrieve_calendar_data
 env = environ.Env()
 environ.Env.read_env()
 
+
 def check_calendar_date(year, month) -> bool:
     date = datetime.datetime(year, datetime.datetime.strptime(month, "%B").month, 1)
     current = datetime.datetime.now()
-    
-    if date < (current - relativedelta(years=1)) or date > (current + relativedelta(years=1)):
+
+    if date < (current - relativedelta(years=1)) or date > (
+        current + relativedelta(years=1)
+    ):
         return False
-    
+
     return True
+
 
 @login_required
 def set_calendar_month(request):
     if request.method == "POST":
-        month = request.POST.get('month_names')
-        
+        month = request.POST.get("month_names")
+
         split = month.split()
 
         month = split[0]
@@ -41,15 +44,21 @@ def set_calendar_month(request):
 
         print(month)
 
-    return redirect('all_calendar', month=month, year=year)
+    return redirect("all_calendar", month=month, year=year)
+
 
 def color_variant(hex_color, brightness_offset=1):
     if len(hex_color) != 7:
-        raise Exception("Passed %s into color_variant(), needs to be in #87c95f format." % hex_color)
-    rgb_hex = [hex_color[x:x+2] for x in [1, 3, 5]]
+        raise Exception(
+            "Passed %s into color_variant(), needs to be in #87c95f format." % hex_color
+        )
+    rgb_hex = [hex_color[x : x + 2] for x in [1, 3, 5]]
     new_rgb_int = [int(hex_value, 16) + brightness_offset for hex_value in rgb_hex]
-    new_rgb_int = [min([255, max([0, i])]) for i in new_rgb_int] # make sure new values are between 0 and 255
+    new_rgb_int = [
+        min([255, max([0, i])]) for i in new_rgb_int
+    ]  # make sure new values are between 0 and 255
     return "rgb" + str(new_rgb_int).replace("[", "(").replace("]", ")")
+
 
 def get_colour_data(user):
     colour_data = {}
@@ -64,22 +73,26 @@ def get_colour_data(user):
             scheme_data["enabled"] = True
             scheme_data["colour"] = scheme.default
             scheme_data["offset"] = color_variant(scheme.default, -30)
-        
+
         colour_data[scheme.name.replace(" ", "_").lower()] = scheme_data
-    
+
     return colour_data
+
 
 def sort_team_absences_by_logged_in_user(data, request):
     user_username = request.user.username
+
     def fetch_username_from_json(userIndex):
-        json_user_id = data[0]['members'][userIndex]['user']['username']
+        json_user_id = data[0]["members"][userIndex]["user"]["username"]
         return json_user_id
-    for userIndex in range(len(data[0]['members'])):
+
+    for userIndex in range(len(data[0]["members"])):
         if user_username == fetch_username_from_json(userIndex):
-            saved_user = data[0]['members'][userIndex]
-            data[0]['members'].pop(userIndex)
-            data[0]['members'].insert(0,saved_user)
+            saved_user = data[0]["members"][userIndex]
+            data[0]["members"].pop(userIndex)
+            data[0]["members"].insert(0, saved_user)
             break
+
 
 def team_calendar_data(id, request):
     data = None
@@ -91,11 +104,12 @@ def team_calendar_data(id, request):
     except:
         # TODO Create error page for API failure
         raise NotImplementedError("Failed to retrieve API data (No error page)")
-    
+
     if response.status_code != 200:
         raise NotImplementedError("Failed to retrieve API data (No error page)")
-    
+
     return data
+
 
 def get_date_data(
     region,
@@ -120,20 +134,33 @@ def get_date_data(
     next_year = datetime.datetime.today().year + 1
 
     try:
-        last_year_date = datetime.datetime.strptime(f"{last_year}-{datetime.datetime.today().month}-{datetime.datetime.today().day}",'%Y-%m-%d').date()
-        next_year_date = datetime.datetime.strptime(f"{next_year}-{datetime.datetime.today().month}-{datetime.datetime.today().day}",'%Y-%m-%d').date()
-    except ValueError: 
-        last_year_date = datetime.datetime.strptime(f"{last_year}-{datetime.datetime.today().month}-{datetime.datetime.today().day-1}",'%Y-%m-%d').date()
-        next_year_date = datetime.datetime.strptime(f"{next_year}-{datetime.datetime.today().month}-{datetime.datetime.today().day-1}",'%Y-%m-%d').date()
+        last_year_date = datetime.datetime.strptime(
+            f"{last_year}-{datetime.datetime.today().month}-{datetime.datetime.today().day}",
+            "%Y-%m-%d",
+        ).date()
+        next_year_date = datetime.datetime.strptime(
+            f"{next_year}-{datetime.datetime.today().month}-{datetime.datetime.today().day}",
+            "%Y-%m-%d",
+        ).date()
+    except ValueError:
+        last_year_date = datetime.datetime.strptime(
+            f"{last_year}-{datetime.datetime.today().month}-{datetime.datetime.today().day - 1}",
+            "%Y-%m-%d",
+        ).date()
+        next_year_date = datetime.datetime.strptime(
+            f"{next_year}-{datetime.datetime.today().month}-{datetime.datetime.today().day - 1}",
+            "%Y-%m-%d",
+        ).date()
 
-
-    #YYYY/MM/DD    
+    # YYYY/MM/DD
     start_date, end_date = last_year_date, next_year_date
- 
-    data["month_list"] = pd.period_range(start=start_date, end=end_date, freq='M')
+
+    data["month_list"] = pd.period_range(start=start_date, end=end_date, freq="M")
     data["month_list"] = [month.strftime("%B %Y") for month in data["month_list"]]
 
-    data["selected_date"] = datetime.date(int(data["year"]), datetime.datetime.strptime(month, "%B").month, 1).strftime("%B %Y")
+    data["selected_date"] = datetime.date(
+        int(data["year"]), datetime.datetime.strptime(month, "%B").month, 1
+    ).strftime("%B %Y")
 
     data["day_range"] = range(
         1,
@@ -181,15 +208,16 @@ def get_date_data(
         date = f"{day} {month} {year}"
         date = datetime.datetime.strptime(date, "%d %B %Y")
         date = date.strftime("%A")[0:2]
-        if (date == "Sa" or date == "Su"):
+        if date == "Sa" or date == "Su":
             data["weekend_list"].append(day)
 
     data["bank_hol"] = []
     for h in holidays.country_holidays(region, years=year).items():
-        if (h[0].month == data["month_num"]):
+        if h[0].month == data["month_num"]:
             data["bank_hol"].append(h[0].day)
-        
+
     return data
+
 
 def get_filter_users(request, users) -> list:
     """Used for calendar filtering system - (Returns list of filtered users depending on
@@ -233,7 +261,8 @@ def get_filter_users(request, users) -> list:
 
     return filtered_users
 
-def retrieve_all_users(request:HttpRequest, data):
+
+def retrieve_all_users(request: HttpRequest, data):
     users = []
     users.append(request.user)
     if data is not None:
@@ -242,20 +271,21 @@ def retrieve_all_users(request:HttpRequest, data):
                 user = User.objects.filter(username=member["user"]["username"])
                 if user.exists() and user not in users:
                     users.append(user[0])
-    
+
     return users
+
 
 @login_required
 def main_calendar(
-    request:HttpRequest,
-    month = datetime.datetime.now().strftime("%B"),
-    year = datetime.datetime.now().year
+    request: HttpRequest,
+    month=datetime.datetime.now().strftime("%B"),
+    year=datetime.datetime.now().year,
 ):
     """
     Main calendar using API data.
     """
 
-    # Retrieve sort value of calendars.    
+    # Retrieve sort value of calendars.
     sortValue = None
     if request.GET.get("sortBy") is not None:
         sortValue = request.GET.get("sortBy")
@@ -266,22 +296,25 @@ def main_calendar(
 
     users = retrieve_all_users(request, teams_data)
 
-    calendar_data = retrieve_common_calendar_data(user, year, month, users, page = "main_calendar")
+    calendar_data = retrieve_common_calendar_data(
+        user, year, month, users, page="main_calendar"
+    )
 
     context = {
         **calendar_data,
         "team_data": teams_data,
         "sort_value": sortValue,
-        "home_active": True
+        "home_active": True,
     }
     return render(request, "calendars/all_teams_calendar.html", context)
 
+
 @login_required
 def api_team_calendar(
-    request:HttpRequest,
+    request: HttpRequest,
     id,
     month=datetime.datetime.now().strftime("%B"),
-    year=datetime.datetime.now().year
+    year=datetime.datetime.now().year,
 ):
     """
     Specific team calendar using the API
@@ -304,18 +337,21 @@ def api_team_calendar(
         if user["user"]["username"] == request.user.username:
             user_data = user["user"]
 
-    calendar_data = retrieve_common_calendar_data(request.user, year, month, team_users, page = "api_team_calendar")
-    
+    calendar_data = retrieve_common_calendar_data(
+        request.user, year, month, team_users, page="api_team_calendar"
+    )
+
     data = {
         **calendar_data,
         "team_data": team_data,
         "user_data": user_data,
         "id": id,
-        "url": env("TEAM_DATA_URL")
+        "url": env("TEAM_DATA_URL"),
     }
 
     return render(request, "calendars/specific_team_calendar.html", data)
-                    
+
+
 def retrieve_common_calendar_data(user, year, month, team_users, page):
     """
     Retrieves common calendar data for use with the reusable calendar_element.html
@@ -340,11 +376,6 @@ def retrieve_common_calendar_data(user, year, month, team_users, page):
 
     weekends = {"Sa": "Sa", "Su": "Su"}
 
-    common_calendar_data = {
-        **date_data,
-        **absence_data,
-        **weekends,
-        **colour_data
-    }
+    common_calendar_data = {**date_data, **absence_data, **weekends, **colour_data}
 
     return common_calendar_data

@@ -1,6 +1,7 @@
 from ..models import UserProfile
 from django.contrib.auth.models import User
 
+
 def get_user_id_from_username(selected_username):
     try:
         user_matching_username = User.objects.get(username=selected_username)
@@ -10,6 +11,7 @@ def get_user_id_from_username(selected_username):
         return
 
     return user_id_of_user
+
 
 def get_userprofile_id_from_user_id(user_id):
     try:

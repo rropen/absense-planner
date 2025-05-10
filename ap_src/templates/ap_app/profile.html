@@ -1,14 +1,13 @@
-{% extends "base.html" %}
-{% block title %}Profile{% endblock %}
-{% load bulma_tags %}
-{% load static %}
-{% block content %}
+{% extends "base.html" %} {% block title %}Profile{% endblock %} {% load
+bulma_tags %} {% load static %} {% block content %}
 
 <div id="delete-modal" class="modal">
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title">Are you sure you want to delete this absence?</p>
+      <p class="modal-card-title">
+        Are you sure you want to delete this absence?
+      </p>
       <button class="delete" aria-label="close"></button>
     </header>
     <footer class="modal-card-foot">
@@ -19,34 +18,40 @@
 </div>
 
 <nav class="">
-  <div class="block has-text-centered" style="position:absolute; left:0; right:0; margin-top:10px;">
+  <div
+    class="block has-text-centered"
+    style="position: absolute; left: 0; right: 0; margin-top: 10px"
+  >
     <h1 class="title dText">My Absences</h1>
   </div>
 
   <!-- Left side -->
-  <div class="level-right submit" style="position: relative; padding-right: 10px;">
+  <div
+    class="level-right submit"
+    style="position: relative; padding-right: 10px"
+  >
     <form method="POST" class="level">
       {% csrf_token %}
       <div class="tooltip">
-        <input type="submit" class="button is-link level-item mt-2" value="Switch" id="button" href="{% url 'profile' %}">
+        <input
+          type="submit"
+          class="button is-link level-item mt-2"
+          value="Switch"
+          id="button"
+          href="{% url 'profile' %}"
+        />
         <span class="tooltiptext">Filter Absences</span>
       </div>
-      <div class="level-item">
-        {{form | bulma}}
-      </div>
-
+      <div class="level-item">{{form | bulma}}</div>
     </form>
-
   </div>
 </nav>
 
 <div class="main container mt-6">
   <div id="message" onclick="close_message()">
-    {% if message %}
-    {% include "messages.html" %}
-    {% endif %}
+    {% if message %} {% include "messages.html" %} {% endif %}
   </div>
-  <br>
+  <br />
   {% if not absences and not recurring_absences.items%}
 
   <div class="container has-background-light box darkInput">
@@ -56,17 +61,26 @@
   </div>
   {% endif %}
 
-
   <div class="mt-2">
     <div class="columns is-multiline">
       {% for absence in absences %}
       <div class="column is-one-third">
         <div class="card has-background-light p-4 has-text-centered">
-          <span class="is-block is-size-5 has-text-weight-bold"> Start date: {{ absence.absence_date_start }}</span>
-          <span class="is-block is-size-5 has-text-weight-bold">End date: {{ absence.absence_date_end }}</span>
+          <span class="is-block is-size-5 has-text-weight-bold">
+            Start date: {{ absence.absence_date_start }}</span
+          >
+          <span class="is-block is-size-5 has-text-weight-bold"
+            >End date: {{ absence.absence_date_end }}</span
+          >
           <div class="mx-auto">
-            <a class="button is-info" href="/absence/edit/{{ absence.pk }}">Edit</a>
-            <a class="button is-danger" href="/absence/delete/{{ absence.pk }}/{{request.user.id}}">Delete</a>
+            <a class="button is-info" href="/absence/edit/{{ absence.pk }}"
+              >Edit</a
+            >
+            <a
+              class="button is-danger"
+              href="/absence/delete/{{ absence.pk }}/{{request.user.id}}"
+              >Delete</a
+            >
           </div>
         </div>
       </div>
@@ -75,93 +89,90 @@
   </div>
   <div class="mt-2">
     <div class="columns is-multiline">
-      {% for id, absence in recurring_absences.items %}
-      {% for x in absence %}
+      {% for id, absence in recurring_absences.items %} {% for x in absence %}
       <div class="column is-6">
         <div class="card has-background-light p-4 has-text-centered">
-          {{x}}
-          {% if not x|check_rule %}
-          <p style="color:red"> This rule needs editing, there needs to be a day/month specified
+          {{x}} {% if not x|check_rule %}
+          <p style="color: red">
+            This rule needs editing, there needs to be a day/month specified
           </p>
-            {% endif %}
+          {% endif %}
           <div class="mx-auto">
-            <a class="button is-info" href="/absence/edit_recurring/{{ id }}">Edit</a>
-            <a class="button is-danger" href="/absence_recurring/delete/{{id}}/{{request.user.id}}/">Delete</a>
+            <a class="button is-info" href="/absence/edit_recurring/{{ id }}"
+              >Edit</a
+            >
+            <a
+              class="button is-danger"
+              href="/absence_recurring/delete/{{id}}/{{request.user.id}}/"
+              >Delete</a
+            >
           </div>
         </div>
       </div>
-      {% endfor %}
-      {% endfor %}
+      {% endfor %} {% endfor %}
     </div>
   </div>
-
-
 </div>
 <script>
-
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener("DOMContentLoaded", () => {
     // Functions to open and close a modal
     function openModal() {
       $el = document.getElementById("delete-modal");
-      $el.classList.add('is-active');
+      $el.classList.add("is-active");
     }
 
     function closeModal($el) {
-      $el.classList.remove('is-active');
+      $el.classList.remove("is-active");
     }
 
     function closeAllModals() {
-      (document.querySelectorAll('.modal') || []).forEach(($modal) => {
+      (document.querySelectorAll(".modal") || []).forEach(($modal) => {
         closeModal($modal);
       });
     }
 
     // Add a click event on buttons to open a specific modal
-    (document.querySelectorAll('.js-modal-trigger') || []).forEach(($trigger) => {
-      const modal = $trigger.dataset.target;
-      const $target =
-
-        $trigger.addEventListener('click', (e) => {
+    (document.querySelectorAll(".js-modal-trigger") || []).forEach(
+      ($trigger) => {
+        const modal = $trigger.dataset.target;
+        const $target = $trigger.addEventListener("click", (e) => {
           openModal($target);
         });
-      $("#delete-btn").attr("href", "/absence/delete/" + $trigger.dataset.id)
-    });
+        $("#delete-btn").attr("href", "/absence/delete/" + $trigger.dataset.id);
+      }
+    );
 
     // Add a click event on various child elements to close the parent modal
-    (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button') || []).forEach(($close) => {
-      const $target = $close.closest('.modal');
+    (
+      document.querySelectorAll(
+        ".modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button"
+      ) || []
+    ).forEach(($close) => {
+      const $target = $close.closest(".modal");
 
-      $close.addEventListener('click', () => {
+      $close.addEventListener("click", () => {
         closeModal($target);
       });
     });
 
     // Add a keyboard event to close all modals
-    document.addEventListener('keydown', (event) => {
+    document.addEventListener("keydown", (event) => {
       const e = event || window.event;
 
-      if (e.keyCode === 27) { // Escape key
+      if (e.keyCode === 27) {
+        // Escape key
         closeAllModals();
       }
     });
-
-    
-    
   });
 
-
-
   function close_message() {
-    
     var elem = document.getElementById("message");
     elem.style.display = "none";
-
   }
-    // $(document).ready(function(){
-    //   $("#button").click(setTimeout(close_message(), 2000));
-      
-    // })
- 
+  // $(document).ready(function(){
+  //   $("#button").click(setTimeout(close_message(), 2000));
 
+  // })
 </script>
 {% endblock %}

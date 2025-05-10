@@ -1,34 +1,38 @@
-{% extends 'base.html' %}
-{% load bulma_tags %}
-{% block title %}Invite{% endblock %}
-{% load static %}
-{% block content %}
-
-{% if not invites %}
+{% extends 'base.html' %} {% load bulma_tags %} {% block title %}Invite{%
+endblock %} {% load static %} {% block content %} {% if not invites %}
 <div class="container has-background-light box">
-    <div class="is-size-5 mb-3">
-        <span class="is-block is-size-5">You have no pending invites.</span>
-        <a class="button is-link" href="{% url 'dashboard' %}">Back to Dashboard</a>
-    </div>
+  <div class="is-size-5 mb-3">
+    <span class="is-block is-size-5">You have no pending invites.</span>
+    <a class="button is-link" href="{% url 'dashboard' %}">Back to Dashboard</a>
+  </div>
 </div>
-{% endif %}
-
-{% for invite in invites %}
+{% endif %} {% for invite in invites %}
 <div class="container has-background-light box">
-    <div class="is-size-5 mb-3">
-        <span class="is-block is-size-5	has-text-weight-bold">{{invite.team.name}} <i class="fas fa-user-alt mx-1"></i>{{invite.team.count}}</span>
-        {% if invite.team.private %}
-            <span class="tag is-dark">Private</span>
-        {% elif not invite.team.private %}
-            <span class="tag is-dark">Public</span>
-        {% endif %}
-        
-        <span class="tag is-info">{{invite.role.role}}</span>
-    </div>
-    <span class="is-block is-size-6">{{invite.team.description}}</span>
-    <a id="{{invite.team.name}}_accept" class="button is-success" href="{% url 'joining_team_request' invite.id 'accepted' %}">Accept</a>
-    <a id="{{invite.team.name}_decline" class="button is-danger" href="{% url 'joining_team_request' invite.id 'nonactive' %}">Decline</a>
-</div>
-{% endfor %}
+  <div class="is-size-5 mb-3">
+    <span class="is-block is-size-5 has-text-weight-bold"
+      >{{invite.team.name}}
+      <i class="fas fa-user-alt mx-1"></i>{{invite.team.count}}</span
+    >
+    {% if invite.team.private %}
+    <span class="tag is-dark">Private</span>
+    {% elif not invite.team.private %}
+    <span class="tag is-dark">Public</span>
+    {% endif %}
 
-{% endblock %}
+    <span class="tag is-info">{{invite.role.role}}</span>
+  </div>
+  <span class="is-block is-size-6">{{invite.team.description}}</span>
+  <a
+    id="{{invite.team.name}}_accept"
+    class="button is-success"
+    href="{% url 'joining_team_request' invite.id 'accepted' %}"
+    >Accept</a
+  >
+  <a
+    id="{{invite.team.name}_decline"
+    class="button is-danger"
+    href="{% url 'joining_team_request' invite.id 'nonactive' %}"
+    >Decline</a
+  >
+</div>
+{% endfor %} {% endblock %}
