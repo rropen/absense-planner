@@ -102,7 +102,7 @@ function JoinTeam(e, user, redirect) {
     })
     .then(() => {
         if (redirect) {
-            location.replace(location.origin + "/teams/api-calendar/" + e.id)
+            location.replace(location.origin + "/teams/join")
         } else {
             location.reload()
         }
@@ -143,19 +143,43 @@ function favouriteTeam(e, user, id) {
     })
 }
 
-function DeleteTeam(e) {
-    var data = JSON.stringify({"id": e.id})
+function openDeleteTeamModal(button) {
+    const teamId = button.id;
+    const modal = document.getElementById('deleteTeamModal');
+    const confirmButton = document.getElementById('confirmDeleteButton');
+    const cancelButton = document.getElementById('cancelDeleteButton');
+    const modalCloseButton = document.querySelector('#deleteTeamModal .modal-close');
+
+    modal.classList.add('is-active');
+
+    confirmButton.onclick = () => {
+        DeleteTeam(parseInt(teamId));
+        modal.classList.remove('is-active');
+    };
+
+    cancelButton.onclick = () => {
+        modal.classList.remove('is-active');
+    };
+
+    modalCloseButton.onclick = () => {
+        modal.classList.remove('is-active');
+    };
+}
+
+function DeleteTeam(teamId) {
+    var data = JSON.stringify({ "id": teamId });
+
     fetch(apiURL + 'api/teams/?method=delete&format=json', {
-        method: "post",
+        method: "POST",
         body: data,
         headers: {
             "Content-Type": "application/json",
         },
     })
     .then(() => {
-        location.replace(location.origin + "/teams")
+        location.replace(location.origin + "/teams");
     })
     .catch(err => {
-        console.log(err)
-    })
+        console.log(err);
+    });
 }

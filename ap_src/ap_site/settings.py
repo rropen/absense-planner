@@ -176,3 +176,5 @@ SHORT_DATE_FORMAT = "dd/mm/YYYY"
 PRODUCTION_UI_ENV = os.getenv("PRODUCTION_UI")
 PRODUCTION_UI = PRODUCTION_UI_ENV is not None and PRODUCTION_UI_ENV.lower() == "true"
 VERSION = "1.3.0"
+
+RECURRENCE_I18N_URL = "javascript-catalog"

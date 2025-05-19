@@ -6,6 +6,7 @@ from django.conf.urls import handler404, handler500
 from django.urls import re_path
 from django.views.static import serve
 from django.conf import settings
+from django.views.i18n import JavaScriptCatalog
 
 js_info_dict = {
     'packages' : ('recurrence', ),
@@ -43,6 +44,12 @@ urlpatterns = [
     path("main_calendar", views.main_calendar, name="main_calendar"),
     path("main_calendar/<str:month>/<int:year>", views.main_calendar, name="main_calendar"),
     path("remove_lingering_perms", views.remove_lingering_perms, name="remove_lingering_perms"),
+    path("jsi18n", JavaScriptCatalog.as_view(packages=['recurrence']), name="javascript-catalog"),
+    #Errors
+    path("404", views.Custom404View, name="404"),
+    path("500", views.Custom500View, name="500"),
+    path("400", views.Custom400View, name="400"),
+
     re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}) #This lets Django find the CSS files when debug is set to false
 
 ] 

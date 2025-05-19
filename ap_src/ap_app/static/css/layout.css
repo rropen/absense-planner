@@ -1,5 +1,6 @@
 :root {
-  --user-cell-width: 120px;
+    --user-cell-width: 2rem;
+    --cell-size: 3.5rem;
 }
 
 * {
@@ -50,10 +51,6 @@ footer {
 
 /* End of basic */
 
-:root {
-    --cell-size: 47px;
-}
-
 .RefreshBox {
     pointer-events: none;
     text-align: right;
@@ -74,6 +71,9 @@ footer {
     max-width: var(--cell-size);
     height: var(--cell-size);
     max-height: var(--cell-size);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .nav-bar-padding {
@@ -87,14 +87,16 @@ footer {
 }
 
 .tooltip .tooltiptext {
+    opacity: 0;
+    transition: opacity 0.5s;
     visibility: hidden;
     top: 100%;
     left: 50%;
-    margin-left: -60px;
     text-align: center;
     border-radius: 6px;
     padding: 5px 5px;
     position: absolute;
+    transform: translate(-50%, 0);
     z-index: 5;
 }
 
@@ -104,6 +106,7 @@ footer {
   
 .tooltip:hover .tooltiptext {
     visibility: visible;
+    opacity: 1;
 }
 
 .tooltip:active .tooltiptext {
@@ -140,11 +143,20 @@ footer {
     max-width: var(--user-cell-width);
     height: var(--cell-size);
     white-space: nowrap;
+    display: flex;
+    justify-content: start;
+    align-items: center;
 }
 
 .username {
     overflow-x: hidden;
     text-overflow: ellipsis;
+    vertical-align: middle;
+    height: 100%;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    margin-left: 10%;
 }
 
 /* End of calendar */
@@ -227,3 +239,18 @@ footer {
     padding: 10px 20px;
     cursor: pointer;
 }
+
+.colour-selector{
+    width: 10vw; 
+}
+
+@media only screen and (max-device-width: 600px) { 
+    .permission_input_select {
+        display: flex;
+        flex-direction: row ;
+    }
+    .colour-selector{
+        min-width: 3.23rem;
+        padding: 0.5rem;
+    }
+ }
