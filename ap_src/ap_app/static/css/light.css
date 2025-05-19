@@ -1,5 +1,7 @@
 :root {
-  --user-cell-width: 120px;
+    --user-cell-width: 120px;
+    --dates-cell-background: rgb(2, 78, 141);
+    --days-cell-background: rgb(32, 108, 171);
 }
 
 .active {
@@ -166,4 +168,12 @@
 
 .CalendarCell[data-editable="False"] {
     cursor: not-allowed;
+}
+
+.days-cell {
+    background-color: var(--days-cell-background);
+}
+
+.dates-cell {
+    background-color: var(--dates-cell-background);
 }
