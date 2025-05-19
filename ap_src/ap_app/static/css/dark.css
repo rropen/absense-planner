@@ -149,13 +149,8 @@ h3 {
     color: black; 
 }
 
-.selected-user-cell {
-    background-color: #3E8ED0; 
-    color: #3e4549; 
-}
-
 .darkBackground {
-background-color: #3e4549;
+    background-color: #3e4549;
 }
 
 /* End of calendar */
