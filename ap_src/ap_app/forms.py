@@ -29,10 +29,6 @@ class CreateTeamForm(forms.Form):
         widget=forms.Textarea(attrs={"class": "", "placeholder": "Team Description","rows":4, "cols":15}),
     )
 
-    #Whether or not the team is private
-    private = forms.BooleanField(
-        required=False, widget=forms.CheckboxInput(attrs={"class": ""})
-    )
 
 class login(forms.Form):
     name = forms.CharField(

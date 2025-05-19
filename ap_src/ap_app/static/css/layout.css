@@ -130,11 +130,12 @@ footer {
     z-index: 4;
 }
 
-.blank-cell {
+.header-label-cell {
     width: 6vw; 
     min-width: var(--user-cell-width); 
     max-width: var(--user-cell-width); 
-    border: none !important;
+    border: 1px solid #dbdbdb;
+    border-width: 1px;
 }
 
 .user-cell {
@@ -253,4 +254,4 @@ footer {
         min-width: 3.23rem;
         padding: 0.5rem;
     }
- }
+}
