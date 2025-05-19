@@ -134,7 +134,8 @@ footer {
     width: 6vw; 
     min-width: var(--user-cell-width); 
     max-width: var(--user-cell-width); 
-    border: none !important;
+    border: 1px solid #dbdbdb;
+    border-width: 1px;
 }
 
 .user-cell {
