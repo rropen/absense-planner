@@ -130,7 +130,7 @@ footer {
     z-index: 4;
 }
 
-.blank-cell {
+.header-label-cell {
     width: 6vw; 
     min-width: var(--user-cell-width); 
     max-width: var(--user-cell-width); 
