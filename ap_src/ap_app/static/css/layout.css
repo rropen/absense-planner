@@ -59,7 +59,6 @@ footer {
 .RefreshBox {
     pointer-events: none;
     text-align: right;
-    background-color: ghostwhite;
     border: 0px;
     font-size: 11pt;
     width: 24px;
