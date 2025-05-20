@@ -1,7 +1,11 @@
 :root {
     --user-cell-width: 120px;
-    --dates-cell-background: rgb(2, 78, 141);
-    --days-cell-background: rgb(32, 108, 171);
+    --days-cell-background: rgb(2, 78, 141);
+    --dates-cell-background: rgb(32, 108, 171);
+}
+
+.navbar a:hover, .navbar a:active, .navbar a:focus {
+    color: #10069f;
 }
 
 .active {
@@ -110,9 +114,6 @@ h3 {
 
 /* End of basic */
 
-.RefreshBox {
-    background-color: #3e4549;
-}
 .AbsenceBox {
     background-color: #ff0000;
     border-color: #ff0000;
@@ -241,9 +242,9 @@ h3 {
 }
 
 .days-cell {
-    background-color: var(--days-cell-background);
+    background-color: var(--days-cell-background) !important;
 }
 
 .dates-cell {
-    background-color: var(--dates-cell-background);
+    background-color: var(--dates-cell-background) !important;
 }
