@@ -1,7 +1,7 @@
 :root {
     --user-cell-width: 120px;
-    --dates-cell-background: rgb(2, 78, 141);
-    --days-cell-background: rgb(32, 108, 171);
+    --days-cell-background: rgb(2, 78, 141);
+    --dates-cell-background: rgb(32, 108, 171);
 }
 
 .navbar a:hover, .navbar a:active, .navbar a:focus {
