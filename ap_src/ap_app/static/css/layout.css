@@ -259,3 +259,23 @@ footer {
         padding: 0.5rem;
     }
 }
+
+.is-active {
+    animation: navAnim .2s ease-in-out;
+}
+
+@keyframes navAnim {
+  0% {
+    display: none;
+    opacity: 0;
+    height: 0;
+  }
+  1% {
+    display: block;
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+    height: 396px;
+  }
+}
