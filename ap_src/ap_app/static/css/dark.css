@@ -245,9 +245,9 @@ h3 {
 }
 
 .days-cell {
-    background-color: var(--days-cell-background);
+    background-color: var(--days-cell-background) !important;
 }
 
 .dates-cell {
-    background-color: var(--dates-cell-background);
+    background-color: var(--dates-cell-background) !important;
 }
