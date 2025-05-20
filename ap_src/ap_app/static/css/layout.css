@@ -268,7 +268,6 @@ footer {
   0% {
     display: none;
     opacity: 0;
-    height: 0;
   }
   1% {
     display: block;
@@ -276,6 +275,35 @@ footer {
   }
   100% {
     opacity: 1;
-    height: 396px;
+    height: 100%;
   }
+}
+
+.team-calendar-accordion {
+    min-width: max-content;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.team-calendar-accordion.is-active {
+    display: flex;
+    flex-direction: column;
+}
+
+.team-calendar-accordion.is-active > .dropdown-menu {
+    position: relative;
+}
+
+.team-calendar-accordion.is-active > * {
+    z-index: inherit;
+}
+
+.team-calendar-dropdown-menu > .dropdown-content {
+    background-color: transparent;
+    padding: 0;
+    border: none;
+}
+
+#calendar-group {
+    gap: 1rem;
 }
