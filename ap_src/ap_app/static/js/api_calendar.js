@@ -141,7 +141,7 @@ window.onclick = function(event) {
     }
 }
 
-let dropdownButton = $(".dropdown").children(".dropdown-trigger").children(".button");
+let dropdownButton = $(".dropdown").children(".dropdown-trigger").children("button");
 
 dropdownButton.click(function() {
     let dropdown = $( this ).parent().parent();
