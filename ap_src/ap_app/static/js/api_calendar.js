@@ -140,3 +140,10 @@ window.onclick = function(event) {
         document.getElementById(modalId).classList.remove("is-active")
     }
 }
+
+let dropdownButton = $(".dropdown").children(".dropdown-trigger").children(".button");
+
+dropdownButton.click(function() {
+    let dropdown = $( this ).parent().parent();
+    dropdown.toggleClass("is-active");
+});
