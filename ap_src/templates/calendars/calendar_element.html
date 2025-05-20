@@ -51,7 +51,7 @@
 
         {% with team_data|length as number_of_teams %}
             {% if number_of_teams > 0 %}
-                <div id="calendar-group">
+                <div id="calendar-group" class="is-flex is-flex-direction-column">
                     {% for item in team_data %}
                         {% if number_of_teams > 1 %}
                             <a class="button mx-1 external-link-title" href={% url 'api_team_calendar' id=item.team.id %}>
