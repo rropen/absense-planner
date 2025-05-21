@@ -45,7 +45,6 @@ function add_spinner_to_button(button_class_name) {
 
 /* Re-use these naming conventions for elements where they apply, for consistency */
 add_spinner_to_button('.join-team-button');
-add_spinner_to_button('.leave-team-button');
 add_spinner_to_button('.edit-team-button');
 add_spinner_to_button('.settings-submit-button');
 add_spinner_to_button('.view-team-button');
