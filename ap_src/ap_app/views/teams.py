@@ -83,7 +83,7 @@ def join_team(request) -> render:
     
     data = None
     api_enabled = False
-    if userprofile.external_teams:
+    if userprofile:
         try:
             r = requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username))
         except:
@@ -127,7 +127,7 @@ def edit_team(request:HttpRequest, id):
 
 def edit_api_data(userprofile, id):
     data = None
-    if userprofile.external_teams:
+    if userprofile:
         try:
             r = requests.get(env("TEAM_DATA_URL") + "api/members/?id={}".format(id))
             data = r.json()
