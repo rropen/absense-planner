@@ -1,16 +1,15 @@
 /*Logic for spinner for create team button */
 document.addEventListener('DOMContentLoaded', function() {
-    var nameInput = document.getElementById('nameInput');
+    var nameInput = document.getElementById('nameInput'); 
     var descriptionInput = document.getElementById('id_description');
     var submitButton = document.getElementById('submit');
     var labelButton = document.getElementById('label_button');
 
     function updateButtonState() {
-        const nameValue = nameInput.value.trim();
-        const descriptionValue = descriptionInput.value.trim();
-        const shouldEnable = nameValue !== "" && descriptionValue !== "";
+        const nameLength = nameInput.value.trim().length;
+        const descriptionLength = descriptionInput.value.trim().length;
 
-        if (shouldEnable) {
+        if (nameLength >= 3 && descriptionLength >=3) {
             submitButton.removeAttribute("disabled");
             labelButton.removeAttribute("disabled");
         } else {
@@ -19,8 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    nameInput.addEventListener("keyup", updateButtonState);
-    descriptionInput.addEventListener("keyup", updateButtonState);
+    nameInput.addEventListener("input", updateButtonState);
+    descriptionInput.addEventListener("input", updateButtonState);
 
     labelButton.addEventListener('click', () => {
         if (!labelButton.hasAttribute("disabled")) {
