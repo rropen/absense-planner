@@ -111,10 +111,6 @@ class UserProfile(models.Model):
 
     region = models.CharField(max_length=200, default="GB")
 
-    external_teams = models.BooleanField(default=True)
-
-
-
     def __str__(self):
         return f"{self.user.username}"
 

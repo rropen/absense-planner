@@ -17,23 +17,23 @@ def teams_dashboard(request) -> render:
     try:
         token = (str(request.user) + "AbsencePlanner").encode()
         encryption = hashlib.sha256(token).hexdigest()
-        r = requests.get(env("TEAM_DATA_URL") + "api/user/teams/?username={}".format(request.user.username), headers={"TEAMS-TOKEN": encryption})
+        api_request = requests.get(env("TEAM_DATA_URL") + "api/user/teams/?username={}".format(request.user.username), headers={"TEAMS-TOKEN": encryption})
     except:
         return render(
         request,
         "teams/dashboard.html",
-        {"external_teams": False})
-    if r.status_code == 200:
-        if len(r.json()) == 0 :
-            external_teams_data = False
+        {"teams": False})
+    if api_request.status_code == 200:
+        if len(api_request.json()) == 0 :
+            teams = False
         else:
-            external_teams_data = r.json()
+            teams = api_request.json()
     else:
-        external_teams_data = False
+        teams = False
     return render(
         request,
         "teams/dashboard.html",
-        {"external_teams": external_teams_data, "url": env("TEAM_DATA_URL")},
+        {"teams": teams, "url": env("TEAM_DATA_URL")},
     )
 
 
@@ -66,7 +66,6 @@ def create_team(request:HttpRequest) -> render:
         "teams/create_team.html",
         {
             "form": form,
-            "api_enabled": userprofile.external_teams,
             "api_url": env("TEAM_DATA_URL") + "api/teams/?format=json",
         },
     )
@@ -81,22 +80,20 @@ def join_team(request) -> render:
     except IndexError:
         return redirect("/")
     
-    data = None
-    api_enabled = False
-    if userprofile.external_teams:
+    teams = None
+    if userprofile:
         try:
-            r = requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username))
+            api_request = requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username))
         except:
             print("Api failed to load")
-        if r is not None and r.status_code == 200:
-            data = r.json()
-            api_enabled = True
+        if api_request is not None and api_request.status_code == 200:
+            teams = api_request.json()
 
     return render(
         request,
         "teams/join_team.html",
         {
-            "api_enabled": api_enabled, "team_data": data, "url": env("TEAM_DATA_URL"),
+            "teams": teams, "url": env("TEAM_DATA_URL"),
         },
     )
 
@@ -127,7 +124,7 @@ def edit_team(request:HttpRequest, id):
 
 def edit_api_data(userprofile, id):
     data = None
-    if userprofile.external_teams:
+    if userprofile:
         try:
             r = requests.get(env("TEAM_DATA_URL") + "api/members/?id={}".format(id))
             data = r.json()

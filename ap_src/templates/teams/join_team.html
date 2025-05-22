@@ -3,9 +3,7 @@
 {% load static %}
 {% block content %}
 
-{% if api_enabled %}
 {% include 'api_pages/teams.html' %}
-{% else %}
 
 
 <div class="container">
@@ -96,5 +94,4 @@
 
 </script>
 
-{% endif %}
 {% endblock %}

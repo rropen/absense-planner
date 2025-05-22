@@ -61,3 +61,33 @@ def get_users_sharing_teams(username, user_model):
     # as this will avoid conflicts.
 
     return users_sharing_teams
+
+def check_user_exists(username):
+    data = None
+    api_request = None
+
+    try:
+        token = (str(username) + "AbsencePlanner").encode()
+        encryption = hashlib.sha256(token).hexdigest()
+        api_request = requests.get(env("TEAM_DATA_URL") + "api/user_exists/?format=json&username={}".format(username), headers={"TEAMS-TOKEN": encryption})
+    except:
+        print("API Failed to connect")
+        return # Caller should handle the API error
+    
+    if api_request is not None and api_request.status_code == 200:
+        data = api_request.json()
+    return data
+
+def is_team_app_running():
+    team_app_running = False
+
+    try:
+        api_request = requests.get(env("TEAM_DATA_URL") + "api/status_check")
+    except:
+        print("API Failed to connect")
+        return team_app_running # Caller should handle the API error
+    
+    if api_request is not None and api_request.status_code == 200:
+        team_app_running = True
+    
+    return team_app_running
