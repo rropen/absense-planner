@@ -7,7 +7,6 @@ from datetime import timedelta
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse, JsonResponse, HttpRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
@@ -16,7 +15,7 @@ from django.views.generic import CreateView
 from ..utils.objects import obj_exists, find_user_obj
 from .calendarview import main_calendar
 
-from ..forms import AcceptPolicyForm, AbsenceForm, DeleteUserForm
+from ..forms import AcceptPolicyForm, AbsenceForm, DeleteUserForm, AbsencePlannerUserCreationForm
 from ..models import Absence, UserProfile, ColourScheme, ColorData, RecurringException
 
 from ..utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
@@ -67,7 +66,7 @@ def privacy_page(request, to_accept=False) -> render:
     return main_calendar(request)
 
 class SignUpView(CreateView):
-    form_class = UserCreationForm
+    form_class = AbsencePlannerUserCreationForm
     success_url = reverse_lazy("login")
     template_name = "registration/signup.html"
 
