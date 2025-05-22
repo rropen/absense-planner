@@ -65,18 +65,6 @@
                         <label class="label"><div class="dText">Data Settings</div></label>
                         <div class="control">
                             <label style="display: flex; gap: 10px;">
-                                {% if data_privacy_mode %}
-                                <input type="checkbox" checked="checked" name="privacy" title="Hide Data From Non Team Members"></input>
-                                {% else %}
-                                <input type="checkbox" name="privacy" title="Hide Data From Non Team Members"></input>
-                                {% endif %}
-                                <div class="dText">
-                                    Keep Data Private
-                                </div>
-                            </label>
-                        </div>
-                        <div class="control">
-                            <label style="display: flex; gap: 10px;">
                                 {% if dark_mode %}
                                 <input type="checkbox" checked="checked" id="darkModeToggle" name="dark"></input>
                                 {% else %}
