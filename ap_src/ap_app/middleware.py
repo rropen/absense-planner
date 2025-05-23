@@ -2,6 +2,8 @@ import environ
 from django.http import HttpResponse, HttpRequest
 from .utils.teams_utils import is_team_app_running
 from django.template import loader
+from django.template import Template, Context
+
 
 env = environ.Env()
 environ.Env.read_env()
@@ -17,7 +19,9 @@ def status_check_middleware(get_response):
 
         if ((not team_app_running) and (not asset_request)):
             print("Team App is not running. 503 error will persist until it is.")
-            return HttpResponse(loader.render_to_string("503.html"), status=503)
+            context = {"error_message": "The Absence Planner relies on the Team App API which is currently unavailable, and so you should contact the developers with this information."}
+            content = loader.render_to_string("503.html", context=context)
+            return HttpResponse(content, status=503)
 
         response = get_response(request)
 
