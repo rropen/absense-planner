@@ -102,7 +102,7 @@ function JoinTeam(e, user, redirect) {
     })
     .then(() => {
         if (redirect) {
-            location.reload()
+            location.replace(location.origin + "/teams/join")
         } else {
             location.reload()
         }

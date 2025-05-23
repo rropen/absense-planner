@@ -12,6 +12,12 @@ def handler500(request):
     response.status_code = 500
     return response
 
+def handler503(request):
+    context = {}
+    response = render(request, "503.html", context=context)
+    response.status_code = 503
+    return response
+
 def handler400(request, exception):
     context = {}
     response = render(request, "400.html", context=context)

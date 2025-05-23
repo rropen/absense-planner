@@ -10,13 +10,8 @@
 
 
 <div class="main container">
-    
     <h1 class="title dText">Create a Team</h1>
-    {% if api_enabled %}
     <form method="post" class="text-center" id="teamForm">
-    {% else %}
-    <form method="post" class="text-center">
-    {% endif %}
         {% if message %}
         {% include "messages.html" %}
         {% endif %}

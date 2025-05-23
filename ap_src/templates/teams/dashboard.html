@@ -24,14 +24,14 @@
         </div>
     </div>
 
-    {% if not external_teams %}
+    {% if not teams %}
     <div class="container has-background-light box darkInput">
         <div class="is-size-5 mb-3">
             <span class="is-block is-size-5">No teams found.</span>
         </div>
     </div>
     {% else %}
-    {% for team in external_teams %}
+    {% for team in teams %}
     <div class="container has-background-light box darkInput">
         <div class="is-size-5 mb-3">
             <span class="is-block is-size-5	has-text-weight-bold">{{ team.team.name }} <i class="fas fa-users mx-1"></i>{{ team.team.members|length }}

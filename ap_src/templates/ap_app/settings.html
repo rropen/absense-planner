@@ -65,29 +65,6 @@
                         <label class="label"><div class="dText">Data Settings</div></label>
                         <div class="control">
                             <label style="display: flex; gap: 10px;">
-                                {% if data_privacy_mode %}
-                                <input type="checkbox" checked="checked" name="privacy" title="Hide Data From Non Team Members"></input>
-                                {% else %}
-                                <input type="checkbox" name="privacy" title="Hide Data From Non Team Members"></input>
-                                {% endif %}
-                                <div class="dText">
-                                    Keep Data Private
-                                </div>
-                            </label>
-                        </div>
-                        <!-- <div class="control">
-                            <label>
-                                {% if external_teams %}
-                                <input type="checkbox" checked="checked" name="teams"></input>
-                                {% else %}
-                                <input type="checkbox" name="teams"></input>
-                                {% endif %}
-                                Use the team app data instead of local data
-                            </label>
-                        </div>
-                        -->
-                        <div class="control">
-                            <label style="display: flex; gap: 10px;">
                                 {% if dark_mode %}
                                 <input type="checkbox" checked="checked" id="darkModeToggle" name="dark"></input>
                                 {% else %}
@@ -113,13 +90,16 @@
                 <h3 class="title is-4"><div class="dText">App Information</div></h3>
                 <label class="label"><div class="dText">Permission Settings</div></label>
                 <nav class="navbar">
-                    <div class="control">
-                        <input class="input is-rounded darkInput" placeholder="Add a user" type="text" size="50" id="user_permission_input">
+                    <div class="permission_input_select">
+                        <div class="control">
+                            <input class="input is-rounded darkInput" placeholder="Add a user" type="text" size="50" id="user_permission_input">
+                        </div>
+                        <div class="control">
+                            {% csrf_token %}
+                            <button class="button is-rounded" onclick="addUserPermission( '{{ csrf_token }}' )">Submit</button>
+                        </div>
                     </div>
-                    <div class="control">
-                        {% csrf_token %}
-                        <button class="button is-rounded" onclick="addUserPermission( '{{ csrf_token }}' )">Submit</button>
-                    </div>
+                    
                 </nav>
                 <h6><div class="dText">Users with permission to edit your absences:</div></h6>
                 <div class="tags">
@@ -130,7 +110,10 @@
                 <label class="label"><div class="dText">Calendar Settings</div></label>
                 {% for colour in colours %}
                 <h6 class="dText"><div class="dText">{{ colour.name }}</div></h6>
-                {% include 'ap_app/elements/colour_picker.html' with colour_value=colour.colour name=colour.name enabled=colour.enabled %}
+                <div class="permission_input_select">
+                    {% include 'ap_app/elements/colour_picker.html' with colour_value=colour.colour name=colour.name enabled=colour.enabled %}
+                </div>
+                
                 {% endfor %}
             </div>
         </div>

@@ -1,10 +1,15 @@
 :root {
     --user-cell-width: 2rem;
-    --cell-size: 3.5rem;
+    --cell-size: 3.1rem;
 }
 
 * {
     font-family: Arial, Helvetica, sans-serif;
+}
+
+.navbar-item, .icon {
+    transition-duration: none;
+    transition-property: none;
 }
 
 html, body {
@@ -54,7 +59,6 @@ footer {
 .RefreshBox {
     pointer-events: none;
     text-align: right;
-    background-color: ghostwhite;
     border: 0px;
     font-size: 11pt;
     width: 24px;
@@ -87,14 +91,16 @@ footer {
 }
 
 .tooltip .tooltiptext {
+    opacity: 0;
+    transition: opacity 0.5s;
     visibility: hidden;
     top: 100%;
     left: 50%;
-    margin-left: -60px;
     text-align: center;
     border-radius: 6px;
     padding: 5px 5px;
     position: absolute;
+    transform: translate(-50%, 0);
     z-index: 5;
 }
 
@@ -104,6 +110,7 @@ footer {
   
 .tooltip:hover .tooltiptext {
     visibility: visible;
+    opacity: 1;
 }
 
 .tooltip:active .tooltiptext {
@@ -127,11 +134,12 @@ footer {
     z-index: 4;
 }
 
-.blank-cell {
+.header-label-cell {
     width: 6vw; 
     min-width: var(--user-cell-width); 
     max-width: var(--user-cell-width); 
-    border: none !important;
+    border: 1px solid #dbdbdb;
+    border-width: 1px;
 }
 
 .user-cell {
@@ -235,4 +243,19 @@ footer {
     border: none;
     padding: 10px 20px;
     cursor: pointer;
+}
+
+.colour-selector{
+    width: 10vw; 
+}
+
+@media only screen and (max-device-width: 600px) { 
+    .permission_input_select {
+        display: flex;
+        flex-direction: row ;
+    }
+    .colour-selector{
+        min-width: 3.23rem;
+        padding: 0.5rem;
+    }
 }
