@@ -26,6 +26,12 @@ def team_api_data(request):
     """
     return {'TEAM_DATA_URL': env("TEAM_DATA_URL")}
 
+def debug(request):
+    """
+    Returns the DEBUG environment variable's value.
+    """
+    return {'DEBUG': env("DEBUG")}
+
 def url_splitter(request):
     """
     Utility that splits URL for use in the header bar.
