@@ -2,8 +2,8 @@
 <script src="{%static 'js/button_spinner.js' %}"></script>
 <div class="container">
     <h3 class="has-text-weight-bold is-size-5 my-3">Teams</h3>
-    {% if team_data %}
-    {% for team in team_data %}
+    {% if teams %}
+    {% for team in teams %}
     <div class="container has-background-light box darkInput">
         <div class="is-size-5 mb-3">
             <span class="is-block is-size-5 has-text-weight-bold">{{team.name}} 
