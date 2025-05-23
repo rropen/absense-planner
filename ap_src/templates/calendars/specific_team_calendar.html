@@ -68,7 +68,7 @@
     </div>
     <button class="modal-close is-large" aria-label="close"></button>
 </div>
-{% include 'calendars/calendar_element.html'%}
+{% include 'calendars/specific_team_calendar_element.html'%}
 <script src="{% static "js/api_calendar.js" %}" token="{{ csrf_token }}"></script>
 <script src="{% static 'js/teams.js' %}" apiURL="{{ url }}"></script>
 {% endblock %}

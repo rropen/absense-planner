@@ -53,12 +53,6 @@
             {% if number_of_teams > 0 %}
                 <div id="calendar-group">
                     {% for item in team_data %}
-                        <a class="button mx-1 external-link-title" href={% url 'api_team_calendar' id=item.team.id %}>
-                            <h1 class="is-size-5 has-text-weight-bold dText" id="title-{{ item.team.name }}">
-                                {{ item.team.name }}
-                            </h1>
-                            <svg class="svg-inline--fa fa-home fa-w-18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"/></svg>
-                        </a>
                         <table class="table is-bordered is-striped" style="width: 100%" id="{{ item.team.name }}">
                             <tbody>
                                 {% for member in item.team.members %}
@@ -86,19 +80,19 @@
                                         <td data-editable="{{editable}}" style="background-color: #ff0000;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="S"></td>
                                         {% elif check_half_day == "A"%}
                                             {% if day in bank_hol and bank_holidays.enabled %}
-                                            <td data-editable="{{editable}}" style="background: linear-gradient(to right, rgba(0,0,0,0.2) 50%, #ff0000 50% ); background-color: {{ bank_holidays.colour }} !important;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                            <td data-editable="{{editable}}" style="background: linear-gradient(to right, transparent 50%, #ff0000 50% ); background-color: {{ bank_holidays.colour }} !important;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                             {% elif day in weekend_list and weekends.enabled %}
-                                            <td data-editable="{{editable}}" style="background: linear-gradient(to right, rgba(0,0,0,0.2) 50%, #ff0000 50% ); background-color: {{ weekends.colour }} !important;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                            <td data-editable="{{editable}}" style="background: linear-gradient(to right, transparent 50%, #ff0000 50% ); background-color: {{ weekends.colour }} !important;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                             {% else %}
-                                            <td data-editable="{{editable}}" style="background: linear-gradient(to right, rgba(0,0,0,0.2) 50%, #ff0000 50% );" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="A"></td>
+                                            <td data-editable="{{editable}}" style="background: linear-gradient(to right, transparent 50%, #ff0000 50% );" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="A"></td>
                                             {% endif %}
                                         {% elif check_half_day == "M" %}
                                             {% if day in bank_hol and bank_holidays.enabled %}
-                                            <td data-editable="{{editable}}" style="background: linear-gradient(to left, rgba(0,0,0,0.2) 50%, #ff0000 50% ); background-color: {{ bank_holidays.colour }} !important;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                            <td data-editable="{{editable}}" style="background: linear-gradient(to left, transparent 50%, #ff0000 50% ); background-color: {{ bank_holidays.colour }} !important;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                             {% elif day in weekend_list and weekends.enabled %}
-                                            <td data-editable="{{editable}}" style="background: linear-gradient(to left, rgba(0,0,0,0.2) 50%, #ff0000 50% ); background-color: {{ weekends.colour }} !important;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                            <td data-editable="{{editable}}" style="background: linear-gradient(to left, transparent 50%, #ff0000 50% ); background-color: {{ weekends.colour }} !important;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                             {% else %}
-                                            <td data-editable="{{editable}}" style="background: linear-gradient(to left, rgba(0,0,0,0.2) 50%, #ff0000 50% );" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="A"></td>
+                                            <td data-editable="{{editable}}" style="background: linear-gradient(to left, transparent 50%, #ff0000 50% );" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="A"></td>
                                             {% endif %}
                                         {% else %}
                                             {% if day in bank_hol and bank_holidays.enabled %}
@@ -121,7 +115,7 @@
             {% else %}
                 <div class="has-background-light box">
                     <div class="is-size-5 mb-3">
-                        <span class="is-block is-size-5">You are not in any teams.</span>
+                        <span class="is-block is-size-5">Something went wrong with the calendar.</span>
                     </div>
                 </div>
             {% endif %}
@@ -130,11 +124,7 @@
         {% else %}
         <div class="has-background-light box">
             <div class="is-size-5 mb-3">
-                <span class="is-block is-size-5">No teams were found.</span>
-                <div class="buttons">
-                    <a href="{% url 'dashboard' %}" class="button is-link">View Teams</a>
-                    <a href="{% url 'create_team' %}" class="button is-success">Create Team</a>
-                </div>
+                <span class="is-block is-size-5">Something went wrong with the calendar.</span>
             </div>
         </div>
         {% endif %}
