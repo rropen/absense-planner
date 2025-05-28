@@ -21,11 +21,12 @@ environ.Env.read_env()
 
 def check_calendar_date(year, month) -> bool:
     date = datetime.datetime(year, datetime.datetime.strptime(month, "%B").month, 1)
-    current = datetime.datetime.now()
-    
+
+    current = datetime.datetime(datetime.datetime.now().year, datetime.datetime.now().month, 1)
+
     if date < (current - relativedelta(years=1)) or date > (current + relativedelta(years=1)):
         return False
-    
+
     return True
 
 @login_required
