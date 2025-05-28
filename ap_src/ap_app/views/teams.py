@@ -43,8 +43,12 @@ def create_team(request:HttpRequest) -> render:
         form = CreateTeamForm(request.POST)
 
         if form.is_valid():
-            # # Gets the created team and "Owner" Role and creates a Link between
-            # # the user and their team
+            # Gets the created team and "Owner" Role and creates a Link between
+            # the user and their team.
+
+            # Send a POST request to the API instead of handling the usual model logic,
+            # so that the created team is stored on the Team App instead of the Absence Planner.
+
             response = requests.post(env("TEAM_DATA_URL") + "api/teams/?format=json", data=request.POST)
             if response.status_code == 200:
                 return redirect("/teams/api-calendar/" + str(response.json()["id"]))
