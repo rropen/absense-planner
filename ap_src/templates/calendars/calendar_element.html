@@ -130,11 +130,9 @@
         {% else %}
         <div class="has-background-light box">
             <div class="is-size-5 mb-3">
-                <span class="is-block is-size-5">No teams were found.</span>
-                <div class="buttons">
-                    <a href="{% url 'join_team' %}" class="button is-link">Join Teams</a>
-                    <a href="{% url 'create_team' %}" class="button is-success">Create Team</a>
-                </div>
+                <p>You haven't joined any teams yet!</p>
+                <br />
+                <p>Consider joining a <a href="/teams/join"> team </a> or <a href="/teams/create">creating a team</a>. </p>
             </div>
         </div>
         {% endif %}
