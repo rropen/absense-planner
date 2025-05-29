@@ -19,6 +19,8 @@ from ..utils.teams_utils import retrieve_calendar_data
 env = environ.Env()
 environ.Env.read_env()
 
+TEAM_APP_API_URL = env("TEAM_APP_API_URL")
+
 def check_calendar_date(year, month) -> bool:
     date = datetime.datetime(year, datetime.datetime.strptime(month, "%B").month, 1)
 
@@ -82,21 +84,25 @@ def sort_team_absences_by_logged_in_user(data, request):
             data[0]['members'].insert(0,saved_user)
             break
 
-def team_calendar_data(id, request):
+def retrieve_team_calendar_data(id, request):
     data = None
 
     try:
-        response = requests.get(env("TEAM_APP_API_URL") + "members/?id={}".format(id))
-        data = response.json()
+        url = TEAM_APP_API_URL + "members/"
+        params = {"id": id}
+
+        api_response = requests.get(url=url, params=params)
+
+        team_calendar_data = api_response.json()
         sort_team_absences_by_logged_in_user(data, request)
     except:
         # TODO Create error page for API failure
         raise NotImplementedError("Failed to retrieve API data (No error page)")
     
-    if response.status_code != 200:
+    if api_response.status_code != 200:
         raise NotImplementedError("Failed to retrieve API data (No error page)")
     
-    return data
+    return team_calendar_data
 
 def get_date_data(
     region,
@@ -290,7 +296,7 @@ def api_team_calendar(
 
     user = request.user
 
-    team_data = team_calendar_data(id, request)[0]
+    team_data = retrieve_team_calendar_data(id, request)[0]
 
     team_data = [{"team": team_data}]
 
@@ -313,7 +319,7 @@ def api_team_calendar(
         "user_data": user_data,
         "id": id,
         "single_team": True,
-        "url": env("TEAM_APP_API_URL")
+        "url": TEAM_APP_API_URL
     }
 
     return render(request, "calendars/specific_team_calendar.html", data)
