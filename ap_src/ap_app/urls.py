@@ -46,7 +46,6 @@ urlpatterns = [
     path("remove_lingering_perms", views.remove_lingering_perms, name="remove_lingering_perms"),
     path("jsi18n", JavaScriptCatalog.as_view(packages=['recurrence']), name="javascript-catalog"),
     #Errors
-    path("403", views.Custom403View, name="403"),
     path("404", views.Custom404View, name="404"),
     path("500", views.Custom500View, name="500"),
     path("400", views.Custom400View, name="400"),
@@ -59,3 +58,4 @@ handler404 = 'ap_app.utils.errors.handler404'
 handler500 = 'ap_app.utils.errors.handler500'
 handler400 = 'ap_app.utils.errors.handler400'
 handler503 = 'ap_app.utils.errors.handler503'
+handler403 = 'ap_app.utils.errors.handler403'
