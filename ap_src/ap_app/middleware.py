@@ -41,7 +41,7 @@ def is_asset_request(request:HttpRequest):
     """
     Checks the file extension of the request and compares it to a list of file formats used for assets.
     This is used when throwing a 503 error for requests as it should still allow the loading of asset
-    requests for a user-friendly page.
+    requests for a user-friendly 503 page.
     """
 
     is_asset_request = False
