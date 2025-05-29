@@ -112,35 +112,22 @@ function JoinTeam(e, user, redirect) {
     })
 }
 
-function starHover(e) {
-    if (e.dataset.star == 'false'){
-        e.innerHTML="<i class='fas fa-star'></i>"
-        e.dataset.star = 'true'
+function starHover(element) {
+    if (element.dataset.star == 'False'){
+        let starElement = $(element).children(".fa-star");
+        starElement.removeClass("far")
+        starElement.addClass("fas")
+        element.dataset.star = 'True'
     }
 }
 
-function removeHover(e) {
-    if (e.dataset.star == 'true'){
-        e.innerHTML="<i class='far fa-star'></i>"
-        e.dataset.star = 'false'
+function removeHover(element) {
+    if (element.dataset.star == 'True'){
+        let starElement = $(element).children(".fa-star");
+        starElement.removeClass("fas")
+        starElement.addClass("far")
+        element.dataset.star = 'False'
     }
-}
-
-function favouriteTeam(e, user, id) {
-    var data = {"username": user, "team": id}
-    fetch(apiURL + 'manage/?method=favourite', {
-        method:"post",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-    })
-    .then(() => {
-        location.reload()
-    })
-    .catch(err => {
-        console.log(err)
-    })
 }
 
 function openDeleteTeamModal(button) {

@@ -14,7 +14,13 @@ env = environ.Env()
 environ.Env.read_env()
 TEAM_APP_API_URL = env("TEAM_APP_API_URL")
 
+@login_required
 def teams_dashboard(request) -> render:
+    if (request.method == "POST"):
+        api_specific_method = request.POST.get("method")
+        if (api_specific_method == "favourite"):
+            favouriteTeam(request.user.username, request.POST.get("team"))
+
     try:
         token = (str(request.user) + "AbsencePlanner").encode()
         token = hashlib.sha256(token).hexdigest()
@@ -43,6 +49,20 @@ def teams_dashboard(request) -> render:
         "teams/dashboard.html",
         {"teams": teams, "url": TEAM_APP_API_URL},
     )
+
+def favouriteTeam(username, team_id):
+    url = TEAM_APP_API_URL + 'manage/'
+    data = {
+        "username": username,
+        "team": team_id
+    }
+    params = {
+        "method": "favourite"
+    }
+
+    api_response = requests.post(url=url, data=data, params=params)
+
+    return api_response
 
 @login_required
 def create_team(request:HttpRequest) -> render:
