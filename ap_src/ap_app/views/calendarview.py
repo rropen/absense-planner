@@ -312,6 +312,7 @@ def api_team_calendar(
         "team_data": team_data,
         "user_data": user_data,
         "id": id,
+        "single_team": True,
         "url": env("TEAM_DATA_URL")
     }
 
