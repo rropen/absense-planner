@@ -31,7 +31,7 @@ async function LeaveTeamAndRemovePermissions(teamId, username, token, teamName) 
     var data = JSON.stringify({ username: username, team: teamId });
 
     try {
-        const leaveResponse = await fetch(apiURL + "api/manage/?method=leave", {
+        const leaveResponse = await fetch(apiURL + "manage/?method=leave", {
             method: "post",
             body: data,
             headers: headers,
@@ -93,7 +93,7 @@ window.addEventListener('load', () => {
 
 function JoinTeam(e, user, redirect) {
     var data = JSON.stringify({"username": user, "team": e.id})
-    fetch(apiURL + 'api/manage/?method=join', {
+    fetch(apiURL + 'manage/?method=join', {
         method: "post",
         body: data,
         headers: {
@@ -128,7 +128,7 @@ function removeHover(e) {
 
 function favouriteTeam(e, user, id) {
     var data = {"username": user, "team": id}
-    fetch(apiURL + 'api/manage/?method=favourite', {
+    fetch(apiURL + 'manage/?method=favourite', {
         method:"post",
         headers: {
             "Content-Type": "application/json",
@@ -169,7 +169,7 @@ function openDeleteTeamModal(button) {
 function DeleteTeam(teamId) {
     var data = JSON.stringify({ "id": teamId });
 
-    fetch(apiURL + 'api/teams/?method=delete&format=json', {
+    fetch(apiURL + 'teams/?method=delete&format=json', {
         method: "POST",
         body: data,
         headers: {

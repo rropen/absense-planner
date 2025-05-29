@@ -25,7 +25,7 @@ def retrieve_calendar_data(user, sortValue):
     try:
         token = (str(user) + "AbsencePlanner").encode()
         encryption = hashlib.sha256(token).hexdigest()
-        r = requests.get(env("TEAM_DATA_URL") + "api/user/teams/?format=json&username={}&sort={}".format(user.username, sortValue), headers={"TEAMS-TOKEN": encryption})
+        r = requests.get(env("TEAM_APP_API_URL") + "user/teams/?format=json&username={}&sort={}".format(user.username, sortValue), headers={"TEAMS-TOKEN": encryption})
     except:
         print("API Failed to connect")
         return # Caller should handle the API error
@@ -69,7 +69,7 @@ def check_user_exists(username):
     try:
         token = (str(username) + "AbsencePlanner").encode()
         encryption = hashlib.sha256(token).hexdigest()
-        api_request = requests.get(env("TEAM_DATA_URL") + "api/user_exists/?format=json&username={}".format(username), headers={"TEAMS-TOKEN": encryption})
+        api_request = requests.get(env("TEAM_APP_API_URL") + "user_exists/?format=json&username={}".format(username), headers={"TEAMS-TOKEN": encryption})
     except:
         print("API Failed to connect")
         return # Caller should handle the API error
@@ -82,7 +82,7 @@ def is_team_app_running():
     team_app_running = False
 
     try:
-        api_request = requests.get(env("TEAM_DATA_URL") + "api/status_check")
+        api_request = requests.get(env("TEAM_APP_API_URL") + "status_check")
     except:
         print("API Failed to connect")
         return team_app_running # Caller should handle the API error

@@ -12,7 +12,7 @@ https://www.conventionalcommits.org/en/v1.0.0-beta.2/
 The `.env` file is stored in the project root and can either be created manually or is created automatically by the setup script. It looks something like this:
 
 ```
-TEAM_DATA_URL=http://localhost:8002/
+TEAM_APP_API_URL=http://localhost:8002/api/
 DEBUG=True
 PRODUCTION_UI=False
 DB_NAME = ""
@@ -25,7 +25,7 @@ If you change the `.env` file, you should reboot the shell/terminal window in wh
 
 ### Settings Explained
 
-#### `TEAM_DATA_URL`
+#### `TEAM_APP_API_URL`
 
 This is the URL containing the host and port of the server application for the RR Team App. This is needed to pull data about teams and team members from the Team App database using the API. The Team App runs on port 8002 by default. Without a functioning connection to the Team App, the Absence Planner will not function correctly.
 

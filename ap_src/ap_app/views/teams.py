@@ -17,7 +17,7 @@ def teams_dashboard(request) -> render:
     try:
         token = (str(request.user) + "AbsencePlanner").encode()
         encryption = hashlib.sha256(token).hexdigest()
-        api_request = requests.get(env("TEAM_DATA_URL") + "api/user/teams/?username={}".format(request.user.username), headers={"TEAMS-TOKEN": encryption})
+        api_request = requests.get(env("TEAM_APP_API_URL") + "user/teams/?username={}".format(request.user.username), headers={"TEAMS-TOKEN": encryption})
     except:
         return render(
         request,
@@ -33,9 +33,8 @@ def teams_dashboard(request) -> render:
     return render(
         request,
         "teams/dashboard.html",
-        {"teams": teams, "url": env("TEAM_DATA_URL")},
+        {"teams": teams, "url": env("TEAM_APP_API_URL")},
     )
-
 
 @login_required
 def create_team(request:HttpRequest) -> render:
@@ -49,7 +48,7 @@ def create_team(request:HttpRequest) -> render:
             # Send a POST request to the API instead of handling the usual model logic,
             # so that the created team is stored on the Team App instead of the Absence Planner.
 
-            url = env("TEAM_DATA_URL") + "api/teams/"
+            url = env("TEAM_APP_API_URL") + "teams/"
             response = requests.post(url, data=request.POST)
             if response.status_code == 200:
                 return redirect("/teams/api-calendar/" + str(response.json()["id"]))
@@ -71,7 +70,7 @@ def create_team(request:HttpRequest) -> render:
         "teams/create_team.html",
         {
             "form": form,
-            "api_url": env("TEAM_DATA_URL") + "api/teams/?format=json",
+            "api_url": env("TEAM_APP_API_URL") + "teams/?format=json",
         },
     )
 
@@ -88,7 +87,7 @@ def join_team(request) -> render:
     teams = None
     if userprofile:
         try:
-            api_request = requests.get(env("TEAM_DATA_URL") + "api/teams/?username={}".format(request.user.username))
+            api_request = requests.get(env("TEAM_APP_API_URL") + "teams/?username={}".format(request.user.username))
         except:
             print("Api failed to load")
         if api_request is not None and api_request.status_code == 200:
@@ -98,7 +97,7 @@ def join_team(request) -> render:
         request,
         "teams/join_team.html",
         {
-            "teams": teams, "url": env("TEAM_DATA_URL"),
+            "teams": teams, "url": env("TEAM_APP_API_URL"),
         },
     )
 
@@ -114,7 +113,7 @@ def edit_team(request:HttpRequest, id):
     userprofile: UserProfile = UserProfile.objects.get(user=request.user)
 
     if request.method == "POST":
-        response = requests.post(env("TEAM_DATA_URL") + "api/teams/?method=edit&format=json", data=request.POST)
+        response = requests.post(env("TEAM_APP_API_URL") + "teams/?method=edit&format=json", data=request.POST)
         if response.status_code != 200:
             print(response.json())
 
@@ -124,14 +123,14 @@ def edit_team(request:HttpRequest, id):
     
     roles = Role.objects.all()
 
-    return render(request, "teams/edit_team.html", context={"team": api_data[0], "roles": roles, "url": env("TEAM_DATA_URL")})
+    return render(request, "teams/edit_team.html", context={"team": api_data[0], "roles": roles, "url": env("TEAM_APP_API_URL")})
 
 
 def edit_api_data(userprofile, id):
     data = None
     if userprofile:
         try:
-            r = requests.get(env("TEAM_DATA_URL") + "api/members/?id={}".format(id))
+            r = requests.get(env("TEAM_APP_API_URL") + "members/?id={}".format(id))
             data = r.json()
         except:
             raise NotImplementedError("Could not find API (No error page)")

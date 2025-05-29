@@ -86,7 +86,7 @@ def team_calendar_data(id, request):
     data = None
 
     try:
-        response = requests.get(env("TEAM_DATA_URL") + "api/members/?id={}".format(id))
+        response = requests.get(env("TEAM_APP_API_URL") + "members/?id={}".format(id))
         data = response.json()
         sort_team_absences_by_logged_in_user(data, request)
     except:
@@ -313,7 +313,7 @@ def api_team_calendar(
         "user_data": user_data,
         "id": id,
         "single_team": True,
-        "url": env("TEAM_DATA_URL")
+        "url": env("TEAM_APP_API_URL")
     }
 
     return render(request, "calendars/specific_team_calendar.html", data)
