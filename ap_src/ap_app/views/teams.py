@@ -8,6 +8,7 @@ from django.shortcuts import redirect, render
 
 from ..forms import CreateTeamForm
 from ..models import Role, UserProfile
+from ..utils.teams_utils import edit_api_data
 
 env = environ.Env()
 environ.Env.read_env()
@@ -113,10 +114,11 @@ def join_team(request) -> render:
         },
     )
 
-#This page allows owners of a team to modify differnt properties of a team.
-#Links to: teams/edit_team.html
 @login_required
 def edit_team(request:HttpRequest, id):
+    """
+    Renders the page that allows owners of a team to modify different properties of a team.
+    """
 
     if not id:
         return JsonResponse({"Error": "Team name not found"})
@@ -140,23 +142,3 @@ def edit_team(request:HttpRequest, id):
     roles = Role.objects.all()
 
     return render(request, "teams/edit_team.html", context={"team": api_data[0], "roles": roles, "url": TEAM_APP_API_URL})
-
-def edit_api_data(userprofile, id):
-    api_data = None
-    if userprofile:
-        try:
-            url = TEAM_APP_API_URL + "members/"
-            params = {"id": id}
-
-            api_response = requests.get(url=url, params=params)
-
-            api_data = api_response.json()
-        except:
-            raise NotImplementedError("Could not find API (No error page)")
-        
-        if api_response.status_code != 200:
-            raise NotImplementedError("Invalid team name (No error page)")
-    else:
-        raise NotImplementedError("The API setting is not enabled in your profile. (No error page)")
-
-    return api_data

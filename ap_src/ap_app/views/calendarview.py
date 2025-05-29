@@ -257,7 +257,7 @@ def main_calendar(
     year = datetime.datetime.now().year
 ):
     """
-    Main calendar using API data.
+    Renders main calendar using API data.
     """
 
     # Retrieve sort value of calendars.    
@@ -289,7 +289,7 @@ def api_team_calendar(
     year=datetime.datetime.now().year
 ):
     """
-    Specific team calendar using the API
+    Renders the specific team calendar using the API.
     """
 
     user = request.user
@@ -324,7 +324,7 @@ def api_team_calendar(
                     
 def retrieve_common_calendar_data(user, year, month, team_users, page):
     """
-    Retrieves common calendar data for use with the reusable calendar_element.html
+    Retrieves common calendar data for use with the reusable calendar_element.html component template.
     """
 
     # Retrieve user's profile

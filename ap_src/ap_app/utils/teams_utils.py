@@ -109,3 +109,23 @@ def is_team_app_running():
         team_app_running = True
     
     return team_app_running
+
+def edit_api_data(userprofile, id):
+    api_data = None
+    if userprofile:
+        try:
+            url = TEAM_APP_API_URL + "members/"
+            params = {"id": id}
+
+            api_response = requests.get(url=url, params=params)
+
+            api_data = api_response.json()
+        except:
+            raise NotImplementedError("Could not find API (No error page)")
+        
+        if api_response.status_code != 200:
+            raise NotImplementedError("Invalid team name (No error page)")
+    else:
+        raise NotImplementedError("The API setting is not enabled in your profile. (No error page)")
+
+    return api_data
