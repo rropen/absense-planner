@@ -162,9 +162,7 @@ def update_colour(request:HttpRequest):
             update_data.color = request.POST["colour"]
             update_data.save()
         else:
-            print(request.POST)
             if request.POST["colour"] != default.default or request.POST["enabled"] != 'True':
-                print("Created colour data")
                 newData = ColorData()
                 if request.POST["enabled"] == 'True':
                     newData.enabled = True

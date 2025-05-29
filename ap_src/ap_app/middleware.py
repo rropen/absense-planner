@@ -47,7 +47,6 @@ def is_asset_request(request:HttpRequest):
     is_asset_request = False
     if "." in request.path:
         file_extension = request.path.split(".")[-1]
-        print(file_extension)
 
         asset_file_formats = ["js", "css", "mp3", "ico"]
         is_asset_request = file_extension in asset_file_formats

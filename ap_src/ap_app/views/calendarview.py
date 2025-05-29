@@ -42,8 +42,6 @@ def set_calendar_month(request):
 
         year = split[1]
 
-        print(month)
-
     return redirect('all_calendar', month=month, year=year)
 
 def color_variant(hex_color, brightness_offset=1):
