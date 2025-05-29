@@ -2,7 +2,6 @@ import environ
 from django.http import HttpResponse, HttpRequest
 from .utils.teams_utils import is_team_app_running
 from django.template import loader
-from django.template import Template, Context
 
 
 env = environ.Env()
