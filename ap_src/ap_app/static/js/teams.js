@@ -1,6 +1,6 @@
 var apiURL = document.currentScript.getAttribute("apiURL");
 
-function openLeaveTeamModal(teamId, csrfToken, username, teamName) {
+function openLeaveTeamModal(teamId) {
     const modal = document.getElementById('leaveTeamModal');
     const confirmButton = $("#confirmLeaveButton");
     const cancelButton = document.getElementById('cancelLeaveButton');
