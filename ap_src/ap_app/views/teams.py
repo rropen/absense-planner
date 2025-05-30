@@ -69,8 +69,8 @@ def leave_team(request):
         "method": "leave"
     }
 
-    api_response_leave_team = requests.post(url=url, data=data, params=params)
-    if (api_response_leave_team.status_code == 200):
+    api_response = requests.post(url=url, data=data, params=params)
+    if (api_response.status_code == 200):
         # Remove lingering switch permissions upon success
         check_for_lingering_switch_perms(username, remove_switch_permissions)
 
