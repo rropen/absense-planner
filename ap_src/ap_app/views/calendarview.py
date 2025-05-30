@@ -70,16 +70,16 @@ def get_colour_data(user):
     
     return colour_data
 
-def sort_team_absences_by_logged_in_user(data, request):
+def sort_team_absences_by_logged_in_user(team_absences, request):
     user_username = request.user.username
     def fetch_username_from_json(userIndex):
-        json_user_id = data[0]['members'][userIndex]['user']['username']
+        json_user_id = team_absences[0]['members'][userIndex]['user']['username']
         return json_user_id
-    for userIndex in range(len(data[0]['members'])):
+    for userIndex in range(len(team_absences[0]['members'])):
         if user_username == fetch_username_from_json(userIndex):
-            saved_user = data[0]['members'][userIndex]
-            data[0]['members'].pop(userIndex)
-            data[0]['members'].insert(0,saved_user)
+            saved_user = team_absences[0]['members'][userIndex]
+            team_absences[0]['members'].pop(userIndex)
+            team_absences[0]['members'].insert(0,saved_user)
             break
 
 def retrieve_team_calendar_data(id, request):
