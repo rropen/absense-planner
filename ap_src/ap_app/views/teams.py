@@ -188,3 +188,17 @@ def edit_team(request:HttpRequest, id):
     roles = Role.objects.all()
 
     return render(request, "teams/edit_team.html", context={"team": api_data[0], "roles": roles, "url": TEAM_APP_API_URL})
+
+@login_required
+def delete_team(request:HttpRequest):
+    url = TEAM_APP_API_URL + "teams/"
+    data = {"id": request.POST.get("team_id")}
+    params = {"method": "delete"}
+
+    api_response = requests.post(url=url, data=data, params=params)
+
+    if (api_response.status_code == 200):
+        # Remove lingering switch permissions upon success
+        check_for_lingering_switch_perms(request.user.username, remove_switch_permissions)
+
+    return redirect(reverse("dashboard")) # Redirect back to the list of joined teams
