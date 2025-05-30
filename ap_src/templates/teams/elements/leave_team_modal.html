@@ -1,0 +1,19 @@
+{# Leave Team Confirmation Modal #}
+<div id="leaveTeamModal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="box">
+            <h1 class="title">Confirm Leave</h1>
+            <p>Are you sure you want to leave this team?</p>
+            <div class="buttons is-right">
+                <form action="{% url "leave_team" %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="team_id" value="">
+                    <button id="confirmLeaveButton" class="button is-danger" type="submit">Leave</button>
+                </form>
+                <button id="cancelLeaveButton" class="button">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"></button>
+</div>

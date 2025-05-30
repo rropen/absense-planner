@@ -19,6 +19,8 @@ from ..utils.teams_utils import retrieve_calendar_data
 env = environ.Env()
 environ.Env.read_env()
 
+TEAM_APP_API_URL = env("TEAM_APP_API_URL")
+
 def check_calendar_date(year, month) -> bool:
     date = datetime.datetime(year, datetime.datetime.strptime(month, "%B").month, 1)
 
@@ -39,8 +41,6 @@ def set_calendar_month(request):
         month = split[0]
 
         year = split[1]
-
-        print(month)
 
     return redirect('all_calendar', month=month, year=year)
 
@@ -70,33 +70,37 @@ def get_colour_data(user):
     
     return colour_data
 
-def sort_team_absences_by_logged_in_user(data, request):
+def sort_team_absences_by_logged_in_user(team_absences, request):
     user_username = request.user.username
     def fetch_username_from_json(userIndex):
-        json_user_id = data[0]['members'][userIndex]['user']['username']
+        json_user_id = team_absences[0]['members'][userIndex]['user']['username']
         return json_user_id
-    for userIndex in range(len(data[0]['members'])):
+    for userIndex in range(len(team_absences[0]['members'])):
         if user_username == fetch_username_from_json(userIndex):
-            saved_user = data[0]['members'][userIndex]
-            data[0]['members'].pop(userIndex)
-            data[0]['members'].insert(0,saved_user)
+            saved_user = team_absences[0]['members'][userIndex]
+            team_absences[0]['members'].pop(userIndex)
+            team_absences[0]['members'].insert(0,saved_user)
             break
 
-def team_calendar_data(id, request):
-    data = None
+def retrieve_team_calendar_data(id, request):
+    team_calendar_data = None
 
     try:
-        response = requests.get(env("TEAM_DATA_URL") + "api/members/?id={}".format(id))
-        data = response.json()
-        sort_team_absences_by_logged_in_user(data, request)
+        url = TEAM_APP_API_URL + "members/"
+        params = {"id": id}
+
+        api_response = requests.get(url=url, params=params)
+
+        team_calendar_data = api_response.json()
+        sort_team_absences_by_logged_in_user(team_calendar_data, request)
     except:
         # TODO Create error page for API failure
         raise NotImplementedError("Failed to retrieve API data (No error page)")
     
-    if response.status_code != 200:
+    if api_response.status_code != 200:
         raise NotImplementedError("Failed to retrieve API data (No error page)")
     
-    return data
+    return team_calendar_data
 
 def get_date_data(
     region,
@@ -253,7 +257,7 @@ def main_calendar(
     year = datetime.datetime.now().year
 ):
     """
-    Main calendar using API data.
+    Renders main calendar using API data.
     """
 
     # Retrieve sort value of calendars.    
@@ -285,12 +289,12 @@ def api_team_calendar(
     year=datetime.datetime.now().year
 ):
     """
-    Specific team calendar using the API
+    Renders the specific team calendar using the API.
     """
 
     user = request.user
 
-    team_data = team_calendar_data(id, request)[0]
+    team_data = retrieve_team_calendar_data(id, request)[0]
 
     team_data = [{"team": team_data}]
 
@@ -312,14 +316,15 @@ def api_team_calendar(
         "team_data": team_data,
         "user_data": user_data,
         "id": id,
-        "url": env("TEAM_DATA_URL")
+        "single_team": True,
+        "url": TEAM_APP_API_URL
     }
 
     return render(request, "calendars/specific_team_calendar.html", data)
                     
 def retrieve_common_calendar_data(user, year, month, team_users, page):
     """
-    Retrieves common calendar data for use with the reusable calendar_element.html
+    Retrieves common calendar data for use with the reusable calendar_element.html component template.
     """
 
     # Retrieve user's profile

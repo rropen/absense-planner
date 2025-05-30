@@ -2,7 +2,6 @@ import environ
 from django.http import HttpResponse, HttpRequest
 from .utils.teams_utils import is_team_app_running
 from django.template import loader
-from django.template import Template, Context
 
 
 env = environ.Env()
@@ -39,12 +38,17 @@ def status_check_middleware(get_response):
     return middleware
 
 def is_asset_request(request:HttpRequest):
+    """
+    Checks the file extension of the request and compares it to a list of file formats used for assets.
+    This is used when throwing a 503 error for requests as it should still allow the loading of asset
+    requests for a user-friendly 503 page.
+    """
+
     is_asset_request = False
     if "." in request.path:
         file_extension = request.path.split(".")[-1]
-        print(file_extension)
 
-        asset_file_formats = ["js", "css", "mp3"]
+        asset_file_formats = ["js", "css", "mp3", "ico"]
         is_asset_request = file_extension in asset_file_formats
 
     return is_asset_request

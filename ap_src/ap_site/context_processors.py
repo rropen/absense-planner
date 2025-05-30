@@ -22,9 +22,9 @@ def info(request):
 
 def team_api_data(request):
     """
-    Returns the TEAM_DATA_URL environment variable's value.
+    Returns the TEAM_APP_API_URL environment variable's value.
     """
-    return {'TEAM_DATA_URL': env("TEAM_DATA_URL")}
+    return {'TEAM_APP_API_URL': env("TEAM_APP_API_URL")}
 
 def debug(request):
     """

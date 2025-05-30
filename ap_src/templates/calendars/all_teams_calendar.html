@@ -22,7 +22,7 @@
         </span>
         <div class="level mt-5">
             <div class="level-left">
-                {% include 'calendars/calendar_nav.html' with name='all_calendar' %}
+                {% include 'calendars/elements/calendar_nav.html' with name='all_calendar' %}
             </div>
             <div class="level-right">
                 <div class="control has-icons-left px-1">
@@ -72,6 +72,6 @@
         </div>
     </div>
 </section>
-{% include 'calendars/calendar_element.html'%}
+{% include 'calendars/elements/calendar_element.html'%}
 <script src="{% static "js/api_calendar.js" %}" token="{{ csrf_token }}"></script>
 {% endblock %}

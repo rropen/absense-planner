@@ -259,3 +259,7 @@ footer {
         padding: 0.5rem;
     }
 }
+
+.team-name-bar {
+    gap: 1rem;
+}

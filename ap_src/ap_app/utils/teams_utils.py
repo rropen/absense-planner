@@ -18,22 +18,32 @@ def sort_global_absences_by_logged_in_user(data, user):
 env = environ.Env()
 environ.Env.read_env()
 
-def retrieve_calendar_data(user, sortValue):
-    data = None
-    r = None
+TEAM_APP_API_URL = env("TEAM_APP_API_URL")
+
+def retrieve_calendar_data(user, sort_value):
+    calendar_data = None
+    api_response = None
 
     try:
         token = (str(user) + "AbsencePlanner").encode()
-        encryption = hashlib.sha256(token).hexdigest()
-        r = requests.get(env("TEAM_DATA_URL") + "api/user/teams/?format=json&username={}&sort={}".format(user.username, sortValue), headers={"TEAMS-TOKEN": encryption})
+        token = hashlib.sha256(token).hexdigest()
+
+        url = TEAM_APP_API_URL + "user/teams/"
+        params = {
+            "username": user.username,
+            "sort": sort_value
+        }
+        headers = {"TEAMS-TOKEN": token}
+
+        api_response = requests.get(url=url, params=params, headers=headers)
     except:
         print("API Failed to connect")
         return # Caller should handle the API error
     
-    if r is not None and r.status_code == 200:
-        data = r.json()
-        sort_global_absences_by_logged_in_user(data, user)
-    return data
+    if api_response is not None and api_response.status_code == 200:
+        calendar_data = api_response.json()
+        sort_global_absences_by_logged_in_user(calendar_data, user)
+    return calendar_data
 
 def get_users_sharing_teams(username, user_model):
     teams = retrieve_calendar_data(user_model, None)
@@ -63,31 +73,73 @@ def get_users_sharing_teams(username, user_model):
     return users_sharing_teams
 
 def check_user_exists(username):
-    data = None
-    api_request = None
+    user_exists = None
+    api_response = None
 
     try:
         token = (str(username) + "AbsencePlanner").encode()
-        encryption = hashlib.sha256(token).hexdigest()
-        api_request = requests.get(env("TEAM_DATA_URL") + "api/user_exists/?format=json&username={}".format(username), headers={"TEAMS-TOKEN": encryption})
+        token = hashlib.sha256(token).hexdigest()
+
+        url = TEAM_APP_API_URL + "user_exists/"
+        params = {"username": username}
+        headers = {"TEAMS-TOKEN": token}
+
+        api_response = requests.get(url=url, params=params, headers=headers)
     except:
         print("API Failed to connect")
         return # Caller should handle the API error
     
-    if api_request is not None and api_request.status_code == 200:
-        data = api_request.json()
-    return data
+    if api_response is not None and api_response.status_code == 200:
+        user_exists = api_response.json()
+
+    return user_exists
 
 def is_team_app_running():
     team_app_running = False
 
     try:
-        api_request = requests.get(env("TEAM_DATA_URL") + "api/status_check")
+        url = TEAM_APP_API_URL + "status_check"
+
+        api_response = requests.get(url=url)
     except:
         print("API Failed to connect")
         return team_app_running # Caller should handle the API error
     
-    if api_request is not None and api_request.status_code == 200:
+    if api_response is not None and api_response.status_code == 200:
         team_app_running = True
     
     return team_app_running
+
+def edit_api_data(userprofile, id):
+    api_data = None
+    if userprofile:
+        try:
+            url = TEAM_APP_API_URL + "members/"
+            params = {"id": id}
+
+            api_response = requests.get(url=url, params=params)
+
+            api_data = api_response.json()
+        except:
+            raise NotImplementedError("Could not find API (No error page)")
+        
+        if api_response.status_code != 200:
+            raise NotImplementedError("Invalid team name (No error page)")
+    else:
+        raise NotImplementedError("The API setting is not enabled in your profile. (No error page)")
+
+    return api_data
+
+def favourite_team(username, team_id):
+    url = TEAM_APP_API_URL + 'manage/'
+    data = {
+        "username": username,
+        "team": team_id
+    }
+    params = {
+        "method": "favourite"
+    }
+
+    api_response = requests.post(url=url, data=data, params=params)
+
+    return api_response

@@ -162,9 +162,7 @@ def update_colour(request:HttpRequest):
             update_data.color = request.POST["colour"]
             update_data.save()
         else:
-            print(request.POST)
             if request.POST["colour"] != default.default or request.POST["enabled"] != 'True':
-                print("Created colour data")
                 newData = ColorData()
                 if request.POST["enabled"] == 'True':
                     newData.enabled = True
@@ -391,13 +389,13 @@ def remove_lingering_perms(request):
 
     Generally ran when a user leaves a team and we wish to remove any lingering permissions.
     """
-    if request.method == "GET":
-        username = request.user.get_username()
+    if request.method == "POST":
+        username = request.user.username
         result = check_for_lingering_switch_perms(username, remove_switch_permissions)
         if result is not None:
             return JsonResponse({'status': 'success'})
     # Something failed in the logic for checking and removing switch permissions
-    return JsonResponse({'status': 'fail', 'message': 'Invalid request'})
+    return HttpResponse(status=500)
 
 def Custom404View(request):
     return render(request, '404.html')
