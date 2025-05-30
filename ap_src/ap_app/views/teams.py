@@ -9,7 +9,7 @@ from django.urls import reverse
 
 from ..forms import CreateTeamForm
 from ..models import Role, UserProfile
-from ..utils.teams_utils import edit_api_data
+from ..utils.teams_utils import edit_api_data, favourite_team
 from ..utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
 
 env = environ.Env()
@@ -51,20 +51,6 @@ def teams_dashboard(request) -> render:
         "teams/dashboard.html",
         {"teams": teams, "url": TEAM_APP_API_URL},
     )
-
-def favourite_team(username, team_id):
-    url = TEAM_APP_API_URL + 'manage/'
-    data = {
-        "username": username,
-        "team": team_id
-    }
-    params = {
-        "method": "favourite"
-    }
-
-    api_response = requests.post(url=url, data=data, params=params)
-
-    return api_response
 
 @login_required
 def leave_team(request):

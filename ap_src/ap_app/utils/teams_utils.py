@@ -129,3 +129,17 @@ def edit_api_data(userprofile, id):
         raise NotImplementedError("The API setting is not enabled in your profile. (No error page)")
 
     return api_data
+
+def favourite_team(username, team_id):
+    url = TEAM_APP_API_URL + 'manage/'
+    data = {
+        "username": username,
+        "team": team_id
+    }
+    params = {
+        "method": "favourite"
+    }
+
+    api_response = requests.post(url=url, data=data, params=params)
+
+    return api_response
