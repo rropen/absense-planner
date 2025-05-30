@@ -83,7 +83,7 @@ def sort_team_absences_by_logged_in_user(data, request):
             break
 
 def retrieve_team_calendar_data(id, request):
-    data = None
+    team_calendar_data = None
 
     try:
         url = TEAM_APP_API_URL + "members/"
@@ -92,7 +92,7 @@ def retrieve_team_calendar_data(id, request):
         api_response = requests.get(url=url, params=params)
 
         team_calendar_data = api_response.json()
-        sort_team_absences_by_logged_in_user(data, request)
+        sort_team_absences_by_logged_in_user(team_calendar_data, request)
     except:
         # TODO Create error page for API failure
         raise NotImplementedError("Failed to retrieve API data (No error page)")
