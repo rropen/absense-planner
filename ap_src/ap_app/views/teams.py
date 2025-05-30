@@ -10,6 +10,7 @@ from django.urls import reverse
 from ..forms import CreateTeamForm
 from ..models import Role, UserProfile
 from ..utils.teams_utils import edit_api_data
+from ..utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
 
 env = environ.Env()
 environ.Env.read_env()
@@ -67,9 +68,15 @@ def favourite_team(username, team_id):
 
 @login_required
 def leave_team(request):
+    """
+    Leaves a team and removes lingering switch permissions.
+    """
+
+    username = request.user.username
+
     url = TEAM_APP_API_URL + "manage/"
     data = {
-        "username": request.user.username,
+        "username": username,
         "team": request.POST.get("team_id")
     }
     params = {
@@ -78,8 +85,8 @@ def leave_team(request):
 
     api_response_leave_team = requests.post(url=url, data=data, params=params)
     if (api_response_leave_team.status_code == 200):
-        url = request.build_absolute_uri(reverse("remove_lingering_perms"))
-        requests.post(url=url)
+        # Remove lingering switch permissions upon success
+        check_for_lingering_switch_perms(username, remove_switch_permissions)
 
     return redirect(reverse("dashboard")) # Redirect back to the list of joined teams
 
