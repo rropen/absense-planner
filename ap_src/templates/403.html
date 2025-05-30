@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>403 Access Denied</title>
+    <link rel="stylesheet" href="{% static 'css/error_pages.css' %}">
+</head>
+<body>
+
+    <div class="container">
+        <div class="sad-face">:(</div>
+        <div class="title">403 ACCESS_DENIED</div>
+        <div class="message">
+            Access to this page is denied.
+            <br><br>
+            Sorry, you are not allowed to access this page.
+        </div>
+        <div class="details">
+            Error Code: HTTP_403_ACCESS_DENIED<br><br>
+            What failed: UNAUTHORISED_ACCESS<br>
+            Stop Code: 0x00000403<br><br>
+            You are not authorised to access this page. Go back to home page:<br>
+            <a href="/">https://absence-planner.com/</a>
+        </div>
+    </div>
+    <script>
+        function playAudio(){
+            audio.play().catch(error => console.log("Playback error:", error));
+        };
+        var audio = new Audio("{% static 'audio/death-sound.mp3' %}");
+        document.documentElement.addEventListener("click", playAudio);
+        document.documentElement.addEventListener("keypress", playAudio);
+    </script>
+</body>
+</html>

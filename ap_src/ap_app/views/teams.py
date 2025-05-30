@@ -3,6 +3,7 @@ import requests
 import environ
 
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse, HttpRequest
 from django.shortcuts import redirect, render
 
@@ -101,25 +102,41 @@ def join_team(request) -> render:
 #This page allows owners of a team to modify differnt properties of a team.
 #Links to: teams/edit_team.html
 @login_required
-def edit_team(request:HttpRequest, id):
-
+def edit_team(request: HttpRequest, id):
     if not id:
         return JsonResponse({"Error": "Team name not found"})
 
     userprofile: UserProfile = UserProfile.objects.get(user=request.user)
 
     if request.method == "POST":
-        response = requests.post(env("TEAM_DATA_URL") + "api/teams/?method=edit&format=json", data=request.POST)
+        response = requests.post(
+            env("TEAM_DATA_URL") + "api/teams/?method=edit&format=json",
+            data=request.POST,
+        )
         if response.status_code != 200:
             print(response.json())
 
     api_data = edit_api_data(userprofile, id)
-    if api_data is None:
-        raise ValueError("Invalid API Data")
-    
-    roles = Role.objects.all()
+    if api_data is None or not api_data[0].get("members"):
+        return JsonResponse({"Error": "Invalid team data returned from API"})
 
-    return render(request, "teams/edit_team.html", context={"team": api_data[0], "roles": roles, "url": env("TEAM_DATA_URL")})
+    current_user = request.user.username
+
+    is_owner = any(
+        member["user"]["username"] == current_user and
+        member["user"].get("role_info", {}).get("role", "").lower() == "owner"
+        for member in api_data[0]["members"]
+    )
+
+    if not is_owner:
+        raise PermissionDenied
+
+    roles = Role.objects.all()
+    return render(
+        request,
+        "teams/edit_team.html",
+        {"team": api_data[0], "roles": roles, "url": env("TEAM_DATA_URL")},
+    )
 
 
 def edit_api_data(userprofile, id):

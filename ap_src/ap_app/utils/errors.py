@@ -24,5 +24,11 @@ def handler400(request, exception):
     response.status_code = 400
     return response
 
+def handler403(request, exception):
+    context = {}
+    response = render(request, "403.html", context=context)
+    response.status_code = 403
+    return response
+
 def my_view(request):
     return render(request, "base.html")
