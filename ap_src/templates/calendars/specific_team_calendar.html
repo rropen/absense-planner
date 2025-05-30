@@ -47,7 +47,7 @@
 <section class="section" style="padding-left: 7.5vw!important; padding-right: 7.5vw!important;">
     <div class="level">
         <div class="level-left">
-            {% include 'calendars/calendar_nav.html' with name='api_team_calendar' %}
+            {% include 'calendars/elements/calendar_nav.html' with name='api_team_calendar' %}
         </div>
     </div>
 </section>
@@ -67,7 +67,7 @@
     </div>
     <button class="modal-close is-large" aria-label="close"></button>
 </div>
-{% include 'elements/calendar_element.html'%}
+{% include 'calendars/elements/calendar_element.html'%}
 <script src="{% static "js/api_calendar.js" %}" token="{{ csrf_token }}"></script>
 <script src="{% static 'js/teams.js' %}" apiURL="{{ url }}"></script>
 {% endblock %}
