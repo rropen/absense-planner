@@ -191,6 +191,11 @@ def edit_team(request:HttpRequest, id):
 
 @login_required
 def delete_team(request:HttpRequest):
+    """
+    Deletes a team and, if successful, checks for lingering switch permissions and deletes them, and
+    then redirects back to the list of joined teams.
+    """
+    
     url = TEAM_APP_API_URL + "teams/"
     data = {"id": request.POST.get("team_id")}
     params = {"method": "delete"}
