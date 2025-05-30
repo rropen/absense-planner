@@ -3,6 +3,7 @@ import requests
 import environ
 
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse, HttpRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -182,12 +183,26 @@ def edit_team(request:HttpRequest, id):
             print(api_response.json())
 
     api_data = edit_api_data(userprofile, id)
-    if api_data is None:
-        raise ValueError("Invalid API Data")
-    
-    roles = Role.objects.all()
+    if api_data is None or not api_data[0].get("members"):
+        return JsonResponse({"Error": "Invalid team data returned from API"})
 
-    return render(request, "teams/edit_team.html", context={"team": api_data[0], "roles": roles, "url": TEAM_APP_API_URL})
+    current_user = request.user.username
+
+    is_owner = any(
+        member["user"]["username"] == current_user and
+        member["user"].get("role_info", {}).get("role", "").lower() == "owner"
+        for member in api_data[0]["members"]
+    )
+
+    if not is_owner:
+        raise PermissionDenied
+
+    roles = Role.objects.all()
+    return render(
+        request,
+        "teams/edit_team.html",
+        {"team": api_data[0], "roles": roles, "url": TEAM_APP_API_URL},
+    )
 
 @login_required
 def delete_team(request:HttpRequest):
