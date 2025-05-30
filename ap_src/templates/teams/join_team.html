@@ -13,7 +13,14 @@
                 <i class="fas fa-user-alt mx-2"></i>{{team.count}}</span>
             <span class="is-block is-size-6">{{ team.description }}</span>
             <div class="is-grouped">
-                <button class="button is-success join-team-button" id="{{ team.id }}" onclick="JoinTeam(this, '{{ request.user.username }}', true)">Join Team</button>
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="team_id" value="{{ team.id }}">
+                    <input type="hidden" name="method" value="join">
+                    <button class="button is-success join-team-button" id="{{ team.id }}" type="submit">
+                        Join Team
+                    </button>
+                </form>
             </div>
         </div>
     </div>

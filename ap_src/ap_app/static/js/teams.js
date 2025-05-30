@@ -48,27 +48,6 @@ window.addEventListener('load', () => {
     }
 });
 
-function JoinTeam(e, user, redirect) {
-    var data = JSON.stringify({"username": user, "team": e.id})
-    fetch(apiURL + 'manage/?method=join', {
-        method: "post",
-        body: data,
-        headers: {
-            "Content-Type": "application/json",
-        },
-    })
-    .then(() => {
-        if (redirect) {
-            location.replace(location.origin + "/teams/join")
-        } else {
-            location.reload()
-        }
-    })
-    .catch(err => {
-        console.log(err)
-    })
-}
-
 function starHover(element) {
     if (element.dataset.star == 'False'){
         let starElement = $(element).children(".fa-star");

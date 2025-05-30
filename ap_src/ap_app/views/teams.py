@@ -119,7 +119,7 @@ def create_team(request:HttpRequest) -> render:
 
 @login_required
 def join_team(request) -> render:
-    """Renders page with all teams the user is not currently in"""
+    """Renders page with all teams the user is not currently in and handles joining of specific teams."""
     # Filtering by team name
     try:
         userprofile: UserProfile = UserProfile.objects.get(user=request.user)
@@ -129,6 +129,20 @@ def join_team(request) -> render:
     teams = None
     if userprofile:
         try:
+            if (request.method == "POST"):
+                # Pass through data to the Team App API
+                method = request.POST.get("method")
+
+                if (method == "join"):
+                    data = {
+                        "username": request.user.username,
+                        "team": request.POST.get("team_id")
+                    }
+                    url = TEAM_APP_API_URL + "manage/"
+                    params = {"method": "join"}
+
+                    api_response = requests.post(url=url, data=data, params=params)
+
             params = {"username": request.user.username}
             url = TEAM_APP_API_URL + "teams/"
 
