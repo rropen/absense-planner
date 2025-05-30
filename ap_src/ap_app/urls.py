@@ -18,6 +18,7 @@ urlpatterns = [
     path("calendar/", views.main_calendar, name="all_Calendar"),
     path("calendar/<str:month>/<int:year>", views.main_calendar, name="all_calendar"),
     path("teams/", teams.teams_dashboard, name="dashboard"),
+    path("teams/leave", teams.leave_team, name="leave_team"),
     path("teams/create", teams.create_team, name="create_team"),
     path("teams/join", teams.join_team, name="join_team"),
     path("teams/api-calendar/<int:id>", calendarview.api_team_calendar, name="api_team_calendar"),

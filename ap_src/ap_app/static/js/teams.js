@@ -2,70 +2,27 @@ var apiURL = document.currentScript.getAttribute("apiURL");
 
 function openLeaveTeamModal(teamId, csrfToken, username, teamName) {
     const modal = document.getElementById('leaveTeamModal');
-    const confirmButton = document.getElementById('confirmLeaveButton');
+    const confirmButton = $("#confirmLeaveButton");
     const cancelButton = document.getElementById('cancelLeaveButton');
     const modalCloseButton = document.querySelector('#leaveTeamModal .modal-close');
 
+    // Find hidden input used to send selected Team ID.
+    const teamIdInputElement = confirmButton.parent().children("[name='team_id']").eq(0)
+
     modal.classList.add('is-active');
 
-    confirmButton.addEventListener('click', () => {
-        LeaveTeamAndRemovePermissions(teamId, username, csrfToken, teamName);
-        modal.classList.remove('is-active');
-    });
+    // Add the current Team ID to the form so it can be sent in the request when the confirm button is pressed.
+    teamIdInputElement.val(teamId);
 
     cancelButton.addEventListener('click', () => {
         modal.classList.remove('is-active');
+        teamIdInputElement.val(""); // Reset Team ID input
     });
 
     modalCloseButton.addEventListener('click', () => {
         modal.classList.remove('is-active');
+        teamIdInputElement.val("");
     });
-}
-
-async function LeaveTeamAndRemovePermissions(teamId, username, token, teamName) {
-    const headers = {
-        "Content-Type": "application/json",
-        "X-CSRFToken": token,
-    };
-
-    var data = JSON.stringify({ username: username, team: teamId });
-
-    try {
-        const leaveResponse = await fetch(apiURL + "manage/?method=leave", {
-            method: "post",
-            body: data,
-            headers: headers,
-        });
-
-        if (!leaveResponse.ok) {
-            throw new Error(`Leave request failed with status ${leaveResponse.status}`);
-        }
-
-        const leaveData = await leaveResponse.json();
-
-        if (leaveData.message === "success") {
-            const permissionsResponse = await fetch(
-                window.location.origin + "/remove_lingering_perms",
-                {
-                    method: "get",
-                    headers: headers,
-                },
-            );
-
-            if (!permissionsResponse.ok) {
-                throw new Error(
-                    `Permissions check request failed with status ${permissionsResponse.status}`,
-                );
-            }
-
-            const permissionsData = await permissionsResponse.json();
-            sessionStorage.setItem('showSuccessModal', 'true'); // Set flag to show success modal
-            sessionStorage.setItem('teamName', teamName)
-            location.reload(); // Reload the page to update the teams
-        }
-    } catch (err) {
-        console.log(err);
-    }
 }
 
 function showSuccessModal() {

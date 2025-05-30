@@ -5,6 +5,7 @@ import environ
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpRequest
 from django.shortcuts import redirect, render
+from django.urls import reverse
 
 from ..forms import CreateTeamForm
 from ..models import Role, UserProfile
@@ -19,7 +20,7 @@ def teams_dashboard(request) -> render:
     if (request.method == "POST"):
         api_specific_method = request.POST.get("method")
         if (api_specific_method == "favourite"):
-            favouriteTeam(request.user.username, request.POST.get("team"))
+            favourite_team(request.user.username, request.POST.get("team"))
 
     try:
         token = (str(request.user) + "AbsencePlanner").encode()
@@ -50,7 +51,7 @@ def teams_dashboard(request) -> render:
         {"teams": teams, "url": TEAM_APP_API_URL},
     )
 
-def favouriteTeam(username, team_id):
+def favourite_team(username, team_id):
     url = TEAM_APP_API_URL + 'manage/'
     data = {
         "username": username,
@@ -63,6 +64,24 @@ def favouriteTeam(username, team_id):
     api_response = requests.post(url=url, data=data, params=params)
 
     return api_response
+
+@login_required
+def leave_team(request):
+    url = TEAM_APP_API_URL + "manage/"
+    data = {
+        "username": request.user.username,
+        "team": request.POST.get("team_id")
+    }
+    params = {
+        "method": "leave"
+    }
+
+    api_response_leave_team = requests.post(url=url, data=data, params=params)
+    if (api_response_leave_team.status_code == 200):
+        url = request.build_absolute_uri(reverse("remove_lingering_perms"))
+        requests.post(url=url)
+
+    return redirect(reverse("dashboard")) # Redirect back to the list of joined teams
 
 @login_required
 def create_team(request:HttpRequest) -> render:
