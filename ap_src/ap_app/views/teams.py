@@ -50,7 +50,7 @@ def teams_dashboard(request) -> render:
     return render(
         request,
         "teams/dashboard.html",
-        {"teams": teams, "url": TEAM_APP_API_URL},
+        {"teams": teams},
     )
 
 @login_required
@@ -114,7 +114,6 @@ def create_team(request:HttpRequest) -> render:
         "teams/create_team.html",
         {
             "form": form,
-            "api_url": TEAM_APP_API_URL + "teams/?format=json",
         },
     )
 
@@ -157,7 +156,7 @@ def join_team(request) -> render:
         request,
         "teams/join_team.html",
         {
-            "teams": teams, "url": TEAM_APP_API_URL,
+            "teams": teams,
         },
     )
 
