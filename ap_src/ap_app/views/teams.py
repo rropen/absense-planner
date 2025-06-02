@@ -31,7 +31,10 @@ def teams_dashboard(request) -> render:
 
         # Prepare request parameters
         params = {"username": request.user.username}
-        headers = {"TEAMS-TOKEN": token}
+        headers = {
+            "TEAMS-TOKEN": token,
+            "Authorization": "Api_Key amAaQwQ0.cmf6FJ6OcfpBrk5frt744653z4pwll1I"
+        }
         url = TEAM_APP_API_URL + "user/teams/"
 
         # Send request to Team App API and store in response object
@@ -70,8 +73,9 @@ def leave_team(request):
     params = {
         "method": "leave"
     }
+    headers = {"Authorization": TEAM_APP_API_KEY}
 
-    api_response = requests.post(url=url, data=data, params=params)
+    api_response = requests.post(url=url, data=data, params=params, headers=headers)
     if (api_response.status_code == 200):
         # Remove lingering switch permissions upon success
         check_for_lingering_switch_perms(username, remove_switch_permissions)
@@ -92,8 +96,9 @@ def create_team(request:HttpRequest) -> render:
 
             url = TEAM_APP_API_URL + "teams/"
             data = request.POST # This is the data sent by the user in the CreateTeamForm
+            headers = {"Authorization": TEAM_APP_API_KEY}
 
-            api_response = requests.post(url=url, data=data)
+            api_response = requests.post(url=url, data=data, headers=headers)
 
             if api_response.status_code == 200:
                 return redirect("/teams/api-calendar/" + str(api_response.json()["id"]))
@@ -141,13 +146,14 @@ def join_team(request) -> render:
                     }
                     url = TEAM_APP_API_URL + "manage/"
                     params = {"method": "join"}
+                    headers = {"Authorization": TEAM_APP_API_KEY}
 
-                    api_response = requests.post(url=url, data=data, params=params)
+                    api_response = requests.post(url=url, data=data, params=params, headers=headers)
 
             params = {"username": request.user.username}
             url = TEAM_APP_API_URL + "teams/"
 
-            api_response = requests.get(url=url, params=params)
+            api_response = requests.get(url=url, params=params, headers=headers)
         except:
             print("Api failed to load")
         if api_response is not None and api_response.status_code == 200:
@@ -176,8 +182,9 @@ def edit_team(request:HttpRequest, id):
         url = TEAM_APP_API_URL + "teams/"
         params = {"method": "edit"}
         data = request.POST
+        headers = {"Authorization": TEAM_APP_API_KEY}
 
-        api_response = requests.post(url=url, params=params, data=data)
+        api_response = requests.post(url=url, params=params, data=data, headers=headers)
 
         if api_response.status_code != 200:
             print(api_response.json())
@@ -201,7 +208,7 @@ def edit_team(request:HttpRequest, id):
     return render(
         request,
         "teams/edit_team.html",
-        {"team": api_data[0], "roles": roles, "url": TEAM_APP_API_URL},
+        {"team": api_data[0], "roles": roles},
     )
 
 @login_required
@@ -214,8 +221,9 @@ def delete_team(request:HttpRequest):
     url = TEAM_APP_API_URL + "teams/"
     data = {"id": request.POST.get("team_id")}
     params = {"method": "delete"}
+    headers = {"Authorization": TEAM_APP_API_KEY}
 
-    api_response = requests.post(url=url, data=data, params=params)
+    api_response = requests.post(url=url, data=data, params=params, headers=headers)
 
     if (api_response.status_code == 200):
         # Remove lingering switch permissions upon success

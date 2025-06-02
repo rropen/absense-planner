@@ -89,8 +89,9 @@ def retrieve_team_calendar_data(id, request):
     try:
         url = TEAM_APP_API_URL + "members/"
         params = {"id": id}
+        headers = {"Authorization": TEAM_APP_API_KEY}
 
-        api_response = requests.get(url=url, params=params)
+        api_response = requests.get(url=url, params=params, headers=headers)
 
         team_calendar_data = api_response.json()
         sort_team_absences_by_logged_in_user(team_calendar_data, request)
