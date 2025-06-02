@@ -152,6 +152,7 @@ def join_team(request) -> render:
 
             params = {"username": request.user.username}
             url = TEAM_APP_API_URL + "teams/"
+            headers = {"Authorization": TEAM_APP_API_KEY}
 
             api_response = requests.get(url=url, params=params, headers=headers)
         except:
