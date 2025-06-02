@@ -16,6 +16,7 @@ from ..utils.switch_permissions import check_for_lingering_switch_perms, remove_
 env = environ.Env()
 environ.Env.read_env()
 TEAM_APP_API_URL = env("TEAM_APP_API_URL")
+TEAM_APP_API_KEY = env("TEAM_APP_API_KEY")
 
 @login_required
 def teams_dashboard(request) -> render:

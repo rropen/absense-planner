@@ -20,6 +20,7 @@ env = environ.Env()
 environ.Env.read_env()
 
 TEAM_APP_API_URL = env("TEAM_APP_API_URL")
+TEAM_APP_API_KEY = env("TEAM_APP_API_KEY")
 
 def check_calendar_date(year, month) -> bool:
     date = datetime.datetime(year, datetime.datetime.strptime(month, "%B").month, 1)
