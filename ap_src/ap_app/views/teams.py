@@ -10,7 +10,7 @@ from django.urls import reverse
 
 from ..forms import CreateTeamForm
 from ..models import Role, UserProfile
-from ..utils.teams_utils import edit_api_data, favourite_team
+from ..utils.teams_utils import edit_api_data, favourite_team, get_user_token_from_request
 from ..utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
 
 env = environ.Env()
@@ -179,18 +179,23 @@ def edit_team(request:HttpRequest, id):
 
     userprofile: UserProfile = UserProfile.objects.get(user=request.user)
 
+    user_token = get_user_token_from_request(request)
+
     if request.method == "POST":
         url = TEAM_APP_API_URL + "teams/"
         params = {"method": "edit"}
         data = request.POST
-        headers = {"Authorization": TEAM_APP_API_KEY}
+        headers = {
+            "Authorization": TEAM_APP_API_KEY,
+            "User-Token": user_token
+        }
 
         api_response = requests.post(url=url, params=params, data=data, headers=headers)
 
         if api_response.status_code != 200:
             print(api_response.json())
 
-    api_data = edit_api_data(userprofile, id)
+    api_data = edit_api_data(userprofile, id, user_token)
     if api_data is None or not api_data[0].get("members"):
         return JsonResponse({"Error": "Invalid team data returned from API"})
 

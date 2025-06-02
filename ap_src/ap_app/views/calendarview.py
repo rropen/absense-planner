@@ -6,6 +6,7 @@ import calendar
 import holidays
 import environ
 import json
+import hashlib
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
@@ -14,7 +15,7 @@ from django.http import HttpRequest
 from ..models import (UserProfile, ColorData, ColourScheme, User, Absence)
 
 from ..utils.absence_utils import get_absence_data
-from ..utils.teams_utils import retrieve_calendar_data
+from ..utils.teams_utils import retrieve_calendar_data, get_user_token_from_request
 
 env = environ.Env()
 environ.Env.read_env()
@@ -83,13 +84,16 @@ def sort_team_absences_by_logged_in_user(team_absences, request):
             team_absences[0]['members'].insert(0,saved_user)
             break
 
-def retrieve_team_calendar_data(id, request):
+def retrieve_team_calendar_data(id, request, user_token):
     team_calendar_data = None
 
     try:
         url = TEAM_APP_API_URL + "members/"
         params = {"id": id}
-        headers = {"Authorization": TEAM_APP_API_KEY}
+        headers = {
+            "Authorization": TEAM_APP_API_KEY,
+            "User-Token": user_token
+        }
 
         api_response = requests.get(url=url, params=params, headers=headers)
 
@@ -296,9 +300,11 @@ def api_team_calendar(
 
     user = request.user
 
-    team_data = retrieve_team_calendar_data(id, request)[0]
+    user_token = get_user_token_from_request(request)
+    team_data = retrieve_team_calendar_data(id, request, user_token)[0]
 
     team_data = [{"team": team_data}]
+
 
     # Get absence data
     team_users = []

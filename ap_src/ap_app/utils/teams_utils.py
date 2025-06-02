@@ -3,6 +3,9 @@ import requests
 
 import environ
 
+from django.contrib.auth.decorators import login_required
+from django.http import HttpRequest
+
 def sort_global_absences_by_logged_in_user(data, user):
     for teamIndex in range(len(data)):
         def fetch_username_from_json(userIndex):
@@ -118,13 +121,16 @@ def is_team_app_running():
     
     return team_app_running
 
-def edit_api_data(userprofile, id):
+def edit_api_data(userprofile, id, user_token):
     api_data = None
     if userprofile:
         try:
             url = TEAM_APP_API_URL + "members/"
             params = {"id": id}
-            headers = {"Authorization": TEAM_APP_API_KEY}
+            headers = {
+                "Authorization": TEAM_APP_API_KEY,
+                "User-Token": user_token
+            }
 
             api_response = requests.get(url=url, params=params, headers=headers)
 
@@ -153,3 +159,10 @@ def favourite_team(username, team_id):
     api_response = requests.post(url=url, data=data, params=params, headers=headers)
 
     return api_response
+
+@login_required
+def get_user_token_from_request(request:HttpRequest):
+    username = str(request.user.username).encode() # Get the raw username string from request
+    user_token = hashlib.sha256(username).hexdigest() # Encrypt and get digest value
+
+    return user_token
