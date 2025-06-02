@@ -1,5 +1,4 @@
 TEAM_APP_API_URL=http://localhost:8002/api/
-TEAM_APP_API_KEY=
 DEBUG=True
 PRODUCTION_UI=False
 DB_NAME = ""
