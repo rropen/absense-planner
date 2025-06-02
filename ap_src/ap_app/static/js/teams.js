@@ -1,5 +1,3 @@
-var apiURL = document.currentScript.getAttribute("apiURL");
-
 function openLeaveTeamModal(teamId) {
     const modal = document.getElementById('leaveTeamModal');
     const confirmButton = $("#confirmLeaveButton");

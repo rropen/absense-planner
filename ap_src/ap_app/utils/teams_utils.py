@@ -19,6 +19,7 @@ env = environ.Env()
 environ.Env.read_env()
 
 TEAM_APP_API_URL = env("TEAM_APP_API_URL")
+TEAM_APP_API_KEY = env("TEAM_APP_API_KEY")
 
 def retrieve_calendar_data(user, sort_value):
     calendar_data = None
@@ -33,7 +34,10 @@ def retrieve_calendar_data(user, sort_value):
             "username": user.username,
             "sort": sort_value
         }
-        headers = {"TEAMS-TOKEN": token}
+        headers = {
+            "TEAMS-TOKEN": token,
+            "Authorization": TEAM_APP_API_KEY
+        }
 
         api_response = requests.get(url=url, params=params, headers=headers)
     except:
@@ -82,7 +86,10 @@ def check_user_exists(username):
 
         url = TEAM_APP_API_URL + "user_exists/"
         params = {"username": username}
-        headers = {"TEAMS-TOKEN": token}
+        headers = {
+            "TEAMS-TOKEN": token,
+            "Authorization": TEAM_APP_API_KEY
+        }
 
         api_response = requests.get(url=url, params=params, headers=headers)
     except:
@@ -99,6 +106,7 @@ def is_team_app_running():
 
     try:
         url = TEAM_APP_API_URL + "status_check"
+        # We do not need an API key because it is a simple status check
 
         api_response = requests.get(url=url)
     except:
@@ -116,8 +124,9 @@ def edit_api_data(userprofile, id):
         try:
             url = TEAM_APP_API_URL + "members/"
             params = {"id": id}
+            headers = {"Authorization": TEAM_APP_API_KEY}
 
-            api_response = requests.get(url=url, params=params)
+            api_response = requests.get(url=url, params=params, headers=headers)
 
             api_data = api_response.json()
         except:
@@ -139,7 +148,8 @@ def favourite_team(username, team_id):
     params = {
         "method": "favourite"
     }
+    headers = {"Authorization": TEAM_APP_API_KEY}
 
-    api_response = requests.post(url=url, data=data, params=params)
+    api_response = requests.post(url=url, data=data, params=params, headers=headers)
 
     return api_response
