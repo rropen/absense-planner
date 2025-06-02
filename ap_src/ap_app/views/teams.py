@@ -33,7 +33,7 @@ def teams_dashboard(request) -> render:
         params = {"username": request.user.username}
         headers = {
             "TEAMS-TOKEN": token,
-            "Authorization": "Api_Key amAaQwQ0.cmf6FJ6OcfpBrk5frt744653z4pwll1I"
+            "Authorization": TEAM_APP_API_KEY
         }
         url = TEAM_APP_API_URL + "user/teams/"
 
