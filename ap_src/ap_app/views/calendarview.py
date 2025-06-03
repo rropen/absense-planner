@@ -273,7 +273,8 @@ def main_calendar(
 
     user = request.user
     # Get names of teams and members in the team.
-    teams_data = retrieve_calendar_data(user, sortValue)
+    user_token = get_user_token_from_request(request)
+    teams_data = retrieve_calendar_data(user, sortValue, user_token)
 
     users = retrieve_all_users(request, teams_data)
 

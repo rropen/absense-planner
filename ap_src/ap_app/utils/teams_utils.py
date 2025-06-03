@@ -6,13 +6,13 @@ import environ
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest
 
-def sort_global_absences_by_logged_in_user(data, user):
+def sort_global_absences_by_logged_in_user(data, username):
     for teamIndex in range(len(data)):
         def fetch_username_from_json(userIndex):
-            user_username = data[teamIndex]['team']['members'][userIndex]['user']['username']
-            return user_username
+            username = data[teamIndex]['team']['members'][userIndex]['user']['username']
+            return username
         for userIndex in range(len(data[teamIndex]['team']['members'])):
-            if user.username == fetch_username_from_json(userIndex):
+            if username == fetch_username_from_json(userIndex):
                 saved_user = data[teamIndex]['team']['members'][userIndex]
                 data[teamIndex]['team']['members'].pop(userIndex)
                 data[teamIndex]['team']['members'].insert(0,saved_user)
@@ -24,21 +24,17 @@ environ.Env.read_env()
 TEAM_APP_API_URL = env("TEAM_APP_API_URL")
 TEAM_APP_API_KEY = env("TEAM_APP_API_KEY")
 
-def retrieve_calendar_data(user, sort_value):
+def retrieve_calendar_data(user, sort_value, user_token):
     calendar_data = None
     api_response = None
 
     try:
-        token = (str(user) + "AbsencePlanner").encode()
-        token = hashlib.sha256(token).hexdigest()
-
         url = TEAM_APP_API_URL + "user/teams/"
         params = {
-            "username": user.username,
             "sort": sort_value
         }
         headers = {
-            "TEAMS-TOKEN": token,
+            "User-Token": user_token,
             "Authorization": TEAM_APP_API_KEY
         }
 
@@ -52,8 +48,8 @@ def retrieve_calendar_data(user, sort_value):
         sort_global_absences_by_logged_in_user(calendar_data, user)
     return calendar_data
 
-def get_users_sharing_teams(username, user_model):
-    teams = retrieve_calendar_data(user_model, None)
+def get_users_sharing_teams(username, user_model, user_token):
+    teams = retrieve_calendar_data(user_model, None, user_token)
     users_sharing_teams = set()
 
     if teams is None:

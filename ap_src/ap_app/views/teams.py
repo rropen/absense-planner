@@ -26,19 +26,17 @@ def teams_dashboard(request) -> render:
             favourite_team(request.user.username, request.POST.get("team"))
 
     try:
-        token = (str(request.user) + "AbsencePlanner").encode()
-        token = hashlib.sha256(token).hexdigest()
+        user_token = get_user_token_from_request(request)
 
         # Prepare request parameters
-        params = {"username": request.user.username}
         headers = {
-            "TEAMS-TOKEN": token,
-            "Authorization": TEAM_APP_API_KEY
+            "Authorization": TEAM_APP_API_KEY,
+            "User-Token": user_token
         }
         url = TEAM_APP_API_URL + "user/teams/"
 
         # Send request to Team App API and store in response object
-        api_response = requests.get(url=url, params=params, headers=headers)
+        api_response = requests.get(url=url, headers=headers)
     except:
         return render(
         request,
@@ -64,6 +62,7 @@ def leave_team(request):
     """
 
     username = request.user.username
+    user_token = get_user_token_from_request(request)
 
     url = TEAM_APP_API_URL + "manage/"
     data = {
@@ -78,7 +77,7 @@ def leave_team(request):
     api_response = requests.post(url=url, data=data, params=params, headers=headers)
     if (api_response.status_code == 200):
         # Remove lingering switch permissions upon success
-        check_for_lingering_switch_perms(username, remove_switch_permissions)
+        check_for_lingering_switch_perms(username, remove_switch_permissions, user_token)
 
     return redirect(reverse("dashboard")) # Redirect back to the list of joined teams
 
@@ -94,9 +93,14 @@ def create_team(request:HttpRequest) -> render:
             # Send a POST request to the API instead of handling the usual model logic,
             # so that the created team is stored on the Team App instead of the Absence Planner.
 
+            user_token = get_user_token_from_request(request)
+            
             url = TEAM_APP_API_URL + "teams/"
             data = request.POST # This is the data sent by the user in the CreateTeamForm
-            headers = {"Authorization": TEAM_APP_API_KEY}
+            headers = {
+                "Authorization": TEAM_APP_API_KEY,
+                "User-Token": user_token
+            }
 
             api_response = requests.post(url=url, data=data, headers=headers)
 
@@ -134,6 +138,7 @@ def join_team(request) -> render:
     
     teams = None
     if userprofile:
+        user_token = get_user_token_from_request(request)
         try:
             if (request.method == "POST"):
                 # Pass through data to the Team App API
@@ -141,18 +146,22 @@ def join_team(request) -> render:
 
                 if (method == "join"):
                     data = {
-                        "username": request.user.username,
                         "team": request.POST.get("team_id")
                     }
                     url = TEAM_APP_API_URL + "manage/"
                     params = {"method": "join"}
-                    headers = {"Authorization": TEAM_APP_API_KEY}
+                    headers = {
+                        "Authorization": TEAM_APP_API_KEY,
+                        "User-Token": user_token
+                    }
 
                     api_response = requests.post(url=url, data=data, params=params, headers=headers)
 
-            params = {"username": request.user.username}
             url = TEAM_APP_API_URL + "teams/"
-            headers = {"Authorization": TEAM_APP_API_KEY}
+            headers = {
+                "Authorization": TEAM_APP_API_KEY,
+                "User-Token": user_token
+            }
 
             api_response = requests.get(url=url, params=params, headers=headers)
         except:
@@ -193,7 +202,7 @@ def edit_team(request:HttpRequest, id):
         api_response = requests.post(url=url, params=params, data=data, headers=headers)
 
         if api_response.status_code != 200:
-            print(api_response.json())
+            print("Error in Team API")
 
     api_data = edit_api_data(userprofile, id, user_token)
     if api_data is None or not api_data[0].get("members"):
@@ -223,16 +232,21 @@ def delete_team(request:HttpRequest):
     Deletes a team and, if successful, checks for lingering switch permissions and deletes them, and
     then redirects back to the list of joined teams.
     """
-    
+
+    user_token = get_user_token_from_request(request)
+
     url = TEAM_APP_API_URL + "teams/"
     data = {"id": request.POST.get("team_id")}
     params = {"method": "delete"}
-    headers = {"Authorization": TEAM_APP_API_KEY}
+    headers = {
+        "Authorization": TEAM_APP_API_KEY,
+        "User-Token": user_token
+    }
 
     api_response = requests.post(url=url, data=data, params=params, headers=headers)
 
     if (api_response.status_code == 200):
         # Remove lingering switch permissions upon success
-        check_for_lingering_switch_perms(request.user.username, remove_switch_permissions)
+        check_for_lingering_switch_perms(request.user.username, remove_switch_permissions, user_token)
 
     return redirect(reverse("dashboard")) # Redirect back to the list of joined teams

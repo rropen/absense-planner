@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from .teams_utils import get_users_sharing_teams
 from .user_profile import get_user_id_from_username, get_userprofile_id_from_user_id
 
-def check_for_lingering_switch_perms(username, action):
+def check_for_lingering_switch_perms(username, action, user_token):
     """
     Check that discovers lingering switch permissions in the database and determines what to do with them.
 
@@ -29,7 +29,7 @@ def check_for_lingering_switch_perms(username, action):
         return
 
     user = User.objects.get(id=user_id)
-    users_sharing_teams = get_users_sharing_teams(username, user)
+    users_sharing_teams = get_users_sharing_teams(username, user, user_token)
     if users_sharing_teams is None:
         return # Caller should handle error
     

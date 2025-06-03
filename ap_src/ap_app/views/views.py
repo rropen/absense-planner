@@ -19,6 +19,7 @@ from ..forms import AcceptPolicyForm, AbsenceForm, DeleteUserForm, AbsencePlanne
 from ..models import Absence, UserProfile, ColourScheme, ColorData, RecurringException
 
 from ..utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
+from ..utils.teams_utils import get_user_token_from_request
 
 User = get_user_model()
 
@@ -391,7 +392,9 @@ def remove_lingering_perms(request):
     """
     if request.method == "POST":
         username = request.user.username
-        result = check_for_lingering_switch_perms(username, remove_switch_permissions)
+        user_token = get_user_token_from_request(request)
+
+        result = check_for_lingering_switch_perms(username, remove_switch_permissions, user_token)
         if result is not None:
             return JsonResponse({'status': 'success'})
     # Something failed in the logic for checking and removing switch permissions
