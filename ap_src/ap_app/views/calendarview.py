@@ -15,7 +15,7 @@ from django.http import HttpRequest
 from ..models import (UserProfile, ColorData, ColourScheme, User, Absence)
 
 from ..utils.absence_utils import get_absence_data
-from ..utils.teams_utils import retrieve_calendar_data, get_user_token_from_request
+from ..utils.teams_utils import retrieve_calendar_data, get_user_token_from_request, retrieve_team_member_data, sort_global_absences_by_logged_in_user
 
 env = environ.Env()
 environ.Env.read_env()
@@ -72,41 +72,21 @@ def get_colour_data(user):
     
     return colour_data
 
-def sort_team_absences_by_logged_in_user(team_absences, request):
+def sort_team_members_by_logged_in_user(team_absences, request):
+    """
+    On the specific team calendar, ensure that the logged-in user and their absences
+    are always at the top of the calendar.
+    """
     user_username = request.user.username
     def fetch_username_from_json(userIndex):
-        json_user_id = team_absences[0]['members'][userIndex]['user']['username']
+        json_user_id = team_absences['members'][userIndex]['user']['username']
         return json_user_id
-    for userIndex in range(len(team_absences[0]['members'])):
+    for userIndex in range(len(team_absences['members'])):
         if user_username == fetch_username_from_json(userIndex):
-            saved_user = team_absences[0]['members'][userIndex]
-            team_absences[0]['members'].pop(userIndex)
-            team_absences[0]['members'].insert(0,saved_user)
+            saved_user = team_absences['members'][userIndex]
+            team_absences['members'].pop(userIndex)
+            team_absences['members'].insert(0,saved_user)
             break
-
-def retrieve_team_calendar_data(id, request, user_token):
-    team_calendar_data = None
-
-    try:
-        url = TEAM_APP_API_URL + "members/"
-        params = {"id": id}
-        headers = {
-            "Authorization": TEAM_APP_API_KEY,
-            "User-Token": user_token
-        }
-
-        api_response = requests.get(url=url, params=params, headers=headers)
-
-        team_calendar_data = api_response.json()
-        sort_team_absences_by_logged_in_user(team_calendar_data, request)
-    except:
-        # TODO Create error page for API failure
-        raise NotImplementedError("Failed to retrieve API data (No error page)")
-    
-    if api_response.status_code != 200:
-        raise NotImplementedError("Failed to retrieve API data (No error page)")
-    
-    return team_calendar_data
 
 def get_date_data(
     region,
@@ -272,9 +252,11 @@ def main_calendar(
         sortValue = request.GET.get("sortBy")
 
     user = request.user
-    # Get names of teams and members in the team.
     user_token = get_user_token_from_request(request)
+
+    # Get names of teams and members in the team.
     teams_data = retrieve_calendar_data(user, sortValue, user_token)
+    sort_global_absences_by_logged_in_user(teams_data, user.username)
 
     users = retrieve_all_users(request, teams_data)
 
@@ -302,7 +284,8 @@ def api_team_calendar(
     user = request.user
 
     user_token = get_user_token_from_request(request)
-    team_data = retrieve_team_calendar_data(id, request, user_token)[0]
+    team_data = retrieve_team_member_data(id, user_token)[0]
+    sort_team_members_by_logged_in_user(team_data, request)
 
     team_data = [{"team": team_data}]
 

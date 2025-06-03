@@ -7,6 +7,10 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest
 
 def sort_global_absences_by_logged_in_user(data, username):
+    """
+    On the main calendar showing the absences for every team, ensure that the
+    logged-in user and their absences are always at the top of each team's calendar.
+    """
     for teamIndex in range(len(data)):
         def fetch_username_from_json(userIndex):
             username = data[teamIndex]['team']['members'][userIndex]['user']['username']
@@ -25,7 +29,6 @@ TEAM_APP_API_URL = env("TEAM_APP_API_URL")
 TEAM_APP_API_KEY = env("TEAM_APP_API_KEY")
 
 def retrieve_calendar_data(user, sort_value, user_token):
-    calendar_data = None
     api_response = None
 
     try:
@@ -44,9 +47,8 @@ def retrieve_calendar_data(user, sort_value, user_token):
         return # Caller should handle the API error
     
     if api_response is not None and api_response.status_code == 200:
-        calendar_data = api_response.json()
-        sort_global_absences_by_logged_in_user(calendar_data, user)
-    return calendar_data
+        api_response = api_response.json()
+    return api_response
 
 def get_users_sharing_teams(username, user_model, user_token):
     teams = retrieve_calendar_data(user_model, None, user_token)
@@ -117,29 +119,31 @@ def is_team_app_running():
     
     return team_app_running
 
-def edit_api_data(userprofile, id, user_token):
-    api_data = None
-    if userprofile:
-        try:
-            url = TEAM_APP_API_URL + "members/"
-            params = {"id": id}
-            headers = {
-                "Authorization": TEAM_APP_API_KEY,
-                "User-Token": user_token
-            }
+def retrieve_team_member_data(id, user_token):
+    """
+    Gets the data about team members of a particular team.
 
-            api_response = requests.get(url=url, params=params, headers=headers)
+    This is needed for the edit team page and specific team calendar ("view team") page.
+    """
+    team_member_data = None
+    try:
+        url = TEAM_APP_API_URL + "members/"
+        params = {"id": id}
+        headers = {
+            "Authorization": TEAM_APP_API_KEY,
+            "User-Token": user_token
+        }
 
-            api_data = api_response.json()
-        except:
-            raise NotImplementedError("Could not find API (No error page)")
-        
-        if api_response.status_code != 200:
-            raise NotImplementedError("Invalid team name (No error page)")
-    else:
-        raise NotImplementedError("The API setting is not enabled in your profile. (No error page)")
+        api_response = requests.get(url=url, params=params, headers=headers)
 
-    return api_data
+        team_member_data = api_response.json()
+    except:
+        raise NotImplementedError("Could not find API (No error page)")
+    
+    if api_response.status_code != 200:
+        raise NotImplementedError("Invalid team name (No error page)")
+
+    return team_member_data
 
 def favourite_team(username, team_id):
     url = TEAM_APP_API_URL + 'manage/'
