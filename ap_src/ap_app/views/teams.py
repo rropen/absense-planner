@@ -153,7 +153,12 @@ def join_team(request) -> render:
                     "User-Token": user_token
                 }
 
-                api_response = requests.post(url=url, data=data, params=params, headers=headers)
+                api_response = requests.post(
+                    url=url,
+                    data=data,
+                    params=params,
+                    headers=headers
+                )
 
         url = TEAM_APP_API_URL + "teams/"
         headers = {
@@ -178,7 +183,9 @@ def join_team(request) -> render:
 @login_required
 def edit_team(request:HttpRequest, id):
     """
-    Renders the page that allows owners of a team to modify different properties of a team.
+    Renders the page that allows owners of a team to modify different properties of that team.
+
+    Also handles editing of a team's name and description.
     """
 
     if not id:
@@ -192,6 +199,14 @@ def edit_team(request:HttpRequest, id):
     if api_data is None or not api_data[0].get("members"):
         return JsonResponse({"Error": "Invalid team data returned from API"})
 
+    team = api_data[0]
+    initial_data = {
+        "name": team["name"],
+        "description": team["description"] 
+    }
+
+    form = CreateTeamForm(initial=initial_data) # Reuse the form used for creating a team
+
     current_user = request.user.username
 
     is_owner = any(
@@ -204,24 +219,36 @@ def edit_team(request:HttpRequest, id):
         raise PermissionDenied
 
     if request.method == "POST":
-        url = TEAM_APP_API_URL + "teams/"
-        params = {"method": "edit"}
-        data = request.POST
-        headers = {
-            "Authorization": TEAM_APP_API_KEY,
-            "User-Token": user_token
-        }
+        form = CreateTeamForm(request.POST)
+        if form.is_valid():
+            url = TEAM_APP_API_URL + "teams/"
+            params = {"method": "edit"}
+            data = request.POST
+            headers = {
+                "Authorization": TEAM_APP_API_KEY,
+                "User-Token": user_token
+            }
 
-        api_response = requests.post(url=url, params=params, data=data, headers=headers)
+            api_response = requests.post(url=url, params=params, data=data, headers=headers)
 
-        if api_response.status_code != 200:
-            print("Error in Team API")
+            if api_response.status_code != 200:
+                print("Error in Team API")
+
+            # Get the updated API data again after authorising the user and editing the team
+            api_data = retrieve_team_member_data(id, user_token)
+            if api_data is None or not api_data[0].get("members"):
+                return JsonResponse({"Error": "Invalid team data returned from API"})
+            
 
     roles = Role.objects.all()
     return render(
         request,
         "teams/edit_team.html",
-        {"team": api_data[0], "roles": roles},
+        {
+            "team": api_data[0],
+            "roles": roles,
+            "form": form
+        }
     )
 
 @login_required

@@ -8,55 +8,47 @@
         <h1 class="title">{{ team.name }}</h1>
         <h2 class="subtitle">{{ team.description }}</h2>
 
-        <div class="has-background-light box">
-            <span class="is-block is-size-5 has-text-weight-bold">
-                <i class="fas fa-users"></i>
-                Members
-            </span>
-            {% for role in roles %}
-            <span class="is-block is-size-6 has-text-weight-bold">{{ role }}s</span>
-            <div class="field is-grouped is-grouped-multiline">
-                {% for member in team.members %}
-                    {% if member.user.role_info.role == role.role %}
-                    <span class="tag is-dark">
-                        {{ member.user.username }}
+        <div class="columns">
+            <div class="column">
+                <div class="has-background-light box is-flex is-flex-direction-column">
+                    <span class="is-block is-size-5 has-text-weight-bold">
+                        <i class="fas fa-cog"></i>
+                        Team Management
                     </span>
-                    {% endif %}
-                {% endfor %}
+                    <form class="py-1" method="POST" action="/teams/edit/{{ team.id }}">
+                        {% csrf_token %}
+                        {{ form | bulma }}
+                        <input type="hidden" value="{{ team.id }}" name="id" />
+                        <input class="button is-link is-fullwidth" type="submit" value="Submit" />
+                    </form><br />
+                    <span class="is-block is-size-6 has-text-weight-bold">Danger Zone:</span>
+                    <button class="button is-danger" onclick="openDeleteTeamModal(this)" id="{{ team.id }}" type="button">Delete Team</button>
+                </div>
             </div>
-            {% endfor %}
-        </div>
-        <div class="has-background-light box">
-            <span class="is-block is-size-5 has-text-weight-bold">
-                <i class="fas fa-cog"></i>
-                Team Management
-            </span>
-            <form class="py-1" method="POST" action="/teams/edit/{{ team.id }}">
-                {% csrf_token %}
-                <div class="field">
-                    <label class="label" for="name">Name:</label>
-                    <input class="input" name="name" type="text" value="{{ team.name }}" required/> 
+            <div class="column">
+                <div class="has-background-light box is-fullheight">
+                    <span class="is-block is-size-5 has-text-weight-bold">
+                        <i class="fas fa-users"></i>
+                        Members
+                    </span>
+                    <div class="is-flex is-flex-direction-column is-justify-content-flex-start is-fullheight">
+                        {% for role in roles %}
+                            <div class="mt-4">
+                                <span class="is-block is-size-6 has-text-weight-bold">{{ role }}s</span>
+                                <div class="field is-grouped is-grouped-multiline">
+                                    {% for member in team.members %}
+                                        {% if member.user.role_info.role == role.role %}
+                                            <span class="tag is-dark">
+                                                {{ member.user.username }}
+                                            </span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
-                <div class="field">
-                    <label class="label py-1" for="description">Description:</label>
-                    <textarea class="textarea" name="description">{{ team.description }}</textarea>
-                </div>
-                <div class="field">
-                    <label class="label py-1">Private:</label>
-                    <label class="checkbox" for="private">
-                        {% if team.private %}
-                        <input type="checkbox" name="private" checked/>
-                        {% else %}
-                        <input type="checkbox" name="private" />
-                        {% endif %}
-                        Private Team
-                    </label>
-                </div>
-                <input type="hidden" value="{{ team.id }}" name="id" />
-                <input class="button is-link" type="submit" value="Submit" />
-            </form><br />
-            <span class="is-block is-size-6 has-text-weight-bold">Danger Zone:</span>
-            <button class="button is-danger" onclick="openDeleteTeamModal(this)" id="{{ team.id }}" type="button">Delete Team</button>
+            </div>
         </div>
 </div>
 <div id="deleteTeamModal" class="modal">
