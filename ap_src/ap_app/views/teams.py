@@ -19,14 +19,14 @@ TEAM_APP_API_KEY = env("TEAM_APP_API_KEY")
 
 @login_required
 def teams_dashboard(request) -> render:
+    user_token = get_user_token_from_request(request)
+
     if (request.method == "POST"):
         api_specific_method = request.POST.get("method")
         if (api_specific_method == "favourite"):
-            favourite_team(request.user.username, request.POST.get("team"))
+            favourite_team(user_token, request.POST.get("team"))
 
     try:
-        user_token = get_user_token_from_request(request)
-
         # Prepare request parameters
         headers = {
             "Authorization": TEAM_APP_API_KEY,
@@ -65,13 +65,15 @@ def leave_team(request):
 
     url = TEAM_APP_API_URL + "manage/"
     data = {
-        "username": username,
         "team": request.POST.get("team_id")
     }
     params = {
         "method": "leave"
     }
-    headers = {"Authorization": TEAM_APP_API_KEY}
+    headers = {
+        "Authorization": TEAM_APP_API_KEY,
+        "User-Token": user_token
+    }
 
     api_response = requests.post(url=url, data=data, params=params, headers=headers)
     if (api_response.status_code == 200):
@@ -130,43 +132,40 @@ def create_team(request:HttpRequest) -> render:
 def join_team(request) -> render:
     """Renders page with all teams the user is not currently in and handles joining of specific teams."""
     # Filtering by team name
-    try:
-        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
-    except IndexError:
-        return redirect("/")
     
     teams = None
-    if userprofile:
-        user_token = get_user_token_from_request(request)
-        try:
-            if (request.method == "POST"):
-                # Pass through data to the Team App API
-                method = request.POST.get("method")
+    api_response = None
+    user_token = get_user_token_from_request(request)
 
-                if (method == "join"):
-                    data = {
-                        "team": request.POST.get("team_id")
-                    }
-                    url = TEAM_APP_API_URL + "manage/"
-                    params = {"method": "join"}
-                    headers = {
-                        "Authorization": TEAM_APP_API_KEY,
-                        "User-Token": user_token
-                    }
+    try:
+        if (request.method == "POST"):
+            # Pass through data to the Team App API
+            method = request.POST.get("method")
 
-                    api_response = requests.post(url=url, data=data, params=params, headers=headers)
+            if (method == "join"):
+                data = {
+                    "team": request.POST.get("team_id")
+                }
+                url = TEAM_APP_API_URL + "manage/"
+                params = {"method": "join"}
+                headers = {
+                    "Authorization": TEAM_APP_API_KEY,
+                    "User-Token": user_token
+                }
 
-            url = TEAM_APP_API_URL + "teams/"
-            headers = {
-                "Authorization": TEAM_APP_API_KEY,
-                "User-Token": user_token
-            }
+                api_response = requests.post(url=url, data=data, params=params, headers=headers)
 
-            api_response = requests.get(url=url, params=params, headers=headers)
-        except:
-            print("Api failed to load")
-        if api_response is not None and api_response.status_code == 200:
-            teams = api_response.json()
+        url = TEAM_APP_API_URL + "teams/"
+        headers = {
+            "Authorization": TEAM_APP_API_KEY,
+            "User-Token": user_token
+        }
+
+        api_response = requests.get(url=url, headers=headers)
+    except:
+        print("Api failed to load")
+    if api_response is not None and api_response.status_code == 200:
+        teams = api_response.json()
 
     return render(
         request,

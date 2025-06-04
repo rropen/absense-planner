@@ -141,16 +141,18 @@ def retrieve_team_member_data(id, user_token):
 
     return team_member_data
 
-def favourite_team(username, team_id):
+def favourite_team(user_token, team_id):
     url = TEAM_APP_API_URL + 'manage/'
     data = {
-        "username": username,
         "team": team_id
     }
     params = {
         "method": "favourite"
     }
-    headers = {"Authorization": TEAM_APP_API_KEY}
+    headers = {
+        "Authorization": TEAM_APP_API_KEY,
+        "User-Token": user_token
+    }
 
     api_response = requests.post(url=url, data=data, params=params, headers=headers)
 
