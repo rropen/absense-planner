@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.core.exceptions import PermissionDenied
 
 from ..forms import CreateTeamForm
 from ..models import Role, UserProfile
@@ -188,6 +189,21 @@ def edit_team(request:HttpRequest, id):
 
     user_token = get_user_token_from_request(request)
 
+    api_data = retrieve_team_member_data(id, user_token)
+    if api_data is None or not api_data[0].get("members"):
+        return JsonResponse({"Error": "Invalid team data returned from API"})
+
+    current_user = request.user.username
+
+    is_owner = any(
+        member["user"]["username"] == current_user and
+        member["user"].get("role_info", {}).get("role", "").lower() == "owner"
+        for member in api_data[0]["members"]
+    )
+
+    if not is_owner:
+        raise PermissionDenied
+
     if request.method == "POST":
         url = TEAM_APP_API_URL + "teams/"
         params = {"method": "edit"}
@@ -201,19 +217,6 @@ def edit_team(request:HttpRequest, id):
 
         if api_response.status_code != 200:
             print("Error in Team API")
-
-    api_data = retrieve_team_member_data(id, user_token)
-    if api_data is None or not api_data[0].get("members"):
-        return JsonResponse({"Error": "Invalid team data returned from API"})
-
-    current_user = request.user.username
-
-    is_owner = any(
-        member["user"]["username"] == current_user and
-        member["user"].get("role_info", {}).get("role", "").lower() == "owner"
-        for member in api_data[0]["members"]
-    )
-
 
     roles = Role.objects.all()
     return render(
