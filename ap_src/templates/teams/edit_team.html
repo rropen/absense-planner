@@ -33,25 +33,7 @@
             </span>
             <form class="py-1" method="POST" action="/teams/edit/{{ team.id }}">
                 {% csrf_token %}
-                <div class="field">
-                    <label class="label" for="name">Name:</label>
-                    <input class="input" name="name" type="text" value="{{ team.name }}" required/> 
-                </div>
-                <div class="field">
-                    <label class="label py-1" for="description">Description:</label>
-                    <textarea class="textarea" name="description">{{ team.description }}</textarea>
-                </div>
-                <div class="field">
-                    <label class="label py-1">Private:</label>
-                    <label class="checkbox" for="private">
-                        {% if team.private %}
-                        <input type="checkbox" name="private" checked/>
-                        {% else %}
-                        <input type="checkbox" name="private" />
-                        {% endif %}
-                        Private Team
-                    </label>
-                </div>
+                {{ form | bulma }}
                 <input type="hidden" value="{{ team.id }}" name="id" />
                 <input class="button is-link" type="submit" value="Submit" />
             </form><br />
