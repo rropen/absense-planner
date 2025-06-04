@@ -263,3 +263,7 @@ footer {
 .team-name-bar {
     gap: 1rem;
 }
+
+.is-fullheight {
+    height: 100%;
+}
