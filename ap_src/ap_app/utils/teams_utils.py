@@ -82,14 +82,10 @@ def check_user_exists(username):
     api_response = None
 
     try:
-        token = (str(username) + "AbsencePlanner").encode()
-        token = hashlib.sha256(token).hexdigest()
-
         url = TEAM_APP_API_URL + "user_exists/"
         params = {"username": username}
         headers = {
-            "TEAMS-TOKEN": token,
-            "Authorization": TEAM_APP_API_KEY
+            "Authorization": TEAM_APP_API_KEY,
         }
 
         api_response = requests.get(url=url, params=params, headers=headers)
