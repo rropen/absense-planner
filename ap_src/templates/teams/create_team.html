@@ -24,7 +24,6 @@
         {{ form | bulma }}
 
     <h2 class="description dText"><b>Please avoid using personal information in the description as it will be seen by non team members.<b></h2>
-    <input type="hidden" name="username" value="{{ request.user.username }}">
     <input type="hidden" name="origin_application" value="Absence Planner">
     <label id="label_button" class="button is-primary" disabled>
         Submit
