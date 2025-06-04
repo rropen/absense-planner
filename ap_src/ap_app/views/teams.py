@@ -183,7 +183,9 @@ def join_team(request) -> render:
 @login_required
 def edit_team(request:HttpRequest, id):
     """
-    Renders the page that allows owners of a team to modify different properties of a team.
+    Renders the page that allows owners of a team to modify different properties of that team.
+
+    Also handles editing of a team's name and description.
     """
 
     if not id:
@@ -219,7 +221,6 @@ def edit_team(request:HttpRequest, id):
     if request.method == "POST":
         form = CreateTeamForm(request.POST)
         if form.is_valid():
-
             url = TEAM_APP_API_URL + "teams/"
             params = {"method": "edit"}
             data = request.POST
