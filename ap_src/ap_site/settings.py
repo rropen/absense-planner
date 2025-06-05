@@ -184,18 +184,18 @@ VERSION = "1.3.0"
 
 RECURRENCE_I18N_URL = "javascript-catalog"
 
-DEBUG_TOOLBAR_ENV = os.getenv("DEBUG_TOOLBAR")
-DEBUG_TOOLBAR = DEBUG_TOOLBAR_ENV is not None and DEBUG_TOOLBAR_ENV.lower() == "true"
+PROFILING_ENV = os.getenv("PROFILING")
+PROFILING = PROFILING_ENV is not None and PROFILING_ENV.lower() == "true"
 
 # Allows the debug toolbar to be shown
-if DEBUG_TOOLBAR:
+if PROFILING:
     INTERNAL_IPS += [
         "127.0.0.1",
         "localhost"
     ]
 
     MIDDLEWARE += [
-        "debug_toolbar.middleware.DebugToolbarMiddleware"
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
     ]
 
     INSTALLED_APPS += [
