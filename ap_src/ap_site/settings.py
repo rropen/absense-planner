@@ -36,6 +36,10 @@ STATIC_ROOT = BASE_DIR / 'static/css'
 ALLOWED_HOSTS = ["*"]
 
 
+INTERNAL_IPS = [
+
+]
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -179,3 +183,21 @@ PRODUCTION_UI = PRODUCTION_UI_ENV is not None and PRODUCTION_UI_ENV.lower() == "
 VERSION = "1.3.0"
 
 RECURRENCE_I18N_URL = "javascript-catalog"
+
+DEBUG_TOOLBAR_ENV = os.getenv("DEBUG_TOOLBAR")
+DEBUG_TOOLBAR = DEBUG_TOOLBAR_ENV is not None and DEBUG_TOOLBAR_ENV.lower() == "true"
+
+# Allows the debug toolbar to be shown
+if DEBUG_TOOLBAR:
+    INTERNAL_IPS += [
+        "127.0.0.1",
+        "localhost"
+    ]
+
+    MIDDLEWARE += [
+        "debug_toolbar.middleware.DebugToolbarMiddleware"
+    ]
+
+    INSTALLED_APPS += [
+        "debug_toolbar",
+    ]
