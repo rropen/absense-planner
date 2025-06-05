@@ -1,10 +1,21 @@
 import hashlib
-import requests
 
 import environ
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest
+
+from requests import Session
+
+env = environ.Env()
+environ.Env.read_env()
+
+TEAM_APP_API_URL = env("TEAM_APP_API_URL")
+TEAM_APP_API_KEY = env("TEAM_APP_API_KEY")
+
+# Use the session object from the Python requests library to send requests and pool the connection resources.
+# Without this, the requests sent to the API are EXTREMELY SLOW.
+session = Session()
 
 def sort_global_absences_by_logged_in_user(data, username):
     """
@@ -22,12 +33,6 @@ def sort_global_absences_by_logged_in_user(data, username):
                 data[teamIndex]['team']['members'].insert(0,saved_user)
                 break
 
-env = environ.Env()
-environ.Env.read_env()
-
-TEAM_APP_API_URL = env("TEAM_APP_API_URL")
-TEAM_APP_API_KEY = env("TEAM_APP_API_KEY")
-
 def retrieve_calendar_data(user, sort_value, user_token):
     api_response = None
 
@@ -41,7 +46,7 @@ def retrieve_calendar_data(user, sort_value, user_token):
             "Authorization": TEAM_APP_API_KEY
         }
 
-        api_response = requests.get(url=url, params=params, headers=headers)
+        api_response = session.get(url=url, params=params, headers=headers)
     except:
         print("API Failed to connect")
         return # Caller should handle the API error
@@ -88,7 +93,7 @@ def check_user_exists(username):
             "Authorization": TEAM_APP_API_KEY,
         }
 
-        api_response = requests.get(url=url, params=params, headers=headers)
+        api_response = session.get(url=url, params=params, headers=headers)
     except:
         print("API Failed to connect")
         return # Caller should handle the API error
@@ -102,10 +107,10 @@ def is_team_app_running():
     team_app_running = False
 
     try:
-        url = TEAM_APP_API_URL + "status_check"
+        url = TEAM_APP_API_URL + "status_check/"
         # We do not need an API key because it is a simple status check
 
-        api_response = requests.get(url=url)
+        api_response = session.get(url=url)
     except:
         print("API Failed to connect")
         return team_app_running # Caller should handle the API error
@@ -130,7 +135,7 @@ def retrieve_team_member_data(id, user_token):
             "User-Token": user_token
         }
 
-        api_response = requests.get(url=url, params=params, headers=headers)
+        api_response = session.get(url=url, params=params, headers=headers)
 
         team_member_data = api_response.json()
     except:
@@ -154,7 +159,7 @@ def favourite_team(user_token, team_id):
         "User-Token": user_token
     }
 
-    api_response = requests.post(url=url, data=data, params=params, headers=headers)
+    api_response = session.post(url=url, data=data, params=params, headers=headers)
 
     return api_response
 

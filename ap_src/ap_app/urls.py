@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 
 from .views import calendarview, views, absences, teams
 
@@ -7,6 +7,11 @@ from django.urls import re_path
 from django.views.static import serve
 from django.conf import settings
 from django.views.i18n import JavaScriptCatalog
+
+from os import getenv
+
+PROFILING_ENV = getenv("PROFILING")
+PROFILING = PROFILING_ENV is not None and PROFILING_ENV.lower() == "true"
 
 js_info_dict = {
     'packages' : ('recurrence', ),
@@ -52,9 +57,16 @@ urlpatterns = [
     path("500", views.Custom500View, name="500"),
     path("400", views.Custom400View, name="400"),
 
-    re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}) #This lets Django find the CSS files when debug is set to false
+    re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}), #This lets Django find the CSS files when debug is set to false
 
-] 
+]
+
+# This allows the django-debug-toolbar to be used to analyse performance of the web server
+# The 4.2.0 version has to be used as it is the latest one compatible with Django version 4.2.6
+# This is not the same method of importing the URLs as in the documentation because the helper function, debug_toolbar_urls, is only available
+# since version 4.4.3
+if PROFILING:
+    urlpatterns += path("__debug__/", include("debug_toolbar.urls")),
 
 handler404 = 'ap_app.utils.errors.handler404'
 handler500 = 'ap_app.utils.errors.handler500'

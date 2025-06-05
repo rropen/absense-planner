@@ -14,10 +14,10 @@ def status_check_middleware(get_response):
     """
 
     def middleware(request):
-        team_app_running = is_team_app_running()
         asset_request = is_asset_request(request)
 
         if (not asset_request):
+            team_app_running = is_team_app_running()
             if (not team_app_running):
                 print("Team App is not running. 503 error will persist until it is.")
         
