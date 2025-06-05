@@ -15,7 +15,7 @@ convertdate==2.4.0
 cryptography==40.0.2
 cssselect==1.2.0
 dill==0.3.4
-Django==3.2.9
+Django==4.2.22
 django-bulma==0.8.3
 django-ckeditor==6.5.0
 django-codemirror2==0.2
