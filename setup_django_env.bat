@@ -62,6 +62,9 @@ if EXIST ap_src/manage.py (
 	"venv\Scripts\python" ap_src/manage.py migrate ap_app
 	"venv\Scripts\python" ap_src/manage.py migrate
 
+    ECHO Creating cache table
+    "venv\Scripts\python" ap_src/manage.py createcachetable
+
     ECHO Loading fixtures
 
     @REM LOOP through all fixtures in the fixtures folder in a for loop and load them one by one
