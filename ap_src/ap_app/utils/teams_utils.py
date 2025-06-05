@@ -102,7 +102,7 @@ def is_team_app_running():
     team_app_running = False
 
     try:
-        url = TEAM_APP_API_URL + "status_check"
+        url = TEAM_APP_API_URL + "status_check/"
         # We do not need an API key because it is a simple status check
 
         api_response = requests.get(url=url)
