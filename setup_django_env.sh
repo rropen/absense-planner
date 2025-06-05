@@ -54,6 +54,9 @@ if [ -f "ap_src/manage.py" ]; then
     python ap_src/manage.py migrate ap_app
     python ap_src/manage.py migrate
 
+    echo "Creating cache table"
+    python ap_src/manage.py createcachetable
+
     echo "Loading fixtures"
     for f in ap_src/ap_app/fixtures/*.*; do
         echo "Loading fixture $f"
