@@ -17,9 +17,6 @@ from ..utils.teams_utils import retrieve_calendar_data, get_user_token_from_requ
 env = environ.Env()
 environ.Env.read_env()
 
-TEAM_APP_API_URL = env("TEAM_APP_API_URL")
-TEAM_APP_API_KEY = env("TEAM_APP_API_KEY")
-
 def check_calendar_date(year, month) -> bool:
     date = datetime.datetime(year, datetime.datetime.strptime(month, "%B").month, 1)
 
@@ -306,7 +303,6 @@ def api_team_calendar(
         "user_data": user_data,
         "id": id,
         "single_team": True,
-        "url": TEAM_APP_API_URL
     }
 
     return render(request, "calendars/specific_team_calendar.html", data)
