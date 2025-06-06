@@ -1,3 +1,9 @@
+"""
+Contains views that handle team-related logic, connecting to the API whilst utilising team utility functions.
+
+Errors are handled here by passing Django messages up through views to templates so API errors can be displayed to the user.
+"""
+
 import environ
 
 from django.contrib.auth.decorators import login_required

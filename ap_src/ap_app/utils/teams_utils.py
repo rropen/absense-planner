@@ -1,3 +1,9 @@
+"""
+Utility functions that are reused to retrieve data from the Team App API.
+
+Request errors are thrown and not handled here on purpose so they can be handled further up the stack (i.e., in views).
+"""
+
 import hashlib
 
 import environ
