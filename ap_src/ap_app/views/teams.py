@@ -31,6 +31,9 @@ session = Session()
 
 @login_required
 def teams_dashboard(request) -> render:
+    """
+    Renders the view that shows the user a selection of teams they are in with the associated options.
+    """
     user_token = get_user_token_from_request(request)
 
     if (request.method == "POST"):
