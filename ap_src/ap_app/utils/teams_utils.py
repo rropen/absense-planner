@@ -33,7 +33,7 @@ def sort_global_absences_by_logged_in_user(data, username):
                 data[teamIndex]['team']['members'].insert(0,saved_user)
                 break
 
-def retrieve_calendar_data(user, sort_value, user_token):
+def retrieve_calendar_data(sort_value, user_token):
     api_response = None
 
     try:
