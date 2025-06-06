@@ -7,6 +7,7 @@ Errors are handled here by passing Django messages up through views to templates
 import environ
 
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.http import JsonResponse, HttpRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -32,7 +33,10 @@ session = Session()
 @login_required
 def teams_dashboard(request) -> render:
     """
-    Renders the view that shows the user a selection of teams they are in with the associated options.
+    Renders the view that shows the user a selection of teams they are in with
+    the associated options.
+
+    Also handles favouriting of teams through POST requests.
     """
     user_token = get_user_token_from_request(request)
 
@@ -41,9 +45,20 @@ def teams_dashboard(request) -> render:
         try:
             team_id = request.POST["team"]
         except KeyError:
-            print("Error: Team ID was not found in request.")
+            print("Error: Team ID was not found in request so it cannot be favourited.")
+            messages.add_message(
+                request,
+                messages.ERROR,
+                "Error - a team was not provided so it could not be favourited."
+            )
         except Exception as exception:
             print("Error: Cannot obtain Team ID from request. Exception:", exception)
+            messages.add_message(
+                request,
+                messages.ERROR,
+                "Error - could not obtain the team you requested due to an unknown error" \
+                "so it could not be favourited."
+            )
         else:
             favourite_team(user_token, team_id)
 
