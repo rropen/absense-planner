@@ -36,10 +36,16 @@ def teams_dashboard(request) -> render:
     """
     user_token = get_user_token_from_request(request)
 
-    if (request.method == "POST"):
-        api_specific_method = request.POST.get("method")
-        if (api_specific_method == "favourite"):
-            favourite_team(user_token, request.POST.get("team"))
+    api_specific_method = request.POST.get("method") # Using .get will not raise an error
+    if (api_specific_method == "favourite"):
+        try:
+            team_id = request.POST["team"]
+        except KeyError:
+            print("Error: Team ID was not found in request.")
+        except Exception as exception:
+            print("Error: Cannot obtain Team ID from request. Exception:", exception)
+        else:
+            favourite_team(user_token, team_id)
 
     try:
         # Prepare request parameters
