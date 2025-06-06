@@ -41,13 +41,14 @@ def sort_global_absences_by_logged_in_user(data, username):
                 data[teamIndex]['team']['members'].insert(0,saved_user)
                 break
 
-def retrieve_calendar_data(sort_value, user_token):
+def get_users_teams(sort_value, user_token):
     """
     Retrieves data about all the teams a user is already in.
     """
 
     api_response = None
 
+    # Prepare request parameters
     url = TEAM_APP_API_URL + "user/teams/"
     params = {
         "sort": sort_value
@@ -57,6 +58,7 @@ def retrieve_calendar_data(sort_value, user_token):
         "Authorization": TEAM_APP_API_KEY
     }
 
+    # Send request to Team App API and store in response object
     api_response = session.get(
         url=url,
         params=params,
@@ -77,7 +79,7 @@ def get_users_sharing_teams(username, user_model, user_token):
     """
 
     # Caller should handle the API error
-    teams = retrieve_calendar_data(None, user_token)
+    teams = get_users_teams(None, user_token)
     users_sharing_teams = set()
 
     if teams is None:

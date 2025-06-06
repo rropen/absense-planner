@@ -14,7 +14,7 @@ from django.core.exceptions import PermissionDenied
 
 from ..forms import CreateTeamForm
 from ..models import Role, UserProfile
-from ..utils.teams_utils import retrieve_team_member_data, favourite_team, get_user_token_from_request
+from ..utils.teams_utils import retrieve_team_member_data, favourite_team, get_user_token_from_request, get_users_teams
 from ..utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
 
 from requests import Session
@@ -48,31 +48,20 @@ def teams_dashboard(request) -> render:
             favourite_team(user_token, team_id)
 
     try:
-        # Prepare request parameters
-        headers = {
-            "Authorization": TEAM_APP_API_KEY,
-            "User-Token": user_token
-        }
-        url = TEAM_APP_API_URL + "user/teams/"
-
-        # Send request to Team App API and store in response object
-        api_response = session.get(url=url, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
+        users_teams = get_users_teams(None, user_token)
     except:
         return render(
         request,
         "teams/dashboard.html",
         {"teams": False})
-    if api_response.status_code == 200:
-        if len(api_response.json()) == 0 :
-            teams = False
-        else:
-            teams = api_response.json()
-    else:
-        teams = False
+
+    if (len(users_teams) == 0):
+        users_teams = False
+
     return render(
         request,
         "teams/dashboard.html",
-        {"teams": teams},
+        {"teams": users_teams},
     )
 
 @login_required
