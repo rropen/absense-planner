@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from django.contrib.messages import constants as messages
 
 load_dotenv()
 
@@ -200,3 +201,14 @@ if PROFILING:
     INSTALLED_APPS += [
         "debug_toolbar",
     ]
+
+# Override the Django Messages Framework tags with Bulma colours
+# https://docs.djangoproject.com/en/5.1/ref/settings/#message-tags
+# https://bulma.io/documentation/elements/notification/#colors
+MESSAGE_TAGS = {
+    messages.DEBUG: "is-primary",
+    messages.INFO: "is-info",
+    messages.SUCCESS: "is-success",
+    messages.WARNING: "is-warning",
+    messages.ERROR: "is-danger",
+}
