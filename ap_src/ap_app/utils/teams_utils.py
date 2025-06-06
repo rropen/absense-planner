@@ -12,6 +12,7 @@ environ.Env.read_env()
 
 TEAM_APP_API_URL = env("TEAM_APP_API_URL")
 TEAM_APP_API_KEY = env("TEAM_APP_API_KEY")
+TEAM_APP_API_TIMEOUT = float(env("TEAM_APP_API_TIMEOUT"))
 
 # Use the session object from the Python requests library to send requests and pool the connection resources.
 # Without this, the requests sent to the API are EXTREMELY SLOW.
@@ -34,6 +35,9 @@ def sort_global_absences_by_logged_in_user(data, username):
                 break
 
 def retrieve_calendar_data(sort_value, user_token):
+    """
+    Retrieves data about all the teams a user is already in.
+    """
     api_response = None
 
     try:
@@ -46,7 +50,7 @@ def retrieve_calendar_data(sort_value, user_token):
             "Authorization": TEAM_APP_API_KEY
         }
 
-        api_response = session.get(url=url, params=params, headers=headers)
+        api_response = session.get(url=url, params=params, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
     except:
         print("API Failed to connect")
         return # Caller should handle the API error
@@ -56,7 +60,7 @@ def retrieve_calendar_data(sort_value, user_token):
     return api_response
 
 def get_users_sharing_teams(username, user_model, user_token):
-    teams = retrieve_calendar_data(user_model, None, user_token)
+    teams = retrieve_calendar_data(None, user_token)
     users_sharing_teams = set()
 
     if teams is None:
@@ -93,7 +97,7 @@ def check_user_exists(username):
             "Authorization": TEAM_APP_API_KEY,
         }
 
-        api_response = session.get(url=url, params=params, headers=headers)
+        api_response = session.get(url=url, params=params, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
     except:
         print("API Failed to connect")
         return # Caller should handle the API error
@@ -110,7 +114,7 @@ def is_team_app_running():
         url = TEAM_APP_API_URL + "status_check/"
         # We do not need an API key because it is a simple status check
 
-        api_response = session.get(url=url)
+        api_response = session.get(url=url, timeout=TEAM_APP_API_TIMEOUT)
     except:
         print("API Failed to connect")
         return team_app_running # Caller should handle the API error
@@ -135,7 +139,7 @@ def retrieve_team_member_data(id, user_token):
             "User-Token": user_token
         }
 
-        api_response = session.get(url=url, params=params, headers=headers)
+        api_response = session.get(url=url, params=params, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
 
         team_member_data = api_response.json()
     except:
@@ -159,7 +163,7 @@ def favourite_team(user_token, team_id):
         "User-Token": user_token
     }
 
-    api_response = session.post(url=url, data=data, params=params, headers=headers)
+    api_response = session.post(url=url, data=data, params=params, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
 
     return api_response
 

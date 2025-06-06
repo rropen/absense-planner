@@ -17,6 +17,7 @@ env = environ.Env()
 environ.Env.read_env()
 TEAM_APP_API_URL = env("TEAM_APP_API_URL")
 TEAM_APP_API_KEY = env("TEAM_APP_API_KEY")
+TEAM_APP_API_TIMEOUT = float(env("TEAM_APP_API_TIMEOUT"))
 
 # Use the session object from the Python requests library to send requests and pool the connection resources.
 # Without this, the requests sent to the API are EXTREMELY SLOW.
@@ -40,7 +41,7 @@ def teams_dashboard(request) -> render:
         url = TEAM_APP_API_URL + "user/teams/"
 
         # Send request to Team App API and store in response object
-        api_response = session.get(url=url, headers=headers)
+        api_response = session.get(url=url, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
     except:
         return render(
         request,
@@ -80,7 +81,7 @@ def leave_team(request):
         "User-Token": user_token
     }
 
-    api_response = session.post(url=url, data=data, params=params, headers=headers)
+    api_response = session.post(url=url, data=data, params=params, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
     if (api_response.status_code == 200):
         # Remove lingering switch permissions upon success
         check_for_lingering_switch_perms(username, remove_switch_permissions, user_token)
@@ -108,7 +109,7 @@ def create_team(request:HttpRequest) -> render:
                 "User-Token": user_token
             }
 
-            api_response = session.post(url=url, data=data, headers=headers)
+            api_response = session.post(url=url, data=data, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
 
             if api_response.status_code == 200:
                 return redirect("/teams/api-calendar/" + str(api_response.json()["id"]))
@@ -162,7 +163,8 @@ def join_team(request) -> render:
                     url=url,
                     data=data,
                     params=params,
-                    headers=headers
+                    headers=headers,
+                    timeout=TEAM_APP_API_TIMEOUT
                 )
 
         url = TEAM_APP_API_URL + "teams/"
@@ -171,7 +173,7 @@ def join_team(request) -> render:
             "User-Token": user_token
         }
 
-        api_response = session.get(url=url, headers=headers)
+        api_response = session.get(url=url, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
     except:
         print("Api failed to load")
     if api_response is not None and api_response.status_code == 200:
@@ -234,7 +236,7 @@ def edit_team(request:HttpRequest, id):
                 "User-Token": user_token
             }
 
-            api_response = session.post(url=url, params=params, data=data, headers=headers)
+            api_response = session.post(url=url, params=params, data=data, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
 
             if api_response.status_code != 200:
                 print("Error in Team API")
@@ -273,7 +275,7 @@ def delete_team(request:HttpRequest):
         "User-Token": user_token
     }
 
-    api_response = session.post(url=url, data=data, params=params, headers=headers)
+    api_response = session.post(url=url, data=data, params=params, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
 
     if (api_response.status_code == 200):
         # Remove lingering switch permissions upon success
