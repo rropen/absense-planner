@@ -52,13 +52,19 @@ def teams_dashboard(request) -> render:
         except Exception as exception:
             error = "Error - could not obtain the team you requested due to an unknown error" \
                     "so it could not be favourited."
-            debug = "Error: Cannot obtain Team ID from request. Exception: " + exception
+            debug = "Error: Cannot obtain Team ID from request for favouriting. Exception: " + str(exception)
             print_messages(request, error=error, debug=debug)
         else:
-            favourite_team(user_token, team_id)
-
-            success = "Favourited team successfully."
-            print_messages(request, success=success)
+            try:
+                error, debug, success = None, None, None
+                favourite_team(user_token, team_id)
+            except Exception as exception:
+                error = "Error - could not favourite the team you requested due to an unknown error."
+                debug = "Error: Could not send a request to the API to favourite a team. Exception: " + str(exception)
+            else:
+                success = "Favourited team successfully."
+            finally:
+                print_messages(request, success=success, error=error, debug=debug)
 
     try:
         users_teams = get_users_teams(None, user_token)
