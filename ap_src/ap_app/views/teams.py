@@ -17,6 +17,7 @@ from ..forms import CreateTeamForm
 from ..models import Role, UserProfile
 from ..utils.teams_utils import retrieve_team_member_data, favourite_team, get_user_token_from_request, get_users_teams
 from ..utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
+from ..utils.errors import print_messages
 
 from requests import Session
 
@@ -45,22 +46,19 @@ def teams_dashboard(request) -> render:
         try:
             team_id = request.POST["team"]
         except KeyError:
-            print("Error: Team ID was not found in request so it cannot be favourited.")
-            messages.add_message(
-                request,
-                messages.ERROR,
-                "Error - a team was not provided so it could not be favourited."
-            )
+            error = "Error - a team was not provided so it could not be favourited."
+            debug = "Error: Team ID was not found in request so it cannot be favourited."
+            print_messages(request, error=error, debug=debug)
         except Exception as exception:
-            print("Error: Cannot obtain Team ID from request. Exception:", exception)
-            messages.add_message(
-                request,
-                messages.ERROR,
-                "Error - could not obtain the team you requested due to an unknown error" \
-                "so it could not be favourited."
-            )
+            error = "Error - could not obtain the team you requested due to an unknown error" \
+                    "so it could not be favourited."
+            debug = "Error: Cannot obtain Team ID from request. Exception: " + exception
+            print_messages(request, error=error, debug=debug)
         else:
             favourite_team(user_token, team_id)
+
+            success = "Favourited team successfully."
+            print_messages(request, success=success)
 
     try:
         users_teams = get_users_teams(None, user_token)
