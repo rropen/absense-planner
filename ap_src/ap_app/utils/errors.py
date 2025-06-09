@@ -77,6 +77,9 @@ def print_messages(request, success=None, error=None, debug=None):
     elif (error and debug):
         messages.error(request, error)
         print_debug(request, debug)
+    elif (error):
+        messages.error(request, error)
+
 def derive_http_error_message(http_error:HTTPError):
     """
     Utility function that takes a HTTPError exception from the Python requests
