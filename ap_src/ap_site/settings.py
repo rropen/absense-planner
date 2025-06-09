@@ -206,7 +206,7 @@ if PROFILING:
 # https://docs.djangoproject.com/en/5.1/ref/settings/#message-tags
 # https://bulma.io/documentation/elements/notification/#colors
 MESSAGE_TAGS = {
-    messages.DEBUG: "is-primary",
+    messages.DEBUG: "is-link",
     messages.INFO: "is-info",
     messages.SUCCESS: "is-success",
     messages.WARNING: "is-warning",
