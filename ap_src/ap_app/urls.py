@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 
 from .views import calendarview, views, absences, teams
 
@@ -7,6 +7,11 @@ from django.urls import re_path
 from django.views.static import serve
 from django.conf import settings
 from django.views.i18n import JavaScriptCatalog
+
+from os import getenv
+
+PROFILING_ENV = getenv("PROFILING")
+PROFILING = PROFILING_ENV is not None and PROFILING_ENV.lower() == "true"
 
 js_info_dict = {
     'packages' : ('recurrence', ),
@@ -18,11 +23,13 @@ urlpatterns = [
     path("calendar/", views.main_calendar, name="all_Calendar"),
     path("calendar/<str:month>/<int:year>", views.main_calendar, name="all_calendar"),
     path("teams/", teams.teams_dashboard, name="dashboard"),
+    path("teams/leave", teams.leave_team, name="leave_team"),
     path("teams/create", teams.create_team, name="create_team"),
     path("teams/join", teams.join_team, name="join_team"),
     path("teams/api-calendar/<int:id>", calendarview.api_team_calendar, name="api_team_calendar"),
     path("teams/api-calendar/<int:id>/<str:month>/<int:year>", calendarview.api_team_calendar, name="api_team_calendar"),
     path("teams/edit/<int:id>", teams.edit_team, name="edit_team"),
+    path("teams/delete", teams.delete_team, name="delete_team"),
     path("absence/add", absences.manual_add, name="add"),
     path("absence/add_recurring", absences.add_recurring, name="add_recurring"),
     path("profile/", absences.profile_page, name="profile"),
@@ -50,10 +57,19 @@ urlpatterns = [
     path("500", views.Custom500View, name="500"),
     path("400", views.Custom400View, name="400"),
 
-    re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}) #This lets Django find the CSS files when debug is set to false
+    re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}), #This lets Django find the CSS files when debug is set to false
 
-] 
+]
+
+# This allows the django-debug-toolbar to be used to analyse performance of the web server
+# The 4.2.0 version has to be used as it is the latest one compatible with Django version 4.2.6
+# This is not the same method of importing the URLs as in the documentation because the helper function, debug_toolbar_urls, is only available
+# since version 4.4.3
+if PROFILING:
+    urlpatterns += path("__debug__/", include("debug_toolbar.urls")),
 
 handler404 = 'ap_app.utils.errors.handler404'
 handler500 = 'ap_app.utils.errors.handler500'
 handler400 = 'ap_app.utils.errors.handler400'
+handler503 = 'ap_app.utils.errors.handler503'
+handler403 = 'ap_app.utils.errors.handler403'

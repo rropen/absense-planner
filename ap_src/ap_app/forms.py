@@ -5,6 +5,10 @@ from django.contrib.auth import get_user_model
 from django.utils.timezone import now
 
 from .models import Absence, RecurringAbsences, UserProfile
+from django.contrib.auth.forms import UserCreationForm
+
+from .utils.teams_utils import check_user_exists
+from django.core.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -29,10 +33,6 @@ class CreateTeamForm(forms.Form):
         widget=forms.Textarea(attrs={"class": "", "placeholder": "Team Description","rows":4, "cols":15}),
     )
 
-    #Whether or not the team is private
-    private = forms.BooleanField(
-        required=False, widget=forms.CheckboxInput(attrs={"class": ""})
-    )
 
 class login(forms.Form):
     name = forms.CharField(
@@ -154,3 +154,12 @@ class DeleteUserForm(forms.ModelForm):
 
 class AcceptPolicyForm(forms.Form):
     check = forms.CheckboxInput()
+
+class AbsencePlannerUserCreationForm(UserCreationForm):
+    def clean_username(self):
+        username = self.cleaned_data["username"]
+        user_exists = check_user_exists(username)
+        if (user_exists):
+            return username
+        else:
+            raise ValidationError("User does not exist on the Team App.")

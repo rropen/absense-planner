@@ -1,70 +1,34 @@
-var apiURL = document.currentScript.getAttribute("apiURL");
+function openLeaveTeamModal(teamId, teamName, userRole, memberCount) {
+    const leaveModal = document.getElementById('leaveTeamModal');
+    const deleteModal = document.getElementById('deleteTeamModal');
 
-function openLeaveTeamModal(teamId, csrfToken, username, teamName) {
-    const modal = document.getElementById('leaveTeamModal');
-    const confirmButton = document.getElementById('confirmLeaveButton');
-    const cancelButton = document.getElementById('cancelLeaveButton');
-    const modalCloseButton = document.querySelector('#leaveTeamModal .modal-close');
+    document.getElementById('leaveTeamName').innerText = teamName;
+    document.getElementById('deleteTeamName').innerText = teamName;
 
-    modal.classList.add('is-active');
+    $('#leaveTeamInput').val(teamId);
+    $('#deleteTeamInput').val(teamId);
 
-    confirmButton.addEventListener('click', () => {
-        LeaveTeamAndRemovePermissions(teamId, username, csrfToken, teamName);
-        modal.classList.remove('is-active');
-    });
+    if (userRole === 'Owner' && memberCount === 1) {
+        // Delete modal for when only member is owener
+        deleteModal.classList.add('is-active');
 
-    cancelButton.addEventListener('click', () => {
-        modal.classList.remove('is-active');
-    });
+        document.getElementById('cancelDeleteButton').onclick = () => {
+            deleteModal.classList.remove('is-active');
+        };
+        document.querySelector('#deleteTeamModal .modal-close').onclick = () => {
+            deleteModal.classList.remove('is-active');
+        };
 
-    modalCloseButton.addEventListener('click', () => {
-        modal.classList.remove('is-active');
-    });
-}
+    } else {
+        // Leave modal if not the only member
+        leaveModal.classList.add('is-active');
 
-async function LeaveTeamAndRemovePermissions(teamId, username, token, teamName) {
-    const headers = {
-        "Content-Type": "application/json",
-        "X-CSRFToken": token,
-    };
-
-    var data = JSON.stringify({ username: username, team: teamId });
-
-    try {
-        const leaveResponse = await fetch(apiURL + "api/manage/?method=leave", {
-            method: "post",
-            body: data,
-            headers: headers,
-        });
-
-        if (!leaveResponse.ok) {
-            throw new Error(`Leave request failed with status ${leaveResponse.status}`);
-        }
-
-        const leaveData = await leaveResponse.json();
-
-        if (leaveData.message === "success") {
-            const permissionsResponse = await fetch(
-                window.location.origin + "/remove_lingering_perms",
-                {
-                    method: "get",
-                    headers: headers,
-                },
-            );
-
-            if (!permissionsResponse.ok) {
-                throw new Error(
-                    `Permissions check request failed with status ${permissionsResponse.status}`,
-                );
-            }
-
-            const permissionsData = await permissionsResponse.json();
-            sessionStorage.setItem('showSuccessModal', 'true'); // Set flag to show success modal
-            sessionStorage.setItem('teamName', teamName)
-            location.reload(); // Reload the page to update the teams
-        }
-    } catch (err) {
-        console.log(err);
+        document.getElementById('cancelLeaveButton').onclick = () => {
+            leaveModal.classList.remove('is-active');
+        };
+        document.querySelector('#leaveTeamModal .modal-close').onclick = () => {
+            leaveModal.classList.remove('is-active');
+        };
     }
 }
 
@@ -91,71 +55,30 @@ window.addEventListener('load', () => {
     }
 });
 
-function JoinTeam(e, user, redirect) {
-    var data = JSON.stringify({"username": user, "team": e.id})
-    fetch(apiURL + 'api/manage/?method=join', {
-        method: "post",
-        body: data,
-        headers: {
-            "Content-Type": "application/json",
-        },
-    })
-    .then(() => {
-        if (redirect) {
-            location.replace(location.origin + "/teams/join")
-        } else {
-            location.reload()
-        }
-    })
-    .catch(err => {
-        console.log(err)
-    })
-}
-
-function starHover(e) {
-    if (e.dataset.star == 'false'){
-        e.innerHTML="<i class='fas fa-star'></i>"
-        e.dataset.star = 'true'
+function starHover(element) {
+    if (element.dataset.star == 'False'){
+        let starElement = $(element).children(".fa-star");
+        starElement.removeClass("far")
+        starElement.addClass("fas")
+        element.dataset.star = 'True'
     }
 }
 
-function removeHover(e) {
-    if (e.dataset.star == 'true'){
-        e.innerHTML="<i class='far fa-star'></i>"
-        e.dataset.star = 'false'
+function removeHover(element) {
+    if (element.dataset.star == 'True'){
+        let starElement = $(element).children(".fa-star");
+        starElement.removeClass("fas")
+        starElement.addClass("far")
+        element.dataset.star = 'False'
     }
-}
-
-function favouriteTeam(e, user, id) {
-    var data = {"username": user, "team": id}
-    fetch(apiURL + 'api/manage/?method=favourite', {
-        method:"post",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-    })
-    .then(() => {
-        location.reload()
-    })
-    .catch(err => {
-        console.log(err)
-    })
 }
 
 function openDeleteTeamModal(button) {
-    const teamId = button.id;
     const modal = document.getElementById('deleteTeamModal');
-    const confirmButton = document.getElementById('confirmDeleteButton');
     const cancelButton = document.getElementById('cancelDeleteButton');
     const modalCloseButton = document.querySelector('#deleteTeamModal .modal-close');
 
     modal.classList.add('is-active');
-
-    confirmButton.onclick = () => {
-        DeleteTeam(parseInt(teamId));
-        modal.classList.remove('is-active');
-    };
 
     cancelButton.onclick = () => {
         modal.classList.remove('is-active');
@@ -164,22 +87,4 @@ function openDeleteTeamModal(button) {
     modalCloseButton.onclick = () => {
         modal.classList.remove('is-active');
     };
-}
-
-function DeleteTeam(teamId) {
-    var data = JSON.stringify({ "id": teamId });
-
-    fetch(apiURL + 'api/teams/?method=delete&format=json', {
-        method: "POST",
-        body: data,
-        headers: {
-            "Content-Type": "application/json",
-        },
-    })
-    .then(() => {
-        location.replace(location.origin + "/teams");
-    })
-    .catch(err => {
-        console.log(err);
-    });
 }

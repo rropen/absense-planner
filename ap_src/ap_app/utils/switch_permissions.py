@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from .teams_utils import get_users_sharing_teams
 from .user_profile import get_user_id_from_username, get_userprofile_id_from_user_id
 
-def check_for_lingering_switch_perms(username, action):
+def check_for_lingering_switch_perms(username, action, user_token):
     """
     Check that discovers lingering switch permissions in the database and determines what to do with them.
 
@@ -19,6 +19,7 @@ def check_for_lingering_switch_perms(username, action):
 
     NO_ERRORS = True
 
+    # Get user information
     user_id = get_user_id_from_username(username)
     userprofile_id = get_userprofile_id_from_user_id(user_id)
     if (user_id is None) or (userprofile_id is None):
@@ -29,7 +30,7 @@ def check_for_lingering_switch_perms(username, action):
         return
 
     user = User.objects.get(id=user_id)
-    users_sharing_teams = get_users_sharing_teams(username, user)
+    users_sharing_teams = get_users_sharing_teams(username, user, user_token)
     if users_sharing_teams is None:
         return # Caller should handle error
     
@@ -44,22 +45,17 @@ def check_for_lingering_switch_perms(username, action):
 
 def get_associated_permissions(current_user, selected_userprofile_id, selected_user_id):
     usernames_given_permissions = set(User.objects.filter(permissions=selected_userprofile_id).values_list("username", flat=True))
+
+    # Remove the currently logged in user (i.e., the user who left the team)
+    # so that their permissions to set their own absences are not removed
     try:
         usernames_given_permissions.remove(current_user)
     except:
         print("User does not exist in absence planner database")
         return None, None # Caller should handle error
 
-    userprofile_ids_who_give_permissions = UserProfile.objects.filter(edit_whitelist=selected_user_id).values_list(flat=False)
-    userprofile_usernames_who_give_permissions = set()
-    for userprofile_id in userprofile_ids_who_give_permissions:
-        try:
-            user = User.objects.get(userprofile=userprofile_id)
-        except:
-            print("User matching UserProfile ID not found")
-            return None, None
-        current_username = user.get_username()
-        userprofile_usernames_who_give_permissions.add(current_username)
+    userprofile_ids_who_give_permissions = UserProfile.objects.filter(edit_whitelist=selected_user_id)
+    userprofile_usernames_who_give_permissions = set(User.objects.filter(userprofile__in=userprofile_ids_who_give_permissions).values_list("username", flat=True))
 
     try:
         userprofile_usernames_who_give_permissions.remove(current_user)

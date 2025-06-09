@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load bulma_tags %}
-{% block title %}Join Team{% endblock %}
+{% block title %}Create Team{% endblock %}
 {% load static %}
 {% block content %}
 
@@ -10,13 +10,8 @@
 
 
 <div class="main container">
-    
     <h1 class="title dText">Create a Team</h1>
-    {% if api_enabled %}
     <form method="post" class="text-center" id="teamForm">
-    {% else %}
-    <form method="post" class="text-center">
-    {% endif %}
         {% if message %}
         {% include "messages.html" %}
         {% endif %}
@@ -29,7 +24,6 @@
         {{ form | bulma }}
 
     <h2 class="description dText"><b>Please avoid using personal information in the description as it will be seen by non team members.<b></h2>
-    <input type="hidden" name="username" value="{{ request.user.username }}">
     <input type="hidden" name="origin_application" value="Absence Planner">
     <label id="label_button" class="button is-primary" disabled>
         Submit

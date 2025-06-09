@@ -36,6 +36,10 @@ STATIC_ROOT = BASE_DIR / 'static/css'
 ALLOWED_HOSTS = ["*"]
 
 
+INTERNAL_IPS = [
+
+]
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -47,7 +51,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "bulma",
-    "ckeditor",
     "recurrence",
 ]
 
@@ -60,6 +63,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "ap_app.middleware.status_check_middleware",
 ]
 
 ROOT_URLCONF = "ap_site.urls"
@@ -178,3 +182,21 @@ PRODUCTION_UI = PRODUCTION_UI_ENV is not None and PRODUCTION_UI_ENV.lower() == "
 VERSION = "1.3.0"
 
 RECURRENCE_I18N_URL = "javascript-catalog"
+
+PROFILING_ENV = os.getenv("PROFILING")
+PROFILING = PROFILING_ENV is not None and PROFILING_ENV.lower() == "true"
+
+# Allows the debug toolbar to be shown
+if PROFILING:
+    INTERNAL_IPS += [
+        "127.0.0.1",
+        "localhost"
+    ]
+
+    MIDDLEWARE += [
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+    ]
+
+    INSTALLED_APPS += [
+        "debug_toolbar",
+    ]

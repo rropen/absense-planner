@@ -1,0 +1,24 @@
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Could not connect to Team App API</title>
+
+    <style>
+      .message {
+        font-size: 3em;
+      }
+    </style>
+</head>
+<body class="message">
+  <strong>Critical error - could not connect to the Team App API.</strong>
+  <br>
+  <p>Please make sure the Team App is running and the <code>TEAM_APP_API_URL</code> environment variable is the same as the URL of the running Team App.</p>
+</body>
+</html>
+{% endblock %}

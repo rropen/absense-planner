@@ -18,9 +18,23 @@ body {
     margin-bottom: 24px;
   }
 
+  .wrench {
+    font-size: 28px;
+  }
+
   .title {
     font-size: 32px;
     margin-bottom: 24px;
+    text-align: center;
+    vertical-align: center;
+  }
+
+  .title-with-wrench {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px
   }
 
   .message {

@@ -3,98 +3,40 @@
 {% load static %}
 {% block content %}
 
-{% if api_enabled %}
-{% include 'api_pages/teams.html' %}
-{% else %}
-
-
 <div class="container">
-    <div class="level">
-        <div class="level-left">
-            <div class="level-item">
-                <a class="button is-link" href="/teams/">Back to Dashboard</a>
+    <h3 class="has-text-weight-bold is-size-5 my-3">Teams</h3>
+    {% if teams %}
+    {% for team in teams %}
+    <div class="container has-background-light box darkInput">
+        <div class="is-size-5 mb-3">
+            <span class="is-block is-size-5 has-text-weight-bold">{{team.name}} 
+                <i class="fas fa-user-alt mx-2"></i>{{team.count}}</span>
+            <span class="is-block is-size-6">{{ team.description }}</span>
+            <div class="is-grouped">
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="team_id" value="{{ team.id }}">
+                    <input type="hidden" name="method" value="join">
+                    <button class="button is-success join-team-button" id="{{ team.id }}" type="submit">
+                        Join Team
+                    </button>
+                </form>
             </div>
         </div>
-
-        <div class="level-right">
-            <form method="get" class="field has-addons">
-                <input class="input" type="text" name="teamName" placeholder="Search for a Team">
-                <button class="button is-link" type="submit">Search</button>
-            </form>
-
-        </div>
-
-    </div>
-
-    {% if not all_teams or not joined_teams %}
-    <div class="container has-background-light box">
-        <div class="is-size-5 mb-3">
-            <span class="is-block is-size-5">There are no teams to join.</span>
-            <a class="button is-link" href="{% url 'create_team' %}">Create a team</a>
-        </div>
-    </div>
-    {% endif %}
-
-    <label for="chkJoined" class="checkbox">
-        <input type="checkbox" id="chkJoined" onclick="ShowHideDiv(this)"> Show joined teams </input>
-    </label>
-
-    {% if message %}
-        {% include "messages.html" %}
-    {% endif %}
-    {% for team in joined_teams %}
-
-    <div style="display: none" class="container has-background-light box joined_teams">
-        <div class="is-size-5 mb-3">
-            <span class="is-block is-size-5 has-text-weight-bold">{{team.name}} <i
-                    class="fas fa-user-alt mx-2"></i>{{team.count}}</span>
-            {% if team.private %}
-            <span class="tag is-dark">Private</span>
-            {% elif not team.private %}
-            <span class="tag is-dark">Public</span>
-            {% endif %}
-        </div>
-        <span class="is-block is-size-6">{{team.description}}</span>
-        <div class="is-block mt-3">
-            <span class="is-block is-size-6">You are already a member of this team.</span>
-            <a class="button is-success" href="/teams/calendar/{{team.id}}/{{current_month}}/{{year}}" >View Team</a>
-        </div>
     </div>
     {% endfor %}
-
-    {% for teams in all_teams %}
-    <div class="container has-background-light box">
-        <div class="is-size-5 mb-3">
-            <span class="is-block is-size-5	has-text-weight-bold">{{teams.name}} <i
-                    class="fas fa-user-alt mx-2"></i>{{teams.count}}</span>
-            {% if teams.private %}
-            <span class="tag is-dark">Private</span>
-            {% elif not teams.private %}
-            <span class="tag is-dark">Public</span>
-            {% endif %}
+    {% else %}
+        <div class="container has-background-light box">
+            <div class="is-size-5 mb-3">
+                <span class="is-block is-size-5">You've joined all of the available teams.</span>
+            </div>
         </div>
-        <span class="is-block is-size-6">{{teams.description}}</span>
-        <div class="is-block mt-3">
-            {% if teams.private %}
-            <a  class="button is-success" id="apply_member_{{teams.name}}" href="{% url 'join_team_2' teams.id 'Member' %}">Apply as Member</a>
-            <a class="button is-link" id="apply_follower_{{teams.name}}" href="{% url 'join_team_2' teams.id 'Follower' %}">Apply as Follower</a>
-            {% else %}
-            <a class="button is-success" id="join_member_{{teams.name}}" href="{% url 'join_team_2' teams.id 'Member' %}">Join as Member</a>
-            <a class="button is-link" id="join_follower_{{teams.name}}" href="{% url 'join_team_2' teams.id 'Follower' %}">Join as Follower</a>
-            {% endif %}
-        </div>
-    </div>
-    {% endfor %}
+    {% endif %}
+    <a id="teams/" class="column button is-medium is-info icon-text" href="{% url 'dashboard' %}">
+    <i class="fas fa-users fa-w-20"></i> Go back to joined teams</i>
+    </a>
 </div>
-<script type="text/javascript">
-    function ShowHideDiv(chkJoined) {
-        var dvJoined = document.getElementsByClassName("joined_teams")
-        for (var i = 0; i < dvJoined.length; i += 1) {
-            dvJoined[i].style.display = chkJoined.checked ? "block" : "none";
-        }
-    }
+<script src="{%static 'js/button_spinner.js' %}"></script>
+<script src="{% static "js/teams.js" %}"></script>
 
-</script>
-
-{% endif %}
 {% endblock %}

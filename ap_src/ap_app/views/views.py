@@ -7,7 +7,6 @@ from datetime import timedelta
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse, JsonResponse, HttpRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
@@ -16,10 +15,11 @@ from django.views.generic import CreateView
 from ..utils.objects import obj_exists, find_user_obj
 from .calendarview import main_calendar
 
-from ..forms import AcceptPolicyForm, AbsenceForm, DeleteUserForm
+from ..forms import AcceptPolicyForm, AbsenceForm, DeleteUserForm, AbsencePlannerUserCreationForm
 from ..models import Absence, UserProfile, ColourScheme, ColorData, RecurringException
 
 from ..utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
+from ..utils.teams_utils import get_user_token_from_request
 
 User = get_user_model()
 
@@ -67,7 +67,7 @@ def privacy_page(request, to_accept=False) -> render:
     return main_calendar(request)
 
 class SignUpView(CreateView):
-    form_class = UserCreationForm
+    form_class = AbsencePlannerUserCreationForm
     success_url = reverse_lazy("login")
     template_name = "registration/signup.html"
 
@@ -125,11 +125,6 @@ def profile_settings(request:HttpRequest) -> render:
         elif request.POST.get("privacy") == "on":
             userprofile.privacy = True
 
-        if request.POST.get("teams") is None:
-            userprofile.external_teams = False
-        elif request.POST.get("teams") == "on":
-            userprofile.external_teams = True
-        
         userprofile.save()
     
     country_data = get_region_data()
@@ -150,8 +145,7 @@ def profile_settings(request:HttpRequest) -> render:
         colour_data.append(colour)
 
     privacy_status = userprofile.privacy
-    teams_status = userprofile.external_teams
-    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status, "external_teams": teams_status,
+    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status,
                "current_country": country_name, **country_data, "colours": colour_data}
 
     return render(request, "ap_app/settings.html", context)
@@ -169,9 +163,7 @@ def update_colour(request:HttpRequest):
             update_data.color = request.POST["colour"]
             update_data.save()
         else:
-            print(request.POST)
             if request.POST["colour"] != default.default or request.POST["enabled"] != 'True':
-                print("Created colour data")
                 newData = ColorData()
                 if request.POST["enabled"] == 'True':
                     newData.enabled = True
@@ -398,13 +390,15 @@ def remove_lingering_perms(request):
 
     Generally ran when a user leaves a team and we wish to remove any lingering permissions.
     """
-    if request.method == "GET":
-        username = request.user.get_username()
-        result = check_for_lingering_switch_perms(username, remove_switch_permissions)
+    if request.method == "POST":
+        username = request.user.username
+        user_token = get_user_token_from_request(request)
+
+        result = check_for_lingering_switch_perms(username, remove_switch_permissions, user_token)
         if result is not None:
             return JsonResponse({'status': 'success'})
     # Something failed in the logic for checking and removing switch permissions
-    return JsonResponse({'status': 'fail', 'message': 'Invalid request'})
+    return HttpResponse(status=500)
 
 def Custom404View(request):
     return render(request, '404.html')

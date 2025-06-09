@@ -20,26 +20,49 @@
 
     <div class="level">
         <div class="level-left">
-            <h3 class="has-text-weight-bold is-size-5 my-3">Teams ({{external_teams|length}})</h3>
+            <h3 class="has-text-weight-bold is-size-5 my-3">Teams ({{teams|length}})</h3>
         </div>
     </div>
 
-    {% if not external_teams %}
+    {% if not teams %}
     <div class="container has-background-light box darkInput">
         <div class="is-size-5 mb-3">
-            <span class="is-block is-size-5">No teams found.</span>
+            <p>You haven't joined any teams yet!</p>
+            <br />
+            <p>Consider joining a <a href="/teams/join"> team </a> or <a href="/teams/create">creating a team</a>. </p>
         </div>
     </div>
     {% else %}
-    {% for team in external_teams %}
+    {% for team in teams %}
     <div class="container has-background-light box darkInput">
         <div class="is-size-5 mb-3">
-            <span class="is-block is-size-5	has-text-weight-bold">{{ team.team.name }} <i class="fas fa-users mx-1"></i>{{ team.team.members|length }}
-                {% if team.favourite %}
-                <button class="button is-ghost" style="color: gold !important; padding-top: 0px!important; padding-bottom: 10px!important;" onclick="favouriteTeam(this, '{{ request.user.username }}', {{ team.team.id }})" onmouseover="starHover(this)" onmouseout="removeHover(this)" data-star="True"><i class="fas fa-star"></i></button>
-                {% else %}
-                <button class="button is-ghost" style="color: gold !important; padding-top: 0px!important; padding-bottom: 10px!important;" onclick="favouriteTeam(this, '{{ request.user.username }}', {{ team.team.id }})" onmouseover="starHover(this)" onmouseout="removeHover(this)" data-star="false"><i class="far fa-star"></i></button>
-                {% endif %}
+            <span class="is-flex is-flex-direction-row is-justify-content-start is-align-items-center is-size-5 has-text-weight-bold team-name-bar">
+                <span>{{ team.team.name }}</span>
+                <span>
+                    <i class="fas fa-users mx-1"></i>
+                    <span>{{ team.team.members|length }}</span>
+                </span>
+                <form action="" method="POST" class="button is-ghost is-align-content-center" style="color: gold !important; padding: 0">
+                    {% csrf_token %}
+                    <input type="hidden" name="method" value="favourite">
+                    <input type="hidden" name="team" value="{{ team.team.id }}">
+                    <button
+                        onmouseover="starHover(this)"
+                        onmouseout="removeHover(this)"
+                        data-star="{{ team.favourite }}"
+                        type="submit"
+                    >
+                        <i class="
+                            {% if team.favourite %}
+                                fas
+                            {% else %}
+                                far
+                            {% endif %}
+                            fa-star
+                        "></i>
+                    </button>
+                </form>
+                
             </span>
             {% if team.team.private %}
                 <span class="tag is-info is-rounded">
@@ -68,7 +91,11 @@
             {% if team.role.role == "Owner" or team.role.role == "Co-Owner"%}
             <a class="button is-info mx-1" href={% url 'edit_team' id=team.team.id %}>Edit</a>
             {% endif %}
-            <button class="button is-danger mx-1 leave-team-button" title="Leave" id="{{ team.team.id }}" onclick="openLeaveTeamModal('{{ team.team.id }}', '{{ csrf_token }}', '{{ request.user.username }}', '{{team.team.name}}')">Leave</button>
+            <button class="button is-danger mx-1 leave-team-button"
+                    onclick="openLeaveTeamModal('{{ team.team.id }}', '{{ team.team.name }}', '{{ team.role.role }}', {{ team.team.members|length }})"
+            >
+                Leave
+            </button>
         </div>
     </div>
     {% endfor %}
@@ -76,22 +103,7 @@
     
 </div>
 
-<!-- Confirmation Modal -->
-<div id="leaveTeamModal" class="modal">
-    <div class="modal-background"></div>
-    <div class="modal-content">
-        <div class="box">
-            <h1 class="title">Confirm Leave</h1>
-            <p>Are you sure you want to leave this team?</p>
-            <div class="buttons is-right">
-                <button id="confirmLeaveButton" class="button is-danger">Leave</button>
-                <button id="cancelLeaveButton" class="button">Cancel</button>
-            </div>
-        </div>
-    </div>
-    <button class="modal-close is-large" aria-label="close"></button>
-</div>
-
+{% include "teams/elements/leave_team_modal.html" %}
 
 <div id="successModal" class="modal">
     <div class="modal-background"></div>
@@ -107,5 +119,5 @@
     <button class="modal-close is-large" aria-label="close"></button>
 </div>
 
-<script src="{% static 'js/teams.js' %}" apiURL="{{ url }}"></script>
+<script src="{% static 'js/teams.js' %}"></script>
 {% endblock %}

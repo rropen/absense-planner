@@ -1,5 +1,11 @@
 :root {
     --user-cell-width: 120px;
+    --days-cell-background: rgb(2, 78, 141);
+    --dates-cell-background: rgb(32, 108, 171);
+}
+
+.navbar a:hover, .navbar a:active, .navbar a:focus {
+    color: #10069f;
 }
 
 .active {
@@ -108,9 +114,6 @@ h3 {
 
 /* End of basic */
 
-.RefreshBox {
-    background-color: #3e4549;
-}
 .AbsenceBox {
     background-color: #ff0000;
     border-color: #ff0000;
@@ -133,7 +136,7 @@ h3 {
     border-color: red;
 }
 
-.blank-cell {
+.header-label-cell {
     color: black;
     background-color: #343b3f;
 }
@@ -147,13 +150,8 @@ h3 {
     color: black; 
 }
 
-.selected-user-cell {
-    background-color: #0e00d6; 
-    color: #3e4549; 
-}
-
 .darkBackground {
-background-color: #3e4549;
+    background-color: #3e4549;
 }
 
 /* End of calendar */
@@ -241,4 +239,12 @@ background-color: #3e4549;
 
 .CalendarCell[data-editable="False"] {
     cursor: not-allowed;
+}
+
+.days-cell {
+    background-color: var(--days-cell-background) !important;
+}
+
+.dates-cell {
+    background-color: var(--dates-cell-background) !important;
 }
