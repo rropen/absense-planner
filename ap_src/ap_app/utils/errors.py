@@ -6,6 +6,8 @@ from django.shortcuts import render
 from django.contrib import messages
 
 import environ
+from requests import HTTPError
+from http import HTTPStatus
 
 env = environ.Env()
 environ.Env.read_env()
@@ -75,3 +77,18 @@ def print_messages(request, success=None, error=None, debug=None):
     elif (error and debug):
         messages.error(request, error)
         print_debug(request, debug)
+def derive_http_error_message(http_error:HTTPError):
+    """
+    Utility function that takes a HTTPError exception from the Python requests
+    library and turns it into a human-readable error message using the HTTPStatus
+    library.
+    """
+    http_status = HTTPStatus(http_error.response.status_code)
+    error_message = str(http_status.value) + http_status.phrase + http_status.description
+    error_message = "{code} ({phrase}) - {description}".format(
+        code=http_status.value,
+        phrase=http_status.phrase,
+        description=http_status.description
+    )
+
+    return error_message

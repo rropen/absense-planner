@@ -17,9 +17,10 @@ from ..forms import CreateTeamForm
 from ..models import Role, UserProfile
 from ..utils.teams_utils import retrieve_team_member_data, favourite_team, get_user_token_from_request, get_users_teams
 from ..utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
-from ..utils.errors import print_messages
+from ..utils.errors import print_messages, derive_http_error_message
 
 from requests import Session
+from requests import HTTPError, ConnectionError, RequestException
 
 env = environ.Env()
 environ.Env.read_env()
@@ -58,7 +59,12 @@ def teams_dashboard(request) -> render:
             try:
                 error, debug, success = None, None, None
                 favourite_team(user_token, team_id)
-            except Exception as exception:
+            except HTTPError as exception:
+                error = "Error in favouriting team - " + derive_http_error_message(exception)
+            except ConnectionError as exception:
+                error = "Error - could not favourite the team you requested due to a connection error."
+                debug = "Error: Could not connect to the API to favourite a team. Exception: " + str(exception)
+            except RequestException as exception:
                 error = "Error - could not favourite the team you requested due to an unknown error."
                 debug = "Error: Could not send a request to the API to favourite a team. Exception: " + str(exception)
             else:

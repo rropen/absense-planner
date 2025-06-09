@@ -201,6 +201,7 @@ def favourite_team(user_token, team_id):
         headers=headers,
         timeout=TEAM_APP_API_TIMEOUT
     )
+    api_response.raise_for_status()
 
     return api_response
 

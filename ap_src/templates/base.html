@@ -170,9 +170,9 @@
 <container>
   <div id="content" , name="content" , class="main">
     {% if messages %}
-      <ul class="messages mb-3">
+      <ul class="messages">
           {% for message in messages %}
-          <li class="notification {% if message.tags %} {{ message.tags }} {% endif %}">
+          <li class="notification mb-3 {% if message.tags %} {{ message.tags }} {% endif %}">
             <button class="delete" type="button" title="Hide this error"></button>
             <strong>{{ message }}</strong>
           </li>
