@@ -67,6 +67,7 @@ def get_users_teams(sort_value, user_token):
     )
     # Caller should handle the API error
     
+    api_response.raise_for_status()
     api_response = api_response.json()
 
     return api_response

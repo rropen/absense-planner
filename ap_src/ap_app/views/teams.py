@@ -73,14 +73,22 @@ def teams_dashboard(request) -> render:
                 print_messages(request, success=success, error=error, debug=debug)
 
     try:
+        error, debug, success = None, None, None
         users_teams = get_users_teams(None, user_token)
-    except:
-        return render(
-        request,
-        "teams/dashboard.html",
-        {"teams": False})
+    except HTTPError as exception:
+        error = "Error in fetching your joined teams - " + derive_http_error_message(exception)
+    except ConnectionError as exception:
+        error = "Error - could not fetch the teams you are in due to a connection error."
+        debug = "Error: Could not connect to the API to fetch a user's joined teams. Exception: " + str(exception)
+    except RequestException as exception:
+        error = "Error - could not fetch the teams you are in due to an unknown error."
+        debug = "Error: Could not send a request to the API to fetch a user's joined teams. Exception: " + str(exception)
+    finally:
+        print_messages(request, success=success, error=error, debug=debug)
 
-    if (len(users_teams) == 0):
+    if (error):
+        users_teams = False
+    elif (len(users_teams) == 0):
         users_teams = False
 
     return render(
