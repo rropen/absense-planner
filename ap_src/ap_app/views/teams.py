@@ -106,9 +106,25 @@ def leave_team(request):
     username = request.user.username
     user_token = get_user_token_from_request(request)
 
+    try:
+        team_id = request.POST["team_id"]
+    except KeyError:
+        error = "Error - a team was not provided so it could not be left."
+        debug = "Error: Team ID was not found in request so it cannot be left."
+        print_messages(request, error=error, debug=debug)
+
+        return redirect(reverse("dashboard")) # Return early because there is no Team ID to use
+    except Exception as exception:
+        error = "Error - could not obtain the team you requested due to an unknown error" \
+                "so it could not be left."
+        debug = "Error: Cannot obtain Team ID from request for leaving. Exception: " + str(exception)
+        print_messages(request, error=error, debug=debug)
+
+        return redirect(reverse("dashboard")) # Return early because there is no Team ID to use
+
     url = TEAM_APP_API_URL + "manage/"
     data = {
-        "team": request.POST.get("team_id")
+        "team": team_id
     }
     params = {
         "method": "leave"
@@ -118,10 +134,28 @@ def leave_team(request):
         "User-Token": user_token
     }
 
-    api_response = session.post(url=url, data=data, params=params, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
-    if (api_response.status_code == 200):
+    try:
+        error, debug, success, warning = None, None, None, None
+        session.post(url=url, data=data, params=params, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
+    except HTTPError as exception:
+        error = "Error in leaving team - " + derive_http_error_message(exception)
+    except ConnectionError as exception:
+        error = "Error - could not leave the team you requested due to a connection error."
+        debug = "Error: Could not connect to the API to leave a team. Exception: " + str(exception)
+    except RequestException as exception:
+        error = "Error - could not leave the team you requested due to an unknown error."
+        debug = "Error: Could not send a request to the API to leave a team. Exception: " + str(exception)
+    else:
+        success = "Left team successfully."
+
         # Remove lingering switch permissions upon success
-        check_for_lingering_switch_perms(username, remove_switch_permissions, user_token)
+        try:
+            check_for_lingering_switch_perms(username, remove_switch_permissions, user_token)
+        except Exception as exception:
+            warning = "Warning - could not remove unnecessary switch permissions."
+            debug = warning + " Exception: " + str(exception)
+    finally:
+        print_messages(request, success=success, error=error, debug=debug, warning=warning)
 
     return redirect(reverse("dashboard")) # Redirect back to the list of joined teams
 

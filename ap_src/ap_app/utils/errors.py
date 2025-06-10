@@ -62,7 +62,7 @@ def print_debug(request, message):
             message
         )
 
-def print_messages(request, success=None, error=None, debug=None):
+def print_messages(request, success=None, error=None, debug=None, warning=None):
     """
     Utility function that has two modes:
         - `success` message - this will only print out a success message
@@ -72,13 +72,14 @@ def print_messages(request, success=None, error=None, debug=None):
         is enabled, a debug message for developers too
     """
 
+    if (error):
+        messages.error(request, error)
+    if (warning):
+        messages.warning(request, warning)
     if (success):
         messages.success(request, success)
-    elif (error and debug):
-        messages.error(request, error)
+    if (debug):
         print_debug(request, debug)
-    elif (error):
-        messages.error(request, error)
 
 def derive_http_error_message(http_error:HTTPError):
     """
