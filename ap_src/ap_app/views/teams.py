@@ -230,14 +230,38 @@ def join_team(request) -> render:
     api_response = None
     user_token = get_user_token_from_request(request)
 
-    try:
-        if (request.method == "POST"):
+    if (request.method == "POST"):
+        warning, debug = None, None
+        try:
+            method = request.POST["method"]
+        except KeyError:
+            warning = "Warning - a method was not provided so no team-related action could be carried out."
+            debug = "Warning: method was not found in request so no action took place."
+            print_messages(request, warning=warning, debug=debug)
+        except Exception as exception:
+            warning = "Warning - could not obtain the team you requested due to an unknown error" \
+                    "so it could not be left."
+            debug = "Warning: Cannot obtain Team ID from request for leaving. Exception: " + str(exception)
+            print_messages(request, warning=warning, debug=debug)
+        else:
             # Pass through data to the Team App API
-            method = request.POST.get("method")
 
+            warning, debug = None, None
             if (method == "join"):
+                try:
+                    team_id = request.POST["team_id"]
+                except KeyError:
+                    error = "Error - a team was not provided so it could not be joined."
+                    debug = "Error: Team ID was not found in request so it cannot be joined."
+                    print_messages(request, error=error, debug=debug)
+                except Exception as exception:
+                    error = "Error - could not obtain the team you requested due to an unknown error" \
+                            "so it could not be joined."
+                    debug = "Error: Cannot obtain Team ID from request for joining. Exception: " + str(exception)
+                    print_messages(request, error=error, debug=debug)
+
                 data = {
-                    "team": request.POST.get("team_id")
+                    "team": team_id
                 }
                 url = TEAM_APP_API_URL + "manage/"
                 params = {"method": "join"}
@@ -246,25 +270,55 @@ def join_team(request) -> render:
                     "User-Token": user_token
                 }
 
-                api_response = session.post(
-                    url=url,
-                    data=data,
-                    params=params,
-                    headers=headers,
-                    timeout=TEAM_APP_API_TIMEOUT
-                )
+                error, debug, success = None, None, None
+                try:
+                    api_response = session.post(
+                        url=url,
+                        data=data,
+                        params=params,
+                        headers=headers,
+                        timeout=TEAM_APP_API_TIMEOUT
+                    )
+                    api_response.raise_for_status()
+                except HTTPError as exception:
+                    error = "Error in joining the team - " + derive_http_error_message(exception)
+                except ConnectionError as exception:
+                    error = "Error - could not join the team due to a connection error."
+                    debug = "Error: Could not connect to the API for a user to join a team. Exception: " + str(exception)
+                except RequestException as exception:
+                    error = "Error - could not join the team due to an unknown error."
+                    debug = "Error: Could not send a request to the API for a user to join a team. Exception: " + str(exception)
+                finally:
+                    print_messages(request, success=success, error=error, debug=debug)
+            else:
+                warning = "Warning - the method provided was not valid so no team-related action could be carried out."
+                debug = "Error: method found in request was not valid so no action took place."
+                print_messages(request, warning=warning, debug=debug)
 
-        url = TEAM_APP_API_URL + "teams/"
-        headers = {
-            "Authorization": TEAM_APP_API_KEY,
-            "User-Token": user_token
-        }
+    url = TEAM_APP_API_URL + "teams/"
+    headers = {
+        "Authorization": TEAM_APP_API_KEY,
+        "User-Token": user_token
+    }
 
+    error, debug, success = None, None, None
+    teams = None
+    try:
         api_response = session.get(url=url, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
-    except:
-        print("Api failed to load")
-    if api_response is not None and api_response.status_code == 200:
-        teams = api_response.json()
+        api_response.raise_for_status()
+    except HTTPError as exception:
+        error = "Error in fetching teams that are available to join - " + derive_http_error_message(exception)
+    except ConnectionError as exception:
+        error = "Error - could not fetch teams that are available to join due to a connection error."
+        debug = "Error: Could not connect to the API to fetch a user's teams that they are not in. Exception: " + str(exception)
+    except RequestException as exception:
+        error = "Error - could not fetch teams that are available to join due to an unknown error."
+        debug = "Error: Could not send a request to the API to fetch a user's teams that they are not in. Exception: " + str(exception)
+    else:
+        if api_response is not None:
+            teams = api_response.json()
+    finally:
+        print_messages(request, success=success, error=error, debug=debug)
 
     return render(
         request,
