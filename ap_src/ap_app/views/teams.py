@@ -288,6 +288,8 @@ def join_team(request) -> render:
                 except RequestException as exception:
                     error = "Error - could not join the team due to an unknown error."
                     debug = "Error: Could not send a request to the API for a user to join a team. Exception: " + str(exception)
+                else:
+                    success = "Successfully joined team."
                 finally:
                     print_messages(request, success=success, error=error, debug=debug)
             else:
