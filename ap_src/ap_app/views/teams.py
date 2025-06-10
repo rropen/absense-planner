@@ -180,14 +180,30 @@ def create_team(request:HttpRequest) -> render:
                 "User-Token": user_token
             }
 
-            api_response = session.post(url=url, data=data, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
+            try:
+                error, debug, success = None, None, None
+                context = None
+                api_response = session.post(url=url, data=data, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
+                api_response.raise_for_status()
+            except HTTPError as exception:
+                error = "Error in creating a team - " + derive_http_error_message(exception)
+                if exception.response.status_code == 400:
+                    context = {"form": form}
+                    if api_response.json()["name"] is not None:
+                        context["message"] = "That team name already exists"
 
-            if api_response.status_code == 200:
+            except ConnectionError as exception:
+                error = "Error - could not create the team due to a connection error."
+                debug = "Error: Could not connect to the API to create a team. Exception: " + str(exception)
+            except RequestException as exception:
+                error = "Error - could not create the team due to an unknown error."
+                debug = "Error: Could not send a request to the API to create a team. Exception: " + str(exception)
+            finally:
+                print_messages(request, success=success, error=error, debug=debug)
+
+            if not error:
                 return redirect("/teams/api-calendar/" + str(api_response.json()["id"]))
-            elif api_response.status_code == 400:
-                context = {"form": form}
-                if api_response.json()["name"] != None:
-                    context["message"] = "That team name already exists"
+            else:
                 return render(request, "teams/create_team.html", context=context)
     else:
         form = CreateTeamForm()
