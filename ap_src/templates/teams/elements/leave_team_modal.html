@@ -4,11 +4,11 @@
     <div class="modal-content">
         <div class="box">
             <h1 class="title">Confirm Leave</h1>
-            <p>Are you sure you want to leave this team?</p>
+            <p>Are you sure you want to leave <strong id="leaveTeamName"></strong>?</p>
             <div class="buttons is-right">
-                <form action="{% url "leave_team" %}" method="POST">
+                <form id="leaveTeamForm" action="{% url 'leave_team' %}" method="POST">
                     {% csrf_token %}
-                    <input type="hidden" name="team_id" value="">
+                    <input id="leaveTeamInput" type="hidden" name="team_id" value="">
                     <button id="confirmLeaveButton" class="button is-danger" type="submit">Leave</button>
                 </form>
                 <button id="cancelLeaveButton" class="button">Cancel</button>
@@ -16,4 +16,24 @@
         </div>
     </div>
     <button class="modal-close is-large" aria-label="close"></button>
+</div>
+
+{# Delete Team modal for when owner only member #}
+<div id="deleteTeamModal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="box">
+            <h1 class="title">Delete Team</h1>
+            <p>You are the only member of <strong id="deleteTeamName"></strong>. Would you like to delete it?</p>
+            <div class="buttons is-right">
+                <form id="deleteTeamForm" action="{% url 'delete_team' %}" method="POST">
+                    {% csrf_token %}
+                    <input id="deleteTeamInput" type="hidden" name="team_id" value="">
+                    <button id="confirmDeleteButton" class="button is-danger" type="submit">Delete</button>
+                </form>
+                <button id="cancelDeleteButton" class="button" type="button">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close" onclick="closeDeleteTeamModal()"></button>
 </div>

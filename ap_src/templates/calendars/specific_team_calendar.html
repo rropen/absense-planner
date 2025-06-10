@@ -40,7 +40,12 @@
                 {% endif %}
                 <button class="button is-danger is-outlined mx-1 leave-team-button"
                         id="{{ id }}"
-                        onclick="openLeaveTeamModal('{{ id }}')"
+                        onclick="openLeaveTeamModal(
+                            '{{ id }}',
+                            '{{ team_index.team.name|escapejs }}',
+                            '{{ user_data.role_info.role }}',
+                            {{ team_index.team.members|length }}
+                        )"
                 >
                     Leave
                 </button>

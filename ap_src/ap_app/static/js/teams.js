@@ -1,26 +1,35 @@
-function openLeaveTeamModal(teamId) {
-    const modal = document.getElementById('leaveTeamModal');
-    const confirmButton = $("#confirmLeaveButton");
-    const cancelButton = document.getElementById('cancelLeaveButton');
-    const modalCloseButton = document.querySelector('#leaveTeamModal .modal-close');
+function openLeaveTeamModal(teamId, teamName, userRole, memberCount) {
+    const leaveModal = document.getElementById('leaveTeamModal');
+    const deleteModal = document.getElementById('deleteTeamModal');
 
-    // Find hidden input used to send selected Team ID.
-    const teamIdInputElement = confirmButton.parent().children("[name='team_id']").eq(0)
+    document.getElementById('leaveTeamName').innerText = teamName;
+    document.getElementById('deleteTeamName').innerText = teamName;
 
-    modal.classList.add('is-active');
+    $('#leaveTeamInput').val(teamId);
+    $('#deleteTeamInput').val(teamId);
 
-    // Add the current Team ID to the form so it can be sent in the request when the confirm button is pressed.
-    teamIdInputElement.val(teamId);
+    if (userRole === 'Owner' && memberCount === 1) {
+        // Delete modal for when only member is owener
+        deleteModal.classList.add('is-active');
 
-    cancelButton.addEventListener('click', () => {
-        modal.classList.remove('is-active');
-        teamIdInputElement.val(""); // Reset Team ID input
-    });
+        document.getElementById('cancelDeleteButton').onclick = () => {
+            deleteModal.classList.remove('is-active');
+        };
+        document.querySelector('#deleteTeamModal .modal-close').onclick = () => {
+            deleteModal.classList.remove('is-active');
+        };
 
-    modalCloseButton.addEventListener('click', () => {
-        modal.classList.remove('is-active');
-        teamIdInputElement.val("");
-    });
+    } else {
+        // Leave modal if not the only member
+        leaveModal.classList.add('is-active');
+
+        document.getElementById('cancelLeaveButton').onclick = () => {
+            leaveModal.classList.remove('is-active');
+        };
+        document.querySelector('#leaveTeamModal .modal-close').onclick = () => {
+            leaveModal.classList.remove('is-active');
+        };
+    }
 }
 
 function showSuccessModal() {
