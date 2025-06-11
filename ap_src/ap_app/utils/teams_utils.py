@@ -221,3 +221,59 @@ def get_user_token_from_request(request:HttpRequest):
     user_token = hashlib.sha256(username).hexdigest() # Encrypt and get digest value
 
     return user_token
+
+def edit_user_details(user_token, first_name=None, last_name=None, email=None):
+    """
+    Edits the user's details using the Team App API:
+
+    - First Name
+    - Last Name
+    - Email Address
+    """
+
+    url = TEAM_APP_API_URL + 'user/'
+    data = {
+        "first_name": first_name,
+        "last_name": last_name,
+        "email": email
+    }
+    headers = {
+        "Authorization": TEAM_APP_API_KEY,
+        "User-Token": user_token
+    }
+
+    api_response = session.post(
+        url=url,
+        data=data,
+        headers=headers,
+        timeout=TEAM_APP_API_TIMEOUT
+    )
+    api_response.raise_for_status()
+
+    return api_response
+
+def fetch_user_details(user_token):
+    """
+    Fetches details about the user using the Team App API:
+
+    - First Name
+    - Last Name
+    - Email Address
+    """
+
+    url = TEAM_APP_API_URL + 'user/'
+    headers = {
+        "Authorization": TEAM_APP_API_KEY,
+        "User-Token": user_token
+    }
+
+    api_response = session.get(
+        url=url,
+        headers=headers,
+        timeout=TEAM_APP_API_TIMEOUT
+    )
+    api_response.raise_for_status()
+
+    user_details = api_response.json()[0]
+
+    return user_details
