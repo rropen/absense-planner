@@ -93,10 +93,8 @@
                     <div class="permission_input_select">
                         <div class="control">
                             <input class="input is-rounded darkInput" placeholder="Add a user" type="text" size="50" id="user_permission_input">
-                        </div>
-                        <div class="control">
                             {% csrf_token %}
-                            <button class="button is-rounded" onclick="addUserPermission( '{{ csrf_token }}' )">Submit</button>
+                            <button class="button is-rounded submit-button" onclick="addUserPermission('{{ csrf_token }}')">Submit</button>
                         </div>
                     </div>
                     
