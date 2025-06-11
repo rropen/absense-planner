@@ -51,7 +51,7 @@
 
         {% with team_data|length as number_of_teams %}
             {% if number_of_teams > 0 %}
-                <div id="calendar-group">
+                <div id="calendar-group" style="margin-bottom: 5rem">
                     {% for item in team_data %}
                         <div id="{{ item.team.name }}" class="mb-3">
                             {% if not single_team %}
