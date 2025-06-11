@@ -92,6 +92,7 @@
                                                 {% elif check_absence %}
                                                 <td data-editable="{{editable}}" style="background-color: #ff0000;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="S">
                                                     {% include "calendars/elements/absence_setter_tooltip.html" with got_user_id=got_user_id %}
+
                                                 </td>
                                                 {% elif check_half_day == "A"%}
                                                     {% if day in bank_hol and bank_holidays.enabled %}
@@ -125,7 +126,7 @@
                                                     {% if day in bank_hol and bank_holidays.enabled %}
                                                         <td data-editable="{{editable}}" style="background-color: {{ bank_holidays.colour }};" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
                                                     {% elif day in weekend_list and weekends.enabled %}
-                                                        <td data-editable="{{editable}}" style="background-color: {{ weekends.colour }};" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                                        <td data-editable="{{editable}}" style="background-color: {{ weekends.colour }};" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"><i class="far fa-times-circle" style="color: #ffffff;"></i></td>
                                                     {% elif day in weekend_list and not weekends.enabled %}
                                                         <th style="display:none"> </th>
                                                     {% else %}
