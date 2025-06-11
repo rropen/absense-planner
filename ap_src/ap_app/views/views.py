@@ -25,8 +25,8 @@ from django.views.generic import CreateView
 from ..utils.objects import obj_exists, find_user_obj
 from .calendarview import main_calendar
 
-from ..forms import AcceptPolicyForm, AbsenceForm, DeleteUserForm, AbsencePlannerUserCreationForm
-from ..models import Absence, UserProfile, ColourScheme, ColorData, RecurringException
+from ..forms import AcceptPolicyForm, DeleteUserForm, AbsencePlannerUserCreationForm
+from ..models import UserProfile, ColourScheme, ColorData
 
 from ..utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
 from ..utils.teams_utils import get_user_token_from_request, edit_user_details, fetch_user_details
