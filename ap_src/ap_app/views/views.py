@@ -22,6 +22,8 @@ from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
+from requests import HTTPError, ConnectionError, RequestException
+
 from ..utils.objects import obj_exists, find_user_obj
 from .calendarview import main_calendar
 
@@ -30,6 +32,7 @@ from ..models import UserProfile, ColourScheme, ColorData
 
 from ..utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
 from ..utils.teams_utils import get_user_token_from_request, edit_user_details, fetch_user_details
+from ..utils.errors import derive_http_error_message, print_messages
 
 User = get_user_model()
 
@@ -127,12 +130,26 @@ def profile_settings(request:HttpRequest) -> render:
     user_token = get_user_token_from_request(request)
 
     if request.method == "POST":
-        edit_user_details(
-            user_token=user_token,
-            first_name=request.POST.get("firstName"),
-            last_name=request.POST.get("lastName"),
-            email=request.POST.get("email")
-        )
+        error, debug, success = None, None, None
+        try:
+            edit_user_details(
+                user_token=user_token,
+                first_name=request.POST.get("firstName"),
+                last_name=request.POST.get("lastName"),
+                email=request.POST.get("email")
+            )
+        except HTTPError as exception:
+            error = "Error in editing your details - " + derive_http_error_message(exception)
+        except ConnectionError as exception:
+            error = "Error - could not edit your details due to a connection error."
+            debug = "Error: Could not connect to the API to edit a user's details. Exception: " + str(exception)
+        except RequestException as exception:
+            error = "Error - could not edit your details due to an unknown error."
+            debug = "Error: Could not send a request to the API to edit a user's details. Exception: " + str(exception)
+        else:
+            success = "Edited details successfully."
+        finally:
+            print_messages(request, success=success, error=error, debug=debug)
 
     try:
         userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
@@ -171,7 +188,21 @@ def profile_settings(request:HttpRequest) -> render:
 
     privacy_status = userprofile.privacy
 
-    user_details = fetch_user_details(user_token)
+    warning, debug, success = None, None, None
+    try:
+        user_details = fetch_user_details(user_token)
+    except HTTPError as exception:
+        warning = "Warning - could not read your details - " + derive_http_error_message(exception)
+    except ConnectionError as exception:
+        warning = "Warning - could not read your details due to a connection error."
+        debug = "Error: Could not connect to the API to read a user's details. Exception: " + str(exception)
+    except RequestException as exception:
+        warning = "Warning - could not read your details due to an unknown error."
+        debug = "Error: Could not send a request to the API to read a user's details. Exception: " + str(exception)
+    finally:
+        print_messages(request, success=success, warning=warning, debug=debug)
+        if (warning):
+            user_details = False
 
     context = {
         "user_details": user_details,
