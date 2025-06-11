@@ -122,11 +122,6 @@ footer {
     border-width: 2px;
 }
 
-.calendar-group {
-    overflow: auto;
-    height: 75vh;
-}
-
 .dates-table {
     width: 100%;
     position: sticky;
