@@ -161,6 +161,8 @@ def leave_team(request):
 
 @login_required
 def create_team(request:HttpRequest) -> render:
+    user_token = get_user_token_from_request(request)
+
     if request.method == "POST":
         form = CreateTeamForm(request.POST)
 
@@ -170,8 +172,6 @@ def create_team(request:HttpRequest) -> render:
 
             # Send a POST request to the API instead of handling the usual model logic,
             # so that the created team is stored on the Team App instead of the Absence Planner.
-
-            user_token = get_user_token_from_request(request)
             
             url = TEAM_APP_API_URL + "teams/"
             data = request.POST # This is the data sent by the user in the CreateTeamForm
@@ -342,7 +342,6 @@ def edit_team(request:HttpRequest, id):
 
         return redirect(reverse("dashboard")) # Return early because there is no Team ID to use
 
-
     user_token = get_user_token_from_request(request)
 
     try:
@@ -492,18 +491,63 @@ def delete_team(request:HttpRequest):
 
     user_token = get_user_token_from_request(request)
 
+    error, debug = None, None
+    try:
+        team_id = request.POST["team_id"]
+    except KeyError:
+        error = "Error - a team was not provided so it could not be deleted."
+        debug = "Error: Team ID was not found in request so it cannot be deleted."
+        print_messages(request, error=error, debug=debug)
+    except Exception as exception:
+        error = "Error - could not obtain the team you requested due to an unknown error" \
+                "so it could not be deleted."
+        debug = "Error: Cannot obtain Team ID from request for deleting. Exception: " + str(exception)
+        print_messages(request, error=error, debug=debug)
+    
+    if (error):
+        return redirect("dashboard") # Redirect back to the list of joined teams
+
     url = TEAM_APP_API_URL + "teams/"
-    data = {"id": request.POST.get("team_id")}
-    params = {"method": "delete"}
+    data = {
+        "id": team_id
+    }
+    params = {
+        "method": "delete"
+    }
     headers = {
         "Authorization": TEAM_APP_API_KEY,
         "User-Token": user_token
     }
 
-    api_response = session.post(url=url, data=data, params=params, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
-
-    if (api_response.status_code == 200):
+    error, debug, warning, success = None, None, None, None
+    try:
+        api_response = session.post(
+            url=url,
+            data=data,
+            params=params,
+            headers=headers,
+            timeout=TEAM_APP_API_TIMEOUT
+        )
+        api_response.raise_for_status()
+    except HTTPError as exception:
+        error = "Warning - Error in deleting the team - " + derive_http_error_message(exception)
+    except ConnectionError as exception:
+        error = "Warning - could not delete the team due to a connection error."
+        debug = "Error: Could not connect to the API to delete a team. Exception: " + str(exception)
+    except RequestException as exception:
+        error = "Warning - could not delete the team due to an unknown error."
+        debug = "Error: Could not send a request to the API to delete a team. Exception: " + str(exception)
+    else:
+        success = "Deleted team successfully."
         # Remove lingering switch permissions upon success
-        check_for_lingering_switch_perms(request.user.username, remove_switch_permissions, user_token)
-
-    return redirect(reverse("dashboard")) # Redirect back to the list of joined teams
+        try:
+            check_for_lingering_switch_perms(request.user.username, remove_switch_permissions, user_token)
+        except Exception as exception:
+            warning = "Warning - could not remove unnecessary switch permissions."
+            debug = warning + " Exception: " + str(exception)
+    finally:
+        print_messages(request, error=error, debug=debug, success=success, warning=warning)
+        if (error):
+            return redirect("edit_team", id=team_id)
+        else:
+            return redirect("dashboard") # Redirect back to the list of joined teams
