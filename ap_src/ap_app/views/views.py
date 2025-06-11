@@ -1,3 +1,13 @@
+"""
+A module for generic views that do not make up specific functionality.
+
+Usually these views are for pages that would be found across lots of websites, such as:
+
+- Privacy Policy Page
+- User Settings Page
+- Error Pages
+"""
+
 import datetime
 import json
 import holidays
@@ -230,158 +240,6 @@ def set_region(request):
             userporfile.save()
 
     return redirect("/profile/settings")
-
-#Add an absence when clicking on the calendar
-@login_required
-def click_add(request):
-    if request.method == "POST":
-        json_data=json.loads(request.body)
-        if UserProfile.objects.filter(user__username=json_data["username"]).exists():
-            perm_list = UserProfile.objects.filter(user__username=json_data["username"])[0].edit_whitelist.all()
-        else:
-            perm_list = [UserProfile.objects.get(user=request.user)]
-        if request.user in perm_list:
-            date = datetime.datetime.strptime(json_data["date"], "%Y-%m-%d").date()
-            #This will add a half
-            if json_data["half_day"]:
-                absence = Absence()
-                absence.absence_date_start = json_data['date']
-                absence.absence_date_end = json_data['date']
-                absence.Target_User_ID_id = User.objects.get(username=json_data["username"]).id
-                absence.User_ID = request.user
-                if json_data["half_day_time"] == "M":
-                    absence.half_day = "MORNING"
-                elif json_data["half_day_time"] == "A":
-                    absence.half_day = "AFTERNOON"
-                absence.save()
-                return JsonResponse({})
-            else:
-                def non_connected():
-                    absence = Absence()
-                    absence.absence_date_start = json_data['date']
-                    absence.absence_date_end = json_data['date']
-                    absence.Target_User_ID_id = User.objects.get(username=json_data["username"]).id
-                    absence.User_ID = request.user
-                    absence.save()
-                    return absence
-                date = datetime.datetime.strptime(json_data["date"], "%Y-%m-%d").date()
-                absence = None
-                if date - timedelta(days=1) in Absence.objects.filter(Target_User_ID__username=json_data["username"]).values_list("absence_date_end", flat=True) \
-                    and date + timedelta(days=1) in Absence.objects.filter(Target_User_ID__username=json_data["username"]).values_list("absence_date_start", flat=True):
-                    ab_1 = Absence.objects.filter(Target_User_ID__username=json_data["username"], absence_date_start=date+timedelta(days=1))[0]
-                    ab_2 = Absence.objects.filter(Target_User_ID__username=json_data["username"], absence_date_end=date-timedelta(days=1))[0]
-                    if ab_1.half_day == "NORMAL" and ab_2.half_day == "NORMAL":
-                        absence = Absence()
-                        absence.absence_date_start = ab_2.absence_date_start
-                        absence.absence_date_end = ab_1.absence_date_end
-                        absence.Target_User_ID_id = User.objects.get(username=json_data["username"]).id
-                        absence.User_ID = request.user
-                        ab_1.delete()
-                        ab_2.delete()
-                        absence.save()
-                    else:
-                        absence = non_connected()
-
-                elif date - timedelta(days=1) in Absence.objects.filter(Target_User_ID__username=json_data["username"]).values_list("absence_date_start", flat=True):
-                    a = Absence.objects.filter(Target_User_ID__username=json_data["username"], absence_date_start=date-timedelta(days=1))[0]
-                    if a.half_day == "NORMAL":
-                        a.absence_date_end = date
-                        a.save()
-                        absence = a
-                    else:
-                        absence = non_connected()
-                elif date + timedelta(days=1) in Absence.objects.filter(Target_User_ID__username=json_data["username"]).values_list("absence_date_end", flat=True):
-                    a = Absence.objects.filter(Target_User_ID__username=json_data["username"], absence_date_end=date+timedelta(days=1))[0]
-                    if a.half_day == "NORMAL":
-                        a.absence_date_start = date
-                        a.save()
-                        absence = a
-                    else:
-                        absence = non_connected()
-                elif date - timedelta(days=1) in Absence.objects.filter(Target_User_ID__username=json_data["username"]).values_list("absence_date_end", flat=True):
-                    a =Absence.objects.filter(Target_User_ID__username=json_data["username"], absence_date_end=date-timedelta(days=1))[0]
-                    if a.half_day == "NORMAL":
-                        a.absence_date_end = date
-                        a.save()
-                        absence = a
-                    else:
-                        absence = non_connected()
-                elif date + timedelta(days=1) in Absence.objects.filter(Target_User_ID__username=json_data["username"]).values_list("absence_date_start", flat=True):
-                    a = Absence.objects.filter(Target_User_ID__username=json_data["username"], absence_date_start=date+timedelta(days=1))[0]
-                    if a.half_day == "NORMAL":
-                        a.absence_date_start = date
-                        a.save()
-                        absence = a
-                    else:
-                        absence = non_connected()
-                else:
-                    absence = non_connected()
-
-                return JsonResponse({'start_date': absence.absence_date_start, 'end_date': absence.absence_date_end, 'taget_id': absence.Target_User_ID.username, 'user_id': absence.User_ID.username})
-        else:
-            return JsonResponse({})
-    else:
-        return HttpResponse('404')
-
-@login_required
-def click_remove(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        date = datetime.datetime.strptime(data["date"], "%Y-%m-%d").date()
-        if UserProfile.objects.filter(user__username=data["username"]).exists():
-            perm_list = UserProfile.objects.filter(user__username=data["username"])[0].edit_whitelist.all()
-        else:
-            perm_list = [UserProfile.objects.get(user=request.user)]
-
-        if request.user in perm_list:
-            #Add an exception for recurring absence
-            if data["absence_type"] == "R":
-                exception = RecurringException()
-                exception.Target_User_ID = User.objects.get(username=data["username"])
-                exception.User_ID = request.user
-                exception.Exception_Start = data["date"]
-                exception.Exception_End = data["date"]
-                exception.save()
-            else:
-                #Remove absence if start date and end date is the same
-                if date in Absence.objects.filter(Target_User_ID__username=data["username"]).values_list("absence_date_start", flat=True) \
-                    and date in Absence.objects.filter(Target_User_ID__username=data["username"]).values_list("absence_date_end", flat=True):
-                    absence = Absence.objects.filter(Target_User_ID__username=data["username"], absence_date_start=date, absence_date_end=date)[0]
-                    absence.delete()
-                #Change absence start date if current start date removed
-                elif date in Absence.objects.filter(Target_User_ID__username=data["username"]).values_list("absence_date_start", flat=True):
-                    absence = Absence.objects.filter(Target_User_ID__username=data["username"], absence_date_start=date)[0]
-                    absence.absence_date_start = date + timedelta(days=1)
-                    absence.save()
-                #Change absence end date if current end date removed
-                elif date in Absence.objects.filter(Target_User_ID__username=data["username"]).values_list("absence_date_end", flat=True):
-                    absence = Absence.objects.filter(Target_User_ID__username=data["username"], absence_date_end=date)[0]
-                    absence.absence_date_end = date - timedelta(days=1)
-                    absence.save()
-                else:
-                    for absence in Absence.objects.filter(Target_User_ID__username=data["username"]):
-                        start_date = absence.absence_date_start
-                        end_date = absence.absence_date_end
-                        if date > start_date and date < end_date:
-                            ab_1 = Absence()
-                            ab_1.absence_date_start = start_date
-                            ab_1.absence_date_end = date - timedelta(days=1)
-                            ab_1.Target_User_ID_id = User.objects.get(username=data["username"]).id
-                            ab_1.User_ID = request.user
-
-                            ab_2 = Absence()
-                            ab_2.absence_date_start = date + timedelta(days=1)
-                            ab_2.absence_date_end = end_date
-                            ab_2.Target_User_ID_id = User.objects.get(username=data["username"]).id
-                            ab_2.User_ID = request.user
-
-                            absence.delete()
-                            ab_1.save()
-                            ab_2.save()
-
-        return JsonResponse({"start_date": data["date"]})
-    else:
-        return HttpResponse("404")
 
 @login_required
 def remove_lingering_perms(request):
