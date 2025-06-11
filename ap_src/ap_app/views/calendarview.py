@@ -13,6 +13,9 @@ from ..models import (UserProfile, ColorData, ColourScheme, User, Absence)
 
 from ..utils.absence_utils import get_absence_data
 from ..utils.teams_utils import get_users_teams, get_user_token_from_request, retrieve_team_member_data, sort_global_absences_by_logged_in_user
+from ..utils.errors import print_messages, derive_http_error_message
+
+from requests import HTTPError, ConnectionError, RequestException
 
 env = environ.Env()
 environ.Env.read_env()
@@ -249,12 +252,27 @@ def main_calendar(
     user_token = get_user_token_from_request(request)
 
     # Get names of teams and members in the team.
-    teams_data = get_users_teams(sortValue, user_token)
-    sort_global_absences_by_logged_in_user(teams_data, user.username)
+    try:
+        error, debug, success = None, None, None
+        teams_data = get_users_teams(sortValue, user_token)
+    except HTTPError as exception:
+        error = "Error in fetching your joined teams - " + derive_http_error_message(exception)
+    except ConnectionError as exception:
+        error = "Error - could not fetch the teams you are in due to a connection error."
+        debug = "Error: Could not connect to the API to fetch a user's joined teams. Exception: " + str(exception)
+    except RequestException as exception:
+        error = "Error - could not fetch the teams you are in due to an unknown error."
+        debug = "Error: Could not send a request to the API to fetch a user's joined teams. Exception: " + str(exception)
+    else:
+        sort_global_absences_by_logged_in_user(teams_data, user.username)
+        users = retrieve_all_users(request, teams_data)
+    finally:
+        if (error):
+            teams_data = None
+            users = []
 
-    users = retrieve_all_users(request, teams_data)
-
-    calendar_data = retrieve_common_calendar_data(user, year, month, users, page = "main_calendar")
+        calendar_data = retrieve_common_calendar_data(user, year, month, users, page = "main_calendar")
+        print_messages(request, success=success, error=error, debug=debug)
 
     context = {
         **calendar_data,
