@@ -29,7 +29,7 @@ from ..forms import AcceptPolicyForm, AbsenceForm, DeleteUserForm, AbsencePlanne
 from ..models import Absence, UserProfile, ColourScheme, ColorData, RecurringException
 
 from ..utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
-from ..utils.teams_utils import get_user_token_from_request
+from ..utils.teams_utils import get_user_token_from_request, edit_user_details, fetch_user_details
 
 User = get_user_model()
 
@@ -106,18 +106,33 @@ def deleteuser(request):
 
 @login_required
 def profile_settings(request:HttpRequest) -> render:
-    """returns the settings page"""
+    """
+    View that returns the settings page and handles changes to the user's settings.
 
-    if len(request.POST) > 0:
-        if request.POST.get("firstName") != "" and request.POST.get("firstName") != request.user.first_name:
-            request.user.first_name = request.POST.get("firstName")
-            request.user.save()
-        if request.POST.get("lastName") != "" and request.POST.get("lastName") != request.user.last_name:
-            request.user.last_name = request.POST.get("lastName")
-            request.user.save()
-        if request.POST.get("email") != request.user.email:
-            request.user.email = request.POST.get("email")
-            request.user.save()
+    This uses the Team App API 
+    """
+
+    # TODO: Reimplement this validation in a Django form class instead of a view
+    # if len(request.POST) > 0:
+    #     if request.POST.get("firstName") != "" and request.POST.get("firstName") != request.user.first_name:
+    #         request.user.first_name = request.POST.get("firstName")
+    #         request.user.save()
+    #     if request.POST.get("lastName") != "" and request.POST.get("lastName") != request.user.last_name:
+    #         request.user.last_name = request.POST.get("lastName")
+    #         request.user.save()
+    #     if request.POST.get("email") != request.user.email:
+    #         request.user.email = request.POST.get("email")
+    #         request.user.save()
+
+    user_token = get_user_token_from_request(request)
+
+    if request.method == "POST":
+        edit_user_details(
+            user_token=user_token,
+            first_name=request.POST.get("firstName"),
+            last_name=request.POST.get("lastName"),
+            email=request.POST.get("email")
+        )
 
     try:
         userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
@@ -155,8 +170,17 @@ def profile_settings(request:HttpRequest) -> render:
         colour_data.append(colour)
 
     privacy_status = userprofile.privacy
-    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status,
-               "current_country": country_name, **country_data, "colours": colour_data}
+
+    user_details = fetch_user_details(user_token)
+
+    context = {
+        "user_details": user_details,
+        "userprofile": userprofile,
+        "data_privacy_mode": privacy_status,
+        "current_country": country_name,
+        **country_data,
+        "colours": colour_data
+    }
 
     return render(request, "ap_app/settings.html", context)
 
