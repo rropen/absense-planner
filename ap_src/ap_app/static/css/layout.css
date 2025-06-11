@@ -262,3 +262,7 @@ footer {
 .is-fullheight {
     height: 100%;
 }
+
+.submit-button{
+    margin-top: 5px;
+}
