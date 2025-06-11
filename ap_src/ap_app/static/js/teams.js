@@ -55,24 +55,6 @@ window.addEventListener('load', () => {
     }
 });
 
-function starHover(element) {
-    if (element.dataset.star == 'False'){
-        let starElement = $(element).children(".fa-star");
-        starElement.removeClass("far")
-        starElement.addClass("fas")
-        element.dataset.star = 'True'
-    }
-}
-
-function removeHover(element) {
-    if (element.dataset.star == 'True'){
-        let starElement = $(element).children(".fa-star");
-        starElement.removeClass("fas")
-        starElement.addClass("far")
-        element.dataset.star = 'False'
-    }
-}
-
 function openDeleteTeamModal(button) {
     const modal = document.getElementById('deleteTeamModal');
     const cancelButton = document.getElementById('cancelDeleteButton');
