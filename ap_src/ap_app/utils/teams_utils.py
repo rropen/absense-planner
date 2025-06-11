@@ -121,6 +121,7 @@ def check_user_exists(username):
     )
     # Caller should handle the API error
     
+    api_response.raise_for_status()
     user_exists = api_response.json() # API returns True or False
 
     return user_exists
@@ -174,6 +175,7 @@ def retrieve_team_member_data(id, user_token):
     )
     # Caller should handle API error
 
+    api_response.raise_for_status()
     api_response = api_response.json()
 
     return api_response

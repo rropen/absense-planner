@@ -14,7 +14,7 @@ from django.urls import reverse
 from django.core.exceptions import PermissionDenied
 
 from ..forms import CreateTeamForm
-from ..models import Role, UserProfile
+from ..models import Role
 from ..utils.teams_utils import retrieve_team_member_data, favourite_team, get_user_token_from_request, get_users_teams
 from ..utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
 from ..utils.errors import print_messages, derive_http_error_message
@@ -208,11 +208,6 @@ def create_team(request:HttpRequest) -> render:
     else:
         form = CreateTeamForm()
 
-    try:
-        userprofile: UserProfile = UserProfile.objects.get(user=request.user)
-    except IndexError:
-        return redirect("/")
-
     return render(
         request,
         "teams/create_team.html",
@@ -338,64 +333,151 @@ def edit_team(request:HttpRequest, id):
     Also handles editing of a team's name and description.
     """
 
-    if not id:
-        return JsonResponse({"Error": "Team name not found"})
+    form = CreateTeamForm()
 
-    userprofile: UserProfile = UserProfile.objects.get(user=request.user)
+    if not id:
+        error = "Error - a team was not provided so it could not be edited."
+        debug = "Error: Team ID was not found in request so it cannot be edited."
+        print_messages(request, error=error, debug=debug)
+
+        return redirect(reverse("dashboard")) # Return early because there is no Team ID to use
+
 
     user_token = get_user_token_from_request(request)
 
-    api_data = retrieve_team_member_data(id, user_token)
-    if api_data is None or not api_data[0].get("members"):
-        return JsonResponse({"Error": "Invalid team data returned from API"})
+    try:
+        error, debug = None, None
+        users_teams = get_users_teams(None, user_token)
+    except HTTPError as exception:
+        error = "Error in fetching your joined teams - " + derive_http_error_message(exception)
+    except ConnectionError as exception:
+        error = "Error - could not fetch the teams you are in due to a connection error, so we could not validate if the selected team exists for editing."
+        debug = "Error: Could not connect to the API to fetch a user's joined teams so could not validate a team for editing. Exception: " + str(exception)
+    except RequestException as exception:
+        error = "Error - could not fetch the teams you are in due to an unknown error, so we could not validate if the selected team exists for editing."
+        debug = "Error: Could not send a request to the API to fetch a user's joined teams so could not validate a team for editing.  Exception: " + str(exception)
+    finally:
+        if (error):
+            print_messages(request, error=error, debug=debug)
 
-    team = api_data[0]
-    initial_data = {
-        "name": team["name"],
-        "description": team["description"] 
-    }
+            return redirect(reverse("dashboard")) # Return early because there is no Team ID to use
+    
+    team_ids = set()
+    team_counter = 0
+    for team in users_teams:
+        current_team_id = users_teams[team_counter]["team"]["id"]
+        team_ids.add(current_team_id)
+        team_counter += 1
+    if id not in team_ids:
+        error = "Error - that team does not exist amongst your joined teams so you cannot edit it."
+        debug = "Error: Team ID not among the Team IDs listed in user's joined teams. User's joined teams: " + str(users_teams)
 
-    form = CreateTeamForm(initial=initial_data) # Reuse the form used for creating a team
+        if (error):
+            print_messages(request, error=error, debug=debug)
 
-    current_user = request.user.username
+            return redirect(reverse("dashboard")) # Return early because there is no Team ID to use
 
-    is_owner = any(
-        member["user"]["username"] == current_user and
-        member["user"].get("role_info", {}).get("role", "").lower() == "owner"
-        for member in api_data[0]["members"]
-    )
+    try:
+        warning, debug = None, None
+        api_data = retrieve_team_member_data(id, user_token)
+    except HTTPError as exception:
+        warning = "Warning - Error in fetching information about that team - " + derive_http_error_message(exception)
+    except ConnectionError as exception:
+        warning = "Warning - could not fetch information about that team due to a connection error."
+        debug = "Error: Could not connect to the API to fetch the data about a specific team so could not display them during team editing. Exception: " + str(exception)
+    except RequestException as exception:
+        warning = "Warning - could not fetch information about that team due to an unknown error."
+        debug = "Error: Could not send a request to the API to fetch the data about a specific team so could not display them during team editing. Exception: " + str(exception)
+    finally:
+        print_messages(request, warning=warning, debug=debug)
 
-    if not is_owner:
-        raise PermissionDenied
+    if (not warning):
+        team = api_data[0]
+        initial_data = {
+            "name": team["name"],
+            "description": team["description"] 
+        }
+        form = CreateTeamForm(initial=initial_data) # Reuse the form used for creating a team
+
+        current_user = request.user.username
+
+        is_owner = any(
+            member["user"]["username"] == current_user and
+            member["user"].get("role_info", {}).get("role", "").lower() == "owner"
+            for member in api_data[0]["members"]
+        )
+
+        if not is_owner:
+            raise PermissionDenied
+    else:
+        initial_data = {
+            "name": None,
+            "description": None
+        }
 
     if request.method == "POST":
         form = CreateTeamForm(request.POST)
         if form.is_valid():
             url = TEAM_APP_API_URL + "teams/"
             params = {"method": "edit"}
-            data = request.POST
+            data = {
+                **request.POST,
+                "id": id
+            }
             headers = {
                 "Authorization": TEAM_APP_API_KEY,
                 "User-Token": user_token
             }
 
-            api_response = session.post(url=url, params=params, data=data, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
-
-            if api_response.status_code != 200:
-                print("Error in Team API")
+            error, debug, success = None, None, None
+            try:
+                api_response = session.post(
+                    url=url,
+                    params=params,
+                    data=data,
+                    headers=headers,
+                    timeout=TEAM_APP_API_TIMEOUT
+                )
+                api_response.raise_for_status()
+            except HTTPError as exception:
+                error = "Warning - Error in editing the team - " + derive_http_error_message(exception)
+            except ConnectionError as exception:
+                error = "Warning - could not edit the team due to a connection error."
+                debug = "Error: Could not connect to the API to edit a team. Exception: " + str(exception)
+            except RequestException as exception:
+                error = "Warning - could not edit the team due to an unknown error."
+                debug = "Error: Could not send a request to the API to edit a team. Exception: " + str(exception)
+            else:
+                success = "Edited team successfully."
+            finally:
+                print_messages(request, error=error, debug=debug, success=success)
 
             # Get the updated API data again after authorising the user and editing the team
-            api_data = retrieve_team_member_data(id, user_token)
-            if api_data is None or not api_data[0].get("members"):
-                return JsonResponse({"Error": "Invalid team data returned from API"})
-            
+            try:
+                warning, debug = None, None
+                api_data = retrieve_team_member_data(id, user_token)
+            except HTTPError as exception:
+                warning = "Warning - Error in fetching members of that team - " + derive_http_error_message(exception)
+            except ConnectionError as exception:
+                warning = "Warning - could not fetch the members of that team due to a connection error."
+                debug = "Error: Could not connect to the API to fetch the members of a specific team so could not display them during team editing. Exception: " + str(exception)
+            except RequestException as exception:
+                warning = "Warning - could not fetch the members of that team due to an unknown error."
+                debug = "Error: Could not send a request to the API to fetch the members of a specific team so could not display them during team editing. Exception: " + str(exception)
+            finally:
+                print_messages(request, warning=warning, debug=debug)
 
     roles = Role.objects.all()
+    if (not warning):
+        team = api_data[0]
+    else:
+        team = None
+
     return render(
         request,
         "teams/edit_team.html",
         {
-            "team": api_data[0],
+            "team": team,
             "roles": roles,
             "form": form
         }

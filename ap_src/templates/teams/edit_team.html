@@ -15,10 +15,9 @@
                         <i class="fas fa-cog"></i>
                         Team Management
                     </span>
-                    <form class="py-1" method="POST" action="/teams/edit/{{ team.id }}">
+                    <form class="py-1" method="POST" action="">
                         {% csrf_token %}
                         {{ form | bulma }}
-                        <input type="hidden" value="{{ team.id }}" name="id" />
                         <input class="button is-link is-fullwidth" type="submit" value="Submit" />
                     </form><br />
                     <span class="is-block is-size-6 has-text-weight-bold">Danger Zone:</span>
