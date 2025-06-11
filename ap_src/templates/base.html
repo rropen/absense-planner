@@ -169,8 +169,18 @@
 </nav>
 <container>
   <div id="content" , name="content" , class="main">
-      {% block content %}
-      {% endblock %}
+    {% if messages %}
+      <ul class="messages">
+          {% for message in messages %}
+          <li class="notification mb-3 {% if message.tags %} {{ message.tags }} {% endif %}">
+            <button class="delete" type="button" title="Hide this error"></button>
+            <strong>{{ message }}</strong>
+          </li>
+          {% endfor %}
+      </ul>
+    {% endif %}
+    {% block content %}
+    {% endblock %}
   </div>
 </container>
 
@@ -190,6 +200,7 @@
   </footer>
 
   <script src="{% static 'js/darkMode.js' %}"></script>
+  <script src="{% static 'js/delete_element.js' %}"></script>
 </body>
 
 <script>
