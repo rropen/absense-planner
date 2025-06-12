@@ -133,36 +133,22 @@
       <nav class="navbar" role="navigation" aria-label="main navigation">
   <div class="navbar-menu">
     <div class="navbar-start">
-      <div class="navbar-item has-dropdown is-hoverable rr-dev-secondary {% if subdirectory_name == 'teams' %}is-active{% endif %}">
-        {% if subdirectory_name == "teams" %}
-          <a id="teams" class="navbar-link icon-text active nav_active" href="/teams">
+      <div class="navbar-item has-dropdown is-hoverable rr-dev-secondary">
+        {% if 'teams' in subdirectory_name %}
+          <a id="teams" class="navbar-link icon-text is-arrowless active nav_active" href="/teams">
         {% else %}
-          <a id="teams" class="navbar-link icon-text" href="/teams">
-          <style>
-          .navbar-link {
-            color: white !important;
-          }
-
-          .navbar-link::after {
-            border-color: white !important; /* Changes dropdown arrow color /
-          }
-
-          .navbar-dropdown .navbar-item {
-            color: black; / Optional: make dropdown items dark for contrast */
-          }
-
-          .navbar-dropdown .navbar-item:hover {
-            background-color: #f5f5f5;
-          }
-        </style>
+          <a id="teams" class="navbar-link is-arrowless icon-text" href="/teams">
         {% endif %}
             <span class="icon is-size-5">
               <i class="fas fa-users"></i>
             </span>
             <span>Teams</span>
+            <span class="icon is-small">
+              <i class="fas fa-angle-down" aria-hidden="true"></i>
+            </span>
           </a>
 
-        <div class="navbar-dropdown ">
+        <div class="navbar-dropdown">
           <a class="navbar-item" href="/teams/create">Create A Team</a>
           <hr class="navbar-divider" />
           <a class="navbar-item" href="/teams/join">Join A Team</a>
@@ -171,6 +157,8 @@
     </div>
   </div>
 </nav>
+
+
 
 
 {% else %}
