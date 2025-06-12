@@ -14,7 +14,7 @@
         <table class="table is-bordered is-striped dates-table" style="box-shadow: 5px 5px 5px" id="{{ item.team.name }}">
             <thead>
                 <tr class="is-flex">
-                    <th class="header-label-cell CalendarCell has-text-centered p-0 is-vcentered has-text-white days-cell">Days</th>
+                    <td data-editable="{{editable}}" style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255);background-color: {{ weekends.offset}} !important;" class="header-label-cell CalendarCell has-text-centered p-0 is-vcentered has-text-white days-cell">Days</th>
                     {% for day in days_name %}
                         {% if day == Sa and weekends.enabled or day == Su and weekends.enabled %}
                             <th style="background-color: {{ weekends.offset}}; color: white;" class="CalendarCell has-text-centered p-0 is-vcentered">{{day}}</th>
@@ -31,10 +31,12 @@
 
             <thead>
                 <tr class="is-flex">
-                    <th class="header-label-cell CalendarCell has-text-centered p-0 is-vcentered has-text-white dates-cell">Dates</th>
+                    <th data-editable="{{editable}}"style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255);background-color: {{ weekends.colour }} !important;"class="header-label-cell CalendarCell has-text-centered p-0 is-vcentered has-text-white dates-cell">Dates</th>
                     {% for day in day_range %}
                         {% if day == today and month == current_month and year == current_year %}
-                            <th style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255);" class="CalendarCell has-text-centered p-0 is-vcentered">{{day}}</th>
+                            <td id="currentDateLabel" data-editable="{{editable}}" style="color: rgb(255, 255, 255); display: flex !important" class="CalendarCell has-text-centered p-0 is-vcentered is-info tooltip">{{day}}
+                                {% include 'calendars/elements/current_day_tooltip.html' %}
+                            </th>
                         {% elif day in bank_hol and bank_holidays.enabled %}
                             <td style = "background-color: {{ bank_holidays.colour }}; color: rgb(255, 255, 255);" class="CalendarCell has-text-centered p-0 is-vcentered">{{day}}</td>
                         {% elif day in weekend_list and weekends.enabled %}
@@ -86,24 +88,32 @@
                                                 {% check_absences recurring_absence_dates|get_key:member.user.username year month_num day as check_recurring_absence %}
                                                 {% check_half_day half_days_data|get_key:member.user.username year month_num day as check_half_day %}
                                                 {% if check_recurring_absence %}
-                                                <td data-editable="{{editable}}" style="background-color: #ffaa00;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="R"></td>
+                                                <td data-editable="{{editable}}" style="background-color: #ffaa00;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="R">
+                                                </td>
                                                 {% elif check_absence %}
-                                                <td data-editable="{{editable}}" style="background-color: #ff0000;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="S"></td>
+                                                <td data-editable="{{editable}}" style="background-color: #ff0000;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="S">
+                                                </td>
                                                 {% elif check_half_day == "A"%}
                                                     {% if day in bank_hol and bank_holidays.enabled %}
-                                                    <td data-editable="{{editable}}" style="background: linear-gradient(to right, transparent 50%, #ff0000 50% ); background-color: {{ bank_holidays.colour }} !important;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                                    <td data-editable="{{editable}}" style="background: linear-gradient(to right, transparent 50%, #ff0000 50% ); background-color: {{ bank_holidays.colour }} !important;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE">
+                                                    </td>
                                                     {% elif day in weekend_list and weekends.enabled %}
-                                                    <td data-editable="{{editable}}" style="background: linear-gradient(to right, transparent 50%, #ff0000 50% ); background-color: {{ weekends.colour }} !important;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                                    <td data-editable="{{editable}}" style="background: linear-gradient(to right, transparent 50%, #ff0000 50% ); background-color: {{ weekends.colour }} !important;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE">
+                                                    </td>
                                                     {% else %}
-                                                    <td data-editable="{{editable}}" style="background: linear-gradient(to right, transparent 50%, #ff0000 50% );" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="A"></td>
+                                                    <td data-editable="{{editable}}" style="background: linear-gradient(to right, transparent 50%, #ff0000 50% );" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="A">
+                                                    </td>
                                                     {% endif %}
                                                 {% elif check_half_day == "M" %}
                                                     {% if day in bank_hol and bank_holidays.enabled %}
-                                                    <td data-editable="{{editable}}" style="background: linear-gradient(to left, transparent 50%, #ff0000 50% ); background-color: {{ bank_holidays.colour }} !important;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                                    <td data-editable="{{editable}}" style="background: linear-gradient(to left, transparent 50%, #ff0000 50% ); background-color: {{ bank_holidays.colour }} !important;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE">
+                                                    </td>
                                                     {% elif day in weekend_list and weekends.enabled %}
-                                                    <td data-editable="{{editable}}" style="background: linear-gradient(to left, transparent 50%, #ff0000 50% ); background-color: {{ weekends.colour }} !important;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE"></td>
+                                                    <td data-editable="{{editable}}" style="background: linear-gradient(to left, transparent 50%, #ff0000 50% ); background-color: {{ weekends.colour }} !important;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE">
+                                                    </td>
                                                     {% else %}
-                                                    <td data-editable="{{editable}}" style="background: linear-gradient(to left, transparent 50%, #ff0000 50% );" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="A"></td>
+                                                    <td data-editable="{{editable}}" style="background: linear-gradient(to left, transparent 50%, #ff0000 50% );" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="A">
+                                                    </td>
                                                     {% endif %}
                                                 {% else %}
                                                     {% if day in bank_hol and bank_holidays.enabled %}
