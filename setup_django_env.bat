@@ -25,6 +25,10 @@ IF PYTHON_EXECUTABLE=notfound (
     EXIT
 )
 
+@REM Create the .env file
+
+COPY "example_env.txt" ".env"
+
 :start_django_project
 
 @REM Check if we have a venv
