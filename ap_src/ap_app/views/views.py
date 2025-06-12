@@ -1,3 +1,13 @@
+"""
+A module for generic views that do not make up specific functionality.
+
+Usually these views are for pages that would be found across lots of websites, such as:
+
+- Privacy Policy Page
+- User Settings Page
+- Error Pages
+"""
+
 import datetime
 import json
 import holidays
@@ -12,14 +22,17 @@ from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
+from requests import HTTPError, ConnectionError, RequestException
+
 from ..utils.objects import obj_exists, find_user_obj
 from .calendarview import main_calendar
 
-from ..forms import AcceptPolicyForm, AbsenceForm, DeleteUserForm, AbsencePlannerUserCreationForm
-from ..models import Absence, UserProfile, ColourScheme, ColorData, RecurringException
+from ..forms import AcceptPolicyForm, DeleteUserForm, AbsencePlannerUserCreationForm
+from ..models import UserProfile, ColourScheme, ColorData
 
 from ..utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
-from ..utils.teams_utils import get_user_token_from_request
+from ..utils.teams_utils import get_user_token_from_request, edit_user_details, fetch_user_details
+from ..utils.errors import derive_http_error_message, print_messages
 
 User = get_user_model()
 
@@ -96,18 +109,47 @@ def deleteuser(request):
 
 @login_required
 def profile_settings(request:HttpRequest) -> render:
-    """returns the settings page"""
+    """
+    View that returns the settings page and handles changes to the user's settings.
 
-    if len(request.POST) > 0:
-        if request.POST.get("firstName") != "" and request.POST.get("firstName") != request.user.first_name:
-            request.user.first_name = request.POST.get("firstName")
-            request.user.save()
-        if request.POST.get("lastName") != "" and request.POST.get("lastName") != request.user.last_name:
-            request.user.last_name = request.POST.get("lastName")
-            request.user.save()
-        if request.POST.get("email") != request.user.email:
-            request.user.email = request.POST.get("email")
-            request.user.save()
+    This uses the Team App API 
+    """
+
+    # TODO: Reimplement this validation in a Django form class instead of a view
+    # if len(request.POST) > 0:
+    #     if request.POST.get("firstName") != "" and request.POST.get("firstName") != request.user.first_name:
+    #         request.user.first_name = request.POST.get("firstName")
+    #         request.user.save()
+    #     if request.POST.get("lastName") != "" and request.POST.get("lastName") != request.user.last_name:
+    #         request.user.last_name = request.POST.get("lastName")
+    #         request.user.save()
+    #     if request.POST.get("email") != request.user.email:
+    #         request.user.email = request.POST.get("email")
+    #         request.user.save()
+
+    user_token = get_user_token_from_request(request)
+
+    if request.method == "POST":
+        error, debug, success = None, None, None
+        try:
+            edit_user_details(
+                user_token=user_token,
+                first_name=request.POST.get("firstName"),
+                last_name=request.POST.get("lastName"),
+                email=request.POST.get("email")
+            )
+        except HTTPError as exception:
+            error = "Error in editing your details - " + derive_http_error_message(exception)
+        except ConnectionError as exception:
+            error = "Error - could not edit your details due to a connection error."
+            debug = "Error: Could not connect to the API to edit a user's details. Exception: " + str(exception)
+        except RequestException as exception:
+            error = "Error - could not edit your details due to an unknown error."
+            debug = "Error: Could not send a request to the API to edit a user's details. Exception: " + str(exception)
+        else:
+            success = "Edited details successfully."
+        finally:
+            print_messages(request, success=success, error=error, debug=debug)
 
     try:
         userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
@@ -145,8 +187,31 @@ def profile_settings(request:HttpRequest) -> render:
         colour_data.append(colour)
 
     privacy_status = userprofile.privacy
-    context = {"userprofile": userprofile, "data_privacy_mode": privacy_status,
-               "current_country": country_name, **country_data, "colours": colour_data}
+
+    warning, debug, success = None, None, None
+    try:
+        user_details = fetch_user_details(user_token)
+    except HTTPError as exception:
+        warning = "Warning - could not read your details - " + derive_http_error_message(exception)
+    except ConnectionError as exception:
+        warning = "Warning - could not read your details due to a connection error."
+        debug = "Error: Could not connect to the API to read a user's details. Exception: " + str(exception)
+    except RequestException as exception:
+        warning = "Warning - could not read your details due to an unknown error."
+        debug = "Error: Could not send a request to the API to read a user's details. Exception: " + str(exception)
+    finally:
+        print_messages(request, success=success, warning=warning, debug=debug)
+        if (warning):
+            user_details = False
+
+    context = {
+        "user_details": user_details,
+        "userprofile": userprofile,
+        "data_privacy_mode": privacy_status,
+        "current_country": country_name,
+        **country_data,
+        "colours": colour_data
+    }
 
     return render(request, "ap_app/settings.html", context)
 
@@ -230,158 +295,6 @@ def set_region(request):
             userporfile.save()
 
     return redirect("/profile/settings")
-
-#Add an absence when clicking on the calendar
-@login_required
-def click_add(request):
-    if request.method == "POST":
-        json_data=json.loads(request.body)
-        if UserProfile.objects.filter(user__username=json_data["username"]).exists():
-            perm_list = UserProfile.objects.filter(user__username=json_data["username"])[0].edit_whitelist.all()
-        else:
-            perm_list = [UserProfile.objects.get(user=request.user)]
-        if request.user in perm_list:
-            date = datetime.datetime.strptime(json_data["date"], "%Y-%m-%d").date()
-            #This will add a half
-            if json_data["half_day"]:
-                absence = Absence()
-                absence.absence_date_start = json_data['date']
-                absence.absence_date_end = json_data['date']
-                absence.Target_User_ID_id = User.objects.get(username=json_data["username"]).id
-                absence.User_ID = request.user
-                if json_data["half_day_time"] == "M":
-                    absence.half_day = "MORNING"
-                elif json_data["half_day_time"] == "A":
-                    absence.half_day = "AFTERNOON"
-                absence.save()
-                return JsonResponse({})
-            else:
-                def non_connected():
-                    absence = Absence()
-                    absence.absence_date_start = json_data['date']
-                    absence.absence_date_end = json_data['date']
-                    absence.Target_User_ID_id = User.objects.get(username=json_data["username"]).id
-                    absence.User_ID = request.user
-                    absence.save()
-                    return absence
-                date = datetime.datetime.strptime(json_data["date"], "%Y-%m-%d").date()
-                absence = None
-                if date - timedelta(days=1) in Absence.objects.filter(Target_User_ID__username=json_data["username"]).values_list("absence_date_end", flat=True) \
-                    and date + timedelta(days=1) in Absence.objects.filter(Target_User_ID__username=json_data["username"]).values_list("absence_date_start", flat=True):
-                    ab_1 = Absence.objects.filter(Target_User_ID__username=json_data["username"], absence_date_start=date+timedelta(days=1))[0]
-                    ab_2 = Absence.objects.filter(Target_User_ID__username=json_data["username"], absence_date_end=date-timedelta(days=1))[0]
-                    if ab_1.half_day == "NORMAL" and ab_2.half_day == "NORMAL":
-                        absence = Absence()
-                        absence.absence_date_start = ab_2.absence_date_start
-                        absence.absence_date_end = ab_1.absence_date_end
-                        absence.Target_User_ID_id = User.objects.get(username=json_data["username"]).id
-                        absence.User_ID = request.user
-                        ab_1.delete()
-                        ab_2.delete()
-                        absence.save()
-                    else:
-                        absence = non_connected()
-
-                elif date - timedelta(days=1) in Absence.objects.filter(Target_User_ID__username=json_data["username"]).values_list("absence_date_start", flat=True):
-                    a = Absence.objects.filter(Target_User_ID__username=json_data["username"], absence_date_start=date-timedelta(days=1))[0]
-                    if a.half_day == "NORMAL":
-                        a.absence_date_end = date
-                        a.save()
-                        absence = a
-                    else:
-                        absence = non_connected()
-                elif date + timedelta(days=1) in Absence.objects.filter(Target_User_ID__username=json_data["username"]).values_list("absence_date_end", flat=True):
-                    a = Absence.objects.filter(Target_User_ID__username=json_data["username"], absence_date_end=date+timedelta(days=1))[0]
-                    if a.half_day == "NORMAL":
-                        a.absence_date_start = date
-                        a.save()
-                        absence = a
-                    else:
-                        absence = non_connected()
-                elif date - timedelta(days=1) in Absence.objects.filter(Target_User_ID__username=json_data["username"]).values_list("absence_date_end", flat=True):
-                    a =Absence.objects.filter(Target_User_ID__username=json_data["username"], absence_date_end=date-timedelta(days=1))[0]
-                    if a.half_day == "NORMAL":
-                        a.absence_date_end = date
-                        a.save()
-                        absence = a
-                    else:
-                        absence = non_connected()
-                elif date + timedelta(days=1) in Absence.objects.filter(Target_User_ID__username=json_data["username"]).values_list("absence_date_start", flat=True):
-                    a = Absence.objects.filter(Target_User_ID__username=json_data["username"], absence_date_start=date+timedelta(days=1))[0]
-                    if a.half_day == "NORMAL":
-                        a.absence_date_start = date
-                        a.save()
-                        absence = a
-                    else:
-                        absence = non_connected()
-                else:
-                    absence = non_connected()
-
-                return JsonResponse({'start_date': absence.absence_date_start, 'end_date': absence.absence_date_end, 'taget_id': absence.Target_User_ID.username, 'user_id': absence.User_ID.username})
-        else:
-            return JsonResponse({})
-    else:
-        return HttpResponse('404')
-
-@login_required
-def click_remove(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        date = datetime.datetime.strptime(data["date"], "%Y-%m-%d").date()
-        if UserProfile.objects.filter(user__username=data["username"]).exists():
-            perm_list = UserProfile.objects.filter(user__username=data["username"])[0].edit_whitelist.all()
-        else:
-            perm_list = [UserProfile.objects.get(user=request.user)]
-
-        if request.user in perm_list:
-            #Add an exception for recurring absence
-            if data["absence_type"] == "R":
-                exception = RecurringException()
-                exception.Target_User_ID = User.objects.get(username=data["username"])
-                exception.User_ID = request.user
-                exception.Exception_Start = data["date"]
-                exception.Exception_End = data["date"]
-                exception.save()
-            else:
-                #Remove absence if start date and end date is the same
-                if date in Absence.objects.filter(Target_User_ID__username=data["username"]).values_list("absence_date_start", flat=True) \
-                    and date in Absence.objects.filter(Target_User_ID__username=data["username"]).values_list("absence_date_end", flat=True):
-                    absence = Absence.objects.filter(Target_User_ID__username=data["username"], absence_date_start=date, absence_date_end=date)[0]
-                    absence.delete()
-                #Change absence start date if current start date removed
-                elif date in Absence.objects.filter(Target_User_ID__username=data["username"]).values_list("absence_date_start", flat=True):
-                    absence = Absence.objects.filter(Target_User_ID__username=data["username"], absence_date_start=date)[0]
-                    absence.absence_date_start = date + timedelta(days=1)
-                    absence.save()
-                #Change absence end date if current end date removed
-                elif date in Absence.objects.filter(Target_User_ID__username=data["username"]).values_list("absence_date_end", flat=True):
-                    absence = Absence.objects.filter(Target_User_ID__username=data["username"], absence_date_end=date)[0]
-                    absence.absence_date_end = date - timedelta(days=1)
-                    absence.save()
-                else:
-                    for absence in Absence.objects.filter(Target_User_ID__username=data["username"]):
-                        start_date = absence.absence_date_start
-                        end_date = absence.absence_date_end
-                        if date > start_date and date < end_date:
-                            ab_1 = Absence()
-                            ab_1.absence_date_start = start_date
-                            ab_1.absence_date_end = date - timedelta(days=1)
-                            ab_1.Target_User_ID_id = User.objects.get(username=data["username"]).id
-                            ab_1.User_ID = request.user
-
-                            ab_2 = Absence()
-                            ab_2.absence_date_start = date + timedelta(days=1)
-                            ab_2.absence_date_end = end_date
-                            ab_2.Target_User_ID_id = User.objects.get(username=data["username"]).id
-                            ab_2.User_ID = request.user
-
-                            absence.delete()
-                            ab_1.save()
-                            ab_2.save()
-
-        return JsonResponse({"start_date": data["date"]})
-    else:
-        return HttpResponse("404")
 
 @login_required
 def remove_lingering_perms(request):
