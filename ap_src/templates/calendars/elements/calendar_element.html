@@ -31,7 +31,7 @@
 
             <thead>
                 <tr class="is-flex">
-                    <th data-editable="{{editable}}"style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255) !important;"class="header-label-cell CalendarCell has-text-centered p-0 is-vcentered has-text-white dates-cell">Dates</th>
+                    <th data-editable="{{editable}}"style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255);background-color: {{ weekends.colour }} !important;"class="header-label-cell CalendarCell has-text-centered p-0 is-vcentered has-text-white dates-cell">Dates</th>
                     {% for day in day_range %}
                         {% if day == today and month == current_month and year == current_year %}
                             <td id="currentDateLabel" data-editable="{{editable}}" style="color: rgb(255, 255, 255); display: flex !important" class="CalendarCell has-text-centered p-0 is-vcentered is-info tooltip">{{day}}
