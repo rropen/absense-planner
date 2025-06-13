@@ -60,9 +60,14 @@
     <div id="navbarExampleTransparentExample" class="navbar-menu rr-secondary" >
     <div class="navbar-start navbar-items" style="margin-left: 48px">
 
-  {% else %}
-  <section class="hero rr-dev-primary">
-      <div class="hero-body ">
+{% else %}
+<section class="hero rr-dev-primary">
+  <div class="hero-body">
+    <div style="display: flex; align-items: center; justify-content: flex-start; gap: 1rem; width: 100%;">
+      <div>
+        <img src="https://raw.githubusercontent.com/rropen/.github/main/img/logo.png" style="height: 6rem; padding: 1rem;">
+      </div>
+      <div>
         <p class="title rr-dev-primary">          
           Absence Planner
         </p>
@@ -70,7 +75,9 @@
           v{{ VERSION }}
         </p>
       </div>
-  </section>
+    </div>
+  </div>
+</section>
 
   <nav class="navbar rr-dev-secondary">
     <div class="navbar-brand">
@@ -169,8 +176,18 @@
 </nav>
 <container>
   <div id="content" , name="content" , class="main">
-      {% block content %}
-      {% endblock %}
+    {% if messages %}
+      <ul class="messages">
+          {% for message in messages %}
+          <li class="notification mb-3 {% if message.tags %} {{ message.tags }} {% endif %}">
+            <button class="delete" type="button" title="Hide this error"></button>
+            <strong>{{ message }}</strong>
+          </li>
+          {% endfor %}
+      </ul>
+    {% endif %}
+    {% block content %}
+    {% endblock %}
   </div>
 </container>
 
@@ -190,6 +207,7 @@
   </footer>
 
   <script src="{% static 'js/darkMode.js' %}"></script>
+  <script src="{% static 'js/delete_element.js' %}"></script>
 </body>
 
 <script>

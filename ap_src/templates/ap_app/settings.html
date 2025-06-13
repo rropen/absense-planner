@@ -14,34 +14,40 @@
                     {% csrf_token %}
                     <div class="field">
                         <label class="label"><div class="dText">First Name</div></label>
-                        <div class ="control">
-                            {% if user.first_name %}
-                            <input class="input is-rounded is-success darkInput" type="text" placeholder="First Name" value="{{ user.first_name }}" name="firstName">
+                        <div class ="control has-icons-right">
+                            {% if user_details.first_name %}
+                                <input class="input is-rounded is-success darkInput" type="text" placeholder="First Name" value="{{ user_details.first_name }}" name="firstName" id="first-name-input">
+                                <span class="icon is-small is-right">
+                                    <button type="button" class="delete" aria-label="delete" onclick="deleteInputtedValue('first-name-input')"></button>
+                                </span>
                             {% else %}
-                            <input class="input is-rounded is-warning darkInput" type="text" placeholder="First Name" name="firstName">
+                                <input class="input is-rounded is-warning darkInput" type="text" placeholder="First Name" name="firstName">
                             {% endif %}
                         </div>
                     </div>
                     <div class="field">
                         <label class="label"><div class="dText">Last Name</div></label>
-                        <div class ="control">
-                            {% if user.last_name %}
-                            <input class="input is-rounded is-success darkInput" type="text" placeholder="Last Name" value="{{ user.last_name }}" name="lastName">
+                        <div class ="control has-icons-right">
+                            {% if user_details.last_name %}
+                                <span class="icon is-small is-right">
+                                    <button type="button" class="delete" aria-label="delete" onclick="deleteInputtedValue('last-name-input')"></button>
+                                </span>
+                                <input class="input is-rounded is-success darkInput" type="text" placeholder="Last Name" value="{{ user_details.last_name }}" name="lastName" id="last-name-input">
                             {% else %}
-                            <input class="input is-rounded is-warning darkInput" type="text" placeholder="Last Name" name="lastName">
+                                <input class="input is-rounded is-warning darkInput" type="text" placeholder="Last Name" name="lastName">
                             {% endif %}
                         </div>
                     </div>
                     <div class="field">
                         <label class="label"><div class="dText">Email</div></label>
                         <div class="control has-icons-right">
-                            {% if user.email %}
-                            <input class="input is-rounded is-success darkInput" type="email" placeholder="Email Address" name="email" id="email-input" value="{{ user.email }}">
-                            <span class="icon is-small is-right">
-                                <button class="delete" aria-label="delete" onclick="deleteInputtedValue('email-input')"></button>
-                            </span>
+                            {% if user_details.email %}
+                                <input class="input is-rounded is-success darkInput" type="email" placeholder="Email Address" name="email" id="email-input" value="{{ user_details.email }}">
+                                <span class="icon is-small is-right">
+                                    <button type="button" class="delete" aria-label="delete" onclick="deleteInputtedValue('email-input')"></button>
+                                </span>
                             {% else %}
-                            <input class="input is-rounded is-warning darkInput" type="email" placeholder="Email Address" name="email">
+                                <input class="input is-rounded is-warning darkInput" type="email" placeholder="Email Address" name="email">
                             {% endif %}
                         </div>
                     </div>
@@ -93,10 +99,8 @@
                     <div class="permission_input_select">
                         <div class="control">
                             <input class="input is-rounded darkInput" placeholder="Add a user" type="text" size="50" id="user_permission_input">
-                        </div>
-                        <div class="control">
                             {% csrf_token %}
-                            <button class="button is-rounded" onclick="addUserPermission( '{{ csrf_token }}' )">Submit</button>
+                            <button class="button is-rounded submit-button" onclick="addUserPermission('{{ csrf_token }}')">Submit</button>
                         </div>
                     </div>
                     

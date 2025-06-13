@@ -2,37 +2,15 @@
 <div class="tooltip">
     <span class="tooltiptext">Refresh Calendar</span>
     {% if name == 'api_team_calendar' %}
-    <a href="{% url name id=id month=current_month year=current_year %}" class="mr-4 button refresh-calendar-button">
+    <a href="{% url name id=id month=current_month year=current_year %}" class=" button refresh-calendar-button">
     {% else %}
-    <a href="{% url name month=current_month year=current_year %}" class="mr-4 button refresh-calendar-button">
+    <a href="{% url name month=current_month year=current_year %}" class=" button refresh-calendar-button">
     {% endif %}
         <span class="icon ">
             <i class="fas fa-sync"></i>
         </span>
     </a>
 </div>
-
-<form method="POST" id="month_form" class="mx-2">
-    {% csrf_token %}
-    <div class="tooltip">
-        <span class="tooltiptext">Jump To Month</span>
-        <div class="select">
-            {% if name == 'api_team_calendar' %}
-            <select name="month_names" id="month_names" onchange="setDate(this, {{ id }})">
-            {% else %}
-            <select name="month_names" id="month_names" onchange="setDate(this, 0)">
-            {% endif %}
-                {% for month in month_list %}
-                    {% if month == selected_date %}
-                        <option value="{{ month }}" selected>{{ month }}</option>
-                    {% else %}
-                        <option value="{{ month }}">{{ month }}</option>
-                    {% endif %}
-                {% endfor %}
-            </select>
-        </div>
-    </div>
-</form>
 
 {% if previous_current_year == year and month == current_month %}
 <a id="previous" class="noHover button" aria-disabled="true" disabled>
@@ -66,6 +44,30 @@
     {% endif %}
 </div>
 {% endif %}
+
+
+
+<form method="POST" id="month_form">
+    {% csrf_token %}
+    <div class="tooltip">
+        <span class="tooltiptext">Jump To Month</span>
+        <div class="select">
+            {% if name == 'api_team_calendar' %}
+            <select name="month_names" id="month_names" onchange="setDate(this, {{ id }})">
+            {% else %}
+            <select name="month_names" id="month_names" onchange="setDate(this, 0)">
+            {% endif %}
+                {% for month in month_list %}
+                    {% if month == selected_date %}
+                        <option value="{{ month }}" selected>{{ month }}</option>
+                    {% else %}
+                        <option value="{{ month }}">{{ month }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</form>
 
 {% if next_current_year == year and month == current_month %}
 <a id="next" class="noHover button" aria-disabled="true" disabled>
@@ -102,7 +104,7 @@
 
 <div class="tooltip">
     <span class="tooltiptext">Toggle Clickable Calendar</span>
-    <button id="CalendarClick-Toggle" class="button button-active mx-1">
+    <button id="CalendarClick-Toggle" class="button button-active">
         <span class="icon">
             <i class="fas fa-mouse-pointer"></i>
         </span>

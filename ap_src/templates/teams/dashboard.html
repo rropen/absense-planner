@@ -46,12 +46,9 @@
                     {% csrf_token %}
                     <input type="hidden" name="method" value="favourite">
                     <input type="hidden" name="team" value="{{ team.team.id }}">
-                    <button
-                        onmouseover="starHover(this)"
-                        onmouseout="removeHover(this)"
-                        data-star="{{ team.favourite }}"
-                        type="submit"
-                    >
+                    <div class="tooltip">
+                        <span class="tooltiptext">Favourite {{ team.team.name }}</span>
+                    <button data-star="{{ team.favourite }}" type="submit">
                         <i class="
                             {% if team.favourite %}
                                 fas
@@ -61,16 +58,13 @@
                             fa-star
                         "></i>
                     </button>
+                    </div>
                 </form>
                 
             </span>
             {% if team.team.private %}
                 <span class="tag is-info is-rounded">
                     <i class="fas fa-lock"></i>&nbsp;Private
-                </span>
-            {% else %}
-                <span class="tag is-info is-rounded">
-                    <i class="fas fa-unlock"></i>&nbsp;Public
                 </span>
             {% endif %}
             {% if team.role.role == "Owner" or team.role.role == "Co-Owner" %}
