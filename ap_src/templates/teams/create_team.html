@@ -22,9 +22,17 @@
         
 
         {{ form | bulma }}
-        
-    <h2 class="description dText"><b>Please enter a minimum of 3 characters for each box.<b></h2>
-    <h2 class="description dText"><b>Please avoid using personal information in the description as it will be seen by non team members.<b></h2>
+
+    <div id="notif-info" class="notification is-info">
+    <button class="delete" type="button"></button>
+    Please enter a minimum of 3 characters for the team name and team description.
+    </div>
+
+    <div id="notif-warning" class="notification is-warning">
+    <button class="delete" type="button"></button>
+    Please avoid using personal information in the description as it will be seen by non team members.
+    </div>
+
     <input type="hidden" name="origin_application" value="Absence Planner">
     <label id="label_button" class="button is-primary" disabled>
         Submit
