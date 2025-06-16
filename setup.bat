@@ -8,8 +8,10 @@ ECHO Please follow the instructions in the README.txt file to start the project 
 ECHO ============================================================
 
 @REM Install UV for faster package management
-
-python -m pip install uv
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+@REM alias UV temporarily so we can get the path to it without restarting the terminal session
+Set-Alias -Name uv -Value $HOME\.local\bin\uv
+Set-Alias -Name uvx -Value $HOME\.local\bin\uvx
 
 :start_django_project
 
