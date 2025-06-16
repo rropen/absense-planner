@@ -1,7 +1,7 @@
 {% load static %}
 <form method="post" action="{% url 'update-colour' %}">
     {% csrf_token %}
-    <nav class="navbar permission_input_select">
+    <nav class="navbar is-flex is-flex-wrap-wrap is-align-items-center is-justify-content-space-between p-1">
         <div class="control">
             <div class="select is-rounded">
               <select name="enabled">
