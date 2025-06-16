@@ -8,10 +8,15 @@ ECHO Please follow the instructions in the README.txt file to start the project 
 ECHO ============================================================
 
 @REM Install UV for faster package management
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-@REM alias UV temporarily so we can get the path to it without restarting the terminal session
-doskey uv=$HOME\.local\bin\uv
-doskey uvx=$HOME\.local\bin\uvx
+uv --version
+IF NOT ERRORLEVEL 1 (
+    ECHO uv command found
+) ELSE (
+    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+    @REM alias UV temporarily so we can get the path to it without restarting the terminal session
+    doskey uv=$HOME\.local\bin\uv
+    doskey uvx=$HOME\.local\bin\uvx
+)
 
 :start_django_project
 
