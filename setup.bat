@@ -7,22 +7,9 @@ ECHO If this script does not work, you will need to start django manually. This 
 ECHO Please follow the instructions in the README.txt file to start the project if you need to.
 ECHO ============================================================
 
-SET PYTHON_EXECUTABLE=notfound
-@REM LOOP through the list of python commands  to find the correct one by execute the --version of the command and set it to the variable PYTHON_EXECUTABLE of the one which does not throw an error
-FOR %%P IN ("python") DO (
-    %%~P --version
-    IF NOT ERRORLEVEL 1 (
-        SET PYTHON_EXECUTABLE=%%~P
-        echo Python command found: %%~P
-        GOTO :start_django_project
-    )
-)
+@REM Install UV for faster package management
 
-IF PYTHON_EXECUTABLE=notfound (
-    echo Python command not found. Please install python 3.8 or higher and make sure the command to execute it is 'py -3.8'
-    PAUSE
-    EXIT
-)
+python -m pip install uv
 
 :start_django_project
 
@@ -30,67 +17,65 @@ IF PYTHON_EXECUTABLE=notfound (
 @REM If we do, activate it
 @REM If we don't, create it
 
-
-IF NOT EXIST venv\Scripts\activate.bat (
+IF NOT EXIST .venv\Scripts\activate.bat (
     ECHO Creating venv ... This may take a while
-    %PYTHON_EXECUTABLE% -m venv venv
+    uv venv .venv
 )
 
 @REM Create the .env file
 
 COPY "example_env.txt" ".env"
 
-@REM Install requirements if they are not already installed
-@REM If they are, skip this step
+@REM Install requirements
 
-IF NOT EXIST venv\req_installed  (
-    ECHO Installing requirements
-	"venv\Scripts\python" -m pip install --upgrade pip
-	"venv\Scripts\python" -m pip install -r requirements.txt
-    COPY NUL venv\req_installed
-) ELSE (
-    ECHO Requirements already installed
-)
+ECHO Installing requirements
+uv pip install -r pyproject.toml --all-extras
 
 @REM Start Django
 
 if EXIST ap_src/manage.py (
     ECHO Making migrations
-	"venv\Scripts\python" ap_src/manage.py makemigrations
+	".venv\Scripts\python" ap_src/manage.py makemigrations
 
     ECHO Running migrations
-	"venv\Scripts\python" ap_src/manage.py migrate ap_app
-	"venv\Scripts\python" ap_src/manage.py migrate
+	".venv\Scripts\python" ap_src/manage.py migrate ap_app
+	".venv\Scripts\python" ap_src/manage.py migrate
 
     ECHO Creating cache table
-    "venv\Scripts\python" ap_src/manage.py createcachetable
+    ".venv\Scripts\python" ap_src/manage.py createcachetable
 
     ECHO Loading fixtures
 
     @REM LOOP through all fixtures in the fixtures folder in a for loop and load them one by one
     for %%f in (ap_src\ap_app\fixtures\*.*) do (
         ECHO Loading fixture %%f
-        "venv\Scripts\python" ap_src/manage.py loaddata %%f
+        ".venv\Scripts\python" ap_src/manage.py loaddata %%f
     )
 
-    IF NOT EXIST venv\user_created (
+    IF NOT EXIST ".venv\user_created" (
         ECHO ----------------------------------------------------------------------------------------------------
         ECHO ----------------------------------------------------------------------------------------------------
         ECHO Please create and admin user and password, you will need to use this to signin to the admin panel
         ECHO Please do not use a real password this is a development environment.
         ECHO Create an admin user
 
-        COPY NUL venv\user_created
-        "venv\Scripts\python" ap_src/manage.py createsuperuser
+        COPY NUL ".venv\user_created"
+        ".venv\Scripts\python" ap_src/manage.py createsuperuser
     ) ELSE (
         ECHO Super User already created
     )
 
     @REM ECHO Collecting static files
-    @REM "venv\Scripts\python" ap_src/manage.py collectstatic --noinput
+    @REM only needed for deployment
+    @REM ".venv\Scripts\python" ap_src/manage.py collectstatic --noinput
 
     ECHO Done
-    ECHO Don't forget to activate virtual environment before running manage.py
+    ECHO Run the web server with:
+    ECHO uv run .\ap_src\manage.py runserver
+    ECHO Alternatively, activate the virtual environment:
+    ECHO .\.venv\Scripts\activate
+    ECHO And then run the web server with:
+    ECHO python ap_src\manage.py runserver
 )
 
 PAUSE
