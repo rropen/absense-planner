@@ -1,6 +1,7 @@
-function openLeaveTeamModal(teamId, teamName, userRole, memberCount) {
+function openLeaveTeamModal(teamId, teamName, userRole, memberCount, membersJson) {
     const leaveModal = document.getElementById('leaveTeamModal');
     const deleteModal = document.getElementById('deleteTeamModal');
+    const transferModal = document.getElementById('transferOwnershipModal');
 
     document.getElementById('leaveTeamName').innerText = teamName;
     document.getElementById('deleteTeamName').innerText = teamName;
@@ -8,8 +9,12 @@ function openLeaveTeamModal(teamId, teamName, userRole, memberCount) {
     $('#leaveTeamInput').val(teamId);
     $('#deleteTeamInput').val(teamId);
 
-    if (userRole === 'Owner' && memberCount === 1) {
-        // Delete modal for when only member is owener
+    const members = JSON.parse(membersJson || '[]');
+    const otherMembers = members.filter(m => !m.is_self);
+    const isOwner = userRole === 'Owner';
+
+    if (isOwner && memberCount === 1) {
+        // Only member = show delete modal
         deleteModal.classList.add('is-active');
 
         document.getElementById('cancelDeleteButton').onclick = () => {
@@ -19,8 +24,32 @@ function openLeaveTeamModal(teamId, teamName, userRole, memberCount) {
             deleteModal.classList.remove('is-active');
         };
 
+    } else if (isOwner && otherMembers.length > 0) {
+        // Owner with other members = show transfer modal
+        document.getElementById('transfer-team-name').innerText = teamName;
+        document.getElementById('transfer-team-id').value = teamId;
+
+        const select = document.getElementById('new-owner-select');
+        select.innerHTML = '';
+
+        otherMembers.forEach(member => {
+            const option = document.createElement('option');
+            option.value = member.username;
+            option.textContent = `${member.full_name} (${member.username})`;
+            select.appendChild(option);
+        });
+
+        transferModal.classList.add('is-active');
+
+        document.getElementById('cancelTransferButton').onclick = () => {
+            transferModal.classList.remove('is-active');
+        };
+        document.querySelector('#transferOwnershipModal .modal-close').onclick = () => {
+            transferModal.classList.remove('is-active');
+        };
+
     } else {
-        // Leave modal if not the only member
+        // Leave modal
         leaveModal.classList.add('is-active');
 
         document.getElementById('cancelLeaveButton').onclick = () => {

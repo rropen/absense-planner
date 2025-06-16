@@ -5,33 +5,27 @@ Errors are handled here by passing Django messages up through views to templates
 """
 
 import environ
-
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse, HttpRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied
-
 from ..forms import CreateTeamForm
 from ..models import Role
 from ..utils.teams_utils import retrieve_team_member_data, favourite_team, get_user_token_from_request, get_users_teams
 from ..utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
 from ..utils.errors import print_messages, derive_http_error_message
-
 from requests import Session
 from requests import HTTPError, ConnectionError, RequestException
-
 env = environ.Env()
 environ.Env.read_env()
 TEAM_APP_API_URL = env("TEAM_APP_API_URL")
 TEAM_APP_API_KEY = env("TEAM_APP_API_KEY")
 TEAM_APP_API_TIMEOUT = float(env("TEAM_APP_API_TIMEOUT"))
-
 # Use the session object from the Python requests library to send requests and pool the connection resources.
 # Without this, the requests sent to the API are EXTREMELY SLOW.
 session = Session()
-
 @login_required
 def teams_dashboard(request) -> render:
     """
@@ -96,13 +90,11 @@ def teams_dashboard(request) -> render:
         "teams/dashboard.html",
         {"teams": users_teams},
     )
-
 @login_required
 def leave_team(request):
     """
     Leaves a team and removes lingering switch permissions.
     """
-
     username = request.user.username
     user_token = get_user_token_from_request(request)
 
@@ -133,7 +125,6 @@ def leave_team(request):
         "Authorization": TEAM_APP_API_KEY,
         "User-Token": user_token
     }
-
     try:
         error, debug, success, warning = None, None, None, None
         session.post(url=url, data=data, params=params, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
@@ -147,7 +138,6 @@ def leave_team(request):
         debug = "Error: Could not send a request to the API to leave a team. Exception: " + str(exception)
     else:
         success = "Left team successfully."
-
         # Remove lingering switch permissions upon success
         try:
             check_for_lingering_switch_perms(username, remove_switch_permissions, user_token)
@@ -158,21 +148,16 @@ def leave_team(request):
         print_messages(request, success=success, error=error, debug=debug, warning=warning)
 
     return redirect(reverse("dashboard")) # Redirect back to the list of joined teams
-
 @login_required
 def create_team(request:HttpRequest) -> render:
     user_token = get_user_token_from_request(request)
-
     if request.method == "POST":
         form = CreateTeamForm(request.POST)
-
         if form.is_valid():
             # Gets the created team and "Owner" Role and creates a Link between
             # the user and their team.
-
             # Send a POST request to the API instead of handling the usual model logic,
             # so that the created team is stored on the Team App instead of the Absence Planner.
-            
             url = TEAM_APP_API_URL + "teams/"
             data = request.POST # This is the data sent by the user in the CreateTeamForm
             headers = {
@@ -191,7 +176,6 @@ def create_team(request:HttpRequest) -> render:
                     context = {"form": form}
                     if api_response.json()["name"] is not None:
                         context["message"] = "That team name already exists"
-
             except ConnectionError as exception:
                 error = "Error - could not create the team due to a connection error."
                 debug = "Error: Could not connect to the API to create a team. Exception: " + str(exception)
@@ -215,7 +199,6 @@ def create_team(request:HttpRequest) -> render:
             "form": form,
         },
     )
-
 @login_required
 def join_team(request) -> render:
     """Renders page with all teams the user is not currently in and handles joining of specific teams."""
@@ -551,3 +534,62 @@ def delete_team(request:HttpRequest):
             return redirect("edit_team", id=team_id)
         else:
             return redirect("dashboard") # Redirect back to the list of joined teams
+
+@login_required
+def transfer_ownership(request):
+    """
+    Transfers ownership of a team to a new user.
+    """
+    user_token = get_user_token_from_request(request)
+
+    if request.method != "POST":
+        error = "Invalid request method."
+        print_messages(request, error=error)
+        return redirect("dashboard")
+
+    try:
+        team_id = request.POST["team_id"]
+        new_owner = request.POST["new_owner"]
+    except KeyError:
+        error = "Error - required data (team_id or new_owner) not provided."
+        debug = "KeyError: team_id or new_owner missing from POST data."
+        print_messages(request, error=error, debug=debug)
+        return redirect("dashboard")
+
+    url = TEAM_APP_API_URL + "manage/"
+    data = {
+        "team": team_id,
+        "new_owner": new_owner
+    }
+    params = {
+        "method": "transfer_ownership"
+    }
+    headers = {
+        "Authorization": TEAM_APP_API_KEY,
+        "User-Token": user_token
+    }
+
+    try:
+        error, debug, success = None, None, None
+        response = session.post(
+            url=url,
+            data=data,
+            params=params,
+            headers=headers,
+            timeout=TEAM_APP_API_TIMEOUT
+        )
+        response.raise_for_status()
+    except HTTPError as exception:
+        error = "Error in transferring ownership - " + derive_http_error_message(exception)
+    except ConnectionError as exception:
+        error = "Error - could not transfer ownership due to a connection error."
+        debug = "ConnectionError: " + str(exception)
+    except RequestException as exception:
+        error = "Error - could not transfer ownership due to an unknown error."
+        debug = "RequestException: " + str(exception)
+    else:
+        success = "Ownership transferred successfully."
+    finally:
+        print_messages(request, error=error, debug=debug, success=success)
+
+    return redirect("dashboard")

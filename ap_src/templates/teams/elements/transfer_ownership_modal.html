@@ -1,0 +1,27 @@
+<div id="transferOwnershipModal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="box">
+            <h3 class="title is-4">Transfer Ownership of <span id="transfer-team-name"></span></h3>
+            <p>Please select a new team owner before you leave the team.</p>
+            <form method="POST" action="{% url 'transfer_ownership' %}">
+                {% csrf_token %}
+                <input type="hidden" name="team_id" id="transfer-team-id" />
+                <div class="field mt-4">
+                    <label class="label">New Owner</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="new_owner" id="new-owner-select" required>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="buttons is-right mt-4">
+                    <button type="button" id="cancelTransferButton" class="button">Cancel</button>
+                    <button type="submit" class="button is-danger">Transfer & Leave</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"></button>
+</div>

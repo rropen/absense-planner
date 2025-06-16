@@ -64,6 +64,8 @@
 </section>
 
 {% include "teams/elements/leave_team_modal.html" %}
+{% include 'teams/elements/transfer_ownership_modal.html' %}
+
 
 {% include 'calendars/elements/calendar_element.html'%}
 <script src="{% static "js/api_calendar.js" %}" token="{{ csrf_token }}"></script>
