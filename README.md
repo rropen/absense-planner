@@ -26,6 +26,10 @@ This project aims to overcome these deficiencies
 
 This project is just starting, will be a django web app with Javascript/jQuery on the front end, and Bulma.io CSS
 
+## Developer Guide
+
+To get started with the Absence Planner and the Team App, we have a [developer guide](DEVELOPER.md).
+
 ## Contribution
 
 To contribute changes to the original respository, the following commands can be used:
