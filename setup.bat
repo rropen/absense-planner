@@ -13,12 +13,11 @@ IF NOT ERRORLEVEL 1 (
     ECHO uv command found
 ) ELSE (
     powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-    @REM alias UV temporarily so we can get the path to it without restarting the terminal session
-    doskey uv=$HOME\.local\bin\uv
-    doskey uvx=$HOME\.local\bin\uvx
 )
 
-:start_django_project
+@REM alias UV temporarily so we can get the path to it without restarting the terminal session
+set "uv_temporary_path=%USERPROFILE%\.local\bin\uv.exe"
+echo %uv_temporary_path%
 
 @REM Check if we have a venv
 @REM If we do, activate it
@@ -26,7 +25,7 @@ IF NOT ERRORLEVEL 1 (
 
 IF NOT EXIST .venv\Scripts\activate.bat (
     ECHO Creating venv ... This may take a while
-    uv venv .venv
+    %uv_temporary_path% venv .venv
 )
 
 @REM Create the .env file
@@ -36,7 +35,7 @@ COPY "example_env.txt" ".env"
 @REM Install requirements
 
 ECHO Installing requirements
-uv pip install -r pyproject.toml --all-extras
+%uv_temporary_path% pip install -r pyproject.toml --all-extras
 
 @REM Start Django
 
@@ -79,6 +78,7 @@ if EXIST ap_src/manage.py (
     ECHO Done
     ECHO Run the web server with:
     ECHO uv run .\ap_src\manage.py runserver
+    ECHO Please note that if this is your first time installing uv you may have to restart vscode
     ECHO Alternatively, activate the virtual environment:
     ECHO .\.venv\Scripts\activate
     ECHO And then run the web server with:

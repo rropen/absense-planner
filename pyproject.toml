@@ -56,7 +56,6 @@ dependencies = [
   "mdurl==0.1.2",
   "more-itertools==10.1.0",
   "mypy-extensions==1.0.0",
-  "mysqlclient==2.2.4",
   "names==0.3.0",
   "numpy==1.26.1",
   "order==2.1.4",
