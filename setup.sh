@@ -23,7 +23,7 @@ fi
 
 if [ ! -f ".venv/bin/activate" ]; then
     echo "Creating venv ... This may take a while"
-    $(uv_temporary_path) venv .venv
+    $uv_temporary_path venv .venv
 fi
 
 if [ ! -f ".env" ]; then
@@ -31,7 +31,7 @@ if [ ! -f ".env" ]; then
 fi
 
 echo "Installing requirements"
-$(uv_temporary_path) pip install -r pyproject.toml --all-extras
+$uv_temporary_path pip install -r pyproject.toml --all-extras
 
 if [ -f "ap_src/manage.py" ]; then
     echo "Making migrations"
