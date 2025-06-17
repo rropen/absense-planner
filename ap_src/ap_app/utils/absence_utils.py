@@ -32,6 +32,7 @@ def get_absence_data(users, user_type):
                 absence_date_start = x.absence_date_start
                 absence_date_end = x.absence_date_end
                 user_id = x.User_ID
+                target_id = x.Target_User_ID
                 dates = absence_date_start
                 if x.half_day == "NORMAL":
                     while dates <= absence_date_end:
@@ -49,6 +50,7 @@ def get_absence_data(users, user_type):
                     {
                         "ID": absence_id,
                         "User_ID": user_id,
+                        "target_user_id": target_id,
                         "absence_date_start": absence_date_start,
                         "absence_date_end": absence_date_end,
                         "dates": total_absence_dates[user_username],

@@ -84,41 +84,40 @@
                                                 {% check_absences absence_dates|get_key:member.user.username year month_num day as check_absence %}
                                                 {% check_absences recurring_absence_dates|get_key:member.user.username year month_num day as check_recurring_absence %}
                                                 {% check_half_day half_days_data|get_key:member.user.username year month_num day as check_half_day %}
-                                                {% get_user_id all_absences|get_key:member.user.username as got_user_id %}
                                                 {% if check_recurring_absence %}
                                                 <td data-editable="{{editable}}" style="background-color: #ffaa00;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="R">
-                                                    {% include "calendars/elements/absence_setter_tooltip.html" with got_user_id=got_user_id %}
+                                                    {% include "calendars/elements/absence_setter_tooltip.html" with absences=all_absences|get_key:member.user.username user=member.user.username current_user=user year=year month_num=month_num day=day %}
                                                 </td>
                                                 {% elif check_absence %}
                                                 <td data-editable="{{editable}}" style="background-color: #ff0000;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="S">
-                                                    {% include "calendars/elements/absence_setter_tooltip.html" with got_user_id=got_user_id %}
+                                                    {% include "calendars/elements/absence_setter_tooltip.html" with absences=all_absences|get_key:member.user.username user=member.user.username current_user=user year=year month_num=month_num day=day %}
                                                 </td>
                                                 {% elif check_half_day == "A"%}
                                                     {% if day in bank_hol and bank_holidays.enabled %}
                                                     <td data-editable="{{editable}}" style="background: linear-gradient(to right, transparent 50%, #ff0000 50% ); background-color: {{ bank_holidays.colour }} !important;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE">
-                                                        {% include "calendars/elements/absence_setter_tooltip.html" with got_user_id=got_user_id %}
+                                                        {% include "calendars/elements/absence_setter_tooltip.html" with absences=all_absences|get_key:member.user.username user=member.user.username current_user=user year=year month_num=month_num day=day %}
                                                     </td>
                                                     {% elif day in weekend_list and weekends.enabled %}
                                                     <td data-editable="{{editable}}" style="background: linear-gradient(to right, transparent 50%, #ff0000 50% ); background-color: {{ weekends.colour }} !important;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE">
-                                                        {% include "calendars/elements/absence_setter_tooltip.html" with got_user_id=got_user_id %}
+                                                        {% include "calendars/elements/absence_setter_tooltip.html" with absences=all_absences|get_key:member.user.username user=member.user.username current_user=user year=year month_num=month_num day=day %}
                                                     </td>
                                                     {% else %}
                                                     <td data-editable="{{editable}}" style="background: linear-gradient(to right, transparent 50%, #ff0000 50% );" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="A">
-                                                        {% include "calendars/elements/absence_setter_tooltip.html" with got_user_id=got_user_id %}
+                                                        {% include "calendars/elements/absence_setter_tooltip.html" with absences=all_absences|get_key:member.user.username user=member.user.username current_user=user year=year month_num=month_num day=day %}
                                                     </td>
                                                     {% endif %}
                                                 {% elif check_half_day == "M" %}
                                                     {% if day in bank_hol and bank_holidays.enabled %}
                                                     <td data-editable="{{editable}}" style="background: linear-gradient(to left, transparent 50%, #ff0000 50% ); background-color: {{ bank_holidays.colour }} !important;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE">
-                                                        {% include "calendars/elements/absence_setter_tooltip.html" with got_user_id=got_user_id %}
+                                                        {% include "calendars/elements/absence_setter_tooltip.html" with absences=all_absences|get_key:member.user.username user=member.user.username current_user=user year=year month_num=month_num day=day %}
                                                     </td>
                                                     {% elif day in weekend_list and weekends.enabled %}
                                                     <td data-editable="{{editable}}" style="background: linear-gradient(to left, transparent 50%, #ff0000 50% ); background-color: {{ weekends.colour }} !important;" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/FALSE">
-                                                        {% include "calendars/elements/absence_setter_tooltip.html" with got_user_id=got_user_id %}
+                                                        {% include "calendars/elements/absence_setter_tooltip.html" with absences=all_absences|get_key:member.user.username user=member.user.username current_user=user year=year month_num=month_num day=day %}
                                                     </td>
                                                     {% else %}
                                                     <td data-editable="{{editable}}" style="background: linear-gradient(to left, transparent 50%, #ff0000 50% );" class="CalendarCell p-0 is-vcentered" id="{{member.user.username}}/{{year}}-{{month_num}}-{{day}}/TRUE" data-absence-type="A">
-                                                        {% include "calendars/elements/absence_setter_tooltip.html" with got_user_id=got_user_id %}
+                                                        {% include "calendars/elements/absence_setter_tooltip.html" with absences=all_absences|get_key:member.user.username user=member.user.username current_user=user year=year month_num=month_num day=day %}
                                                     </td>
                                                     {% endif %}
                                                 {% else %}
