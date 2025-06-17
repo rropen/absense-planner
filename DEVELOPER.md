@@ -5,6 +5,11 @@
 This document provides simple instructions and information for developers who want to contribute to this project or get it running locally. This project is primarily a python based
 project.
 
+## Commits
+
+https://www.freecodecamp.org/news/writing-good-commit-messages-a-practical-guide/
+https://www.conventionalcommits.org/en/v1.0.0-beta.2/
+
 ## Team App Compatibility
 
 Team App must be running for Absence Planner to work correctly. This is because features of the Absence Planner have a hard dependency on the Team App's API in order to work. 
@@ -99,15 +104,52 @@ dependency manages (pip, poetry, pipenv, pdm, etc.) as well as handles virtual e
 
 ## Environment Setup
 
+### Instructions
+
 Although some of this is done by the setup script, if you want you want to manually configure the environment variables, copy the `example_env.txt` file to a new file called `.env` in the root directory. You'll need to fill in values for the database you choose to use. You can set that up locally by
 installed something like Postgres, or run your favorite database in docker. Currently, the necessary environment variables are:
 
-| Key              | Value                                |
-| ---------------- | ------------------------------------ |
-| TEAM_APP_API_URL | The URL of the team data API.        |
-| DEBUG            | Set to True to enable debug mode.    |
-| PRODUCTION_UI    | Set to True to enable production UI. |
-| DB_NAME          | The name of the database.            |
-| DB_USER          | The username for the database.       |
-| DB_PASSWORD      | The password for the database.       |
-| DB_HOST          | The host of the database.            |
+### `.env` Settings File
+
+#### Description
+
+The `.env` file is stored in the project root and can either be created manually or is created automatically by the setup script. It looks something like this:
+
+```
+TEAM_APP_API_URL=http://localhost:8002/api/
+DEBUG=True
+PRODUCTION_UI=False
+DB_NAME = ""
+DB_USER = ""
+DB_PASSWORD = ""
+DB_HOST = ""
+```
+
+If you change the `.env` file, you should reboot the shell/terminal window in which the server is running in order for your changes to take effect.
+
+#### Settings Explained
+
+##### `TEAM_APP_API_URL`
+
+This is the URL containing the host and port of the server application for the RR Team App. This is needed to pull data about teams and team members from the Team App database using the API. The Team App runs on port 8002 by default. Without a functioning connection to the Team App, the Absence Planner will not function correctly.
+
+##### `DEBUG`
+
+[See the Django documentation for more information about the debug setting](https://docs.djangoproject.com/en/5.1/ref/settings/#debug)
+
+##### `PRODUCTION_UI`
+
+Red UI represents a non-production environment
+Blue represents Production.
+
+If you set this to False, it will change the colour of the header in the Absence Planner like this:
+
+![image](https://github.com/user-attachments/assets/49ac875f-ab92-4cc5-bcff-4ae2dd089f67)
+
+If you set this to True, it will change the colour of the header in the Absence Planner like this:
+
+![image](https://github.com/user-attachments/assets/edfd9044-57d0-4e7a-9bc6-8e874df97bee)
+
+##### `DB_*` Options
+
+These set the settings that will be used to connect to the absence planner database.
