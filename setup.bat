@@ -1,10 +1,10 @@
 ECHO OFF
 ECHO ============================================================
-ECHO Setting Up Django Project Enviroment
+ECHO Setting Up Django Project Environment
 ECHO This script will make a new venv and install the requirements, then start the Django Project
-ECHO This project is tested on Python 3.8. It may not work on other versions
+ECHO This project is tested on Python 3.11.9. It may not work on other versions
 ECHO If this script does not work, you will need to start django manually. This script is only a helper to make it easier to start the project.
-ECHO Please follow the instructions in the README.txt file to start the project if you need to.
+ECHO Please follow the instructions in the DEVELOPER.md file to start the project if you need to.
 ECHO ============================================================
 
 @REM Install UV for faster package management
