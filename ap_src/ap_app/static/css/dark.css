@@ -110,6 +110,14 @@ h3 {
     color: white;
 }
 
+header, .navbar {
+  background-color: #121212 !important;
+  color: rgb(0, 0, 0) !important;
+}
+
+header a, .navbar a {
+  color: rgb(0, 0, 0) !important;
+}
 
 
 /* End of basic */
