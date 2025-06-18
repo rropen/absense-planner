@@ -31,15 +31,13 @@ SECRET_KEY = "django-insecure-duam^e#bui)v&(*6!z5j1_9!mm55v#o(b_ni77ttxm#55bzs=1
 DEBUG_ENV = os.getenv("DEBUG")
 DEBUG = DEBUG_ENV is not None and DEBUG_ENV.lower() == "true"
 
-#Location of the CSS files
-STATIC_ROOT = BASE_DIR / 'static/css'
+# Location of the CSS files
+STATIC_ROOT = BASE_DIR / "static/css"
 
 ALLOWED_HOSTS = ["*"]
 
 
-INTERNAL_IPS = [
-
-]
+INTERNAL_IPS = []
 
 # Application definition
 
@@ -80,17 +78,17 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "ap_site.context_processors.production", #This is the context processor that will communicate with the context processors .py file.
+                "ap_site.context_processors.production",  # This is the context processor that will communicate with the context processors .py file.
                 "ap_site.context_processors.info",
                 "ap_site.context_processors.team_api_data",
-                "ap_site.context_processors.url_splitter"
+                "ap_site.context_processors.url_splitter",
             ],
             "libraries": {
                 "get_key": "ap_app.templatetags.get_key",
                 "check_absences": "ap_app.templatetags.check_absences",
                 "check_day": "ap_app.templatetags.check_day",
             },
-            'builtins': [
+            "builtins": [
                 "ap_app.templatetags.check_rule",
             ],
         },
@@ -112,10 +110,10 @@ DATABASES = {
 
 if not DEBUG:
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': os.environ["DB_NAME"],
-            'USER': os.environ["DB_USER"],
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": os.environ["DB_NAME"],
+            "USER": os.environ["DB_USER"],
             "PASSWORD": os.environ["DB_PASSWORD"],
             "HOST": os.environ["DB_HOST"],
         }
@@ -162,7 +160,7 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR) + "/static"
 
-#STATICFILES_DIRS = [str(BASE_DIR) + "/ap_app/static"]
+# STATICFILES_DIRS = [str(BASE_DIR) + "/ap_app/static"]
 
 
 # Default primary key field type
@@ -189,10 +187,7 @@ PROFILING = PROFILING_ENV is not None and PROFILING_ENV.lower() == "true"
 
 # Allows the debug toolbar to be shown
 if PROFILING:
-    INTERNAL_IPS += [
-        "127.0.0.1",
-        "localhost"
-    ]
+    INTERNAL_IPS += ["127.0.0.1", "localhost"]
 
     MIDDLEWARE += [
         "debug_toolbar.middleware.DebugToolbarMiddleware",

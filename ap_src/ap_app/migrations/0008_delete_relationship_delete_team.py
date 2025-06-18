@@ -4,16 +4,15 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('ap_app', '0007_alter_userprofile_external_teams'),
+        ("ap_app", "0007_alter_userprofile_external_teams"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='Relationship',
+            name="Relationship",
         ),
         migrations.DeleteModel(
-            name='Team',
+            name="Team",
         ),
     ]

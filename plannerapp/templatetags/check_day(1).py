@@ -7,5 +7,5 @@ register = template.Library()
 def check_day(list_, day):
     for x in list_:
         if x.day == day:
-          return True
+            return True
     return False

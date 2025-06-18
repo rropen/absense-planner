@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('ap_app', '0006_alter_colourscheme_name_and_more'),
+        ("ap_app", "0006_alter_colourscheme_name_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='userprofile',
-            name='external_teams',
+            model_name="userprofile",
+            name="external_teams",
             field=models.BooleanField(default=True),
         ),
     ]
