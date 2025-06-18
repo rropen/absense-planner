@@ -16,7 +16,7 @@ User = get_user_model()
 class CreateTeamForm(forms.Form):
     #details the model the form uses as well as the field names
     class Meta:
-        fields = ["name", "description", "private"]
+        fields = ["name", "description",]
 
     #The name of the team. Has to be between 3 and 64 characters, and is required.
     name = forms.CharField(

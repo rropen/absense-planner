@@ -274,8 +274,6 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         self.click("#teams")
         self.click("#create")
         self.type("#nameInput", TEAM2)
-        self.type("#id_description", "A private team to test.")
-        self.click("#id_private")
         self.click("#submit")
         self.click("#logout")
 
