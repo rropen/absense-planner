@@ -75,12 +75,11 @@ calendarClickButton.onclick = function() {
         calendarClickToggle = true;
         calendarCells.forEach(cell => {
             if (cell.id.startsWith("{{ user.username }}/")) {  
-                cell.dataset.editable = "True";
-            } else {
                 cell.dataset.editable = "False";
+            } else {
+                cell.dataset.editable = "True";
             }
         });
-        location.reload();
     } else {
         calendarClickButton.style.borderColor = "red";
         calendarClickToggle = false;
@@ -140,3 +139,4 @@ window.onclick = function(event) {
         document.getElementById(modalId).classList.remove("is-active")
     }
 }
+

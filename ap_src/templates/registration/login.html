@@ -8,7 +8,15 @@
     <form method="post">
         {% csrf_token %}
         {{ form | bulma }}
+        <div class="field has-addons has-addons-right" style="margin-top: -2.75rem;">
+        <div class="control">
+            <button type="button" onclick="togglePassword()">
+            <span class="icon is-normal mx-2"><i class="fas fa-eye" id="toggleIcon"></i></span>
+            </button>        
+        </div>
+        </div>
         <button id="submit" class="button is-link" type="submit">Login</button>
     </form>
 </div>
+<script src="{% static 'js/login.js' %}"></script>
 {% endblock %}

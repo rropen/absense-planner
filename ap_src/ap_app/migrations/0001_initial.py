@@ -36,7 +36,6 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(primary_key=True, serialize=False)),
                 ('name', models.CharField(max_length=128, unique=True)),
                 ('description', models.CharField(max_length=512)),
-                ('private', models.BooleanField(default=False)),
             ],
         ),
         migrations.CreateModel(
