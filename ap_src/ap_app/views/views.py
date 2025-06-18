@@ -8,11 +8,9 @@ Usually these views are for pages that would be found across lots of websites, s
 - Error Pages
 """
 
-import datetime
 import json
 import holidays
 import pycountry
-from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -30,8 +28,15 @@ from .calendarview import main_calendar
 from ..forms import AcceptPolicyForm, DeleteUserForm, AbsencePlannerUserCreationForm
 from ..models import UserProfile, ColourScheme, ColorData
 
-from ..utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
-from ..utils.teams_utils import get_user_token_from_request, edit_user_details, fetch_user_details
+from ..utils.switch_permissions import (
+    check_for_lingering_switch_perms,
+    remove_switch_permissions,
+)
+from ..utils.teams_utils import (
+    get_user_token_from_request,
+    edit_user_details,
+    fetch_user_details,
+)
 from ..utils.errors import derive_http_error_message, print_messages
 
 User = get_user_model()
@@ -79,10 +84,12 @@ def privacy_page(request, to_accept=False) -> render:
         return render(request, "ap_app/privacy.html")
     return main_calendar(request)
 
+
 class SignUpView(CreateView):
     form_class = AbsencePlannerUserCreationForm
     success_url = reverse_lazy("login")
     template_name = "registration/signup.html"
+
 
 @login_required
 def details_page(request) -> render:
@@ -90,6 +97,7 @@ def details_page(request) -> render:
     # TODO: get employee details and add them to context
     context = {"employee_dicts": ""}
     return render(request, "ap_app/Details.html", context)
+
 
 @login_required
 def deleteuser(request):
@@ -107,12 +115,13 @@ def deleteuser(request):
 
     return render(request, "registration/delete_account.html", context)
 
+
 @login_required
-def profile_settings(request:HttpRequest) -> render:
+def profile_settings(request: HttpRequest) -> render:
     """
     View that returns the settings page and handles changes to the user's settings.
 
-    This uses the Team App API 
+    This uses the Team App API
     """
 
     # TODO: Reimplement this validation in a Django form class instead of a view
@@ -136,16 +145,24 @@ def profile_settings(request:HttpRequest) -> render:
                 user_token=user_token,
                 first_name=request.POST.get("firstName"),
                 last_name=request.POST.get("lastName"),
-                email=request.POST.get("email")
+                email=request.POST.get("email"),
             )
         except HTTPError as exception:
-            error = "Error in editing your details - " + derive_http_error_message(exception)
+            error = "Error in editing your details - " + derive_http_error_message(
+                exception
+            )
         except ConnectionError as exception:
             error = "Error - could not edit your details due to a connection error."
-            debug = "Error: Could not connect to the API to edit a user's details. Exception: " + str(exception)
+            debug = (
+                "Error: Could not connect to the API to edit a user's details. Exception: "
+                + str(exception)
+            )
         except RequestException as exception:
             error = "Error - could not edit your details due to an unknown error."
-            debug = "Error: Could not send a request to the API to edit a user's details. Exception: " + str(exception)
+            debug = (
+                "Error: Could not send a request to the API to edit a user's details. Exception: "
+                + str(exception)
+            )
         else:
             success = "Edited details successfully."
         finally:
@@ -156,7 +173,7 @@ def profile_settings(request:HttpRequest) -> render:
     except IndexError:
         # TODO Create error page
         return redirect("/")
-    
+
     if len(request.POST) > 0:
         region = request.POST.get("region")
         region_code = pycountry.countries.get(name=region).alpha_2
@@ -168,7 +185,7 @@ def profile_settings(request:HttpRequest) -> render:
             userprofile.privacy = True
 
         userprofile.save()
-    
+
     country_data = get_region_data()
     country_name = pycountry.countries.get(alpha_2=userprofile.region).name
 
@@ -192,16 +209,25 @@ def profile_settings(request:HttpRequest) -> render:
     try:
         user_details = fetch_user_details(user_token)
     except HTTPError as exception:
-        warning = "Warning - could not read your details - " + derive_http_error_message(exception)
+        warning = (
+            "Warning - could not read your details - "
+            + derive_http_error_message(exception)
+        )
     except ConnectionError as exception:
         warning = "Warning - could not read your details due to a connection error."
-        debug = "Error: Could not connect to the API to read a user's details. Exception: " + str(exception)
+        debug = (
+            "Error: Could not connect to the API to read a user's details. Exception: "
+            + str(exception)
+        )
     except RequestException as exception:
         warning = "Warning - could not read your details due to an unknown error."
-        debug = "Error: Could not send a request to the API to read a user's details. Exception: " + str(exception)
+        debug = (
+            "Error: Could not send a request to the API to read a user's details. Exception: "
+            + str(exception)
+        )
     finally:
         print_messages(request, success=success, warning=warning, debug=debug)
-        if (warning):
+        if warning:
             user_details = False
 
     context = {
@@ -210,27 +236,33 @@ def profile_settings(request:HttpRequest) -> render:
         "data_privacy_mode": privacy_status,
         "current_country": country_name,
         **country_data,
-        "colours": colour_data
+        "colours": colour_data,
     }
 
     return render(request, "ap_app/settings.html", context)
 
-def update_colour(request:HttpRequest):
+
+def update_colour(request: HttpRequest):
     if request.method == "POST":
         default = ColourScheme.objects.get(name=request.POST["name"])
-        data = ColorData.objects.filter(user=request.user, scheme__name=request.POST["name"])
+        data = ColorData.objects.filter(
+            user=request.user, scheme__name=request.POST["name"]
+        )
         if data.exists():
             update_data = ColorData.objects.get(id=data[0].id)
-            if request.POST["enabled"] == 'True':
+            if request.POST["enabled"] == "True":
                 update_data.enabled = True
             else:
                 update_data.enabled = False
             update_data.color = request.POST["colour"]
             update_data.save()
         else:
-            if request.POST["colour"] != default.default or request.POST["enabled"] != 'True':
+            if (
+                request.POST["colour"] != default.default
+                or request.POST["enabled"] != "True"
+            ):
                 newData = ColorData()
-                if request.POST["enabled"] == 'True':
+                if request.POST["enabled"] == "True":
                     newData.enabled = True
                 else:
                     newData.enabled = False
@@ -238,12 +270,13 @@ def update_colour(request:HttpRequest):
                 newData.color = request.POST["colour"]
                 newData.user = request.user
                 newData.save()
-    
-    return redirect('profile_settings')
+
+    return redirect("profile_settings")
+
 
 @login_required
 def add_user(request) -> render:
-    data=json.loads(request.body)
+    data = json.loads(request.body)
     try:
         userprofile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
     except IndexError:
@@ -255,14 +288,16 @@ def add_user(request) -> render:
 
         try:
             user = User.objects.get(username=username)
-        except:
+        except Exception as exception:
             # TODO Create error page
+            print(exception)
             return redirect("/")
 
         userprofile.edit_whitelist.add(user)
         user.save()
 
     return redirect("/profile/settings")
+
 
 def get_region_data():
     data = {}
@@ -271,16 +306,17 @@ def get_region_data():
         try:
             holidays.country_holidays(country.alpha_2)
             data["countries"].append(country.name)
-        except:
+        except Exception as exception:
+            print(exception)
             pass
-    
+
     data["countries"] = sorted(data["countries"])
 
     return data
 
+
 @login_required
 def set_region(request):
-
     try:
         userporfile: UserProfile = UserProfile.objects.filter(user=request.user)[0]
     except IndexError:
@@ -290,11 +326,12 @@ def set_region(request):
     if request.method == "POST":
         region = request.POST.get("regions")
         region_code = pycountry.countries.get(name=region).alpha_2
-        if (region_code != userporfile.region):
+        if region_code != userporfile.region:
             userporfile.region = region_code
             userporfile.save()
 
     return redirect("/profile/settings")
+
 
 @login_required
 def remove_lingering_perms(request):
@@ -307,17 +344,22 @@ def remove_lingering_perms(request):
         username = request.user.username
         user_token = get_user_token_from_request(request)
 
-        result = check_for_lingering_switch_perms(username, remove_switch_permissions, user_token)
+        result = check_for_lingering_switch_perms(
+            username, remove_switch_permissions, user_token
+        )
         if result is not None:
-            return JsonResponse({'status': 'success'})
+            return JsonResponse({"status": "success"})
     # Something failed in the logic for checking and removing switch permissions
     return HttpResponse(status=500)
 
+
 def Custom404View(request):
-    return render(request, '404.html')
+    return render(request, "404.html")
+
 
 def Custom500View(request):
-    return render(request, '500.html')
+    return render(request, "500.html")
+
 
 def Custom400View(request):
-    return render(request, '400.html')
+    return render(request, "400.html")

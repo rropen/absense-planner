@@ -1,5 +1,4 @@
-from django.conf import \
-    settings  # This will import the settings file that django uses.
+from django.conf import settings  # This will import the settings file that django uses.
 
 import environ
 
@@ -8,29 +7,34 @@ environ.Env.read_env()
 
 # Environment Variables
 
+
 def production(request):
     """
     Returns the PRODUCTION_UI environment variable's value.
     """
-    return {'PRODUCTION_UI': settings.PRODUCTION_UI}
+    return {"PRODUCTION_UI": settings.PRODUCTION_UI}
+
 
 def info(request):
     """
     Returns the VERSION environment variable's value.
     """
-    return {'VERSION': settings.VERSION}
+    return {"VERSION": settings.VERSION}
+
 
 def team_api_data(request):
     """
     Returns the TEAM_APP_API_URL environment variable's value.
     """
-    return {'TEAM_APP_API_URL': env("TEAM_APP_API_URL")}
+    return {"TEAM_APP_API_URL": env("TEAM_APP_API_URL")}
+
 
 def debug(request):
     """
     Returns the DEBUG environment variable's value.
     """
-    return {'DEBUG': env("DEBUG")}
+    return {"DEBUG": env("DEBUG")}
+
 
 def url_splitter(request):
     """
