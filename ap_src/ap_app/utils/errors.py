@@ -14,11 +14,13 @@ environ.Env.read_env()
 
 DEBUG = (env("DEBUG").lower() != "false") and (env("DEBUG").lower() == "true")
 
+
 def handler404(request, exception):
     context = {}
     response = render(request, "404.html", context=context)
     response.status_code = 404
     return response
+
 
 def handler500(request):
     context = {}
@@ -26,11 +28,13 @@ def handler500(request):
     response.status_code = 500
     return response
 
+
 def handler503(request):
     context = {}
     response = render(request, "503.html", context=context)
     response.status_code = 503
     return response
+
 
 def handler400(request, exception):
     context = {}
@@ -38,14 +42,17 @@ def handler400(request, exception):
     response.status_code = 400
     return response
 
+
 def handler403(request, exception):
     context = {}
     response = render(request, "403.html", context=context)
     response.status_code = 403
     return response
 
+
 def my_view(request):
     return render(request, "base.html")
+
 
 def print_debug(request, message):
     """
@@ -57,10 +64,8 @@ def print_debug(request, message):
         messages.set_level(request, messages.DEBUG)
 
         print(message)
-        messages.debug(
-            request,
-            message
-        )
+        messages.debug(request, message)
+
 
 def print_messages(request, success=None, error=None, debug=None, warning=None):
     """
@@ -72,27 +77,30 @@ def print_messages(request, success=None, error=None, debug=None, warning=None):
         is enabled, a debug message for developers too
     """
 
-    if (error):
+    if error:
         messages.error(request, error)
-    if (warning):
+    if warning:
         messages.warning(request, warning)
-    if (success):
+    if success:
         messages.success(request, success)
-    if (debug):
+    if debug:
         print_debug(request, debug)
 
-def derive_http_error_message(http_error:HTTPError):
+
+def derive_http_error_message(http_error: HTTPError):
     """
     Utility function that takes a HTTPError exception from the Python requests
     library and turns it into a human-readable error message using the HTTPStatus
     library.
     """
     http_status = HTTPStatus(http_error.response.status_code)
-    error_message = str(http_status.value) + http_status.phrase + http_status.description
+    error_message = (
+        str(http_status.value) + http_status.phrase + http_status.description
+    )
     error_message = "{code} ({phrase}) - {description}".format(
         code=http_status.value,
         phrase=http_status.phrase,
-        description=http_status.description
+        description=http_status.description,
     )
 
     return error_message

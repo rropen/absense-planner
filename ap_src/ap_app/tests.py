@@ -212,7 +212,7 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
 
         # enter correct details
         self.auto_login(USER2)
-        
+
         # test public team
         # Creating the team
         self.click("#teams")
@@ -263,10 +263,9 @@ class TestSuiteTemplate(LiveServerTestCase, BaseCase):
         # leaves team
         self.click(f"#leave_{TEAM}")
 
-
-        #test private team
+        # test private team
         self.click("#logout")
-        # logs in 
+        # logs in
         self.open(f"{self.live_server_url}/accounts/login")
         # enter correct details
         self.auto_login(USER2)

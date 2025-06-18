@@ -24,6 +24,7 @@ TEAM_APP_API_TIMEOUT = float(env("TEAM_APP_API_TIMEOUT"))
 # Without this, the requests sent to the API are EXTREMELY SLOW.
 session = Session()
 
+
 def sort_global_absences_by_logged_in_user(data, username):
     """
     On the main calendar showing the absences for every team, ensure that the
@@ -31,15 +32,18 @@ def sort_global_absences_by_logged_in_user(data, username):
     """
 
     for teamIndex in range(len(data)):
+
         def fetch_username_from_json(userIndex):
-            username = data[teamIndex]['team']['members'][userIndex]['user']['username']
+            username = data[teamIndex]["team"]["members"][userIndex]["user"]["username"]
             return username
-        for userIndex in range(len(data[teamIndex]['team']['members'])):
+
+        for userIndex in range(len(data[teamIndex]["team"]["members"])):
             if username == fetch_username_from_json(userIndex):
-                saved_user = data[teamIndex]['team']['members'][userIndex]
-                data[teamIndex]['team']['members'].pop(userIndex)
-                data[teamIndex]['team']['members'].insert(0,saved_user)
+                saved_user = data[teamIndex]["team"]["members"][userIndex]
+                data[teamIndex]["team"]["members"].pop(userIndex)
+                data[teamIndex]["team"]["members"].insert(0, saved_user)
                 break
+
 
 def get_users_teams(sort_value, user_token):
     """
@@ -50,27 +54,20 @@ def get_users_teams(sort_value, user_token):
 
     # Prepare request parameters
     url = TEAM_APP_API_URL + "user/teams/"
-    params = {
-        "sort": sort_value
-    }
-    headers = {
-        "User-Token": user_token,
-        "Authorization": TEAM_APP_API_KEY
-    }
+    params = {"sort": sort_value}
+    headers = {"User-Token": user_token, "Authorization": TEAM_APP_API_KEY}
 
     # Send request to Team App API and store in response object
     api_response = session.get(
-        url=url,
-        params=params,
-        headers=headers,
-        timeout=TEAM_APP_API_TIMEOUT
+        url=url, params=params, headers=headers, timeout=TEAM_APP_API_TIMEOUT
     )
     # Caller should handle the API error
-    
+
     api_response.raise_for_status()
     api_response = api_response.json()
 
     return api_response
+
 
 def get_users_sharing_teams(username, user_model, user_token):
     """
@@ -84,11 +81,11 @@ def get_users_sharing_teams(username, user_model, user_token):
     users_sharing_teams = set()
 
     if teams is None:
-        return # Caller should handle the API error
+        return  # Caller should handle the API error
         # Avoid error from iterating through None type
-    elif teams == []: # The current_user is not in any teams
-        return users_sharing_teams # Avoid error from iterating
-                                   # through empty set
+    elif teams == []:  # The current_user is not in any teams
+        return users_sharing_teams  # Avoid error from iterating
+        # through empty set
 
     for team in teams:
         team = team["team"]
@@ -100,12 +97,13 @@ def get_users_sharing_teams(username, user_model, user_token):
 
     return users_sharing_teams
 
+
 def check_user_exists(username):
     """
     Looks for a user (from the Absence Planner) on the Team App database.
     """
 
-    user_exists = False # Assume the user does not exist until proved otherwise
+    user_exists = False  # Assume the user does not exist until proved otherwise
 
     url = TEAM_APP_API_URL + "user_exists/"
     params = {"username": username}
@@ -114,17 +112,15 @@ def check_user_exists(username):
     }
 
     api_response = session.get(
-        url=url,
-        params=params,
-        headers=headers,
-        timeout=TEAM_APP_API_TIMEOUT
+        url=url, params=params, headers=headers, timeout=TEAM_APP_API_TIMEOUT
     )
     # Caller should handle the API error
-    
+
     api_response.raise_for_status()
-    user_exists = api_response.json() # API returns True or False
+    user_exists = api_response.json()  # API returns True or False
 
     return user_exists
+
 
 def is_team_app_running():
     """
@@ -142,13 +138,15 @@ def is_team_app_running():
         # We do not need an API key because it is a simple status check
 
         api_response = session.get(url=url, timeout=TEAM_APP_API_TIMEOUT)
-    except:
-        return team_app_running # Caller should handle the API error
-    
+    except Exception as exception:
+        print(exception)
+        return team_app_running  # Caller should handle the API error
+
     if api_response is not None and api_response.status_code == 200:
         team_app_running = True
-    
+
     return team_app_running
+
 
 def retrieve_team_member_data(id, user_token):
     """
@@ -162,16 +160,10 @@ def retrieve_team_member_data(id, user_token):
 
     url = TEAM_APP_API_URL + "members/"
     params = {"id": id}
-    headers = {
-        "Authorization": TEAM_APP_API_KEY,
-        "User-Token": user_token
-    }
+    headers = {"Authorization": TEAM_APP_API_KEY, "User-Token": user_token}
 
     api_response = session.get(
-        url=url,
-        params=params,
-        headers=headers,
-        timeout=TEAM_APP_API_TIMEOUT
+        url=url, params=params, headers=headers, timeout=TEAM_APP_API_TIMEOUT
     )
     # Caller should handle API error
 
@@ -180,36 +172,27 @@ def retrieve_team_member_data(id, user_token):
 
     return api_response
 
+
 def favourite_team(user_token, team_id):
     """
     Favourites a team on the Team App.
     """
 
-    url = TEAM_APP_API_URL + 'manage/'
-    data = {
-        "team": team_id
-    }
-    params = {
-        "method": "favourite"
-    }
-    headers = {
-        "Authorization": TEAM_APP_API_KEY,
-        "User-Token": user_token
-    }
+    url = TEAM_APP_API_URL + "manage/"
+    data = {"team": team_id}
+    params = {"method": "favourite"}
+    headers = {"Authorization": TEAM_APP_API_KEY, "User-Token": user_token}
 
     api_response = session.post(
-        url=url,
-        data=data,
-        params=params,
-        headers=headers,
-        timeout=TEAM_APP_API_TIMEOUT
+        url=url, data=data, params=params, headers=headers, timeout=TEAM_APP_API_TIMEOUT
     )
     api_response.raise_for_status()
 
     return api_response
 
+
 @login_required
-def get_user_token_from_request(request:HttpRequest):
+def get_user_token_from_request(request: HttpRequest):
     """
     Looks for the username of the user who sent the request so that they have to be authenticated.
 
@@ -217,10 +200,13 @@ def get_user_token_from_request(request:HttpRequest):
     is then used in the headers of a request to the private Team App API to validate their identity.
     """
 
-    username = str(request.user.username).encode() # Get the raw username string from request
-    user_token = hashlib.sha256(username).hexdigest() # Encrypt and get digest value
+    username = str(
+        request.user.username
+    ).encode()  # Get the raw username string from request
+    user_token = hashlib.sha256(username).hexdigest()  # Encrypt and get digest value
 
     return user_token
+
 
 def edit_user_details(user_token, first_name=None, last_name=None, email=None):
     """
@@ -231,26 +217,17 @@ def edit_user_details(user_token, first_name=None, last_name=None, email=None):
     - Email Address
     """
 
-    url = TEAM_APP_API_URL + 'user/'
-    data = {
-        "first_name": first_name,
-        "last_name": last_name,
-        "email": email
-    }
-    headers = {
-        "Authorization": TEAM_APP_API_KEY,
-        "User-Token": user_token
-    }
+    url = TEAM_APP_API_URL + "user/"
+    data = {"first_name": first_name, "last_name": last_name, "email": email}
+    headers = {"Authorization": TEAM_APP_API_KEY, "User-Token": user_token}
 
     api_response = session.post(
-        url=url,
-        data=data,
-        headers=headers,
-        timeout=TEAM_APP_API_TIMEOUT
+        url=url, data=data, headers=headers, timeout=TEAM_APP_API_TIMEOUT
     )
     api_response.raise_for_status()
 
     return api_response
+
 
 def fetch_user_details(user_token):
     """
@@ -261,17 +238,10 @@ def fetch_user_details(user_token):
     - Email Address
     """
 
-    url = TEAM_APP_API_URL + 'user/'
-    headers = {
-        "Authorization": TEAM_APP_API_KEY,
-        "User-Token": user_token
-    }
+    url = TEAM_APP_API_URL + "user/"
+    headers = {"Authorization": TEAM_APP_API_KEY, "User-Token": user_token}
 
-    api_response = session.get(
-        url=url,
-        headers=headers,
-        timeout=TEAM_APP_API_TIMEOUT
-    )
+    api_response = session.get(url=url, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
     api_response.raise_for_status()
 
     user_details = api_response.json()[0]

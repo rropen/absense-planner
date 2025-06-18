@@ -2,6 +2,7 @@ import datetime
 from datetime import timedelta
 from ..models import RecurringException, Absence, RecurringAbsences
 
+
 def get_absence_data(users, user_type):
     data = {}
     absence_content = []
@@ -38,10 +39,7 @@ def get_absence_data(users, user_type):
                         dates += delta
                 else:
                     total_half_dates[user_username].append(
-                        {
-                            "date": absence_date_start,
-                            "type": x.half_day
-                        }
+                        {"date": absence_date_start, "type": x.half_day}
                     )
 
                 absence_content.append(
@@ -56,7 +54,9 @@ def get_absence_data(users, user_type):
             # for each user it maps the set of dates to a dictionary key labelled as the users name
             all_absences[user_username] = absence_content
 
-        recurring = RecurringAbsences.objects.filter(Target_User_ID__username=user_username)
+        recurring = RecurringAbsences.objects.filter(
+            Target_User_ID__username=user_username
+        )
 
         if recurring:
             for recurrence_ in recurring:
@@ -71,9 +71,14 @@ def get_absence_data(users, user_type):
                     time_var = datetime.datetime.strftime(x, "%H:%M:%S")
                     if time_const == time_var:
                         x += timedelta(days=1)
-                    
-                    #print(RecurringException.objects.filter(Target_User_ID__username=user_username, Exception_Start=x).count())
-                    if RecurringException.objects.filter(Target_User_ID__username=user_username, Exception_Start=x).count() == 0:
+
+                    # print(RecurringException.objects.filter(Target_User_ID__username=user_username, Exception_Start=x).count())
+                    if (
+                        RecurringException.objects.filter(
+                            Target_User_ID__username=user_username, Exception_Start=x
+                        ).count()
+                        == 0
+                    ):
                         total_recurring_dates[user_username].append(x)
                 # TODO: add auto deleting for recurring absences once last date of absences in before now
                 # if x < datetime.datetime.now():
@@ -85,6 +90,7 @@ def get_absence_data(users, user_type):
     data["half_days_data"] = total_half_dates
     data["users"] = users
     return data
+
 
 def text_rules(user):
     recurring_absences = RecurringAbsences.objects.filter(Target_User_ID=user).values(
