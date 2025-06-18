@@ -3,17 +3,18 @@
 <html lang="en" data-theme="light">
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{% static 'css/bulma.min.css' %}">
-  <link rel="stylesheet" href="{% static 'css/layout.css' %}">
-  <link rel="stylesheet" id="darkSwitch" href="{% static 'css/light.css' %}">
-  <script src="{%static 'js/button_spinner.js' %}"></script>
-  <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/bulma.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    <link rel="stylesheet" id="darkSwitch" href="{% static 'css/light.css' %}">
+    <script src="{%static 'js/button_spinner.js' %}"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"></script>
   <script language="javascript">
     var pageRefreshCounter = 0;
     function SecondsSinceLastRefresh() {
@@ -68,7 +69,8 @@
               </div>
               <div>
                 <p class="title rr-dev-primary">
-                  Absence Planner
+                  <button onclick="location.href = '/';"><b>Absence Planner</b></button>
+                  
                 </p>
                 <p class="subtitle rr-white">
                   v{{ VERSION }}
@@ -93,126 +95,122 @@
 
 
               {% if user.is_authenticated %}
-
-              {% if subdirectory_name == "" or subdirectory_name == "calendar" %}
-              <a id="home" class="navbar-item icon-text active nav_active" href="/">
+                {% if subdirectory_name == "" or subdirectory_name == "calendar" %}
+                    <a id="home" class="navbar-item icon-text active nav_active" href="/">
                 {% else %}
-                <a id="home" class="navbar-item icon-text" href="/">
-                  {% endif %}
-
-                  <span class="icon is-size-5">
-                    <i class="fas fa-home"></i>
-                  </span>
-                  <span>Calendar</span>
+                    <a id="home" class="navbar-item icon-text" href="/">
+                {% endif %}
+                <span class="icon is-size-5">
+                    <i class="fas fa-calendar-alt"></i>
+                </span>
+                <span>Calendar</span>
                 </a>
 
                 <nav class="navbar" role="navigation" aria-label="main navigation">
-                  <div class="navbar-menu">
-                    <div class="navbar-start">
-                      <div class="navbar-item has-dropdown is-hoverable rr-dev-secondary">
-                        {% if 'absence' in subdirectory_name %}
-                        <a id="absence" class="navbar-link icon-text is-arrowless active nav_active"
-                          href="/absence/add">
-                          {% else %}
-                          <a id="absence" class="navbar-link is-arrowless icon-text" href="/absence/add">
-                            {% endif %}
-                            <span class="icon is-size-5">
-                              <i class="fas fa-users"></i>
-                            </span>
-                            <span>Absences</span>
-                            <span class="icon is-small">
-                              <i class="fas fa-angle-down" aria-hidden="true"></i>
-                            </span>
-                          </a>
+                    <div class="navbar-menu">
+                        <div class="navbar-start">
+                            <div class="navbar-item has-dropdown is-hoverable rr-dev-secondary">
+                                {% if 'absence' in subdirectory_name %}
+                                    <a id="absence" class="navbar-link icon-text is-arrowless active nav_active"
+                                    href="/profile">
+                                {% else %}
+                                    <a id="absence" class="navbar-link is-arrowless icon-text" href="/profile">
+                                {% endif %}
+                                <span class="icon is-size-5">
+                                    <i class="fas fa-calendar-plus"></i>
+                                </span>
+                                <span>My Absences</span>
+                                <span class="icon is-small">
+                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                </span>
+                                </a>
 
-                          <div class="navbar-dropdown">
-                            <a class="navbar-item" href="/profile">My Absences</a>
-                            <hr class="navbar-divider" />
-                            <a class="navbar-item" href="/absence/add_recurring">Add Recurring Absences</a>
-                          </div>
-                      </div>
+                                <div class="navbar-dropdown">
+                                    <a class="navbar-item" href="/absence/add">Create Absence</a>
+                                    <hr class="navbar-divider" />
+                                    <a class="navbar-item" href="/absence/add_recurring">Create Recurring Absence</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 </nav>
 
                 <nav class="navbar" role="navigation" aria-label="main navigation">
-                  <div class="navbar-menu">
-                    <div class="navbar-start">
-                      <div class="navbar-item has-dropdown is-hoverable rr-dev-secondary">
-                        {% if 'teams' in subdirectory_name %}
-                        <a id="teams" class="navbar-link icon-text is-arrowless active nav_active" href="/teams">
-                          {% else %}
-                          <a id="teams" class="navbar-link is-arrowless icon-text" href="/teams">
-                            {% endif %}
-                            <span class="icon is-size-5">
-                              <i class="fas fa-users"></i>
-                            </span>
-                            <span>Teams</span>
-                            <span class="icon is-small">
-                              <i class="fas fa-angle-down" aria-hidden="true"></i>
-                            </span>
-                          </a>
+                    <div class="navbar-menu">
+                        <div class="navbar-start">
+                            <div class="navbar-item has-dropdown is-hoverable rr-dev-secondary">
+                                {% if 'teams' in subdirectory_name %}
+                                    <a id="teams" class="navbar-link icon-text is-arrowless active nav_active" href="/teams">
+                                {% else %}
+                                    <a id="teams" class="navbar-link is-arrowless icon-text" href="/teams">
+                                {% endif %}
+                                        <span class="icon is-size-5">
+                                            <i class="fas fa-users"></i>
+                                        </span>
+                                        <span>Teams</span>
+                                        <span class="icon is-small">
+                                            <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                        </span>
+                                    </a>
 
-                          <div class="navbar-dropdown">
-                            <a class="navbar-item" href="/teams/create">Create A Team</a>
-                            <hr class="navbar-divider" />
-                            <a class="navbar-item" href="/teams/join">Join A Team</a>
-                          </div>
-                          
-                      </div>
+                                <div class="navbar-dropdown">
+                                    <a class="navbar-item" href="/teams/create">Create A Team</a>
+                                    <hr class="navbar-divider" />
+                                    <a class="navbar-item" href="/teams/join">Join A Team</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 </nav>
-
 
 
 
                 <div class="navbar-dropdown ">
-                  <a class="navbar-item" href="/teams/create">Create A Team</a>
-                  <hr class="navbar-divider" />
-                  <a class="navbar-item" href="/teams/join">Join A Team</a>
+                    <a class="navbar-item" href="/teams/create">Create A Team</a>
+                    <hr class="navbar-divider" />
+                    <a class="navbar-item" href="/teams/join">Join A Team</a>
                 </div>
             </div>
-          </div>
-      </div>
-        <div class="navbar-end">
-    <div class="navbar-item">
-      <div class="field is-grouped">
-          <div class="buttons">
-            {% if user.is_authenticated %}
-                <a id="profile" href="/profile/settings" class="button is-info">{{request.user.username}}
-                  <i class="fas fa-user-circle ml-2 is-size-5"></i>
-                </a>
-                <a id="logout" href="{% url 'logout' %}" class="button is-light">Log out</a>
-            {% else %}
-                <a id="signup" href="{% url 'signup' %}" class="button is-info">
-                  <strong>Sign up</strong>
-                </a>
-                <a id="login" href="{% url 'login' %}" class="button is-light">
-                  Log in
-                </a>
-            {% endif %}
-          </div>
-      </div>
+        </div>
     </div>
-  </div>
-</div>
-  </nav>
+
 
 
   {% else %}
-  <a class="navbar-item icon-text" href="/">
-    <span class="icon is-size-5">
-      <i class="fas fa-home"></i>
-    </span>
-    <span>Home</span>
-  </a>
+    <a class="navbar-item icon-text" href="/">
+        <span class="icon is-size-5">
+        <i class="fas fa-home"></i>
+        </span>
+        <span>Home</span>
+    </a>
   {% endif %}
   </div>
-
+    <div class="navbar-end">
+        <div class="navbar-item">
+            <div class="field is-grouped">
+                <div class="buttons">
+                    {% if user.is_authenticated %}
+                        <a id="profile" href="/profile/settings" class="button is-info">{{request.user.username}}
+                        <i class="fas fa-user-circle ml-2 is-size-5"></i>
+                        </a>
+                        <a id="logout" href="{% url 'logout' %}" class="button is-light">Log out</a>
+                    {% else %}
+                        <a id="signup" href="{% url 'signup' %}" class="button is-info">
+                        <strong>Sign up</strong>
+                        </a>
+                        <a id="login" href="{% url 'login' %}" class="button is-light">
+                        Log in
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+</nav>
   </nav>
   <container>
-    <div id="content" , name="content" , class="main">
+    <div id="content" name="content" class="main">
       {% if messages %}
       <ul class="messages">
         {% for message in messages %}

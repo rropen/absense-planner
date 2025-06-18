@@ -6,7 +6,6 @@
   "repository": "https://github.com/rrglobal/project_template",
   "author": "Josh Haines",
   "license": "MIT",
-  "private": true,
   "devDependencies": {
     "commitizen": "^1.0.3",
     "cz-conventional-changelog": "^1.0.1",

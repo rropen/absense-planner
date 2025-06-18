@@ -8,69 +8,56 @@ echo "If this script does not work, you will need to start django manually. This
 echo "Please follow the instructions in the README.txt file to start the project if you need to."
 echo "============================================================"
 
-PYTHON_EXECUTABLE="notfound"
 
-for CMD in python3 python; do
-    if command -v "$CMD" &> /dev/null; then
-        $CMD --version
-        PYTHON_EXECUTABLE=$CMD
-        echo "Python command found: $CMD"
-        break
-    fi
-done
+# alias UV temporarily so we can get the path to it without restarting the terminal session
+uv_temporary_path="$HOME/.local/bin/uv"
+echo "$uv_temporary_path"
 
-if [ "$PYTHON_EXECUTABLE" = "notfound" ]; then
-    echo "Python command not found. Please install Python 3.8 or higher and make sure it is in your PATH."
-    exit 1
+# Install UV for faster package management
+if ! type "$uv_temporary_path" > /dev/null; then
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+else
+    echo "uv command found"
+    $uv_temporary_path --version
 fi
 
-if [ ! -f "venv/bin/activate" ]; then
+if [ ! -f ".venv/bin/activate" ]; then
     echo "Creating venv ... This may take a while"
-    $PYTHON_EXECUTABLE -m venv venv
+    $uv_temporary_path venv .venv
 fi
 
 if [ ! -f ".env" ]; then
     cp "example_env.txt" ".env"
 fi
 
-if [ ! -f "venv/req_installed" ]; then
-    echo "Installing requirements"
-    source venv/bin/activate
-    python -m pip install --upgrade pip
-    python -m pip install -r requirements.txt
-    touch venv/req_installed
-    deactivate
-else
-    echo "Requirements already installed"
-fi
+echo "Installing requirements"
+$uv_temporary_path pip install -r pyproject.toml --all-extras
 
 if [ -f "ap_src/manage.py" ]; then
-    source venv/bin/activate
-
     echo "Making migrations"
-    python ap_src/manage.py makemigrations
+    ./.venv/bin/python ap_src/manage.py makemigrations
 
     echo "Running migrations"
-    python ap_src/manage.py migrate ap_app
-    python ap_src/manage.py migrate
+    ./.venv/bin/python ap_src/manage.py migrate ap_app
+    ./.venv/bin/python ap_src/manage.py migrate
 
     echo "Creating cache table"
-    python ap_src/manage.py createcachetable
+    ./.venv/bin/python ap_src/manage.py createcachetable
 
     echo "Loading fixtures"
     for f in ap_src/ap_app/fixtures/*.*; do
         echo "Loading fixture $f"
-        python ap_src/manage.py loaddata "$f"
+        ./.venv/bin/python ap_src/manage.py loaddata "$f"
     done
 
-    if [ ! -f "venv/user_created" ]; then
+    if [ ! -f ".venv/user_created" ]; then
         echo "----------------------------------------------------------------------------------------------------"
         echo "----------------------------------------------------------------------------------------------------"
         echo "Please create an admin user and password. You will need to use this to sign in to the admin panel."
         echo "Please do not use a real password; this is a development environment."
         echo "Create an admin user"
 
-        touch venv/user_created
+        touch .venv/user_created
         python ap_src/manage.py createsuperuser
     else
         echo "Super User already created"
@@ -81,6 +68,11 @@ if [ -f "ap_src/manage.py" ]; then
     # python ap_src/manage.py collectstatic --noinput
 
     echo "Done"
-    echo "Don't forget to activate the virtual environment before running manage.py"
-    deactivate
+    echo "Run the web server with:"
+    echo "uv run .\ap_src\manage.py runserver"
+    echo "Please note that if this is your first time installing uv you may have to restart vscode"
+    echo "Alternatively, activate the virtual environment:"
+    echo ".\.venv\Scripts\activate"
+    echo "And then run the web server with:"
+    echo "python ap_src\manage.py runserver"
 fi

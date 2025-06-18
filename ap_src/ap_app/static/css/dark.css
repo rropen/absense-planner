@@ -151,14 +151,14 @@ h3 {
 }
 
 .darkBackground {
-    background-color: #3e4549;
+    background-color: #493e44;
 }
 
 /* End of calendar */
 
 .collapsible {
     /* background-color: #271EA8; */
-    color: white;
+    color: rgb(255, 255, 255);
 }
 
 /*.active,
@@ -168,7 +168,7 @@ h3 {
 
 
 .collapsible:after {
-    color: white;
+    color: rgb(255, 255, 255);
 }
 
 .content {
@@ -199,7 +199,7 @@ h3 {
 .modal-content {
     z-index: 1060;
     position: relative;
-    border-color: #888;
+    border-color: #888888;
     padding: 20px;
     margin: 15% auto;
     width: 80%;
@@ -207,7 +207,7 @@ h3 {
 
 /* The Close Button */
 .close {
-    color: #aaa;
+    color: #000000;
 }
 
 .close:hover,
@@ -226,11 +226,13 @@ h3 {
 }
 
 .external-link-title {
-    color: white;
+    background-color: black;
+    color: white
+
 }
 
 .CalendarCell[data-editable="True"]:hover {
-    background-color: #00000069; 
+    background-color: #d30c0c69; 
 }
 
 .CalendarCell[data-editable="True"] {
