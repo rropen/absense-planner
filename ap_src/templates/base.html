@@ -96,9 +96,9 @@
 
               {% if user.is_authenticated %}
                 {% if subdirectory_name == "" or subdirectory_name == "calendar" %}
-                    <a id="home" class="navbar-item icon-text active nav_active" href="/">
+                    <a id="home" class="navbar-link is-arrowless icon-text active nav_active" href="/">
                 {% else %}
-                    <a id="home" class="navbar-item icon-text" href="/">
+                    <a id="home" class="navbar-link is-arrowless icon-text" href="/">
                 {% endif %}
                 <span class="icon is-size-5">
                     <i class="fas fa-calendar-alt"></i>
