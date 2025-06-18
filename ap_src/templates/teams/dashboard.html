@@ -4,7 +4,7 @@
 {% block content %}
 
     {% if not teams %}
-    <div class="container has-background-light box darkInput">
+    <div class="container has-background-light box darkInput" style="margin-top: 2rem;">
         <div class="is-size-5 mb-3">
             <p>You haven't joined any teams yet!</p>
             <br />
@@ -13,7 +13,7 @@
     </div>
     {% else %}
     {% for team in teams %}
-    <div class="container has-background-light box darkInput">
+    <div class="container has-background-light box darkInput" style="margin-top: 2rem;">
         <div class="is-size-5 mb-3">
             <span class="is-flex is-flex-direction-row is-justify-content-start is-align-items-center is-size-5 has-text-weight-bold team-name-bar">
                 <span>{{ team.team.name }}</span>
