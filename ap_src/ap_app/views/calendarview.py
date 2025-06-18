@@ -385,8 +385,9 @@ def retrieve_common_calendar_data(user, year, month, team_users, page):
     # Retrieve user's profile
     try:
         userprofile: UserProfile = UserProfile.objects.get(user=user)
-    except:
+    except Exception as exception:
         # TODO Create an error page if the userprofile is not found.
+        print(exception)
         raise NotImplementedError("Invalid Userprofile (No error page)")
 
     # If a month has been selected by the user check if its valid.

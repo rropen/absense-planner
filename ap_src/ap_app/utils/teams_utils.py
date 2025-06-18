@@ -138,7 +138,8 @@ def is_team_app_running():
         # We do not need an API key because it is a simple status check
 
         api_response = session.get(url=url, timeout=TEAM_APP_API_TIMEOUT)
-    except:
+    except Exception as exception:
+        print(exception)
         return team_app_running  # Caller should handle the API error
 
     if api_response is not None and api_response.status_code == 200:

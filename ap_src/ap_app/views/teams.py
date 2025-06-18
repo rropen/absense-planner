@@ -7,8 +7,7 @@ Errors are handled here by passing Django messages up through views to templates
 import environ
 
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.http import JsonResponse, HttpRequest
+from django.http import HttpRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied

@@ -2,7 +2,6 @@ from django.urls import include, path
 
 from .views import calendarview, views, absences, teams
 
-from django.conf.urls import handler404, handler500
 from django.urls import re_path
 from django.views.static import serve
 from django.conf import settings

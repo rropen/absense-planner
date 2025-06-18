@@ -85,7 +85,7 @@ class RecurringAbsencesForm(forms.ModelForm):
         fields = ["ID", "Recurrences"]
 
     def clean(self):
-        cleaned_data = super().clean()
+        super().clean()
 
     class Media:
         js = (

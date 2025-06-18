@@ -8,11 +8,9 @@ Usually these views are for pages that would be found across lots of websites, s
 - Error Pages
 """
 
-import datetime
 import json
 import holidays
 import pycountry
-from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -290,8 +288,9 @@ def add_user(request) -> render:
 
         try:
             user = User.objects.get(username=username)
-        except:
+        except Exception as exception:
             # TODO Create error page
+            print(exception)
             return redirect("/")
 
         userprofile.edit_whitelist.add(user)
@@ -307,7 +306,8 @@ def get_region_data():
         try:
             holidays.country_holidays(country.alpha_2)
             data["countries"].append(country.name)
-        except:
+        except Exception as exception:
+            print(exception)
             pass
 
     data["countries"] = sorted(data["countries"])

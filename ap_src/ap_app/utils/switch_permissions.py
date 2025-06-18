@@ -67,8 +67,9 @@ def get_associated_permissions(current_user, selected_userprofile_id, selected_u
     # so that their permissions to set their own absences are not removed
     try:
         usernames_given_permissions.remove(current_user)
-    except:
+    except Exception as exception:
         print("User does not exist in absence planner database")
+        print(exception)
         return None, None  # Caller should handle error
 
     userprofile_ids_who_give_permissions = UserProfile.objects.filter(
@@ -82,8 +83,9 @@ def get_associated_permissions(current_user, selected_userprofile_id, selected_u
 
     try:
         userprofile_usernames_who_give_permissions.remove(current_user)
-    except:
+    except Exception as exception:
         print("Current user not found in absence planner database")
+        print(exception)
         return None, None
 
     return usernames_given_permissions, userprofile_usernames_who_give_permissions
@@ -172,15 +174,17 @@ def remove_switch_permissions(userprofile_id, user_id):
     # Get instance of UserProfile that matches given ID
     try:
         userprofile = UserProfile.objects.get(id=userprofile_id)
-    except:
+    except Exception as exception:
         print("UserProfile not found in absence planner database using given ID")
+        print(exception)
         return
 
     # Get instance of User that matches given ID
     try:
         selected_user = User.objects.get(id=user_id)
-    except:
+    except Exception as exception:
         print("User not found in absence planner database using given ID")
+        print(exception)
         return
 
     userprofile.edit_whitelist.remove(selected_user)
