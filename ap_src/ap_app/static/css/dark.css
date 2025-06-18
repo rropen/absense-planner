@@ -110,7 +110,7 @@ h3 {
     color: white;
 }
 
-header, .navbar {
+.navbar-dropdown > .navbar-item {
   background-color: #121212 !important;
   color: rgb(0, 0, 0) !important;
 }
