@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/ambv/black
-    rev: 21.8b0
+    rev: 25.1.0
     hooks:
       - id: black
         name: black
@@ -10,7 +10,7 @@ repos:
         # language_version: python3.9
         files: \.(py)$
   - repo: https://github.com/PyCQA/flake8
-    rev: 3.9.2
+    rev: 7.2.0
     hooks:
       - id: flake8
         files: \.(py)$
