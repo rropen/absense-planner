@@ -12,7 +12,7 @@ https://www.conventionalcommits.org/en/v1.0.0-beta.2/
 
 ## Team App Compatibility
 
-Team App must be running for Absence Planner to work correctly. This is because features of the Absence Planner have a hard dependency on the Team App's API in order to work. 
+Team App must be running for Absence Planner to work correctly. This is because features of the Absence Planner have a hard dependency on the Team App's API in order to work.
 
 User accounts must be created on the Team App first before creating an account on the Absence Planner. Both accounts must have the same username. This is to avoid instability issues and known errors if you do not have a user on both apps with the same name.
 
@@ -101,6 +101,52 @@ The recommended IDE is Microsoft's Visual Studio Code, but you should be able to
 This project uses [uv](https://docs.astral.sh/uv/) which is a super modern python project tool set built in rust and which is blazingly fast. This one tool system replaces the
 dependency manages (pip, poetry, pipenv, pdm, etc.) as well as handles virtual environments, packaging, updating, and even installation of python runtimes. uv uses the
 `pyproject.toml` file to record the dependencies and project information rather than the legacy `requirements.txt` file.
+
+### Node
+
+#### Overview
+
+To access various features such as pre-commit and pre-push hooks, you will need Node JS and its package manager, NPM.
+
+#### Windows
+
+To install the Node Version Manager on Windows, do:
+
+```powershell
+winget install nvs
+```
+
+Reboot your powershell and simply run:
+
+```powershell
+nvs
+```
+
+...and it should let you install a version of Node. Then reboot your PC, and you should have access to Node JS.
+
+#### Linux (Ubuntu)
+
+Run the following if you use the `apt` package manager:
+
+```bash
+sudo apt-get update
+sudo apt install curl
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+```
+
+Reboot your terminal and run:
+
+```bash
+nvm
+```
+
+...and choose the version of Node JS that you want.
+
+#### MacOS
+
+```zsh
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh
+```
 
 ## Environment Setup
 
