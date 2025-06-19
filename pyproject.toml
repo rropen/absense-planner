@@ -125,11 +125,11 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-  "pre-commit",
-  "ruff>=0.11.5",
   "commitizen",
   "django-debug-toolbar==4.2.0",
   "djhtml",
+  "pre-commit",
+  "ruff>=0.11.5",
 ]
 
 [tool.uv]
