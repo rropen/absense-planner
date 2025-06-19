@@ -30,6 +30,7 @@ urlpatterns = [
     path("teams/api-calendar/<int:id>/<str:month>/<int:year>", calendarview.api_team_calendar, name="api_team_calendar"),
     path("teams/edit/<int:id>", teams.edit_team, name="edit_team"),
     path("teams/delete", teams.delete_team, name="delete_team"),
+    path("teams/transfer_ownership", teams.transfer_ownership, name="transfer_ownership"),
     path("absence/add", absences.manual_add, name="add"),
     path("absence/add_recurring", absences.add_recurring, name="add_recurring"),
     path("profile/", absences.profile_page, name="profile"),
