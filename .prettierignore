@@ -1,0 +1,7 @@
+# Ignore Python source files because these are handled by Ruff
+# (https://docs.astral.sh/ruff/)
+*.py
+
+# Ignore HTML files because they are Django templates and handled by djhtml:
+# (https://github.com/rtts/djhtml)
+*.html
