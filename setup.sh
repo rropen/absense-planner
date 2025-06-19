@@ -67,6 +67,9 @@ if [ -f "ap_src/manage.py" ]; then
     # echo "Collecting static files"
     # python ap_src/manage.py collectstatic --noinput
 
+    echo "Installing pre-commit hooks into `.git` for safer development"
+    $uv_temporary_path run pre-commit install
+
     echo "Done"
     echo "Run the web server with:"
     echo "uv run .\ap_src\manage.py runserver"

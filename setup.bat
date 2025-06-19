@@ -75,6 +75,9 @@ if EXIST ap_src/manage.py (
     @REM only needed for deployment
     @REM ".venv\Scripts\python" ap_src/manage.py collectstatic --noinput
 
+    ECHO Installing pre-commit hooks into `.git` for safer development
+    %uv_temporary_path% run pre-commit install
+
     ECHO Done
     ECHO Run the web server with:
     ECHO uv run .\ap_src\manage.py runserver
