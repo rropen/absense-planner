@@ -24,3 +24,9 @@ repos:
       # Run the formatter.
       - id: ruff-format
         files: \.(py)$
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.8.3  # Replace with latest tag
+    hooks:
+      - id: commitizen
+      - id: commitizen-branch
+        stages: [pre-commit]
