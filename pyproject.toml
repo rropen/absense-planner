@@ -129,6 +129,7 @@ dev = [
   "ruff>=0.11.5",
   "commitizen",
   "django-debug-toolbar==4.2.0",
+  "djhtml",
 ]
 
 [tool.uv]
