@@ -1,61 +1,61 @@
 body {
-    background-color: #0078D7;
-    color: white;
-    font-family: "Segoe UI", "Helvetica Neue", sans-serif;
-    padding: 48px;
-    margin: 0;
-    height: 100vh;
-    box-sizing: border-box;
-  }
+  background-color: #0078d7;
+  color: white;
+  font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+  padding: 48px;
+  margin: 0;
+  height: 100vh;
+  box-sizing: border-box;
+}
 
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-  }
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
 
-  .sad-face {
-    font-size: 128px;
-    margin-bottom: 24px;
-  }
+.sad-face {
+  font-size: 128px;
+  margin-bottom: 24px;
+}
 
-  .wrench {
-    font-size: 28px;
-  }
+.wrench {
+  font-size: 28px;
+}
 
-  .title {
-    font-size: 32px;
-    margin-bottom: 24px;
-    text-align: center;
-    vertical-align: center;
-  }
+.title {
+  font-size: 32px;
+  margin-bottom: 24px;
+  text-align: center;
+  vertical-align: center;
+}
 
-  .title-with-wrench {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 10px
-  }
+.title-with-wrench {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+}
 
-  .message {
-    font-size: 18px;
-    line-height: 1.5;
-    margin-bottom: 32px;
-  }
+.message {
+  font-size: 18px;
+  line-height: 1.5;
+  margin-bottom: 32px;
+}
 
-  .details {
-    font-family: Consolas, monospace;
-    background: rgba(0,0,0,0.1);
-    padding: 24px;
-    border-radius: 4px;
-    margin-bottom: 32px;
-  }
+.details {
+  font-family: Consolas, monospace;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  border-radius: 4px;
+  margin-bottom: 32px;
+}
 
-  a {
-    color: white;
-    text-decoration: underline;
-  }
+a {
+  color: white;
+  text-decoration: underline;
+}
 
-  a:hover {
-    text-decoration: none;
-  }
+a:hover {
+  text-decoration: none;
+}

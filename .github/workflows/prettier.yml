@@ -1,7 +1,7 @@
 name: Prettier
 on:
   pull_request:
-    branches: [ "develop" ]
+    branches: ["develop"]
 permissions: {}
 jobs:
   prettier:
