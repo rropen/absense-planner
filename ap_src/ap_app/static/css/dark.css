@@ -209,16 +209,7 @@ h3 {
     width: 80%;
 }
 
-/* The Logout/Login Button */
-#logout {
-    color: #000000;
-}
-
-#logout:hover,
-#logout:focus {
-    color: #10069f;
-}
-
+/* The Login Button */
 #login {
     color: #000000;
 }
