@@ -8,12 +8,16 @@
     <form method="post">
         {% csrf_token %}
         {{ form | bulma }}
-        
-            
-        
+
+        <div class="field">
+            <label class="checkbox">
+                <input type="checkbox" id="showPassword" onclick="togglePasswords(this)">
+                Show passwords
+            </label>
+        </div>
+
         <button id="submit" type="submit" class="button mt-1 is-link">Sign Up</button>
     </form>
 </div>
-
-
+<script src="{% static 'js/login.js' %}"></script>
 {% endblock %}
