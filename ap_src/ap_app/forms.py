@@ -179,6 +179,17 @@ class AcceptPolicyForm(forms.Form):
 
 
 class AbsencePlannerUserCreationForm(UserCreationForm):
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+        self.fields["password1"].widget.attrs.update({
+            "class": "password-input"
+        })
+
+        self.fields["password2"].widget.attrs.update({
+            "class": "password-input"
+        })
+        
     def clean_username(self):
         username = self.cleaned_data["username"]
         user_exists = check_user_exists(username)

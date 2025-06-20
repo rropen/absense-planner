@@ -13,11 +13,9 @@ function togglePassword(element) {
   }
 }
 
-function togglePasswords() {
-  const pass1 = document.getElementById("id_password1");
-  const pass2 = document.getElementById("id_password2");
-  const show = document.getElementById("showPassword").checked;
-
-  if (pass1) pass1.type = show ? "text" : "password";
-  if (pass2) pass2.type = show ? "text" : "password";
+function togglePasswords(checkboxElement) {
+  const passwords = document.querySelectorAll(".password-input");
+  for (const passwordInput of passwords) {
+    if (passwordInput) passwordInput.type = checkboxElement.checked ? "text" : "password";
+  }
 }
