@@ -12,6 +12,7 @@ from django.http import JsonResponse, HttpRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied
+
 from ..forms import CreateTeamForm
 from ..models import Role
 from ..utils.teams_utils import retrieve_team_member_data, favourite_team, get_user_token_from_request, get_users_teams
@@ -30,6 +31,7 @@ TEAM_APP_API_TIMEOUT = float(env("TEAM_APP_API_TIMEOUT"))
 # Use the session object from the Python requests library to send requests and pool the connection resources.
 # Without this, the requests sent to the API are EXTREMELY SLOW.
 session = Session()
+
 @login_required
 def teams_dashboard(request) -> render:
     """
@@ -94,11 +96,13 @@ def teams_dashboard(request) -> render:
         "teams/dashboard.html",
         {"teams": users_teams},
     )
+
 @login_required
 def leave_team(request):
     """
     Leaves a team and removes lingering switch permissions.
     """
+
     username = request.user.username
     user_token = get_user_token_from_request(request)
 
@@ -129,6 +133,7 @@ def leave_team(request):
         "Authorization": TEAM_APP_API_KEY,
         "User-Token": user_token
     }
+
     try:
         error, debug, success, warning = None, None, None, None
         session.post(url=url, data=data, params=params, headers=headers, timeout=TEAM_APP_API_TIMEOUT)
@@ -142,6 +147,7 @@ def leave_team(request):
         debug = "Error: Could not send a request to the API to leave a team. Exception: " + str(exception)
     else:
         success = "Left team successfully."
+
         # Remove lingering switch permissions upon success
         try:
             check_for_lingering_switch_perms(username, remove_switch_permissions, user_token)
@@ -152,16 +158,21 @@ def leave_team(request):
         print_messages(request, success=success, error=error, debug=debug, warning=warning)
 
     return redirect(reverse("dashboard")) # Redirect back to the list of joined teams
+
 @login_required
 def create_team(request:HttpRequest) -> render:
     user_token = get_user_token_from_request(request)
+
     if request.method == "POST":
         form = CreateTeamForm(request.POST)
+
         if form.is_valid():
             # Gets the created team and "Owner" Role and creates a Link between
             # the user and their team.
+
             # Send a POST request to the API instead of handling the usual model logic,
             # so that the created team is stored on the Team App instead of the Absence Planner.
+
             url = TEAM_APP_API_URL + "teams/"
             data = request.POST # This is the data sent by the user in the CreateTeamForm
             headers = {
@@ -203,6 +214,7 @@ def create_team(request:HttpRequest) -> render:
             "form": form,
         },
     )
+
 @login_required
 def join_team(request) -> render:
     """Renders page with all teams the user is not currently in and handles joining of specific teams."""
