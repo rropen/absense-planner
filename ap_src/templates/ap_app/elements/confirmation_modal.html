@@ -13,6 +13,8 @@
         <section class="modal-card-body darkBackground">
             {% if type == 'remove' %}
             <p class="dText">Are you sure you want to remove this absence?</p>
+            {% elif type == 'add' %}
+                <p class="dText"> are you sure you want to add an absence on this day </p>
             {% elif type == 'info' %}
             <p class="dText">Use Left Click to select a full day.
                 <br><br>Use Shift Left Click to select a half-day.

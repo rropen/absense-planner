@@ -38,18 +38,23 @@ document.addEventListener('click', function(e) {
                     var confirmationPage = document.getElementById("half")
                     confirmationPage.classList.add("is-active")
                     //Morning Clicked
-                    document.getElementById("morningBTN").onclick = function() {
+                    document.getElementById("morningBTN").onclick = function () {
                         sendData(username, date, true, "M", "add", "E")
                         confirmationPage.classList.remove("is-active")
                     }
-                    document.getElementById("afternoonBTN").onclick = function() {
+                    document.getElementById("afternoonBTN").onclick = function () {
                         sendData(username, date, true, "A", "add", "E")
                         confirmationPage.classList.remove("is-active")
                     }
                 }
                 //Full day absence
                 else {
-                    sendData(username, date, false, "N", "add", "E")
+                    var absence_type = e.target.dataset.absenceType;
+                    var confirmationPage = document.getElementById("add")
+                    confirmationPage.classList.add("is-active")
+                    document.getElementById("addBTN").onclick = function () {
+                        sendData(username, date, false, "N", "add", "E")
+                    }
                 }
             }
             //Remove an absnece
