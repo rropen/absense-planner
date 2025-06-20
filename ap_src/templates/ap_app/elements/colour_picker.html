@@ -27,13 +27,17 @@
             </select>
           </div>
           <div class="control">
-            <input type="color" class="input is-rounded colour-selector" value="{{ colour_value }}" name="colour" />
+            <input type="color" style="width:125px" class="input is-rounded colour-selector" value="{{ colour_value }}" name="colour" />
         </div>
         <div class="control">
-            <button class="button is-rounded" type="submit">
+            <button class="button is-rounded"  type="submit">
                 Submit
             </button>
         </div>
+    <div class="control"> <button class="button is-rounded" type="reset">
+        undo
+    </button>
+    </div>
     </nav>
     <input type="hidden" name="name" value="{{ name }}"></input>
 </form>

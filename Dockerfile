@@ -1,7 +1,7 @@
-FROM python:3.8
+FROM python:3.11.9
 
-COPY requirements.txt requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+COPY pyproject.toml pyproject.toml
+RUN pip install --no-cache-dir -r pyproject.toml
 
 COPY . rr_absence
 WORKDIR /rr_absence
