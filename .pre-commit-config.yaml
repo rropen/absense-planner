@@ -28,10 +28,8 @@ repos:
     rev: v4.8.3  # Replace with latest tag
     hooks:
       - id: commitizen
-      - id: commitizen-branch
-        stages: [pre-commit]
   - repo: https://github.com/rtts/djhtml
-    rev: 'main'  # replace with the latest tag on GitHub
+    rev: '3.0.8'  # replace with the latest tag on GitHub
     hooks:
       - id: djhtml
       - id: djcss

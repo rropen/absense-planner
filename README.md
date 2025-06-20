@@ -10,7 +10,11 @@
  <a href="http://commitizen.github.io/cz-cli/"><img src="https://img.shields.io/badge/commitizen-friendly-brightgreen?style=flat"></a>
 </p>
 
----h
+# Absence Planner
+
+![image](https://github.com/user-attachments/assets/9678cdf2-012e-4f7a-8919-24a4cd0f7279)
+
+---
 
 ## Overview
 
@@ -24,7 +28,19 @@ This project aims to overcome these deficiencies
 
 ## Usage
 
+### Background
+
 This project is just starting, will be a django web app with Javascript/jQuery on the front end, and Bulma.io CSS
+
+### Running the Server
+
+Once you have followed the [instructions in the Developer Guide for setting up the application](DEVELOPER.md#setup), you can simply run the server with `uv`:
+
+```shell
+uv run ap_src/manage.py runserver
+```
+
+If you are jumping from setup to this and the system cannot find the `uv` command, you may have to restart your IDE or device.
 
 ## Developer Guide
 
