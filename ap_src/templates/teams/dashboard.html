@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}Teams Dashboard{% endblock %}
+{% load static %}
+{% block content %}
+
+    {% if not teams %}
+    <div class="container has-background-light box darkInput" style="margin-top: 2rem;">
+        <div class="is-size-5 mb-3">
+            <p>You haven't joined any teams yet!</p>
+            <br />
+            <p>Consider joining a <a href="/teams/join"> team </a> or <a href="/teams/create">creating a team</a>. </p>
+        </div>
+    </div>
+    {% else %}
+    <div class="container" style="margin-top: 1rem; margin-bottom: 2rem;">
+        <h1 class="title has-text-centered dText">Your Teams</h1>
+    </div>
+    {% for team in teams %}
+    <div class="container has-background-light box darkInput" style="margin-top: 2rem;">
+        <div class="is-size-5 mb-3">
+            <span class="is-flex is-flex-direction-row is-justify-content-start is-align-items-center is-size-5 has-text-weight-bold team-name-bar">
+                <span>{{ team.team.name }}</span>
+                <span>
+                    <i class="fas fa-users mx-1"></i>
+                    <span>{{ team.team.members|length }}</span>
+                </span>
+                <form action="" method="POST" class="button is-ghost is-align-content-center" style="color: gold !important; padding: 0">
+                    {% csrf_token %}
+                    <input type="hidden" name="method" value="favourite">
+                    <input type="hidden" name="team" value="{{ team.team.id }}">
+                    <div class="tooltip">
+                        <span class="tooltiptext">Favourite {{ team.team.name }}</span>
+                    <button data-star="{{ team.favourite }}" type="submit">
+                        <i class="
+                            {% if team.favourite %}
+                                fas
+                            {% else %}
+                                far
+                            {% endif %}
+                            fa-star
+                        "></i>
+                    </button>
+                    </div>
+                </form>
+                
+            </span>
+            {% if team.role.role == "Owner" or team.role.role == "Co-Owner" %}
+                <span class="tag is-dark is-rounded">
+                    <i class="fas fa-user-edit"></i>
+                    &nbsp;{{ team.role.role }}
+                </span>
+            {% else %}
+                <span class="tag is-dark is-rounded">
+                    <i class="fas fa-user"></i>
+                    &nbsp;{{ team.role.role }}
+                </span>
+            {% endif %}
+        </div>
+        <span class="is-block is-size-6">{{team.team.description}}</span>
+        <div class="level-right mt-3">
+            <a class="button is-link mx-1" href={% url 'api_team_calendar' id=team.team.id %}>View</a>
+            {% if team.role.role == "Owner" or team.role.role == "Co-Owner"%}
+            <a class="button is-info mx-1" href={% url 'edit_team' id=team.team.id %}>Edit</a>
+            {% endif %}
+            <button class="button is-danger mx-1 leave-team-button"
+                    onclick="openLeaveTeamModal('{{ team.team.id }}', '{{ team.team.name }}', '{{ team.role.role }}', {{ team.team.members|length }})"
+            >
+                Leave
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+    
+</div>
+
+{% include "teams/elements/leave_team_modal.html" %}
+
+<div id="successModal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="box">
+            <h1 class="title">Success</h1>
+            <p id="success-modal-team-message">You have successfully left the team.</p>
+            <div class="buttons is-right">
+                <button id="closeSuccessButton" class="button is-success">OK</button>
+            </div>
+        </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"></button>
+</div>
+
+<script src="{% static 'js/teams.js' %}"></script>
+{% endblock %}

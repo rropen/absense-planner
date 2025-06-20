@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% load static %}
+{% block content %}
+
+<script src="C:\absense-planner\ap_src\static_root\admin\js\tooltips.js"></script>
+<container>
+<div class="main">
+    {% if user.is_authenticated %}
+        <p>Logged in as <span class="tag is-info">{{user.username}}</span></p>
+        <a href="{% url 'logout' %}" id="LINK-logout">Log Out</a>
+    {% else %}
+        <p id="NOT-loggedin">You are not logged in.</p>
+        <a href="{% url 'login' %}" id="LINK-login">Click here to log in.</a>
+    {% endif %}
+</div>
+</container>
+
+
+{% endblock %}

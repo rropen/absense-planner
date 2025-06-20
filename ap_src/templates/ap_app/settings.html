@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% load bulma_tags %}
+{% load static %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+
+<body>
+
+    <div class="columns is-centered">
+        <div class="column is-one-third">
+            <div class="box">
+                <h3 class="title is-4">User Information</h3>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="field">
+                        <label class="label"><div class="dText">First Name</div></label>
+                        <div class ="control has-icons-right">
+                            {% if user_details.first_name %}
+                                <input class="input is-rounded is-success darkInput" type="text" placeholder="First Name" value="{{ user_details.first_name }}" name="firstName" id="first-name-input">
+                                <span class="icon is-small is-right">
+                                    <button type="button" class="delete" aria-label="delete" onclick="deleteInputtedValue('first-name-input')"></button>
+                                </span>
+                            {% else %}
+                                <input class="input is-rounded is-warning darkInput" type="text" placeholder="First Name" name="firstName">
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label"><div class="dText">Last Name</div></label>
+                        <div class ="control has-icons-right">
+                            {% if user_details.last_name %}
+                                <span class="icon is-small is-right">
+                                    <button type="button" class="delete" aria-label="delete" onclick="deleteInputtedValue('last-name-input')"></button>
+                                </span>
+                                <input class="input is-rounded is-success darkInput" type="text" placeholder="Last Name" value="{{ user_details.last_name }}" name="lastName" id="last-name-input">
+                            {% else %}
+                                <input class="input is-rounded is-warning darkInput" type="text" placeholder="Last Name" name="lastName">
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label"><div class="dText">Email</div></label>
+                        <div class="control has-icons-right">
+                            {% if user_details.email %}
+                                <input class="input is-rounded is-success darkInput" type="email" placeholder="Email Address" name="email" id="email-input" value="{{ user_details.email }}">
+                                <span class="icon is-small is-right">
+                                    <button type="button" class="delete" aria-label="delete" onclick="deleteInputtedValue('email-input')"></button>
+                                </span>
+                            {% else %}
+                                <input class="input is-rounded is-warning darkInput" type="email" placeholder="Email Address" name="email">
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label"><div class="dText">Region</div></label>
+                        <div class="control">
+                            <div class="select is-rounded">
+                                <select name="region">
+                                    {% for country in countries %}
+                                        {% if country == current_country %}
+                                            <option value="{{country}}" selected="selected">{{country}}</option>
+                                        {% else %}
+                                            <option value="{{country}}">{{country}}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label"><div class="dText">Data Settings</div></label>
+                        <div class="control">
+                            <label style="display: flex; gap: 10px;">
+                                {% if dark_mode %}
+                                <input type="checkbox" checked="checked" id="darkModeToggle" name="dark"></input>
+                                {% else %}
+                                <input type="checkbox" id="darkModeToggle" name="dark"></input>
+                                {% endif %}
+                                <div class="dText">
+                                    Toggle Dark Mode
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="field is-grouped my-4">
+                        <div class="control">
+                            <button class="button is-link settings-submit-button">Submit</button>
+                        </div>
+                        <div class="control">
+                            <button class="button is-link">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="box">
+                <h3 class="title is-4"><div class="dText">App Information</div></h3>
+                <label class="label"><div class="dText">Permission Settings</div></label>
+                <nav class="navbar">
+                    <div class="permission_input_select">
+                        <div class="control">
+                            <input class="input is-rounded darkInput" placeholder="Add a user" type="text" size="50" id="user_permission_input">
+                            {% csrf_token %}
+                            <button class="button is-rounded submit-button" onclick="addUserPermission('{{ csrf_token }}')">Submit</button>
+                        </div>
+                    </div>
+                    
+                </nav>
+                <h6><div class="dText">Users with permission to edit your absences:</div></h6>
+                <div class="tags">
+                    {% for user in userprofile.edit_whitelist.all %}
+                        <span class="tag is-dark">{{user}}</span>
+                    {% endfor %}
+                </div>
+                <label class="label"><div class="dText">Calendar Settings</div></label>
+                {% for colour in colours %}
+                <h6 class="dText"><div class="dText">{{ colour.name }}</div></h6>
+                <div class="permission_input_select">
+                    {% include 'ap_app/elements/colour_picker.html' with colour_value=colour.colour name=colour.name enabled=colour.enabled %}
+                </div>
+                
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div id="stylesheet-paths"
+        darkmode-location="{% static 'css/dark.css' %}"
+        lightmode-location="{% static 'css/light.css' %}">
+    </div>
+
+    <script>
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            });
+        }
+    </script>
+    <script src="{% static 'js/profile_update.js' %}"></script>
+    <script src="{% static 'js/darkMode.js' %}"></script>
+
+</body>
+{% endblock %}

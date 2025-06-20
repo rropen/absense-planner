@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load bulma_tags %}
+{% block title %}Create Recurring Absence{% endblock %}
+{% load static %}
+{% block content %}
+<head>
+    {{form.media}}
+    <title>Recurring Absence</title>
+</head>
+
+<div class="main container column is-3">
+    <h1 class="title has-text-centered dText"> Create Recurring Absence </h1>
+    <form method="POST" class="post-form">
+        {% csrf_token %}
+        <div class="container has-text-weight-bold dText">
+
+            {% csrf_token %}
+            {% if message %}
+            {% include "messages.html" %}
+            {% endif %}
+            {{ form }}
+            
+            {{ form.media }}
+            {% for error in form.errors %}
+            {% endfor %}
+            <div class="pt-6 pb-3">
+                {{ form2 | bulma }}
+            </div>
+            
+            <button id="submit" type="submit" class="button is-fullwidth is-link">Submit</button>
+        </div>
+
+    </form>
+</div>
+
+<script type="text/javascript" src="{% static 'jsi18n' %}"></script>
+<script type="text/javascript" src="{% static 'js/core.js' %}"></script>
+{% endblock %}

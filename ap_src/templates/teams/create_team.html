@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load bulma_tags %}
+{% block title %}Create Team{% endblock %}
+{% load static %}
+{% block content %}
+
+<!-- <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.1/css/select2.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.1/js/select2.min.js"></script> -->
+
+
+<div class="main container">
+    <h1 class="title dText">Create a Team</h1>
+    <form method="post" class="text-center" id="teamForm">
+        {% if message %}
+        {% include "messages.html" %}
+        {% endif %}
+        {% csrf_token %}
+      
+        
+        {% comment %} <p id="namePromt"></p> {% endcomment %}
+        
+
+        {{ form | bulma }}
+
+    <div id="notif-info" class="notification is-info">
+    <button class="delete" type="button"></button>
+    Enter a minimum of 3 characters for the team name and team description.
+    </div>
+
+    <div id="notif-warning" class="notification is-warning">
+    <button class="delete" type="button"></button>
+    Please avoid using personal information in the description as it will be seen by non team members.
+    </div>
+
+    <input type="hidden" name="origin_application" value="Absence Planner">
+    <label id="label_button" class="button is-primary" disabled>
+        Submit
+        <input type="hidden" name="origin_application" value="Absence Planner">
+    <input id="submit" class="is-hidden" value="Submit" type="submit" disabled>
+    </label>
+    </form>
+</div>
+{% comment %} <script>
+    
+    const existingTeams = "{{ existing_teams|safe }}".split(",");
+    const existingTeamIds = "{{ existing_teams_ids|safe }}".split(",")
+
+    const teamInputTag = document.getElementById("nameInput");
+
+    
+    var nameFound = false;
+    var foundTeamIndex = null;
+
+    function determineValid(item, index, arr){
+        // If name is similar to an already made team-name, than will set 'nameFound' to true to perform necessary actions 
+        if (item == $("#nameInput").val() && item != "")
+        {
+            nameFound = true;
+        }
+    }
+
+    function teamsInfoBox()
+    {
+        // If link has not already been implemented below team-name input
+        if (!document.getElementById("temp"))
+        {
+            // Sets string for url to search - (with filter applied to find similar names of already made teams)
+            var teamLink = "join?" + "teamName=" + $("#nameInput").val();
+            var str = "<a id='temp' href='" + teamLink + "'>See <strong>" + $("#nameInput").val() + "</strong>" + " Info</a>";
+            teamInputTag.insertAdjacentHTML("afterend", str);
+        }
+    };
+
+    $(document).ready(function(){
+        // Event handling for key-up in name input
+        $("#nameInput").keyup(function(){
+            nameFound = false;
+            var inputVal = $("#nameInput").val();
+            existingTeams.forEach(determineValid);
+            
+            $("#namePromt").html("");
+            
+            if (nameFound)
+            {
+                $("#nameInput").css("color", "red");
+                $("#namePromt").append("<strong style='color:red'> Name Taken </strong>");
+                teamsInfoBox(inputVal);
+            }            
+            else
+            {
+                $("#nameInput").css("color", "green");
+                $("#temp").remove()
+            }
+        });
+
+    });
+  
+</script>
+
+
+
+ {% endcomment %}
+  
+{% endblock %}

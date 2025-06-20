@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load bulma_tags %}
+{% load static %}
+{% block title %}Edit Absence{% endblock %}
+{% block content %}
+<div class="main container column is-3">
+    <h1 class="title has-text-centered dText"> Edit Absence </h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{form | bulma }}
+        {% for error in form.errors %}
+        <p>{{error}}</p>
+        {% endfor %}
+        <input id="submit" type="submit" class="button is-fullwidth is-info" value="Update">
+    </form>
+</div>
+
+{% endblock %}

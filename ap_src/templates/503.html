@@ -1,0 +1,54 @@
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absence Planner - Service Unavailable</title>
+    <link rel="stylesheet" href="{% static 'css/error_pages.css' %}">
+
+    <style>
+      body {
+        background-color: white;
+        color: black;
+      }
+
+      a {
+        color: black
+      }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title title-with-wrench"><i class="fas fa-wrench wrench"></i> 503 SERVICE_UNAVAILABLE</div>
+        <div class="message">
+          The server is currently down due to maintenance-related reasons.
+        </div>
+        <div class="details">
+          Error Code: HTTP_503_SERVICE_UNAVAILABLE
+          <br><br>
+          What failed: the server is not ready to handle the request.
+          <br><br>
+          {% if error_message %}
+            {{ error_message }}
+          {% endif %}
+        </div>
+      </div>
+
+</body>
+</html>
+
+<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+<script>
+    function playAudio(){
+        audio.play().catch(error => console.log("Playback error:", error));
+    };
+
+    var audio = new Audio("{% static 'audio\death-sound.mp3' %}");
+    document.documentElement.addEventListener("click", playAudio);
+    document.documentElement.addEventListener("keypress", playAudio);
+</script>
+{% endblock %}

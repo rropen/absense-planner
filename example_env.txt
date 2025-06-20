@@ -1,0 +1,13 @@
+TEAM_APP_API_URL=http://localhost:8002/api/
+# API key for development use only (DO NOT USE IN PRODUCTION)
+TEAM_APP_API_KEY="Api-Key amAaQwQ0.cmf6FJ6OcfpBrk5frt744653z4pwll1I"
+TEAM_APP_API_TIMEOUT=6
+
+DEBUG=True
+PROFILING=False
+PRODUCTION_UI=False
+
+DB_NAME = ""
+DB_USER = ""
+DB_PASSWORD = ""
+DB_HOST = ""

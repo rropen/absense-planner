@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Join Team{% endblock %}
+{% load static %}
+{% block content %}
+
+<div class="container" style="margin-top: 2rem;">
+    {% if teams %}
+    {% for team in teams %}
+    <div class="container has-background-light box darkInput">
+        <div class="is-size-5 mb-3">
+            <span class="is-block is-size-5 has-text-weight-bold">{{team.name}} 
+                <i class="fas fa-user-alt mx-2"></i>{{team.count}}</span>
+            <span class="is-block is-size-6">{{ team.description }}</span>
+            <div class="is-grouped">
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="team_id" value="{{ team.id }}">
+                    <input type="hidden" name="method" value="join">
+                    <button class="button is-success join-team-button" id="{{ team.id }}" type="submit">
+                        Join Team
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+        <div class="container has-background-light box">
+            <div class="is-size-5 mb-3">
+                <span class="is-block is-size-5">You've joined all of the available teams.</span>
+            </div>
+        </div>
+    {% endif %}
+    <a id="teams/" class="column button is-medium is-info icon-text" href="{% url 'dashboard' %}">
+    <i class="fas fa-users fa-w-20"></i> Go back to joined teams</i>
+    </a>
+</div>
+<script src="{%static 'js/button_spinner.js' %}"></script>
+<script src="{% static "js/teams.js" %}"></script>
+
+{% endblock %}

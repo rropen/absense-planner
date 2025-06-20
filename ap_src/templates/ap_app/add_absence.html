@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load bulma_tags %}
+{% load static %}
+{% block title %}Register Absence{% endblock %}
+{% block content %}
+
+
+<div class="main container column is-4">
+    <h1 class="title has-text-centered dText"> Create Absence </h1>
+    <form method="POST">
+            {% csrf_token %}
+            {% if message %}
+            {% include "messages.html" %}
+            {% endif %}
+            {{form | bulma}}
+        
+
+        <input id="submit" type="submit" class="button is-link is-fullwidth" value="Save">
+
+
+
+    </form>
+    <br>
+    <a id="recurring" class="button is-info has-text-centered is-fullwidth" href="{% url 'add_recurring' %}">Add Recurring Absence</a>
+</div>
+<script src="{% static "js/absence_creation.js" %}"></script>
+{% endblock %}

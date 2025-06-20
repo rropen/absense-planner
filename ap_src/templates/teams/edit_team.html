@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load bulma_tags %}
+{% load static %}
+{% block title %}Edit Team{% endblock %}
+
+{% block content %}
+<div class="container is-centered p-5">
+        <h1 class="title" id="team-name">{{ team.name }}</h1>
+        <h2 class="subtitle" id="team-desc">{{ team.description }}</h2>
+
+        <div class="columns">
+            <div class="column">
+                <div class="has-background-light box is-flex is-flex-direction-column">
+                    <span class="is-block is-size-5 has-text-weight-bold">
+                        <i class="fas fa-cog"></i>
+                        Team Management
+                    </span>
+                    <form class="py-1" method="POST" action="">
+                        {% csrf_token %}
+                        {{ form | bulma }}
+
+                        <input class="button is-link is-fullwidth button is-success" type="submit" value="Submit" />
+                    </form><br />
+                    <button class="button is-danger mb-5" onclick="openDeleteTeamModal(this)" id="{{ team.id }}" type="button">Delete Team</button>
+                        <div id="notif-info" class="notification is-info">
+                        <button class="delete" type="button"></button>
+                        Enter a minimum of 3 characters for the team name and team description.
+                        </div>
+                        <div id="notif-warning" class="notification is-warning">
+                        <button class="delete" type="button"></button>
+                        Please avoid using personal information in the description as it will be seen by non team members.
+                        </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="has-background-light box is-fullheight">
+                    <span class="is-block is-size-5 has-text-weight-bold">
+                        <i class="fas fa-users"></i>
+                        Members
+                    </span>
+                    <div class="is-flex is-flex-direction-column is-justify-content-flex-start is-fullheight">
+                        {% for role in roles %}
+                            <div class="mt-4">
+                                <span class="is-block is-size-6 has-text-weight-bold">{{ role }}s</span>
+                                <div class="field is-grouped is-grouped-multiline">
+                                    {% for member in team.members %}
+                                        {% if member.user.role_info.role == role.role %}
+                                            <span class="tag is-dark">
+                                                {{ member.user.username }}
+                                            </span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+<div id="deleteTeamModal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="box">
+            <h1 class="title">Are you sure you want to delete this team?</h1>
+            <p>This action cannot be undone.</p>
+            <div class="buttons is-right">
+                <form action="{% url "delete_team" %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="team_id" value="{{ team.id }}">
+                    <button id="confirmDeleteButton" class="button is-danger" type="submit">Delete</button>
+                </form>
+                <button id="cancelDeleteButton" class="button">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"></button>
+</div>
+<script src="{% static "js/teams.js" %}"></script>
+{% endblock %}
