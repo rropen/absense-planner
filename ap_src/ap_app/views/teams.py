@@ -5,6 +5,7 @@ Errors are handled here by passing Django messages up through views to templates
 """
 
 import environ
+
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse, HttpRequest
@@ -16,13 +17,16 @@ from ..models import Role
 from ..utils.teams_utils import retrieve_team_member_data, favourite_team, get_user_token_from_request, get_users_teams
 from ..utils.switch_permissions import check_for_lingering_switch_perms, remove_switch_permissions
 from ..utils.errors import print_messages, derive_http_error_message
+
 from requests import Session
 from requests import HTTPError, ConnectionError, RequestException
+
 env = environ.Env()
 environ.Env.read_env()
 TEAM_APP_API_URL = env("TEAM_APP_API_URL")
 TEAM_APP_API_KEY = env("TEAM_APP_API_KEY")
 TEAM_APP_API_TIMEOUT = float(env("TEAM_APP_API_TIMEOUT"))
+
 # Use the session object from the Python requests library to send requests and pool the connection resources.
 # Without this, the requests sent to the API are EXTREMELY SLOW.
 session = Session()
