@@ -172,7 +172,7 @@ def create_team(request:HttpRequest) -> render:
 
             # Send a POST request to the API instead of handling the usual model logic,
             # so that the created team is stored on the Team App instead of the Absence Planner.
-
+            
             url = TEAM_APP_API_URL + "teams/"
             data = request.POST # This is the data sent by the user in the CreateTeamForm
             headers = {
@@ -191,6 +191,7 @@ def create_team(request:HttpRequest) -> render:
                     context = {"form": form}
                     if api_response.json()["name"] is not None:
                         context["message"] = "That team name already exists"
+
             except ConnectionError as exception:
                 error = "Error - could not create the team due to a connection error."
                 debug = "Error: Could not connect to the API to create a team. Exception: " + str(exception)
