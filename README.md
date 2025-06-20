@@ -12,6 +12,8 @@
 
 # Absence Planner
 
+![image](https://github.com/user-attachments/assets/9678cdf2-012e-4f7a-8919-24a4cd0f7279)
+
 ---
 
 ## Overview
