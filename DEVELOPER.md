@@ -17,11 +17,23 @@ User accounts must be created on the Team App first before creating an account o
 
 ## Setup
 
-### Basic
+### Using GNU Make
 
-To start running the application, you need to run the `setup` script:
+This is the simplest way to get the app running, but you need [GNU Make](DEVELOPER.md#gnu-make) as a dependency:
 
-### Windows
+```shell
+make
+```
+
+Then follow the [instructions for running it in the `README`](README.md#running-the-server).
+
+### Using the `setup` Scripts
+
+#### Overview
+
+To start running the application, you need to run the `setup` script, and follow the [instructions for running it in the `README`](README.md#running-the-server).
+
+#### Windows
 
 ```powershell
 .\setup.bat
@@ -33,15 +45,15 @@ If you get an error saying that you are not permitted to run scripts, run the fo
 Set-ExecutionPolicy -Scope CurrentUser Unrestricted
 ```
 
-### MacOS and Linux
+#### MacOS and Linux
 
-```shell
+```sh
 ./setup.sh
 ```
 
 If you get "permission denied", you need to run the following command:
 
-```shell
+```sh
 chmod +x setup.sh
 ```
 
