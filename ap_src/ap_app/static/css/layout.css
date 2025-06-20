@@ -267,3 +267,8 @@ footer {
 .submit-button {
   margin-top: 5px;
 }
+
+.calendar-group {
+  overflow: auto !important;
+  height: 75vh !important;
+}
