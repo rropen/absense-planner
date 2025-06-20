@@ -30,17 +30,9 @@ This project is just starting, will be a django web app with Javascript/jQuery o
 
 To get started with the Absence Planner and the Team App, we have a [developer guide](DEVELOPER.md).
 
-## Contribution
+## Contributing
 
-To contribute changes to the original respository, the following commands can be used:
-
-- git remote add upstream ORIGINAL_REPOSITORY_URL
-
-- git merge upstream/master git fetch upstream
-
-- git merge upstream/master
-
-- git push origin master
+To learn more about contributing (e.g., commits, pull requests, etc.), read our [Contributer's Guide](CONTRIBUTING.md)
 
 ## Colour Schemes
 

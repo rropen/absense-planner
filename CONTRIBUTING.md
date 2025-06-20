@@ -4,6 +4,16 @@
 
 This document provides simple instructions and information for anybody who wishes to create pull requests and pass pre-commit and CI checks and tests.
 
+To contribute changes to the original respository, the following commands can be used:
+
+- `git remote add upstream ORIGINAL_REPOSITORY_URL`
+
+- `git merge upstream/master git fetch upstream`
+
+- `git merge upstream/master`
+
+- `git push origin master`
+
 ## Commits
 
 In order to pass automated pre-commit checks, this is important reading material.
