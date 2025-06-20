@@ -84,6 +84,10 @@ h3 {
   background-color: #3e4549;
 }
 
+.navbar-end {
+    background-color: #a81e1e;
+}
+
 .footer {
   background-color: #292e33;
 }
@@ -204,6 +208,16 @@ h3 {
   width: 80%;
 }
 
+/* The Login Button */
+#login {
+    color: #000000;
+}
+
+#login:hover,
+#login:focus {
+    color: #10069f;
+}
+
 /* The Close Button */
 .close {
   color: #000000;
@@ -247,4 +261,26 @@ h3 {
 
 .dates-cell {
   background-color: var(--dates-cell-background) !important;
+}
+
+/* Signup/Login page */
+#LINK-login {
+    color: #66d1ff;
+}
+
+#NOT-loggedin {
+    color: white;
+}
+
+.help {
+    color: white;
+}
+
+/* Edit Team - Team Name/Description */
+#team-name {
+    color: white;
+}
+
+#team-desc {
+    color: white;
 }
