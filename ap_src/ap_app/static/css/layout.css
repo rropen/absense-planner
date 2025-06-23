@@ -138,7 +138,7 @@ footer {
 }
 
 .user-cell {
-    width: 6vw; 
+    width: 6vw;
     min-width: var(--user-cell-width); 
     max-width: var(--user-cell-width);
     height: var(--cell-size);
@@ -146,6 +146,8 @@ footer {
     display: flex;
     justify-content: start;
     align-items: center;
+    border: 1px solid grey;
+    background: solid white;
 }
 
 .username {

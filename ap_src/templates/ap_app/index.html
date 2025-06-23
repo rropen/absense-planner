@@ -10,8 +10,7 @@
         <p>Logged in as <span class="tag is-info">{{user.username}}</span></p>
         <a href="{% url 'logout' %}" id="LINK-logout">Log Out</a>
     {% else %}
-        <p>You are not logged in.</p>
-        <a href="{% url 'login' %}" id="LINK-login">Click here to log in.</a>
+        <meta http-equiv="refresh" content="1,url=signup">
     {% endif %}
 </div>
 </container>

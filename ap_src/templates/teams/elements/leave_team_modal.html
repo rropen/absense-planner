@@ -9,7 +9,7 @@
                 <form id="leaveTeamForm" action="{% url 'leave_team' %}" method="POST">
                     {% csrf_token %}
                     <input id="leaveTeamInput" type="hidden" name="team_id" value="">
-                    <button id="confirmLeaveButton" class="button is-danger" type="submit">Leave</button>
+                    <button id="confirmLeaveButton" class="button" style="background-color: #a30000; border-color: #a30000; color: white;" type="submit">Leave</button>
                 </form>
                 <button id="cancelLeaveButton" class="button">Cancel</button>
             </div>

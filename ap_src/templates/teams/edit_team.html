@@ -20,7 +20,8 @@
                         {{ form | bulma }}
                         <input class="button is-link is-fullwidth" type="submit" value="Submit" />
                     </form><br />
-                    <button class="button is-danger" onclick="openDeleteTeamModal(this)" id="{{ team.id }}" type="button">Delete Team</button>
+                    <button class="button" style="background-color: #a30000; border-color: #a30000; color: white;" onclick="openDeleteTeamModal(this)" id="{{ team.id }}" type="button">Delete Team</button>
+
                 </div>
             </div>
             <div class="column">
@@ -59,7 +60,7 @@
                 <form action="{% url "delete_team" %}" method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="team_id" value="{{ team.id }}">
-                    <button id="confirmDeleteButton" class="button is-danger" type="submit">Delete</button>
+                    <button id="confirmDeleteButton" class="button" style="background-color: #a30000; border-color: #a30000; color: white;" type="submit">Delete</button>
                 </form>
                 <button id="cancelDeleteButton" class="button">Cancel</button>
             </div>
