@@ -16,9 +16,9 @@
                         <label class="label"><div class="dText">First Name</div></label>
                         <div class ="control">
                             {% if user.first_name %}
-                            <input class="input is-rounded is-success darkInput" type="text" placeholder="First Name" value="{{ user.first_name }}" name="firstName">
+                            <input class="input is-rounded is-success darkInput" type="text" placeholder="First Name" value="{{ user.first_name }}" name="firstName" minlength="2" pattern="[A-Za-z\s]+" title="What name has numbers in it...">
                             {% else %}
-                            <input class="input is-rounded is-warning darkInput" type="text" placeholder="First Name" name="firstName">
+                            <input class="input is-rounded is-warning darkInput" type="text" placeholder="First Name" name="firstName" minlength="2" pattern="[A-Za-z\s]+">
                             {% endif %}
                         </div>
                     </div>
@@ -26,9 +26,9 @@
                         <label class="label"><div class="dText">Last Name</div></label>
                         <div class ="control">
                             {% if user.last_name %}
-                            <input class="input is-rounded is-success darkInput" type="text" placeholder="Last Name" value="{{ user.last_name }}" name="lastName">
+                            <input class="input is-rounded is-success darkInput" type="text" placeholder="Last Name" value="{{ user.last_name }}" name="lastName" minlength="2">
                             {% else %}
-                            <input class="input is-rounded is-warning darkInput" type="text" placeholder="Last Name" name="lastName">
+                            <input class="input is-rounded is-warning darkInput" type="text" placeholder="Last Name" name="lastName" minlength="2">
                             {% endif %}
                         </div>
                     </div>

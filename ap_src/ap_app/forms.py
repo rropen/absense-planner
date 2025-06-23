@@ -23,14 +23,14 @@ class CreateTeamForm(forms.Form):
         min_length=3,
         max_length=64,
         required=True,
-        widget=forms.TextInput(attrs={"class": "", "placeholder": "Team Name", "id":"nameInput"}),
+        widget=forms.TextInput(attrs={"class": "", "placeholder": "Team Name (Min 3 Max 64 Characters)", "id":"nameInput"}),
     )
 
     #The description of the team. Can be up to 512 characters long. Is optional.
     description = forms.CharField(
         max_length=512,
         required=True,
-        widget=forms.Textarea(attrs={"class": "", "placeholder": "Team Description","rows":4, "cols":15}),
+        widget=forms.Textarea(attrs={"class": "", "placeholder": "Team Description (Max 512 Characters)","rows":4, "cols":15}),
     )
 
 
