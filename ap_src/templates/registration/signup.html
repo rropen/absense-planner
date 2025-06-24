@@ -1,23 +1,56 @@
-{% extends 'base.html' %}
-{% block title %}Sign Up{% endblock %}
-{% load static %}
-{% block content %}
+{% extends "base.html" %}
 {% load bulma_tags %}
-<div class="main container column is-3 ">
-    <h1 class="title has-text-centered dText">Sign up</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form | bulma }}
+{% load static %}
+{% block title %}Sign up{% endblock %}
 
-        <div class="field">
-            <label class="checkbox">
-                <input type="checkbox" id="showPassword" onclick="togglePasswords(this)">
-                Show passwords
-            </label>
+{% block content %}
+<section class="hero">
+    <div class="hero-body">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-5-tablet is-4-desktop is-4-widescreen">
+                    <form method="POST" action="signup" class="box">
+                        <h1 class="title">Sign up</h1>
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="field">
+                                <label class="label" for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
+                                <div class="control has-icons-left">
+                                    {% if field.value == None %}
+                                    <input class="input" type="{{ field.field.widget.input_type }}" name="{{ field.name }}" required id="{{ field.id_for_label }}">
+                                    {% else %}
+                                    <input class="input" type="{{ field.field.widget.input_type }}" name="{{ field.name }}" required id="{{ field.id_for_label }}" value="{{ field.value }}">
+                                    {% endif %}
+                                    <span class="icon is-small is-left">
+                                        {% if field.name == "username" %}
+                                            <i class="fa fa-user"></i>
+                                        {% elif field.name == "email" %}
+                                            <i class="fas fa-envelope"></i>
+                                        {% else %}
+                                            <i class="fa fa-lock"></i>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        {% for field in form %}
+                        <p>
+                            {% if field.errors %}
+                            <ul class="errorlist">
+                                {% for error in field.errors %}
+                                <li style="color: red">{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                        </p>
+                        {% endfor %}
+                        <div class="field">
+                            <button class="button is-info">Create Account</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-
-        <button id="submit" type="submit" class="button mt-1 is-link">Sign Up</button>
-    </form>
-</div>
-<script src="{% static 'js/login.js' %}"></script>
+    </div>
+</section>
 {% endblock %}
