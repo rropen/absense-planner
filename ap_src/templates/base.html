@@ -192,13 +192,7 @@
 
 
 
-    {% else %}
-      <a class="navbar-item icon-text" href="/">
-        <span class="icon is-size-5">
-          <i class="fas fa-home"></i>
-        </span>
-        <span>Home</span>
-      </a>
+
     {% endif %}
   </div>
   <div class="navbar-end">
@@ -210,13 +204,6 @@
               <i class="fas fa-user-circle ml-2 is-size-5"></i>
             </a>
             <a id="logout" href="{% url 'logout' %}" class="button is-light">Log out</a>
-          {% else %}
-            <a id="signup" href="{% url 'signup' %}" class="button is-info">
-              <strong>Sign up</strong>
-            </a>
-            <a id="login" href="{% url 'login' %}" class="button is-light">
-              Log in
-            </a>
           {% endif %}
         </div>
       </div>
