@@ -4,48 +4,40 @@
     <nav class="navbar permission_input_select">
         <div class="control">
             <div class="select is-rounded">
-                <select name="enabled">
-                    {% if enabled %}
-                    <option value="True" selected>Enabled</option>
-                    <option value="False">Disabled</option>
-                    {% else %}
-                    <option value="False" selected>Disabled</option>
-                    <option value="True">Enabled</option>
-                    {% endif %}
-                </select>
+              <select name="enabled">
+                {% if enabled %}
+                <option value="True" selected>Enabled</option>
+                <option value="False">Disabled</option>
+                {% else %}
+                <option value="False" selected>Disabled</option>
+                <option value="True">Enabled</option>
+                {% endif %}
+              </select>
             </div>
         </div>
         <div class="select is-rounded">
             <select name="enabled">
-                {% if enabled %}
-                <option value="True" selected>Show</option>
-                <option value="False">Hide</option>
-                {% else %}
-                <option value="False" selected>Show</option>
-                <option value="True">Hide</option>
-                {% endif %}
+              {% if enabled %}
+              <option value="True" selected>Show</option>
+              <option value="False">Hide</option>
+              {% else %}
+              <option value="False" selected>Show</option>
+              <option value="True">Hide</option>
+              {% endif %}
             </select>
-        </div>
-        <div class="control">
-            <input type="color" style="width:150px" class="input is-rounded colour-selector" value="{{ colour_value }}" name="colour" />
+          </div>
+          <div class="control">
+            <input type="color" class="input is-rounded colour-selector" value="{{ colour_value }}" name="colour" />
         </div>
         <div class="control">
             <button class="button is-rounded" type="submit">
                 Submit
             </button>
         </div>
-        <div class="control button-group">
-            <button class="button is-rounded"
-                type="submit"
-                {% if name == "Bank Holidays" %}
-                    value="#28663a" name="colour"
-                {% elif name == "Weekends" %}
-                    value="#206cab" name="colour"
-                {% endif %}
-            >
-                reset
-            </button>
-        </div>
+        <div class="control"> <button class="button is-rounded" type="reset">
+            undo
+        </button>
+    </div>
     </nav>
-    <input type="hidden" name="name" value="{{ name }}">
+    <input type="hidden" name="name" value="{{ name }}"></input>
 </form>
