@@ -41,7 +41,7 @@ from ..utils.errors import derive_http_error_message, print_messages
 
 User = get_user_model()
 
-
+@login_required(login_url="/accounts/login")
 def index(request) -> render:
     """Branched view.                       \n
     IF NOT Logged in: returns the home page \n

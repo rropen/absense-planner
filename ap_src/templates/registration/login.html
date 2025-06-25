@@ -10,11 +10,12 @@
         {{ form | bulma }}
         <div class="field has-addons has-addons-right" style="margin-top: -2.75rem;">
         <div class="control">
-            <button type="button" onclick="togglePassword()">
-            <span class="icon is-normal mx-2"><i class="fas fa-eye" id="toggleIcon"></i></span>
+            <button type="button" onclick="togglePassword(this)">
+            <span class="icon is-normal mx-2"><i class="fas fa-eye toggle-icon"></i></span>
             </button>        
         </div>
         </div>
+        <p class="dText is-size-7 has-text-right">Don't have an account? <a href="/signup">Sign Up</a></p>
         <button id="submit" class="button is-link" type="submit">Login</button>
     </form>
 </div>

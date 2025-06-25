@@ -124,7 +124,13 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["ruff>=0.11.5"]
+dev = [
+  "commitizen",
+  "django-debug-toolbar==4.2.0",
+  "djhtml",
+  "pre-commit",
+  "ruff>=0.11.5",
+]
 
 [tool.uv]
 package = false
@@ -133,3 +139,11 @@ package = false
 
 [tool.uv.sources]
 django-recurrence = { git = "https://github.com/jazzband/django-recurrence.git", rev = "1.12.1" }
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "$version"
+version_scheme = "pep440"
+version_provider = "uv"
+update_changelog_on_bump = true
+major_version_zero = true

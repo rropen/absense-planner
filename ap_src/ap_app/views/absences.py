@@ -71,8 +71,8 @@ def absence_delete(request, absence_id: int, user_id: int, team_id: int = 1):
         absence.delete()
     except Absence.DoesNotExist:
         pass
-    if request.user == User.objects.get(id=user_id):
-        return redirect("profile")
+    if request.user == User.objects.get(id = user_id):
+        return redirect("my_absences")
     return redirect("edit_team_member_absence", team_id, user_id)
 
 
@@ -84,7 +84,7 @@ def absence_recurring_delete(
     user = request.user
     absence.delete()
     if user == absence.Target_User_ID:
-        return redirect("profile")
+        return redirect("my_absences")
     return redirect("edit_team_member_absence", team_id, user_id)
 
 
@@ -96,7 +96,7 @@ class EditAbsence(UpdateView):
     fields = ["absence_date_start", "absence_date_end"]
 
     def get_success_url(self) -> str:
-        return reverse("profile")
+        return reverse("my_absences")
 
 
 @login_required

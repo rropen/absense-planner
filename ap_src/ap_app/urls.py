@@ -39,7 +39,7 @@ urlpatterns = [
     path("teams/delete", teams.delete_team, name="delete_team"),
     path("absence/add", absences.manual_add, name="add"),
     path("absence/add_recurring", absences.add_recurring, name="add_recurring"),
-    path("profile/", absences.profile_page, name="profile"),
+    path("absences/my_absences", absences.profile_page, name="my_absences"),
     path("privacy/", views.privacy_page, name="privacy"),
     path("ap_accounts/delete_user", views.deleteuser, name="delete_user"),
     path(

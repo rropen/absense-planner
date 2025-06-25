@@ -1,101 +1,101 @@
 :root {
-    --user-cell-width: 120px;
-    --days-cell-background: rgb(2, 78, 141);
-    --dates-cell-background: rgb(32, 108, 171);
+  --user-cell-width: 120px;
+  --days-cell-background: rgb(2, 78, 141);
+  --dates-cell-background: rgb(32, 108, 171);
 }
 
 .navbar-items a {
-    color: white;
+  color: white;
 }
 
-.navbar-items a:hover, .navbar a:active, .navbar a:focus {
-    color: #10069f;
+.navbar-items a:hover,
+.navbar a:active,
+.navbar a:focus {
+  color: #10069f;
 }
 
 .navbar-items .active {
-    color: #10069f;
-    background-color: white;
+  color: #10069f;
+  background-color: white;
 }
 
 .navbar-items .dev-active {
-    color: #9f0606;
-    background-color: white;
+  color: #9f0606;
+  background-color: white;
 }
 
 .active {
-    color: green;
-    
+  color: green;
 }
 
 .attending {
-    color: green;
+  color: green;
 }
 
 .not_attending {
-    color: red;
+  color: red;
 }
 
 .rr-primary {
-    background-color: #10069f;
-    color: #fff;
+  background-color: #10069f;
+  color: #fff;
 }
 
 .rr-secondary {
-    background-color: #271EA8;
-    color: #fff;
+  background-color: #271ea8;
+  color: #fff;
 }
 
 .rr-dev-primary {
-    background-color: #9f0606;
-    color: #fff;
+  background-color: #9f0606;
+  color: #fff;
 }
 
 .rr-dev-secondary {
-    background-color: #a81e1e;
-    color: #fff;
+  background-color: #a81e1e;
+  color: #fff;
 }
 
-
 .rr-white {
-    color: #fff;
+  color: #fff;
 }
 
 .AbsenceBox {
-    background-color: #ff0000;
-    border-color: #ff0000;
+  background-color: #ff0000;
+  border-color: #ff0000;
 }
 
 .CalendarCell {
-    background-color: white;
+  background-color: white;
 }
 
 .tooltip .tooltiptext {
-    background-color: black;
-    color: #fff;
+  background-color: black;
+  color: #fff;
 }
 
 .button-active {
-    border-color: green;
+  border-color: green;
 }
 
 .button-inactive {
-    border-color: red;
+  border-color: red;
 }
 
 .header-label-cell {
-    color: black; 
+  color: black;
 }
 
 .unselected-user-cell {
-    background-color: white; 
-    color: black; 
+  background-color: white;
+  color: black;
 }
 
 /* End of calendar */
 
 .collapsible {
-    /* background-color: #271EA8; */
-    color: white;
+  /* background-color: #271EA8; */
+  color: white;
 }
 
 /*.active,
@@ -103,9 +103,8 @@
      background-color: #555;
 }*/
 
-
 .collapsible:after {
-    color: white;
+  color: white;
 }
 
 /* End of settings */
@@ -114,62 +113,62 @@
 
 /* The Modal (background) */
 .modal {
-    z-index: 1050; 
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1050;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 /* Modal Content */
 .modal-content {
-    z-index: 1060;
-    position: relative;
-    border-color: #888;
-    padding: 20px;
-    margin: 15% auto;
-    width: 80%;
+  z-index: 1060;
+  position: relative;
+  border-color: #888;
+  padding: 20px;
+  margin: 15% auto;
+  width: 80%;
 }
 
 /* The Close Button */
 .close {
-    color: #aaa;
+  color: #aaa;
 }
 
 .close:hover,
 .close:focus {
-    color: black;
+  color: black;
 }
 
 /* OK Button */
 #alert-ok-button {
-    background-color: green;
-    color: white;
+  background-color: green;
+  color: white;
 }
 
 #alert-ok-button:hover {
-    background-color: darkgreen;
+  background-color: darkgreen;
 }
 
 .CalendarCell[data-editable="True"]:hover {
-    background-color: #ff00001a; 
+  background-color: #ff00001a;
 }
 
 .CalendarCell[data-editable="True"] {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .CalendarCell[data-editable="False"] {
-    cursor: not-allowed;
+  cursor: not-allowed;
 }
 
 .days-cell {
-    background-color: var(--days-cell-background) !important;
+  background-color: var(--days-cell-background) !important;
 }
 
 .dates-cell {
-    background-color: var(--dates-cell-background) !important;
+  background-color: var(--dates-cell-background) !important;
 }
