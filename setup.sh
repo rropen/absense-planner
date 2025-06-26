@@ -72,10 +72,10 @@ if [ -f "ap_src/manage.py" ]; then
 
     echo "Done"
     echo "Run the web server with:"
-    echo "uv run .\ap_src\manage.py runserver"
+    echo "uv run ./ap_src/manage.py runserver"
     echo "Please note that if this is your first time installing uv you may have to restart vscode"
     echo "Alternatively, activate the virtual environment:"
-    echo ".\.venv\Scripts\activate"
+    echo "source .venv/bin/activate"
     echo "And then run the web server with:"
-    echo "python ap_src\manage.py runserver"
+    echo "python ap_src/manage.py runserver"
 fi
