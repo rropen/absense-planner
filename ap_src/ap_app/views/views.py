@@ -15,7 +15,6 @@ import pycountry
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
 from django.http import HttpResponse, JsonResponse, HttpRequest
 from django.shortcuts import redirect, render
