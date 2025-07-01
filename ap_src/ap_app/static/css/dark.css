@@ -85,7 +85,7 @@ h3 {
 }
 
 .navbar-end {
-    background-color: #a81e1e;
+  background-color: #a81e1e;
 }
 
 .footer {
@@ -210,12 +210,12 @@ h3 {
 
 /* The Login Button */
 #login {
-    color: #000000;
+  color: #000000;
 }
 
 #login:hover,
 #login:focus {
-    color: #10069f;
+  color: #10069f;
 }
 
 /* The Close Button */
@@ -239,7 +239,7 @@ h3 {
 }
 
 .external-link-title {
-  background-color: black;
+  background-color: rgb(73, 70, 70);
   color: white;
 }
 
@@ -265,22 +265,22 @@ h3 {
 
 /* Signup/Login page */
 #LINK-login {
-    color: #66d1ff;
+  color: #66d1ff;
 }
 
 #NOT-loggedin {
-    color: white;
+  color: white;
 }
 
 .help {
-    color: white;
+  color: white;
 }
 
 /* Edit Team - Team Name/Description */
 #team-name {
-    color: white;
+  color: white;
 }
 
 #team-desc {
-    color: white;
+  color: white;
 }
