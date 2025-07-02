@@ -14,7 +14,7 @@
         <table class="table is-bordered is-striped dates-table" style="box-shadow: 5px 5px 5px" id="{{ item.team.name }}">
             <thead>
                 <tr class="is-flex">
-                    <td data-editable="{{editable}}" style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255);background-color: {{ weekends.offset}} !important;" class="header-label-cell CalendarCell has-text-centered p-0 is-vcentered has-text-white days-cell">Days</th>
+                    <td data-editable="{{editable}}" style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255); background-color: {{ weekends.offset }} !important;" class="header-label-cell CalendarCell has-text-centered p-0 is-vcentered has-text-white days-cell has-text-weight-bold">Days</td>
                     {% for day in days_name %}
                         {% if day == Sa and weekends.enabled or day == Su and weekends.enabled %}
                             <th style="background-color: {{ weekends.offset}}; color: white;" class="CalendarCell has-text-centered p-0 is-vcentered">{{day}}</th>
