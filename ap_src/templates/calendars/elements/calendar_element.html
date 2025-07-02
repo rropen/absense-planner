@@ -11,7 +11,7 @@
 <section class="section pt-0">
     <div class="table-container calendar-group nav-bar-padding">
         {% if team_data %}
-        <table class="table is-bordered is-striped dates-table" style="box-shadow: 5px 5px 5px" id="{{ item.team.name }}">
+        <table class="table is-bordered is-striped dates-table" style="box-shadow: 5px 5px 5px; border-radius: 10px; overflow: hidden;" id="{{ item.team.name }}">
             <thead>
                 <tr class="is-flex">
                     <td data-editable="{{editable}}" style="background-color: rgb(0, 169, 236); color: rgb(255, 255, 255); background-color: {{ weekends.offset }} !important;" class="header-label-cell CalendarCell has-text-centered p-0 is-vcentered has-text-white days-cell has-text-weight-bold">Days</td>
