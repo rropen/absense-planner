@@ -19,13 +19,8 @@ h3 {
 }
 
 .darkInput {
-<<<<<<< Updated upstream
-  background-color: #ffffff;
-  border-color: #343b3f;
-=======
     background-color: #ffffff;
     border-color: #343b3f;
->>>>>>> Stashed changes
 }
 
 .attending {
@@ -57,11 +52,7 @@ h3 {
 }
 
 .rr-white {
-<<<<<<< Updated upstream
-  color: #ffffff;
-=======
     color: #ffffff;
->>>>>>> Stashed changes
 }
 
 .navbar a {
@@ -110,7 +101,6 @@ h3 {
     background-color: #2a2c2d;
 }
 
-<<<<<<< Updated upstream
 .footer {
     background-color: #292e33;
 }
@@ -127,10 +117,6 @@ h3 {
     background-color: #2f3131;
     border: 2px solid #a12a2c;
     color: #a12a2c;
-=======
-.box h3 {
-    color: white;
->>>>>>> Stashed changes
 }
 
 .darkModeRed:hover {
@@ -147,7 +133,6 @@ h3 {
     color: #862123;
     transform: scale(0.9);
 }
-<<<<<<< Updated upstream
 
 .darkModeBlue {
     background-color: #2f3131;
@@ -168,10 +153,6 @@ h3 {
     border-color: #1461a9;
     color: #1461a9;
     transform: scale(0.9);
-=======
-.control > .checkbox {
-    color: white;
->>>>>>> Stashed changes
 }
 
 
