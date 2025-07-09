@@ -261,14 +261,21 @@ footer {
 }
 
 .is-fullheight {
-  height: 100%;
+    height: 100%;
 }
 
-.submit-button {
-  margin-top: 5px;
+/* Whiteos Button configs */
+
+.button.popout {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    will-change: transform;
 }
 
-.calendar-group {
-  overflow: auto !important;
-  height: 75vh !important;
+.button.popout:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.button.popout:active {
+    transform: scale(0.9);
 }

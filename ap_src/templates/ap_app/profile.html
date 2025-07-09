@@ -58,12 +58,12 @@
     <div class="columns is-multiline">
       {% for absence in absences %}
       <div class="column is-one-third">
-        <div class="card has-background-light p-4 has-text-centered">
-          <span class="is-block is-size-5 has-text-weight-bold"> Start date: {{ absence.absence_date_start }}</span>
-          <span class="is-block is-size-5 has-text-weight-bold">End date: {{ absence.absence_date_end }}</span>
+        <div class="card darkBox p-4 has-text-centered">
+          <span class="is-block is-size-5 dText"> Start date: {{ absence.absence_date_start }}</span>
+          <span class="is-block is-size-5 dText">End date: {{ absence.absence_date_end }}</span>
           <div class="mx-auto">
-            <a class="button is-info" href="/absence/edit/{{ absence.pk }}">Edit</a>
-            <a class="button is-danger" href="/absence/delete/{{ absence.pk }}/{{request.user.id}}">Delete</a>
+            <a class="button darkModeBlue" href="/absence/edit/{{ absence.pk }}">Edit</a>
+            <a class="button darkModeRed" href="/absence/delete/{{ absence.pk }}/{{request.user.id}}">Delete</a>
           </div>
         </div>
       </div>

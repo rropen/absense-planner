@@ -1,25 +1,37 @@
 {% load static %}
 <form method="post" action="{% url 'update-colour' %}">
     {% csrf_token %}
-    <nav class="navbar permission_input_select">
-        <div class="control">
-            <div class="select is-rounded">
-              <select name="enabled">
-                {% if enabled %}
-                <option value="True" selected>Enabled</option>
-                <option value="False">Disabled</option>
-                {% else %}
-                <option value="False" selected>Disabled</option>
-                <option value="True">Enabled</option>
-                {% endif %}
-              </select>
-            </div>
+    <nav class="navbar darkBox is-flex is-flex-wrap-wrap is-align-items-center is-justify-content-space-between p-1">
+        <div class="control" >
+          <select name="enabled" class="subDarkBox Dropdown dText">
+            {% if enabled %}
+            <option value="True" selected>Enabled</option>
+            <option value="False">Disabled</option>
+            {% else %}
+            <option value="False" selected>Disabled</option>
+            <option value="True">Enabled</option>
+            {% endif %}
+          </select>
         </div>
-          <div class="control">
-            <input type="color" style="width:125px" class="input is-rounded colour-selector" value="{{ colour_value }}" name="colour" />
-        </div>
+
         <div class="control">
-            <button class="button is-rounded"  type="submit">
+            <select name="enabled" class="subDarkBox Dropdown dText">
+              {% if enabled %}
+              <option value="True" selected>Show</option>
+              <option value="False">Hide</option>
+              {% else %}
+              <option value="False" selected>Show</option>
+              <option value="True">Hide</option>
+              {% endif %}
+            </select>
+        </div>
+
+        <div class="control">
+            <input type="color" class="input subDarkBox dSuccess colour-selector" value="{{ colour_value }}" name="colour" />
+        </div>
+
+        <div class="control">
+            <button class="button darkModeBlue" type="submit">
                 Submit
             </button>
         </div>
