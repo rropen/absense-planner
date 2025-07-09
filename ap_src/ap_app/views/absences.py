@@ -37,6 +37,7 @@ def profile_page(request):
                 "ap_app/profile.html",
                 {
                     "form": form,
+                    "message": "Successfully switched user",
                     "absences": absences,
                     "users": users,
                     "recurring_absences": rec_absences,

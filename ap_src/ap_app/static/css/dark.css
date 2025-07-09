@@ -19,8 +19,12 @@ h3 {
 }
 
 .darkInput {
-    background-color: #ffffff;
-    border-color: #343b3f;
+  background-color: #ffffff;
+  border-color: #343b3f;
+}
+
+.main {
+  background-color: #343b3f;
 }
 
 .attending {
@@ -32,8 +36,13 @@ h3 {
 }
 
 .rr-primary {
-    background-color: #1c1c36;
-    color: #ffffff;
+  background-color: #10069f;
+  color: #ffffff;
+}
+
+.rr-secondary {
+  background-color: #271ea8;
+  color: #ffffff;
 }
 
 .rr-dev-primary {
@@ -52,7 +61,13 @@ h3 {
 }
 
 .rr-white {
-    color: #ffffff;
+  color: #ffffff;
+}
+
+.navbar {
+  background-color: #3e4549;
+  z-index: 10;
+  position: relative;
 }
 
 .navbar a {
@@ -73,6 +88,14 @@ h3 {
   background-color: #a81e1e;
 }
 
+.footer {
+  background-color: #292e33;
+}
+
+.box {
+  background-color: #3e4549;
+}
+
 .box h3 {
   color: white;
 }
@@ -84,302 +107,16 @@ h3 {
 .field > label {
   color: white;
 }
+
+.dText {
+  color: white;
+}
+
 .control > .checkbox {
   color: white;
 }
 
-
-
-/* Dark Mode Options */
-/* Main */
-
-.dText {
-    color: white;
-}
-
-.main {
-    background-color: #2a2c2d;
-}
-
-.footer {
-    background-color: #292e33;
-}
-
-.navbar {
-    background-color: #2e2f2f;
-    z-index: 10;
-    position: relative;
-}
-
-/* Buttons */
-
-.darkModeRed {
-    background-color: #2f3131;
-    border: 2px solid #a12a2c;
-    color: #a12a2c;
-}
-
-.darkModeRed:hover {
-    background-color: #2f3131;
-    border-color: #b73133;
-    color: #b73133;
-    box-shadow: 0 0 8px #eb6264;
-    transform: scale(1.025);
-}
-
-.darkModeRed:active {
-    background-color: #2f3131;
-    border-color: #862123;
-    color: #862123;
-    transform: scale(0.9);
-}
-
-.darkModeBlue {
-    background-color: #2f3131;
-    border: 2px solid #1772c8;
-    color: #1772c8;
-}
-
-.darkModeBlue:hover {
-    background-color: #2f3131;
-    border-color: #1a81e1;
-    color: #1a81e1;
-    box-shadow: 0 0 8px #459df0;
-    transform: scale(1.025);
-}
-
-.darkModeBlue:active {
-    background-color: #2f3131;
-    border-color: #1461a9;
-    color: #1461a9;
-    transform: scale(0.9);
-}
-
-
-/* Dark Boxes */
-
-.darkBox {
-    background-color: #222323;
-}
-
-.subDarkBox {
-    background-color: #2f3131;
-}
-
-/* Inputs */
-
-.dSuccess {
-  color: white;
-  border: 1px solid transparent;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.dSuccess:focus {
-  outline: none;
-  border-color: #43b86c;
-  box-shadow: 0 0 0 0.1em rgba(114, 255, 164, 0.4);
-}
-
-.dWarning {
-  color: white;
-  border: 1px solid transparent;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.dWarning:focus {
-  outline: none;
-  border-color: #ff9900;
-  box-shadow: 0 0 0 0.1em rgba(255, 225, 75, 0.4);
-}
-
-.Dropdown {
-  color: #ffffff;
-  border: 1px solid #444;
-  border-radius: 9999px;
-  padding: 0.375em 1.5em 0.375em 0.75em;
-  /* height: 2.25em; */
-  line-height: 1.5;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  transition: border 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-  position: relative;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg fill='rgb(200,200,200)' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.75em center;
-  background-size: 1em;
-  font-size: 1rem;
-}
-
-
-.Dropdown:focus {
-  outline: none;
-  border-color: #48c774;
-  box-shadow: 0 0 0 0.4em rgba(72, 199, 116, 0.2);
-  transform: scale(1.02);
-}
-
-.Dropdown option {
-  background-color: #222323;
-  color: rgb(200, 200, 200);
-}
-
-
-
-/* End of Whiteo's dark stuff */
-
-
-
-
-
-/* Dark Mode Options */
-/* Main */
-
-.dText {
-    color: white;
-}
-
-.main {
-    background-color: #2a2c2d;
-}
-
-.footer {
-    background-color: #292e33;
-}
-
-.navbar {
-    background-color: #2e2f2f;
-    z-index: 10;
-    position: relative;
-}
-
-/* Buttons */
-
-.darkModeRed {
-    background-color: #2f3131;
-    border: 2px solid #a12a2c;
-    color: #a12a2c;
-}
-
-.darkModeRed:hover {
-    background-color: #2f3131;
-    border-color: #b73133;
-    color: #b73133;
-    box-shadow: 0 0 8px #eb6264;
-    transform: scale(1.025);
-}
-
-.darkModeRed:active {
-    background-color: #2f3131;
-    border-color: #862123;
-    color: #862123;
-    transform: scale(0.9);
-}
-
-.darkModeBlue {
-    background-color: #2f3131;
-    border: 2px solid #1772c8;
-    color: #1772c8;
-}
-
-.darkModeBlue:hover {
-    background-color: #2f3131;
-    border-color: #1a81e1;
-    color: #1a81e1;
-    box-shadow: 0 0 8px #459df0;
-    transform: scale(1.025);
-}
-
-.darkModeBlue:active {
-    background-color: #2f3131;
-    border-color: #1461a9;
-    color: #1461a9;
-    transform: scale(0.9);
-}
-
-
-/* Dark Boxes */
-
-.darkBox {
-    background-color: #222323;
-}
-
-.subDarkBox {
-    background-color: #2f3131;
-}
-
-/* Inputs */
-
-.dSuccess {
-  color: white;
-  border: 1px solid transparent;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.dSuccess:focus {
-  outline: none;
-  border-color: #43b86c;
-  box-shadow: 0 0 0 0.1em rgba(114, 255, 164, 0.4);
-}
-
-.dWarning {
-  color: white;
-  border: 1px solid transparent;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.dWarning:focus {
-  outline: none;
-  border-color: #ff9900;
-  box-shadow: 0 0 0 0.1em rgba(255, 225, 75, 0.4);
-}
-
-.Dropdown {
-  color: #ffffff;
-  border: 1px solid #444;
-  border-radius: 9999px;
-  padding: 0.375em 1.5em 0.375em 0.75em;
-  /* height: 2.25em; */
-  line-height: 1.5;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  transition: border 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-  position: relative;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg fill='rgb(200,200,200)' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.75em center;
-  background-size: 1em;
-  font-size: 1rem;
-}
-
-
-.Dropdown:focus {
-  outline: none;
-  border-color: #48c774;
-  box-shadow: 0 0 0 0.4em rgba(72, 199, 116, 0.2);
-  transform: scale(1.02);
-}
-
-.Dropdown option {
-  background-color: #222323;
-  color: rgb(200, 200, 200);
-}
-
-
-
-/* End of Whiteo's dark stuff */
-
-
-
-
-
 /* End of basic */
-
-.rr-secondary {
-    background-color: #1d1d2d;
-    color: #ffffff;
-}
 
 .AbsenceBox {
   background-color: #ff0000;

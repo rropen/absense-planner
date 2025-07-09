@@ -253,8 +253,6 @@
 <script src="{% static 'js/delete_element.js' %}"></script>
 </body>
 
-
-
 <script>
   'use strict';
 
@@ -297,33 +295,14 @@
 
     if ($burgers.length > 0) {
       $burgers.forEach(function ($el) {
-        var target = $el.dataset.target;
-        var $target = document.getElementById(target);
-
-        // Click event
         $el.addEventListener('click', function () {
-
+          var target = $el.dataset.target;
+          var $target = document.getElementById(target);
           $el.classList.toggle('is-active');
           $target.classList.toggle('is-active');
         });
-
-        // Mouse enter (hover)
-        $el.addEventListener('mouseenter', function () {
-          $el.classList.add('is-hovered');
-          $el.classList.add('is-active');
-          $target.classList.add('is-active');
-        });
-
-        // // Mouse leave
-        // $el.addEventListener('mouseleave', function () {
-        //   $el.classList.remove('is-hovered');
-        //   $el.classList.remove('is-active');
-        //   $target.classList.remove('is-active');
-        // });
       });
     }
-
-
 
     // Functions
 
