@@ -2,8 +2,9 @@
 <form method="post" action="{% url 'update-colour' %}">
     {% csrf_token %}
     <nav class="navbar darkBox is-flex is-flex-wrap-wrap is-align-items-center is-justify-content-space-between p-1">
-        <div class="control" >
-          <select name="enabled" class="subDarkBox Dropdown dText">
+
+        <div class="control">
+          <select name="enabled" class="subDarkBox darkDropdown dText">
             {% if enabled %}
             <option value="True" selected>Enabled</option>
             <option value="False">Disabled</option>
@@ -15,18 +16,6 @@
         </div>
 
         <div class="control">
-            <select name="enabled" class="subDarkBox Dropdown dText">
-              {% if enabled %}
-              <option value="True" selected>Show</option>
-              <option value="False">Hide</option>
-              {% else %}
-              <option value="False" selected>Show</option>
-              <option value="True">Hide</option>
-              {% endif %}
-            </select>
-        </div>
-
-        <div class="control">
             <input type="color" class="input subDarkBox dSuccess colour-selector" value="{{ colour_value }}" name="colour" />
         </div>
 
@@ -35,10 +24,11 @@
                 Submit
             </button>
         </div>
-    <div class="control"> <button class="button is-rounded" type="reset">
-        Undo
-    </button>
-    </div>
+        <div class="control">
+            <button class="button darkModeBlue" type="reset">
+                Undo
+            </button>
+        </div>
     </nav>
     <input type="hidden" name="name" value="{{ name }}"></input>
 </form>
