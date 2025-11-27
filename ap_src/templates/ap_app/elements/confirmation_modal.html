@@ -13,16 +13,29 @@
         {% if type == 'remove' %}
             <p class="dText">Are you sure you want to remove this absence?</p>
         {% elif type == 'info' %}
-            <p class="dText">Use Left Click to select a full day.
-                <br><br>Use Shift Left Click to select a half-day.
-                <br><br>To remove an absence, click on the red box again.
+            <p class="dText"><strong>Here is how to book an absence with the calendar:</strong>
+                <br><br>Use Left Click to select a full day.
+                <br>Use Shift Left Click to select a half-day.
+                <br>To remove an absence, click on the red box again.
                 <br><br>
             </p>
             <div id="info-box">
-                <div style="background-color:red; height:30px; width:30px; border: 1px solid black; float: left;" class="mr-2"></div> <p class="p-1 dText">Whole day</p>
+                <p class="dText"><strong>Here is what each type of absence you can book looks like:</strong>
+                <br><br><div style="background-color:red; height:30px; width:30px; border: 1px solid black; float: left;" class="mr-2"></div> <p class="p-1 dText">Whole day</p>
                 <div style="background:linear-gradient(to right, #ff0000 50%, transparent 50%); height:30px; width:30px; border: 1px solid black; float: left;" class="mr-2"></div> <p class="p-1 dText">Morning</p>
                 <div style="background:linear-gradient(to right, transparent 50%, #ff0000 50% ); height:30px; width:30px; border: 1px solid black; float: left;" class="mr-2"></div> <p class="p-1 dText">Afternoon</p>
             </div>
+            <br>
+            <p class="dText"><strong>Here is what each colour represents on the calendar table:</strong>
+                <br><br>
+            </p>
+            <div id="info-box">
+                <div style="background-color:white; height:30px; width:30px; border: 1px solid black; float: left;" class="mr-2"></div> <p class="p-1 dText">No Absences</p>
+                <div style="background-color:red; height:30px; width:30px; border: 1px solid black; float: left;" class="mr-2"></div> <p class="p-1 dText">Absence Booked</p>
+                <div style="background-color:orange; height:30px; width:30px; border: 1px solid black; float: left;" class="mr-2"></div> <p class="p-1 dText">Reccuring Absence</p>
+                <div style="background-color: #206CAB; height:30px; width:30px; border: 1px solid black; float: left;" class="mr-2"></div> <p class="p-1 dText">Weekend</p>
+            </div>
+
         {% elif type == 'half' %}
             <p class="dText">Would you like the absence to be in the morning or afternoon?</p>
         {% endif %}
