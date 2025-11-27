@@ -7,7 +7,7 @@
         {% else %}
             <header class="modal-card-head darkBackground" style="height: 10vh;">
         {% endif %}
-        <p class="modal-card-title title darkBackground" style="color:white; margin: 2vh;">{{ title }}</p>
+        <p class="modal-card-title title darkBackground" style="margin: 2vh;">{{ title }}</p>
     </header>
     <section class="modal-card-body darkBackground">
         {% if type == 'remove' %}
@@ -52,7 +52,8 @@
         <button class="button has-background-danger has-text-white" onclick="closeModal('{{ type }}')">Close</button>
     {% elif type == 'half' %}
         <button class="button has-background-primary has-text-white" id="morningBTN" style="margin-right: 1vw;">Morning</button>
-        <button class="button has-background-primary has-text-white" id="afternoonBTN">Afternoon</button>
+        <button class="button has-background-primary has-text-white" id="afternoonBTN" style="margin-right: 1vw;">Afternoon</button>
+        <button class="button has-background-danger has-text-white" onclick="closeModal('{{ type }}')">Cancel</button>
     {% endif %}
 </div>
 </div>
