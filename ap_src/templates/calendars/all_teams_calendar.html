@@ -10,21 +10,23 @@
 
 <section class="section" id="calendarTitle">
     <div class="nav-bar-padding" style="position: relative;">
-        <h1 class="title is-3 dText pb-5">Absence Calendar</h1>
+        <h1 class="title is-3 dText">Absence Calendar</h1>
 
         <span class="tag dText"
-            style="position: absolute; top: -50px; right: -50px; background: transparent; border: none; padding: 0; font-size: 0.85rem;">
+            style="background: transparent; border: none; padding: 0; font-size: 0.85rem;">
             Last refreshed <span id="refreshSecBox" style="padding: 0 5px;"></span> minute(s) ago.
-            <script>
-                function SecondsSinceLastRefresh() {
-                    const seconds = Math.floor((Date.now() - window.lastRefreshTimestamp) / 60000) || 0;
-                    document.getElementById('refreshSecBox').textContent = seconds;
-                }
-
-                window.lastRefreshTimestamp = Date.now() - 5 * 60000; // 5 minutes ago
-                SecondsSinceLastRefresh();
-            </script>
         </span>
+
+        <script>
+            window.lastRefreshTimestamp = Date.now();
+            function minutesSinceLastRefresh() {
+                const minutes = Math.floor((Date.now() - window.lastRefreshTimestamp) / 60000);
+                document.getElementById('refreshSecBox').textContent = minutes;
+            }
+
+            minutesSinceLastRefresh();
+            setInterval(minutesSinceLastRefresh, 60000);
+        </script>
 
         <div class="level mt-5">
             <div class="level-left">
