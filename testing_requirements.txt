@@ -99,7 +99,7 @@ tqdm==4.65.0
 trio==0.22.0
 trio-websocket==0.10.2
 typing_extensions==4.5.0
-urllib3==2.0.2
+urllib3==2.5.0
 wrapt==1.14.1
 wsproto==1.2.0
 zipp==3.15.0
