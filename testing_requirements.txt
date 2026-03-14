@@ -4,7 +4,7 @@ async-generator==1.10
 attrs==23.1.0
 beautifulsoup4==4.12.2
 behave==1.2.6
-black==23.3.0
+black==26.3.1
 certifi==2023.5.7
 cffi==1.15.1
 chardet==5.1.0
