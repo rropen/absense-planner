@@ -58,7 +58,7 @@ pluggy==1.0.0
 py==1.11.0
 pycparser==2.21
 pydot==1.4.2
-Pygments==2.15.1
+Pygments==2.20.0
 pylint==2.13.9
 pylint-django==2.5.3
 pylint-plugin-utils==0.7
