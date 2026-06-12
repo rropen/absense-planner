@@ -1,4 +1,4 @@
-FROM python:3.11.9
+FROM python:3.14.6
 
 COPY pyproject.toml pyproject.toml
 RUN pip install --no-cache-dir -r pyproject.toml
