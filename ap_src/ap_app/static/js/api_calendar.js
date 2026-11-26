@@ -1,8 +1,15 @@
 var calendarClickToggle = true;
 var token = document.currentScript.getAttribute("token");
+// True while a add/remove request is in flight, so repeated clicks don't
+// queue duplicate requests before the page reloads.
+var requestInFlight = false;
 
 //Send the data to the backend
 function sendData(username, date, half_day, half_day_time, type, absence_type) {
+  if (requestInFlight) {
+    return;
+  }
+  requestInFlight = true;
   var data = JSON.stringify({
     username: username,
     date: date,
@@ -30,6 +37,7 @@ function sendData(username, date, half_day, half_day_time, type, absence_type) {
     })
     .catch((err) => {
       console.log(err);
+      requestInFlight = false;
     });
 }
 
